@@ -79,14 +79,32 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({
     });
   };
 
-  const toggleSaveMistake = (qId: string) => {
+  const toggleSaveMistake = async (q: Question) => {
     haptic.impact('light');
+    const qId = q.id;
+    const isSaved = savedMistakes.has(qId);
+
     setSavedMistakes((prev) => {
       const next = new Set(prev);
       if (next.has(qId)) next.delete(qId);
       else next.add(qId);
       return next;
     });
+
+    if (typeof window !== 'undefined') {
+      const { offlineDb } = await import('@/lib/offlineDb');
+      if (offlineDb) {
+        if (isSaved) {
+          await offlineDb.savedQuestions.delete(qId);
+        } else {
+          await offlineDb.savedQuestions.put({
+            id: qId,
+            savedAt: new Date().toISOString(),
+            question: q,
+          });
+        }
+      }
+    }
   };
 
   const calculateScore = useCallback(() => {
@@ -197,6 +215,17 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({
 
         <div className="flex items-center gap-1">
           <button
+            data-testid="header-save-btn"
+            onClick={() => toggleSaveMistake(currentQ)}
+            className={`p-2 rounded-xl transition-all ${
+              savedMistakes.has(currentQ.id)
+                ? 'bg-amber-500/20 text-amber-400'
+                : 'text-slate-400 hover:bg-slate-800'
+            }`}
+          >
+            <Bookmark className="w-4 h-4" />
+          </button>
+          <button
             onClick={() => toggleFlag(currentIndex)}
             className={`p-2 rounded-xl transition-all ${
               flagged.has(currentIndex)
@@ -292,7 +321,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({
         </div>
 
         {/* Practice Mode Solution Card */}
-        {!isSimulator && isAnswered && currentQ.explanation && (
+        {!isSimulator && isAnswered && (
           <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-2 animate-fade-in">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
@@ -300,7 +329,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({
                 Correct Answer: Option {currentQ.answer}
               </span>
               <button
-                onClick={() => toggleSaveMistake(currentQ.id)}
+                data-testid="save-question-btn"
+                onClick={() => toggleSaveMistake(currentQ)}
                 className={`text-xs flex items-center gap-1 px-2.5 py-1 rounded-lg border transition-colors ${
                   savedMistakes.has(currentQ.id)
                     ? 'bg-amber-500/20 border-amber-500/40 text-amber-400'
@@ -311,9 +341,15 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({
                 {savedMistakes.has(currentQ.id) ? 'Saved' : 'Save'}
               </button>
             </div>
-            <div className="text-xs text-slate-300 leading-relaxed pt-1">
-              <MathText content={currentQ.explanation} />
-            </div>
+            {currentQ.explanation ? (
+              <div className="text-xs text-slate-300 leading-relaxed pt-1">
+                <MathText content={currentQ.explanation} />
+              </div>
+            ) : (
+              <div className="text-[11px] text-slate-500 italic pt-1">
+                Tap &quot;Ask AI Tutor&quot; below for a step-by-step conceptual walkthrough.
+              </div>
+            )}
           </div>
         )}
       </main>

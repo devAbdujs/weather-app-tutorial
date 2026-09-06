@@ -315,7 +315,8 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({ onStartExam }) => 
           <div className="space-y-2.5">
             {filteredSubjects.map((sub) => (
               <div
-                key={sub.subject}
+                key={`${sub.subject}_${sub.category || ''}`}
+                data-testid="subject-card"
                 onClick={() => handleOpenSetup(sub)}
                 className="bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-4 transition-all duration-150 cursor-pointer active:scale-[0.99] flex items-center justify-between group"
               >
@@ -481,6 +482,7 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({ onStartExam }) => 
 
             {/* Start Button */}
             <button
+              data-testid="start-session-btn"
               onClick={handleLaunchExam}
               disabled={isLaunching}
               className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 disabled:opacity-50"

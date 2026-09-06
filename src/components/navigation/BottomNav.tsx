@@ -34,6 +34,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onChangeTab }) 
           return (
             <button
               key={tab.id}
+              data-testid={`nav-${tab.id}`}
               onClick={() => handleTabClick(tab.id)}
               className={`flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-150 ${
                 isActive

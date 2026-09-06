@@ -163,7 +163,7 @@ export function getFlashcardSubjects(): { subject: string; count: number }[] {
 
 export function getFlashcardUnits(subject?: string): string[] {
   const db = getDb();
-  let query = 'SELECT DISTINCT unit FROM flashcards WHERE unit IS NOT NULL AND unit != ""';
+  let query = "SELECT DISTINCT unit FROM flashcards WHERE unit IS NOT NULL AND unit != ''";
   const args: string[] = [];
   if (subject && subject !== 'All') {
     query += ' AND subject = ?';
