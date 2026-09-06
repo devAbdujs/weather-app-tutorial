@@ -20,6 +20,8 @@ export const FlashcardDeck: React.FC = () => {
   const { haptic } = useTelegram();
   const [subjects, setSubjects] = useState<{ subject: string; count: number }[]>([]);
   const [selectedSubject, setSelectedSubject] = useState<string>('All');
+  const [units, setUnits] = useState<string[]>([]);
+  const [selectedUnit, setSelectedUnit] = useState<string>('All');
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -39,17 +41,38 @@ export const FlashcardDeck: React.FC = () => {
       .catch(console.error);
   }, []);
 
-  // Fetch flashcards for subject
-  const loadDeck = useCallback((subject: string) => {
+  // Fetch units whenever subject changes
+  useEffect(() => {
+    setSelectedUnit('All');
+    if (selectedSubject !== 'All') {
+      fetch(`/api/flashcards?meta=units&subject=${encodeURIComponent(selectedSubject)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.units) {
+            setUnits(data.units);
+          }
+        })
+        .catch(console.error);
+    } else {
+      setUnits([]);
+    }
+  }, [selectedSubject]);
+
+  // Fetch flashcards for subject & unit
+  const loadDeck = useCallback((subject: string = 'All', unit: string = 'All') => {
     setLoading(true);
     setIsFlipped(false);
     setCurrentIndex(0);
     setIsCompleted(false);
     setStats({ easy: 0, good: 0, hard: 0 });
 
-    const url = subject === 'All' 
-      ? '/api/flashcards?limit=30' 
-      : `/api/flashcards?subject=${encodeURIComponent(subject)}&limit=30`;
+    let url = '/api/flashcards?limit=30';
+    if (subject !== 'All') {
+      url += `&subject=${encodeURIComponent(subject)}`;
+    }
+    if (unit !== 'All') {
+      url += `&unit=${encodeURIComponent(unit)}`;
+    }
 
     fetch(url)
       .then((res) => res.json())
@@ -63,8 +86,8 @@ export const FlashcardDeck: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    loadDeck(selectedSubject);
-  }, [selectedSubject, loadDeck]);
+    loadDeck(selectedSubject, selectedUnit);
+  }, [selectedSubject, selectedUnit, loadDeck]);
 
   const handleFlip = () => {
     haptic.selection();
@@ -106,7 +129,7 @@ export const FlashcardDeck: React.FC = () => {
           <button
             onClick={() => {
               haptic.impact('light');
-              loadDeck(selectedSubject);
+              loadDeck(selectedSubject, selectedUnit);
             }}
             className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors"
           >
@@ -149,6 +172,44 @@ export const FlashcardDeck: React.FC = () => {
             );
           })}
         </div>
+
+        {/* Unit Pill Filters */}
+        {units.length > 0 && (
+          <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[11px] pt-1 border-t border-slate-800/60">
+            <button
+              onClick={() => {
+                haptic.selection();
+                setSelectedUnit('All');
+              }}
+              className={`px-2.5 py-1 rounded-lg font-medium whitespace-nowrap transition-all border shrink-0 ${
+                selectedUnit === 'All'
+                  ? 'bg-slate-200 border-white text-slate-950 font-bold'
+                  : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-300'
+              }`}
+            >
+              All Units
+            </button>
+            {units.map((u) => {
+              const isUnitActive = selectedUnit === u;
+              return (
+                <button
+                  key={u}
+                  onClick={() => {
+                    haptic.selection();
+                    setSelectedUnit(u);
+                  }}
+                  className={`px-2.5 py-1 rounded-lg font-medium whitespace-nowrap transition-all border shrink-0 ${
+                    isUnitActive
+                      ? 'bg-amber-500/20 border-amber-500 text-amber-300 font-semibold'
+                      : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-300'
+                  }`}
+                >
+                  {u}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Main Flashcard Arena */}
@@ -189,7 +250,7 @@ export const FlashcardDeck: React.FC = () => {
             <button
               onClick={() => {
                 haptic.impact('medium');
-                loadDeck(selectedSubject);
+                loadDeck(selectedSubject, selectedUnit);
               }}
               className="w-full py-3.5 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-lg shadow-amber-500/20"
             >

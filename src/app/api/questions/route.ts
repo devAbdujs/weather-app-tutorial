@@ -8,6 +8,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const track = searchParams.get('track') || searchParams.get('examType') || 'entrance';
     const subject = searchParams.get('subject') || undefined;
+    const section = searchParams.get('section') || undefined;
     const yearStr = searchParams.get('year');
     const limitStr = searchParams.get('limit');
     const offsetStr = searchParams.get('offset');
@@ -20,6 +21,7 @@ export async function GET(req: NextRequest) {
     const { questions, total } = getQuestions({
       examType: track,
       subject,
+      section,
       year,
       limit,
       offset,

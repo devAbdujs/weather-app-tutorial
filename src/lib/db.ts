@@ -75,21 +75,26 @@ export function getTrackSummaries(): TrackSummary[] {
 export function getSubjectsByTrack(examType: string): SubjectSummary[] {
   const db = getDb();
   const rows = db.prepare(`
-    SELECT subject, category, count(*) as count, group_concat(DISTINCT year_ec) as years
+    SELECT subject, category, count(*) as count, group_concat(DISTINCT year_ec) as years, group_concat(DISTINCT section) as sections
     FROM questions
     WHERE exam_type = ?
     GROUP BY subject, category
     ORDER BY count DESC
-  `).all(examType) as { subject: string; category: string | null; count: number; years: string | null }[];
+  `).all(examType) as { subject: string; category: string | null; count: number; years: string | null; sections: string | null }[];
 
   return rows.map(r => {
     const rawYears = r.years ? r.years.split(',').map(y => parseInt(y)).filter(y => !isNaN(y)) : [];
     rawYears.sort((a, b) => b - a);
+
+    const rawSections = r.sections ? r.sections.split(',').map(s => s.trim()).filter(Boolean) : [];
+    rawSections.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+
     return {
       subject: r.subject,
       category: r.category,
       questionCount: r.count,
-      years: rawYears
+      years: rawYears,
+      sections: rawSections
     };
   });
 }
@@ -97,6 +102,7 @@ export function getSubjectsByTrack(examType: string): SubjectSummary[] {
 export function getQuestions(params: {
   examType: string;
   subject?: string;
+  section?: string;
   year?: number;
   limit?: number;
   offset?: number;
@@ -109,6 +115,11 @@ export function getQuestions(params: {
   if (params.subject && params.subject !== 'all') {
     query += ' AND subject = ?';
     args.push(params.subject);
+  }
+
+  if (params.section && params.section !== 'all') {
+    query += ' AND section = ?';
+    args.push(params.section);
   }
 
   if (params.year) {
@@ -150,13 +161,31 @@ export function getFlashcardSubjects(): { subject: string; count: number }[] {
   `).all() as { subject: string; count: number }[];
 }
 
-export function getFlashcards(subject?: string, limit = 50): Flashcard[] {
+export function getFlashcardUnits(subject?: string): string[] {
   const db = getDb();
-  let query = 'SELECT * FROM flashcards';
+  let query = 'SELECT DISTINCT unit FROM flashcards WHERE unit IS NOT NULL AND unit != ""';
+  const args: string[] = [];
+  if (subject && subject !== 'All') {
+    query += ' AND subject = ?';
+    args.push(subject);
+  }
+  const rows = db.prepare(query).all(...args) as { unit: string }[];
+  const units = rows.map(r => r.unit.trim()).filter(Boolean);
+  units.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+  return units;
+}
+
+export function getFlashcards(subject?: string, unit?: string, limit = 50): Flashcard[] {
+  const db = getDb();
+  let query = 'SELECT * FROM flashcards WHERE 1=1';
   const args: (string | number)[] = [];
   if (subject && subject !== 'All') {
-    query += ' WHERE subject = ?';
+    query += ' AND subject = ?';
     args.push(subject);
+  }
+  if (unit && unit !== 'All') {
+    query += ' AND unit = ?';
+    args.push(unit);
   }
   query += ' ORDER BY RANDOM() LIMIT ?';
   args.push(limit);

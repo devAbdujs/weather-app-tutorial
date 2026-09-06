@@ -56,6 +56,7 @@ export interface SubjectSummary {
   category: string | null;
   questionCount: number;
   years: number[];
+  sections: string[];
 }
 
 export interface UserExamAttempt {

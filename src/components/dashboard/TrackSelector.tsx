@@ -52,6 +52,7 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({ onStartExam }) => 
   // Setup modal state
   const [selectedSubject, setSelectedSubject] = useState<SubjectSummary | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | 'all'>('all');
+  const [selectedSection, setSelectedSection] = useState<string | 'all'>('all');
   const [examMode, setExamMode] = useState<'practice' | 'simulator'>('practice');
   const [isLaunching, setIsLaunching] = useState(false);
 
@@ -93,7 +94,12 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({ onStartExam }) => 
       if (!matchSearch) return false;
 
       if (activeTrack === 'entrance' && selectedStream !== 'All') {
-        return s.category === selectedStream;
+        if (selectedStream === 'Natural Science') {
+          return s.category === 'Natural Science' || s.category === 'Common' || s.category === 'Science Science';
+        }
+        if (selectedStream === 'Social Science') {
+          return s.category === 'Social Science' || s.category === 'Common';
+        }
       }
       return true;
     });
@@ -110,6 +116,7 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({ onStartExam }) => 
     haptic.impact('light');
     setSelectedSubject(sub);
     setSelectedYear(sub.years.length > 0 ? sub.years[0] : 'all');
+    setSelectedSection('all');
   };
 
   const handleLaunchExam = async () => {
@@ -118,7 +125,8 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({ onStartExam }) => 
     setIsLaunching(true);
 
     const yearParam = selectedYear === 'all' ? undefined : selectedYear;
-    const cacheKey = `${activeTrack}_${selectedSubject.subject}_${selectedYear}`;
+    const sectionParam = selectedSection === 'all' ? undefined : selectedSection;
+    const cacheKey = `${activeTrack}_${selectedSubject.subject}_${selectedYear}_${selectedSection}`;
 
     try {
       let questions: Question[] = [];
@@ -136,6 +144,9 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({ onStartExam }) => 
         let url = `/api/questions?examType=${activeTrack}&subject=${encodeURIComponent(selectedSubject.subject)}&limit=50`;
         if (yearParam) {
           url += `&year=${yearParam}`;
+        }
+        if (sectionParam) {
+          url += `&section=${encodeURIComponent(sectionParam)}`;
         }
         const res = await fetch(url);
         const data = await res.json();
@@ -158,8 +169,16 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({ onStartExam }) => 
         return;
       }
 
-      const yearLabel = yearParam ? `${yearParam} E.C.` : 'Comprehensive';
-      const title = `${selectedSubject.subject} — ${yearLabel}`;
+      let subDetail = '';
+      if (sectionParam) {
+        subDetail = sectionParam;
+      } else if (yearParam) {
+        subDetail = `${yearParam} E.C.`;
+      } else {
+        subDetail = 'Comprehensive';
+      }
+
+      const title = `${selectedSubject.subject} — ${subDetail}`;
 
       onStartExam({
         examType: activeTrack,
@@ -352,6 +371,41 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({ onStartExam }) => 
                 <X className="w-5 h-5" />
               </button>
             </div>
+
+            {/* Chapter / Unit Breakdown Selector */}
+            {selectedSubject.sections && selectedSubject.sections.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-slate-300">Chapter / Course Unit</label>
+                  <span className="text-[10px] text-blue-400 font-medium">{selectedSubject.sections.length} Modules</span>
+                </div>
+                <div className="flex gap-2 flex-wrap max-h-32 overflow-y-auto p-1">
+                  <button
+                    onClick={() => setSelectedSection('all')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
+                      selectedSection === 'all'
+                        ? 'bg-blue-600 border-blue-500 text-white'
+                        : 'bg-slate-800 border-slate-700 text-slate-400'
+                    }`}
+                  >
+                    All Chapters
+                  </button>
+                  {selectedSubject.sections.map((sec) => (
+                    <button
+                      key={sec}
+                      onClick={() => setSelectedSection(sec)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
+                        selectedSection === sec
+                          ? 'bg-blue-600 border-blue-500 text-white'
+                          : 'bg-slate-800 border-slate-700 text-slate-400'
+                      }`}
+                    >
+                      {sec}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Year Selector */}
             {selectedSubject.years.length > 0 && (

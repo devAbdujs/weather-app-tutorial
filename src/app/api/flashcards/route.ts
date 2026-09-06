@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getFlashcards, getFlashcardSubjects } from '@/lib/db';
+import { getFlashcards, getFlashcardSubjects, getFlashcardUnits } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,11 +12,18 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: true, subjects });
     }
 
+    if (searchParams.get('meta') === 'units') {
+      const subject = searchParams.get('subject') || undefined;
+      const units = getFlashcardUnits(subject);
+      return NextResponse.json({ success: true, units });
+    }
+
     const subject = searchParams.get('subject') || undefined;
+    const unit = searchParams.get('unit') || undefined;
     const limitStr = searchParams.get('limit');
     const limit = limitStr ? parseInt(limitStr) : 40;
 
-    const flashcards = getFlashcards(subject, limit);
+    const flashcards = getFlashcards(subject, unit, limit);
     return NextResponse.json({ success: true, count: flashcards.length, flashcards });
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'Unknown error';
