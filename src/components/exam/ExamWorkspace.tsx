@@ -1,12 +1,30 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Clock, Flag, Grid, Sparkles, CheckCircle2, Bookmark, RefreshCw, Award } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, ChevronDown, Flag, Grid, Sparkles, CheckCircle2, XCircle, Bookmark, Award, X, Lock, Lightbulb } from 'lucide-react';
 import { Question } from '@/types';
 import { MathText } from '@/components/MathText';
-import { AITutorDrawer } from '@/components/ai/AITutorDrawer';
+import { AIResponse } from '@/components/AIResponse';
+import dynamic from 'next/dynamic';
+import { ExamTimer } from './ExamTimer';
 import { useTelegram } from '@/hooks/useTelegram';
+
+const AITutorDrawer = dynamic(() => import('@/components/ai/AITutorDrawer').then(m => m.AITutorDrawer), { ssr: false });
+import { createClient } from '@/utils/supabase/client';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
+
+const getImageUrl = (imageFilename: string) => {
+  if (!imageFilename) return '';
+  if (imageFilename.startsWith('http')) return imageFilename;
+  const baseName = imageFilename.split('/').pop()?.replace(/\.[^/.]+$/, "");
+  if (!baseName) return '';
+  
+  if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
+    return imageFilename.startsWith('/') ? imageFilename : `/assets/question_images/${imageFilename}`;
+  }
+  return getOptimizedImageUrl(`question_images/${baseName}`);
+};
 
 interface ExamWorkspaceProps {
   questions: Question[];
@@ -14,165 +32,244 @@ interface ExamWorkspaceProps {
   isSimulator?: boolean;
   timeLimitMinutes?: number;
   onExit: () => void;
+  examType?: string;
+  subject?: string;
 }
 
-export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({
-  questions,
-  title,
-  isSimulator = false,
-  timeLimitMinutes = 60,
-  onExit
-}) => {
-  const { haptic } = useTelegram();
+export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, isSimulator = false, timeLimitMinutes = 60, onExit, subject = 'unknown' }) => {
+  const { user, haptic } = useTelegram();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, 'A' | 'B' | 'C' | 'D'>>({});
   const [flagged, setFlagged] = useState<Set<number>>(new Set());
-  const [savedMistakes, setSavedMistakes] = useState<Set<string>>(new Set());
+  const [savedQuestions, setSavedQuestions] = useState<Set<string>>(new Set());
   const [showGrid, setShowGrid] = useState(false);
   const [showAI, setShowAI] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
-  const [secondsLeft, setSecondsLeft] = useState(timeLimitMinutes * 60);
+  const [isReviewMode, setIsReviewMode] = useState(false);
+  const startTimeRef = React.useRef(Date.now());
+  const [timeSpentSeconds, setTimeSpentSeconds] = useState(0);
+  const [hasRecordedCompletion, setHasRecordedCompletion] = useState(false);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [inlineHint, setInlineHint] = useState<string | null>(null);
+  const [isHintLoading, setIsHintLoading] = useState(false);
+  
+  const [touchStart, setTouchStart] = useState<{ x: number, y: number } | null>(null);
+  const [zoomImage, setZoomImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    setShowExplanation(false);
+    setInlineHint(null);
+    setIsHintLoading(false);
+  }, [currentIndex]);
+
+  const handleGetHint = async () => {
+    const currentQ = questions[currentIndex];
+    if (!currentQ) return;
+    haptic.impact('medium');
+    setIsHintLoading(true);
+    setInlineHint('');
+    
+    try {
+      const res = await fetch('/api/ai/tutor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          questionId: currentQ.id,
+          questionText: currentQ.question,
+          options: [currentQ.option_a, currentQ.option_b, currentQ.option_c, currentQ.option_d],
+          promptType: 'hint',
+          subject: currentQ.subject
+        })
+      });
+      
+      if (!res.ok) throw new Error('Failed to fetch hint');
+      
+      const reader = res.body?.getReader();
+      if (!reader) return;
+      const decoder = new TextDecoder();
+      let accumulated = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        accumulated += decoder.decode(value, { stream: true });
+        setInlineHint(accumulated);
+      }
+    } catch {
+      setInlineHint('Failed to load hint. Please try again.');
+    } finally {
+      setIsHintLoading(false);
+    }
+  };
 
   const currentQ = questions[currentIndex];
 
-  // Countdown timer for exam simulator
   useEffect(() => {
-    if (!isSimulator || isFinished) return;
-    const interval = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          setIsFinished(true);
-          haptic.notification('warning');
-          return 0;
+    const loadBookmarks = async () => {
+      if (!user?.id) return;
+      try {
+        const supabase = createClient();
+        const { data } = await supabase
+          .from('saved_mistakes')
+          .select('question_id')
+          .eq('telegram_id', user.id.toString());
+        if (data && data.length > 0) {
+          setSavedQuestions(new Set(data.map(d => d.question_id)));
         }
-        if (prev === 300) {
-          haptic.impact('heavy'); // 5-minute warning
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isSimulator, isFinished, haptic]);
+      } catch (err) {
+        console.error("Error loading bookmarks from Supabase:", err);
+      }
+    };
+    loadBookmarks();
+  }, [user?.id]);
 
   const handleSelectOption = (letter: 'A' | 'B' | 'C' | 'D') => {
-    haptic.selection();
     setSelectedAnswers((prev) => ({ ...prev, [currentIndex]: letter }));
-
+    
+    const normalizedAns = currentQ?.answer ? currentQ.answer.trim().toUpperCase() : null;
+    
     if (!isSimulator) {
-      // Practice mode instant feedback
-      if (letter === currentQ.answer) {
+      if (!normalizedAns) {
+        haptic.selection();
+      } else if (letter === normalizedAns) {
         haptic.notification('success');
       } else {
         haptic.notification('error');
       }
+    } else {
+      haptic.selection();
     }
   };
 
-  const toggleFlag = (idx: number) => {
+  const toggleBookmark = async () => {
+    if (!currentQ || !user?.id) return;
     haptic.impact('light');
-    setFlagged((prev) => {
-      const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx);
-      else next.add(idx);
-      return next;
+    const qId = currentQ.id || `${subject}-${currentQ.question.substring(0, 20)}`;
+    const isSaved = savedQuestions.has(qId);
+    const telegramId = user.id.toString();
+
+    // Optimistic UI update
+    setSavedQuestions(prev => {
+      const n = new Set(prev);
+      if (isSaved) n.delete(qId);
+      else n.add(qId);
+      return n;
     });
+
+    try {
+      const supabase = createClient();
+      if (isSaved) {
+        await supabase
+          .from('saved_mistakes')
+          .delete()
+          .eq('question_id', qId)
+          .eq('telegram_id', telegramId);
+      } else {
+        await supabase
+          .from('saved_mistakes')
+          .insert({ question_id: qId, telegram_id: telegramId });
+      }
+    } catch (err) {
+      console.error("Error toggling bookmark in Supabase:", err);
+    }
   };
 
-  const toggleSaveMistake = async (q: Question) => {
-    haptic.impact('light');
-    const qId = q.id;
-    const isSaved = savedMistakes.has(qId);
+  const handleFinish = async () => {
+    setIsFinished(true);
+    const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
+    setTimeSpentSeconds(elapsed);
+    if (!hasRecordedCompletion) {
+      setHasRecordedCompletion(true);
+      try {
+        if (!user?.id) return;
+        const supabase = createClient();
+        const telegramId = user.id.toString();
 
-    setSavedMistakes((prev) => {
-      const next = new Set(prev);
-      if (next.has(qId)) next.delete(qId);
-      else next.add(qId);
-      return next;
-    });
+        // Fetch current streak
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('daily_streak, last_activity_date')
+          .eq('telegram_id', telegramId)
+          .maybeSingle();
 
-    if (typeof window !== 'undefined') {
-      const { offlineDb } = await import('@/lib/offlineDb');
-      if (offlineDb) {
-        if (isSaved) {
-          await offlineDb.savedQuestions.delete(qId);
-        } else {
-          await offlineDb.savedQuestions.put({
-            id: qId,
-            savedAt: new Date().toISOString(),
-            question: q,
-          });
+        const today = new Date().toISOString().split('T')[0];
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+        const lastDate = profile?.last_activity_date;
+
+        let newStreak = 1;
+        if (lastDate === today) {
+          newStreak = profile?.daily_streak ?? 1;         // Already done today — keep
+        } else if (lastDate === yesterday) {
+          newStreak = (profile?.daily_streak ?? 0) + 1;  // Consecutive — increment
         }
+        // else: streak broken — reset to 1
+
+        await supabase.from('profiles').upsert({
+          telegram_id: telegramId,
+          full_name: `${user.first_name} ${user.last_name || ''}`.trim(),
+          username: user.username ?? null,
+          daily_streak: newStreak,
+          last_activity_date: today,
+        }, { onConflict: 'telegram_id' });
+
+      } catch (err) {
+        console.error("Error updating streak in Supabase:", err);
       }
     }
   };
 
-  const calculateScore = useCallback(() => {
-    let score = 0;
-    questions.forEach((q, idx) => {
-      if (selectedAnswers[idx] === q.answer) {
-        score++;
-      }
-    });
-    return score;
-  }, [questions, selectedAnswers]);
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+  };
 
-  const formatTime = (totalSec: number) => {
-    const mins = Math.floor(totalSec / 60);
-    const secs = totalSec % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    
+    const deltaX = touchStart.x - touchEndX;
+    const deltaY = touchStart.y - touchEndY;
+    
+    // Require a clear horizontal swipe (min 60px) and ignore if it was mostly a vertical scroll
+    if (Math.abs(deltaX) > 60 && Math.abs(deltaY) < 50) {
+      if (deltaX > 0 && currentIndex < questions.length - 1) {
+        haptic.selection();
+        setCurrentIndex(prev => prev + 1); // Swipe left -> Next
+      } else if (deltaX < 0 && currentIndex > 0) {
+        haptic.selection();
+        setCurrentIndex(prev => prev - 1); // Swipe right -> Prev
+      }
+    }
+    setTouchStart(null);
   };
 
   if (isFinished) {
-    const score = calculateScore();
+    let score = 0;
+    questions.forEach((q, idx) => {
+      const norm = q.answer ? q.answer.trim().toUpperCase() : null;
+      if (norm && selectedAnswers[idx] === norm) score++;
+    });
     const percentage = Math.round((score / questions.length) * 100);
 
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 p-5 flex flex-col justify-center items-center max-w-md mx-auto animate-fade-in">
-        <div className="w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 text-center shadow-2xl space-y-5">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 mx-auto flex items-center justify-center shadow-lg shadow-blue-500/30">
-            <Award className="w-8 h-8 text-white" />
+      <div className="min-h-screen bg-ground text-primary p-6 flex flex-col justify-center items-center max-w-md mx-auto animate-fade-in font-sans">
+        <div className="w-full bg-card border-2 border-primary rounded-[32px] p-8 text-center shadow-brutal-heavy space-y-6">
+          <div className="w-16 h-16 rounded-[16px] bg-accent-amber border-2 border-primary mx-auto flex items-center justify-center shadow-brutal-sm text-primary">
+            <Award className="w-8 h-8" />
           </div>
-
           <div>
-            <h2 className="text-xl font-bold text-white">Exam Completed!</h2>
-            <p className="text-xs text-slate-400 mt-1">{title}</p>
+            <h2 className="text-2xl font-bold tracking-tight">Exam Completed!</h2>
+            <p className="text-sm font-medium text-secondary mt-2">{title}</p>
           </div>
-
-          {/* Score Badge */}
-          <div className="py-5 px-4 bg-slate-800/60 rounded-2xl border border-slate-700/60">
-            <div className="text-4xl font-black text-blue-400 tracking-tight">
-              {percentage}%
-            </div>
-            <p className="text-xs text-slate-400 mt-1">
-              You answered <span className="text-emerald-400 font-semibold">{score}</span> out of <span className="font-semibold">{questions.length}</span> questions correctly.
-            </p>
+          <div className="py-8 bg-ground rounded-[24px] border-2 border-black/5">
+            <div className="text-6xl font-black text-primary tracking-tight tabular-nums">{percentage}%</div>
+            <p className="text-sm font-bold text-secondary mt-2">Correct: <span className="text-accent-emerald">{score}</span> / {questions.length}</p>
+            {isSimulator && <p className="text-xs font-bold text-tertiary mt-2">Time: {Math.floor(timeSpentSeconds / 60)}m {timeSpentSeconds % 60}s</p>}
           </div>
-
-          {/* Action Buttons */}
-          <div className="space-y-2 pt-2">
-            <button
-              onClick={() => {
-                haptic.impact('medium');
-                setIsFinished(false);
-                setCurrentIndex(0);
-                setSelectedAnswers({});
-                setSecondsLeft(timeLimitMinutes * 60);
-              }}
-              className="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Retake Examination
-            </button>
-            <button
-              onClick={() => {
-                haptic.selection();
-                onExit();
-              }}
-              className="w-full py-3 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-medium text-xs transition-colors"
-            >
-              Back to Dashboard
-            </button>
+          <div className="space-y-4 pt-2">
+            <button onClick={() => { haptic.impact('medium'); setIsFinished(false); setIsReviewMode(true); setCurrentIndex(0); }} className="w-full btn-brutal py-4 bg-primary text-card rounded-[16px] font-bold text-sm transition-all">Review Answers</button>
+            <button onClick={() => { haptic.impact('medium'); setIsFinished(false); setIsReviewMode(false); setCurrentIndex(0); setSelectedAnswers({}); setFlagged(new Set()); startTimeRef.current = Date.now(); setHasRecordedCompletion(false); }} className="w-full btn-brutal py-4 bg-card text-primary rounded-[16px] font-bold text-sm transition-all">Retake Exam</button>
+            <button onClick={onExit} className="w-full btn-brutal py-4 bg-ground border-black/10 text-secondary rounded-[16px] font-bold text-sm transition-all">Exit to Dashboard</button>
           </div>
         </div>
       </div>
@@ -181,295 +278,284 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({
 
   const chosenAnswer = selectedAnswers[currentIndex];
   const isAnswered = chosenAnswer !== undefined;
+  const qId = currentQ?.id || `${subject}-${currentQ?.question.substring(0, 20)}`;
+  const isSaved = savedQuestions.has(qId);
+  
+  // Anti-cheat AI Logic
+  const canUseAI = isSimulator ? isReviewMode : isAnswered;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between max-w-md mx-auto pb-20 select-none">
-      {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3 flex items-center justify-between">
-        <button
-          onClick={() => {
-            haptic.selection();
-            onExit();
-          }}
-          className="p-1.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-slate-100 transition-colors"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-
-        <div className="text-center flex-1 px-2">
-          <h1 className="text-xs font-semibold text-slate-200 truncate">{title}</h1>
-          <div className="flex items-center justify-center gap-2 mt-0.5">
-            <span className="text-[10px] text-blue-400 font-medium">
-              Q {currentIndex + 1} of {questions.length}
-            </span>
-            {isSimulator && (
-              <span className={`text-[10px] font-mono font-semibold flex items-center gap-1 ${
-                secondsLeft < 300 ? 'text-rose-400 animate-pulse' : 'text-slate-400'
-              }`}>
-                <Clock className="w-3 h-3" />
-                {formatTime(secondsLeft)}
-              </span>
-            )}
-          </div>
+    <div className={`min-h-screen ${isSimulator && !isReviewMode ? 'exam-mode-active' : 'bg-ground'} text-primary flex flex-col justify-between max-w-md mx-auto pb-24 font-sans select-none relative`}>
+      <header className="sticky top-0 z-20 bg-ground/90 backdrop-blur-md border-b-2 border-black/5 p-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button onClick={onExit} className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-card border-2 border-black/5 text-secondary hover:text-primary transition-colors focus-ring active:scale-95"><ChevronLeft className="w-5 h-5" /></button>
+          <span className="text-sm font-bold text-secondary tabular-nums">Q {currentIndex + 1}/{questions.length}</span>
         </div>
-
-        <div className="flex items-center gap-1">
-          <button
-            data-testid="header-save-btn"
-            onClick={() => toggleSaveMistake(currentQ)}
-            className={`p-2 rounded-xl transition-all ${
-              savedMistakes.has(currentQ.id)
-                ? 'bg-amber-500/20 text-amber-400'
-                : 'text-slate-400 hover:bg-slate-800'
-            }`}
-          >
-            <Bookmark className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => toggleFlag(currentIndex)}
-            className={`p-2 rounded-xl transition-all ${
-              flagged.has(currentIndex)
-                ? 'bg-amber-500/20 text-amber-400'
-                : 'text-slate-400 hover:bg-slate-800'
-            }`}
-          >
-            <Flag className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => {
-              haptic.selection();
-              setShowGrid(true);
-            }}
-            className="p-2 rounded-xl hover:bg-slate-800 text-slate-400 transition-colors"
-          >
-            <Grid className="w-4 h-4" />
-          </button>
+        <div className="flex items-center gap-3">
+          {isSimulator && !isReviewMode && (
+            <ExamTimer 
+              initialSeconds={timeLimitMinutes * 60} 
+              isPaused={isFinished || isReviewMode} 
+              onTimeUp={() => {
+                haptic.notification('warning');
+                handleFinish();
+              }} 
+            />
+          )}
+          <button onClick={toggleBookmark} className={`w-10 h-10 flex items-center justify-center rounded-[12px] border-2 transition-all active:scale-95 ${isSaved ? 'bg-primary border-primary text-card shadow-brutal-sm' : 'bg-card border-black/5 text-secondary hover:text-primary'}`}><Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} /></button>
+          <button onClick={() => {
+            haptic.impact('light');
+            const next = new Set(flagged);
+            if (next.has(currentIndex)) next.delete(currentIndex);
+            else next.add(currentIndex);
+            setFlagged(next);
+          }} className={`w-10 h-10 flex items-center justify-center rounded-[12px] border-2 transition-all active:scale-95 ${flagged.has(currentIndex) ? 'bg-accent-amber border-primary text-primary shadow-brutal-sm' : 'bg-card border-black/5 text-secondary hover:text-primary'}`}><Flag className="w-4 h-4" fill={flagged.has(currentIndex) ? 'currentColor' : 'none'} /></button>
         </div>
       </header>
 
-      {/* Progress Bar */}
-      <div className="w-full bg-slate-800/50 h-1">
-        <div
-          className="bg-gradient-to-r from-blue-500 to-indigo-500 h-1 transition-all duration-300"
-          style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
-        />
-      </div>
-
-      {/* Question Content Arena */}
-      <main className="flex-1 p-4 overflow-y-auto space-y-4">
-        {/* Question Text */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm">
-          <div className="text-sm font-medium text-slate-100 leading-relaxed">
-            <MathText content={currentQ.question} />
-          </div>
-
-          {/* Diagram Image if present */}
-          {currentQ.image_url && (
-            <div className="mt-4 rounded-xl overflow-hidden border border-slate-800 bg-black/40 flex justify-center p-2">
-              <img
-                src={currentQ.image_url}
-                alt="Question diagram"
-                className="max-h-60 object-contain rounded-lg shadow-md"
-                loading="eager"
-              />
-            </div>
-          )}
+      <main 
+        className="flex-1 px-5 py-6 space-y-6 overflow-y-auto relative"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        <div className="text-lg leading-relaxed font-bold text-primary relative">
+          <MathText content={currentQ.question} />
         </div>
 
-        {/* Options List */}
-        <div className="space-y-2.5">
+        {currentQ.image_url && (
+          <button 
+            onClick={() => {
+              haptic.impact('light');
+              setZoomImage(getImageUrl(currentQ.image_url!));
+            }}
+            className="w-full rounded-[16px] border-2 border-black/5 overflow-hidden bg-white relative group active:scale-[0.98] transition-transform block focus-ring"
+          >
+            <img
+              src={getImageUrl(currentQ.image_url)}
+              alt="Question diagram"
+              className="w-full h-auto max-h-64 object-contain"
+            />
+            <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
+              Tap to zoom
+            </div>
+          </button>
+        )}
+
+        {(!isAnswered && !isSimulator) && (
+          <div className="my-2">
+            {!inlineHint && !isHintLoading ? (
+              <button 
+                onClick={handleGetHint} 
+                className="flex items-center gap-2 text-xs font-bold text-accent-blue bg-accent-blue/10 hover:bg-accent-blue/20 px-4 py-2 rounded-full transition-colors active:scale-95"
+              >
+                <Lightbulb className="w-4 h-4 text-accent-amber fill-accent-amber/20"/> Give me hint
+              </button>
+            ) : (
+              <div className="bg-accent-blue/5 border-2 border-accent-blue/10 rounded-[20px] p-5 text-sm font-medium text-primary">
+                {isHintLoading && !inlineHint ? (
+                  <span className="animate-pulse flex items-center gap-2 font-bold text-accent-blue uppercase tracking-widest text-[10px]">
+                    <Lightbulb className="w-4 h-4 text-accent-amber"/> Thinking...
+                  </span>
+                ) : (
+                  <div className="flex gap-3 items-start">
+                    <Lightbulb className="w-5 h-5 text-accent-amber shrink-0 mt-0.5 fill-accent-amber/20"/>
+                    <div className="flex-1 overflow-x-auto">
+                      <AIResponse content={inlineHint || ''} />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="space-y-4">
           {(['A', 'B', 'C', 'D'] as const).map((letter) => {
-            const optKey = `option_${letter.toLowerCase()}` as keyof Question;
-            const optText = currentQ[optKey] as string;
-            if (!optText) return null;
-
+            const opt = currentQ[`option_${letter.toLowerCase()}` as keyof Question] as string;
+            if (!opt) return null;
             const isSelected = chosenAnswer === letter;
-            const isCorrect = currentQ.answer === letter;
+            const normalizedAns = currentQ?.answer ? currentQ.answer.trim().toUpperCase() : null;
+            let cls = 'bg-card border-black/5 text-secondary hover:border-primary';
+            
+            const isRevealed = (!isSimulator || isReviewMode) && (isAnswered || isReviewMode);
+            const isCorrect = normalizedAns ? letter === normalizedAns : false;
+            const isWrongSelected = isSelected && normalizedAns ? letter !== normalizedAns : false;
 
-            let cardStyle = 'bg-slate-900 border-slate-800 text-slate-200 hover:border-slate-700';
-            let badgeStyle = 'bg-slate-800 text-slate-400 border-slate-700';
-
-            if (!isSimulator && isAnswered) {
-              // Practice mode reveals immediately
+            // Neobrutalist active state
+            if (isSelected) cls = 'bg-accent-amber border-primary text-primary shadow-brutal-sm font-bold -translate-y-1';
+            
+            // Review/Practice reveal
+            if (isRevealed) {
               if (isCorrect) {
-                cardStyle = 'bg-emerald-950/40 border-emerald-500/80 text-emerald-100 shadow-md shadow-emerald-950/20';
-                badgeStyle = 'bg-emerald-600 text-white border-emerald-500';
-              } else if (isSelected) {
-                cardStyle = 'bg-rose-950/40 border-rose-500/80 text-rose-100 shadow-md shadow-rose-950/20';
-                badgeStyle = 'bg-rose-600 text-white border-rose-500';
+                cls = 'bg-emerald-100 border-emerald-500 text-emerald-950 shadow-brutal-sm font-bold -translate-y-1';
+              } else if (isWrongSelected) {
+                cls = 'bg-red-100 border-red-500 text-red-950 shadow-brutal-sm font-bold -translate-y-1';
+              } else if (isSelected && !normalizedAns) {
+                cls = 'bg-accent-blue/20 border-primary text-primary shadow-brutal-sm font-bold -translate-y-1';
+              } else {
+                cls = 'bg-card border-black/10 text-primary';
               }
-            } else if (isSelected) {
-              cardStyle = 'bg-blue-950/40 border-blue-500 text-blue-100 shadow-md shadow-blue-950/20';
-              badgeStyle = 'bg-blue-600 text-white border-blue-500';
             }
 
             return (
-              <button
-                key={letter}
-                onClick={() => handleSelectOption(letter)}
-                className={`w-full text-left p-3.5 rounded-2xl border transition-all duration-150 flex items-start gap-3 active:scale-[0.99] ${cardStyle}`}
+              <button 
+                key={letter} 
+                onClick={() => (!isReviewMode && (isSimulator || !isAnswered)) && handleSelectOption(letter)} 
+                disabled={isReviewMode || (!isSimulator && isAnswered)} 
+                className={`w-full flex items-center justify-between gap-4 p-4 rounded-[16px] border-2 transition-all text-left ${cls} ${(!isReviewMode && (isSimulator || !isAnswered)) ? 'active:translate-y-1 active:shadow-none' : ''}`}
               >
-                <span className={`w-7 h-7 rounded-xl border flex items-center justify-center font-bold text-xs shrink-0 ${badgeStyle}`}>
-                  {letter}
-                </span>
-                <span className="text-xs pt-1 leading-relaxed">
-                  <MathText content={optText} />
-                </span>
+                <div className="flex items-start gap-4 flex-1 min-w-0">
+                  <span className="text-sm font-black uppercase tracking-widest mt-0.5 w-6 shrink-0">{letter}</span>
+                  <span className="text-sm leading-relaxed flex-1 font-medium"><MathText content={opt} /></span>
+                </div>
+
+                {isRevealed && isCorrect && (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 self-center" />
+                )}
+
+                {isRevealed && isWrongSelected && (
+                  <XCircle className="w-5 h-5 text-red-600 shrink-0 self-center" />
+                )}
               </button>
             );
           })}
         </div>
 
-        {/* Practice Mode Solution Card */}
-        {!isSimulator && isAnswered && (
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-2 animate-fade-in">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4" />
-                Correct Answer: Option {currentQ.answer}
-              </span>
-              <button
-                data-testid="save-question-btn"
-                onClick={() => toggleSaveMistake(currentQ)}
-                className={`text-xs flex items-center gap-1 px-2.5 py-1 rounded-lg border transition-colors ${
-                  savedMistakes.has(currentQ.id)
-                    ? 'bg-amber-500/20 border-amber-500/40 text-amber-400'
-                    : 'bg-slate-800 border-slate-700 text-slate-400'
-                }`}
-              >
-                <Bookmark className="w-3 h-3" />
-                {savedMistakes.has(currentQ.id) ? 'Saved' : 'Save'}
-              </button>
+        {(!isSimulator || isReviewMode) && (isAnswered || isReviewMode) && (
+          <div className="pt-2 pb-4 animate-fade-up">
+            <div className="flex items-start gap-3 mb-3">
+              {currentQ?.answer?.trim() ? (
+                <>
+                  <div className="bg-emerald-100 text-emerald-600 rounded-full p-1 shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-secondary uppercase tracking-widest block">Answer</span>
+                    <p className="text-base font-black text-primary mt-0.5">{currentQ.answer.trim().toUpperCase()}</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="bg-black/5 text-secondary rounded-full p-1 shrink-0 mt-0.5">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-secondary uppercase tracking-widest block">No Key Provided</span>
+                    <p className="text-xs font-medium text-secondary mt-0.5">Tap <strong className="text-primary">AI Tutor</strong> below for a detailed solution.</p>
+                  </div>
+                </>
+              )}
             </div>
+
             {currentQ.explanation ? (
-              <div className="text-xs text-slate-300 leading-relaxed pt-1">
-                <MathText content={currentQ.explanation} />
+              <div className="pl-9">
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    setShowExplanation((prev) => !prev);
+                  }}
+                  className="flex items-center gap-2 text-xs font-bold text-accent-blue hover:text-accent-blue/80 transition-colors focus-ring active:scale-[0.99]"
+                >
+                  {showExplanation ? 'Hide Explanation' : 'Read Explanation'}
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${showExplanation ? 'rotate-180' : ''}`}
+                  />
+                </button>
+
+                {showExplanation && (
+                  <div className="text-sm text-secondary font-medium leading-relaxed pt-3 animate-fade-in">
+                    <MathText content={currentQ.explanation} />
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="text-[11px] text-slate-500 italic pt-1">
-                Tap &quot;Ask AI Tutor&quot; below for a step-by-step conceptual walkthrough.
-              </div>
-            )}
+            ) : null}
           </div>
         )}
       </main>
 
-      {/* Bottom Control Bar */}
-      <footer className="sticky bottom-0 z-30 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 p-3">
-        <div className="flex items-center justify-between gap-2">
-          {/* AI Master Tutor Trigger */}
-          <button
-            onClick={() => {
-              haptic.impact('light');
-              setShowAI(true);
-            }}
-            className="flex items-center gap-1.5 py-2.5 px-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-blue-600/20 active:scale-95 transition-all"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            Ask AI Tutor
-          </button>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                haptic.selection();
-                setCurrentIndex((prev) => Math.max(0, prev - 1));
-              }}
-              disabled={currentIndex === 0}
-              className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 disabled:opacity-40 disabled:pointer-events-none hover:bg-slate-700 transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            {currentIndex < questions.length - 1 ? (
-              <button
-                onClick={() => {
-                  haptic.selection();
-                  setCurrentIndex((prev) => prev + 1);
-                }}
-                className="py-2.5 px-5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1"
-              >
-                Next
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  haptic.impact('medium');
-                  setIsFinished(true);
-                }}
-                className="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-600/30"
-              >
-                Submit Exam
-              </button>
-            )}
-          </div>
+      <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-ground/90 backdrop-blur-md border-t-2 border-black/5 p-4 z-30 flex justify-between items-center pb-safe">
+        <button 
+          onClick={() => { 
+            if (canUseAI) {
+              haptic.impact('light'); 
+              setShowAI(true); 
+            } else {
+              haptic.notification('error');
+            }
+          }} 
+          className={`px-4 h-14 border-2 rounded-[16px] text-sm font-bold flex items-center gap-2 transition-all ${
+            canUseAI 
+              ? 'bg-card border-black/5 text-primary active:scale-95 hover:border-primary' 
+              : 'bg-ground border-black/5 text-tertiary opacity-70'
+          }`}
+        >
+          {canUseAI ? (
+            <Sparkles className="w-5 h-5 fill-accent-amber text-accent-amber"/>
+          ) : (
+            <Lock className="w-4 h-4 text-tertiary" />
+          )}
+          Ask AI
+        </button>
+        <div className="flex gap-2">
+          {currentIndex > 0 && (
+            <button onClick={() => { haptic.selection(); setCurrentIndex(prev => prev - 1); }} className="w-14 h-14 rounded-[16px] bg-card border-2 border-black/5 flex items-center justify-center text-primary active:scale-95 hover:border-primary transition-all"><ChevronLeft className="w-5 h-5"/></button>
+          )}
+          <button onClick={() => { haptic.selection(); setShowGrid(true); }} className="w-14 h-14 rounded-[16px] bg-card border-2 border-black/5 flex items-center justify-center text-primary active:scale-95 hover:border-primary transition-all"><Grid className="w-5 h-5"/></button>
+          {currentIndex < questions.length - 1 ? (
+            <button onClick={() => { haptic.selection(); setCurrentIndex(prev => prev + 1); }} className="px-6 h-14 bg-primary text-card rounded-[16px] text-sm font-bold active:scale-95 flex items-center gap-2 shadow-brutal-sm btn-brutal">Next <ChevronRight className="w-5 h-5"/></button>
+          ) : (
+            <button onClick={isReviewMode ? () => setIsFinished(true) : handleFinish} className="px-6 h-14 bg-accent-amber text-primary rounded-[16px] text-sm font-bold shadow-brutal-sm btn-brutal">{isReviewMode ? 'Finish Review' : 'Submit Exam'}</button>
+          )}
         </div>
       </footer>
 
-      {/* Question Matrix Grid Modal */}
       {showGrid && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="font-semibold text-sm text-slate-100">Question Matrix</h3>
-              <button
-                onClick={() => setShowGrid(false)}
-                className="text-xs text-slate-400 hover:text-slate-200"
-              >
-                Close
-              </button>
+        <div className="fixed inset-0 z-50 bg-primary/20 backdrop-blur-sm flex flex-col items-center justify-center p-4 animate-fade-in">
+          <div className="w-full max-w-sm bg-card border-2 border-primary rounded-[32px] p-6 shadow-brutal-heavy animate-scale-bounce">
+            <div className="flex justify-between items-center border-b-2 border-black/5 pb-4 mb-4">
+              <h3 className="font-bold tracking-tight text-lg text-primary">Question Matrix</h3>
+              <button onClick={() => setShowGrid(false)} className="w-10 h-10 flex justify-center items-center rounded-[12px] bg-ground border-2 border-transparent hover:border-black/5 text-primary"><X className="w-5 h-5"/></button>
             </div>
-
-            <div className="grid grid-cols-5 gap-2 max-h-60 overflow-y-auto p-1">
-              {questions.map((_, idx) => {
-                const isCur = currentIndex === idx;
-                const isAns = selectedAnswers[idx] !== undefined;
-                const isFlg = flagged.has(idx);
-
-                let btnStyle = 'bg-slate-800 text-slate-400 border-slate-700';
-                if (isCur) btnStyle = 'ring-2 ring-blue-500 bg-blue-600 text-white font-bold';
-                else if (isFlg) btnStyle = 'bg-amber-500/20 text-amber-400 border-amber-500/40 font-semibold';
-                else if (isAns) btnStyle = 'bg-slate-700 text-slate-100 font-medium';
-
+            <div className="grid grid-cols-5 gap-3 max-h-[300px] overflow-y-auto no-scrollbar pb-2 pt-2">
+              {questions.map((_, i) => {
+                const qIdLoop = questions[i]?.id || `${subject}-${questions[i]?.question.substring(0, 20)}`;
+                const isBkmrk = savedQuestions.has(qIdLoop);
+                const isFlg = flagged.has(i);
+                
                 return (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      haptic.selection();
-                      setCurrentIndex(idx);
-                      setShowGrid(false);
-                    }}
-                    className={`h-10 rounded-xl border text-xs flex items-center justify-center transition-all ${btnStyle}`}
-                  >
-                    {idx + 1}
+                  <button key={i} onClick={() => { setCurrentIndex(i); setShowGrid(false); }} className={`relative h-12 rounded-[12px] border-2 text-sm font-bold tabular-nums transition-all active:scale-95 ${currentIndex === i ? 'bg-primary border-primary text-card shadow-brutal-sm -translate-y-1' : isFlg ? 'bg-accent-amber border-primary text-primary shadow-brutal-sm -translate-y-1' : selectedAnswers[i] ? 'bg-ground border-black/20 text-primary' : 'bg-card border-black/5 text-secondary hover:border-primary hover:-translate-y-1 hover:shadow-brutal-sm'}`}>
+                    {i + 1}
+                    {isBkmrk && <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-accent-blue rounded-full border-2 border-card" />}
                   </button>
                 );
               })}
-            </div>
-
-            {/* Matrix Legend */}
-            <div className="flex items-center justify-around text-[10px] text-slate-400 pt-2 border-t border-slate-800">
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded bg-blue-600 inline-block" /> Current
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded bg-slate-700 inline-block" /> Answered
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded bg-amber-500/40 inline-block" /> Flagged
-              </span>
             </div>
           </div>
         </div>
       )}
 
-      {/* AI Master Tutor Drawer */}
-      <AITutorDrawer
-        question={currentQ}
-        isOpen={showAI}
-        onClose={() => setShowAI(false)}
-      />
+      {currentQ && (
+        <AITutorDrawer 
+          question={currentQ} 
+          isOpen={showAI} 
+          onClose={() => setShowAI(false)}
+          studentAnswer={selectedAnswers[currentIndex]}
+        />
+      )}
+
+      {/* Full-screen Image Lightbox Overlay */}
+      {zoomImage && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => { haptic.selection(); setZoomImage(null); }}
+        >
+          <button className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center bg-card border-2 border-primary rounded-[12px] text-primary transition-all active:scale-95 shadow-brutal-sm">
+            <X className="w-6 h-6" />
+          </button>
+          <img src={zoomImage} className="w-full max-h-[90vh] object-contain rounded-xl" alt="Zoomed diagram" />
+        </div>
+      )}
     </div>
   );
 };

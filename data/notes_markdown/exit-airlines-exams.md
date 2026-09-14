@@ -1,0 +1,38 @@
+Flight dynamics is the study of the forces and moments that influence the motion of an aircraft. It includes understanding the behavior of an aircraft in flight, including stability, control, and performance.
+Aircraft propulsion refers to the systems used to generate thrust to move an aircraft through the air. Common propulsion systems include jet engines, turboprops, and piston engines
+Navigation systems are technologies used to determine an aircraft's position and guide it from one point to another. These systems include GPS, inertial navigation systems (INS), and ground-based navigation aids like VOR and DME.
+Air Traffic Control is the service provided by ground-based controllers who coordinate the movement of aircraft on the ground and in the air. ATC ensures safe and orderly flow of air traffic by managing flight paths and providing instructions to pilots.
+A Flight Management System is an onboard computer system used to manage and automate flight planning and navigation. It integrates data from various sources, including the aircraft's navigation systems, to assist pilots in route optimization and flight path management.
+Aircraft maintenance involves routine inspections, repairs, and servicing of an aircraft to ensure it remains in safe operating condition. It includes preventive maintenance, scheduled checks, and corrective actions to address any issues detected during inspections.
+Emergency procedures are predefined actions taken by flight crews and passengers in response to various in-flight emergencies, such as engine failures, depressurization, or fire. These procedures are designed to ensure the safety and well-being of all individuals on board
+Airline operations encompass all activities related to the management and execution of airline services, including flight scheduling, crew management, ticketing, and customer service. Efficient airline operations ensure smooth and reliable air travel experiences for passengers.
+International air law consists of treaties and agreements that govern the rights and responsibilities of countries regarding the use of airspace and international aviation operations. It includes regulations on air safety, air traffic rights, and environmental standards
+Geometry is the branch of mathematics concerned with the properties and relations of points, lines, surfaces, and solids. It includes concepts such as angles, shapes, and theorems
+Probability is the measure of the likelihood that a particular event will occur. It involves calculating the ratio of the number of favorable outcomes to the total number of possible outcomes.
+Statistics involves collecting, analyzing, and interpreting data. Key concepts include mean, median, mode, variance, and standard deviation.
+Ratio and proportion involve comparing quantities and determining their relative sizes. It includes solving problems that require finding equivalent ratios.
+Deductive reasoning involves drawing specific conclusions from general premises. It follows a logical sequence where if the premises are true, the conclusion must also be true.
+Syllogism is a form of deductive reasoning where a conclusion is drawn from two given or assumed propositions (premises). For example, 'All men are mortal. Socrates is a man. Therefore, Socrates is mortal.
+Pattern recognition involves identifying and analyzing regularities or trends in data or sequences. It is used to predict future elements based on observed patterns.
+Critical thinking involves analyzing and evaluating information or arguments to form a reasoned judgment. It requires evaluating evidence, identifying biases, and considering alternative viewpoints.
+Quantitative analysis involves using mathematical and statistical techniques to analyze numerical data. It is used to make informed decisions based on data trends and patterns.
+Aerodynamics: The study of how air moves around objects, specifically how an aircraft's wings produce lift and how drag affects its speed and fuel efficiency
+ Avionics: The electronic systems used on aircraft, including communications, navigation, the display and management of multiple systems, and the hundreds of systems that are fitted to aircraft to perform individual functions
+Ground Handling: The services provided to an aircraft while it is on the ground and parked at a terminal gate of an airport, including ramp services, passenger services, and field operation services
+ Yield Management: A variable pricing strategy used by airlines to maximize revenue from a fixed, time-limited inventory of seats by adjusting prices based on demand and timing
+Load Factor: A metric used to measure the percentage of available seating capacity that has been filled with passengers, calculated by dividing revenue passenger miles by available seat miles
+Interlining: A voluntary commercial agreement between individual airlines to handle passengers traveling on itineraries that require multiple flights on multiple airlines
+Code Sharing: An aviation business arrangement where two or more airlines share the same flight, where a seat can be purchased on one airline but is actually operated by a cooperating airline under a different flight number
+Hub and Spoke: A system of air transportation in which local airports (spokes) offer flights to a central airport (hub), where passengers then transfer to other flights to reach their final destinations
+ Minimum Equipment List (MEL): A precise list of aircraft equipment and instruments that may be inoperative for a given flight while still maintaining an acceptable level of safety
+Cruising Altitude: The altitude at which an aircraft settles for the majority of its flight between the climb and descent phases, typically chosen for optimal fuel efficiency and weather conditions
+ETOPS (Extended-range Twin-engine Operational Performance Standards): A certification for twin-engine aircraft that allows them to fly long-distance routes that were previously off-limits because they are far from emergency diversion airports
+Deadheading: A term used for airline crew members who are flying as passengers for the purpose of reaching a location to start a work assignment or returning to their home base after an assignment
+Pushback: The procedure during which an aircraft is pushed backward away from an airport gate by external power, usually a specialized tractor called a tug
+ Slot (Airport): A specific time interval allocated to an airline to allow its aircraft to land or take off at a congested airport on a specific day and time
+Cabotage: The right to operate sea, air, or other transport services within a particular territory; in aviation, it refers to a foreign airline carrying passengers between two domestic points in another country
+Non-Revenue Passenger (Non-Rev): A passenger who flies on a free or significantly discounted ticket, typically airline employees, their family members, or travel industry professionals
+Fuselage: The main body section of an aircraft which holds the crew, passengers, and cargo, designed to withstand internal pressurization and aerodynamic forces
+Standard Operating Procedures (SOPs): A set of step-by-step instructions compiled by an airline to help flight and ground crews carry out complex routine operations efficiently and safely
+Turnaround Time: The time elapsed between an aircraft arriving at the gate and departing for its next flight, covering cleaning, refueling, boarding, and baggage loading
+Crew Resource Management (CRM): A set of training procedures for use in environments where human error can have devastating effects, focusing on interpersonal communication, leadership, and decision-making in the cockpit
