@@ -75,7 +75,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
     }
   };
 
-  const isFormValid = phone.length >= 9 && pin.join('').length === 4;
+  const handlePhoneAuth = async () => {
+    if (!phone || pin.join('').length !== 4) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/auth/phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, pin: pin.join(''), action: activeTab }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        window.location.reload();
+      } else {
+        setError(data.error || 'Authentication failed');
+        setIsLoading(false);
+      }
+    } catch (err) {
+      setError('Network error occurred.');
+      setIsLoading(false);
+    }
+  };
+
+  const isFormValid = phone.length >= 9 && pin.join('').length === 4 && !isLoading;
 
   // Telegram Bot ID is the first part of the token (before the colon)
   const BOT_ID = '8400954528'; 
@@ -205,14 +228,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
 
         {/* 7. Submit Button */}
         <button
+          onClick={handlePhoneAuth}
           disabled={!isFormValid}
-          className={`w-full h-[48px] rounded-xl text-[15px] font-bold transition-all ${
+          className={`w-full h-[48px] rounded-xl text-[15px] font-bold flex justify-center items-center gap-2 transition-all ${
             isFormValid 
               ? 'bg-primary text-white shadow-sm active:scale-[0.98]' 
               : 'bg-ground text-tertiary cursor-not-allowed border border-black/5'
           }`}
         >
-          {activeTab === 'signin' ? 'Sign In' : 'Create Account'}
+          {isLoading ? <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-white animate-spin" /> : (activeTab === 'signin' ? 'Sign In' : 'Create Account')}
         </button>
       </div>
 
