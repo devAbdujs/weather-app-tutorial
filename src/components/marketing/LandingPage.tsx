@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Sparkles, Brain, BookOpen, PenLine, ChevronRight } from 'lucide-react';
 
 interface LandingPageProps {
@@ -11,20 +11,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const widgetRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    // 1. Define global callback for Telegram Widget
+    // 1. Define the global callback function Telegram needs
     (window as any).onTelegramAuth = async (user: any) => {
       setIsLoading(true);
+      setError(null);
       try {
-        // Securely verify with backend
-        const res = await fetch('/api/auth/telegram/web', {
+        const res = await fetch('/api/auth/session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(user)
+          body: JSON.stringify({ webData: user })
         });
         
         if (res.ok) {
-          onLogin(user); // Triggers parent to save to localStorage and show app
+          onLogin(user);
         } else {
           const errData = await res.json();
           setError(errData.error || 'Authentication failed');
@@ -36,17 +38,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       }
     };
 
-    // 2. Inject the Telegram Login Widget script securely
-    const script = document.createElement('script');
-    script.src = "https://telegram.org/js/telegram-widget.js?22";
-    script.setAttribute('data-telegram-login', process.env.NEXT_PUBLIC_BOT_USERNAME || 'EthioScholarBot');
-    script.setAttribute('data-size', 'large');
-    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-    script.setAttribute('data-request-access', 'write');
-    
-    const container = document.getElementById('telegram-login-container');
-    if (container && !container.hasChildNodes()) {
-      container.appendChild(script);
+    // 2. Inject the Telegram Login Widget script safely
+    if (widgetRef.current) {
+      widgetRef.current.innerHTML = ''; // Clear any existing scripts/iframes
+      const script = document.createElement('script');
+      script.src = "https://telegram.org/js/telegram-widget.js?22";
+      script.setAttribute('data-telegram-login', process.env.NEXT_PUBLIC_BOT_USERNAME || 'EthioScholarBot');
+      script.setAttribute('data-size', 'large');
+      script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+      script.setAttribute('data-request-access', 'write');
+      script.async = true;
+      widgetRef.current.appendChild(script);
     }
 
     return () => {
@@ -58,12 +60,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
     <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6 text-center font-sans animate-fade-in relative overflow-hidden">
       
       {/* Decorative blobs */}
-      <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-accent-amber/20 rounded-full blur-3xl z-0" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-accent-blue/20 rounded-full blur-3xl z-0" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent-blue/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent-yellow/10 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="relative z-10 w-full max-w-md mx-auto flex flex-col items-center">
+      <div className="max-w-md w-full relative z-10 flex flex-col items-center animate-slide-up">
         
-        <div className="w-16 h-16 bg-primary rounded-[20px] flex items-center justify-center shadow-brutal-sm mb-6 rotate-[-3deg]">
+        {/* Brutalist Logo Icon */}
+        <div className="w-16 h-16 bg-primary rounded-2xl shadow-brutal-sm flex items-center justify-center mb-8 rotate-3 transition-transform hover:rotate-6">
           <BookOpen className="w-8 h-8 text-card" />
         </div>
         
@@ -84,7 +87,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             <div className="w-8 h-8 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
           ) : (
             <div className="flex flex-col items-center gap-3">
-              <div id="telegram-login-container" className="min-h-[40px] flex items-center justify-center"></div>
+              <div ref={widgetRef} className="min-h-[40px] flex items-center justify-center"></div>
               {process.env.NODE_ENV === 'development' && (
                 <button 
                   onClick={async () => {
