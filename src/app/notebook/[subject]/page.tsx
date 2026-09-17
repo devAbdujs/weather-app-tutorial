@@ -1,6 +1,6 @@
 import React from 'react';
 import { getServerSession } from '@/lib/session';
-import { createClient } from '@/utils/supabase/server';
+import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { NotebookView } from '@/components/dashboard/NotebookView';
 import { redirect } from 'next/navigation';
 

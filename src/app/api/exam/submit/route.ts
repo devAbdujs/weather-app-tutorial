@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { getServerSession } from '@/lib/session';
+import { z } from 'zod';
+
+const SubmitSchema = z.object({
+  subject: z.string().min(1),
+  attempted: z.number().int().nonnegative(),
+  correct: z.number().int().nonnegative(),
+  timeSpentSeconds: z.number().int().nonnegative().optional().default(0)
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,11 +17,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { subject, attempted, correct, timeSpentSeconds } = await req.json();
+    const body = await req.json();
+    const result = SubmitSchema.safeParse(body);
 
-    if (!subject || attempted === undefined || correct === undefined) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if (!result.success) {
+      return NextResponse.json({ error: 'Invalid request data', details: result.error.issues }, { status: 400 });
     }
+
+    const { subject, attempted, correct, timeSpentSeconds } = result.data;
 
     const supabase = await createClient();
     const telegramId = session.telegram_id.toString();

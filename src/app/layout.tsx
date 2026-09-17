@@ -40,7 +40,7 @@ export const viewport: Viewport = {
 };
 
 import { getServerSession } from '@/lib/session';
-import { createClient } from '@/utils/supabase/server';
+import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { ClientAuthDetector } from '@/components/auth/ClientAuthDetector';
 import { StoreInitializer } from '@/components/auth/StoreInitializer';
 import { DashboardShell } from '@/components/layout/DashboardShell';

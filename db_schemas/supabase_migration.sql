@@ -39,7 +39,7 @@ ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
 -- Public read/write — Telegram HMAC verification on the server is the security layer
 CREATE POLICY "Telegram users full access"
-  ON profiles FOR ALL USING (true) WITH CHECK (true);
+  ON profiles FOR ALL USING (false) WITH CHECK (false);
 
 
 -- ── 2. SAVED MISTAKES (BOOKMARKS) ─────────────────────────────
@@ -57,7 +57,7 @@ CREATE INDEX idx_saved_mistakes_telegram_id ON saved_mistakes(telegram_id);
 ALTER TABLE saved_mistakes ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Telegram users full access"
-  ON saved_mistakes FOR ALL USING (true) WITH CHECK (true);
+  ON saved_mistakes FOR ALL USING (false) WITH CHECK (false);
 
 
 -- ── 3. VERIFY ─────────────────────────────────────────────────
