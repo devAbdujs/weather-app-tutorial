@@ -41,6 +41,8 @@ export const ExamSetupModal: React.FC = () => {
   const { haptic } = useTelegram();
   const router = useRouter();
   const [mode, setMode] = useState('practice');
+  const [mixType, setMixType] = useState<'quick' | 'past_paper'>('quick');
+  const [selectedYear, setSelectedYear] = useState<number>(2015);
 
   const setupModalType = useAppStore(s => s.setupModalType);
   const userProfile = useAppStore(s => s.userProfile);
@@ -82,7 +84,8 @@ export const ExamSetupModal: React.FC = () => {
     } else if (setupModalType === 'notes') {
       router.push(`/notes/${encodedSubject}`);
     } else if (setupModalType === 'exam') {
-      router.push(`/exam/${encodedSubject}/${mode}`);
+      const url = `/exam/${encodedSubject}/${mode}?mix=${mixType}&year=${selectedYear}`;
+      router.push(url);
     }
 
     setSetupModalType(null);
@@ -162,20 +165,35 @@ export const ExamSetupModal: React.FC = () => {
                 </div>
               )}
 
-              <div className="space-y-2 pt-2">
-                <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">Mode</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button type="button" onClick={() => { haptic.selection(); setMode('practice'); }}
-                    className={`p-4 rounded-[16px] border-2 text-sm font-bold transition-all ${mode === 'practice' ? 'bg-primary text-card border-primary shadow-sm' : 'bg-card text-secondary border-black/10'}`}
-                  >
-                    <div className="text-lg mb-1">📖</div>Practice Mode
-                  </button>
-                  <button type="button" onClick={() => { haptic.selection(); setMode('simulator'); }}
-                    className={`p-4 rounded-[16px] border-2 text-sm font-bold transition-all ${mode === 'simulator' ? 'bg-primary text-card border-primary shadow-sm' : 'bg-card text-secondary border-black/10'}`}
-                  >
-                    <div className="text-lg mb-1">⏱️</div>Timed Simulator
-                  </button>
+              <div className="space-y-4 pt-2">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">Session Type</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button type="button" onClick={() => { haptic.selection(); setMixType('quick'); setMode('practice'); }}
+                      className={`p-4 rounded-[16px] border-2 text-sm font-bold transition-all flex flex-col items-center text-center ${mixType === 'quick' ? 'bg-primary text-card border-primary shadow-sm' : 'bg-card text-secondary border-black/10'}`}
+                    >
+                      <div className="text-2xl mb-1">⚡</div>Quick Drill
+                    </button>
+                    <button type="button" onClick={() => { haptic.selection(); setMixType('past_paper'); setMode('simulator'); }}
+                      className={`p-4 rounded-[16px] border-2 text-sm font-bold transition-all flex flex-col items-center text-center ${mixType === 'past_paper' ? 'bg-primary text-card border-primary shadow-sm' : 'bg-card text-secondary border-black/10'}`}
+                    >
+                      <div className="text-2xl mb-1">🏛️</div>Past Paper
+                    </button>
+                  </div>
                 </div>
+
+                {mixType === 'past_paper' && (
+                  <div className="space-y-2 animate-fade-in">
+                    <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">Select Year (EC)</label>
+                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar px-1">
+                      {[2015, 2014, 2013, 2012, 2011, 2010].map((yr) => (
+                        <button key={yr} type="button" onClick={() => { haptic.selection(); setSelectedYear(yr); }}
+                          className={`shrink-0 px-4 py-2.5 rounded-[12px] border-2 text-sm font-bold transition-all ${selectedYear === yr ? 'bg-primary text-card border-primary shadow-sm' : 'bg-card text-secondary border-black/10 hover:border-black/20'}`}
+                        >{yr}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

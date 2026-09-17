@@ -12,9 +12,11 @@ interface ExamSessionLoaderProps {
   subject: string;
   examType: string; // 'freshman' | 'entrance' | 'exit'
   mode: string;
+  mix?: string;
+  year?: string;
 }
 
-export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ subject, examType, mode }) => {
+export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ subject, examType, mode, mix, year }) => {
   const router = useRouter();
   const onExit = () => router.push('/');
   
@@ -28,7 +30,7 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ subject, e
         const dbExamType = examType || 'entrance';
         
         // Generate a unique cache key for this exact exam configuration
-        const cacheKey = `exam_${dbExamType}_${subject}_All`;
+        const cacheKey = `exam_${dbExamType}_${subject}_${mix === 'past_paper' ? year : 'random'}`;
         
         // 1. Try to load instantly from IndexedDB cache
         const cachedData = await getCachedQuestions(cacheKey);
@@ -53,24 +55,38 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ subject, e
           query = query.ilike('subject', `%${subject}%`);
         }
 
-        const randomOffset = Math.floor(Math.random() * 300);
-        let { data, error } = await query.range(randomOffset, randomOffset + 49);
+        let fetchedData;
+        let fetchError;
 
-        if (error || !data || data.length === 0) {
-          // Fallback: if offset is beyond table size, fetch from start
-          const fallback = await query.limit(50);
-          data = fallback.data;
-          error = fallback.error;
+        if (mix === 'past_paper' && year) {
+          // Mock Exam Mode: Fetch exact 100 questions for the specific year
+          query = query.eq('year_ec', parseInt(year, 10));
+          const result = await query.limit(100);
+          fetchedData = result.data;
+          fetchError = result.error;
+        } else {
+          // Quick Drill Mode: Random slice of 50 questions
+          const randomOffset = Math.floor(Math.random() * 300);
+          const result = await query.range(randomOffset, randomOffset + 49);
+          fetchedData = result.data;
+          fetchError = result.error;
+
+          if (fetchError || !fetchedData || fetchedData.length === 0) {
+            // Fallback if offset overshoots
+            const fallback = await query.limit(50);
+            fetchedData = fallback.data;
+            fetchError = fallback.error;
+          }
         }
 
-        if (error) throw error;
+        if (fetchError) throw fetchError;
         
         // 3. Save the results to the IndexedDB cache for next time
-        if (data && data.length > 0) {
-          await setCachedQuestions(cacheKey, data as Question[]);
+        if (fetchedData && fetchedData.length > 0) {
+          await setCachedQuestions(cacheKey, fetchedData as Question[]);
         }
 
-        const shuffled = (data as Question[]).sort(() => 0.5 - Math.random());
+        const shuffled = (fetchedData as Question[]).sort(() => 0.5 - Math.random());
         setQuestions(shuffled);
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Failed to fetch questions';
