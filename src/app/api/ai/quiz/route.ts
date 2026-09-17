@@ -7,7 +7,7 @@ import { getNextGeminiKey, markKeyRateLimited, getKeyCount } from '@/lib/geminiK
 import { checkRateLimit } from '@/lib/rateLimiter';
 import { createClient } from '@/utils/supabase/server';
 
-export const runtime = 'nodejs';
+
 
 // Define the exact shape of the quiz we want back
 const QuizSchema = z.object({

@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { getNextGeminiKey, markKeyRateLimited, getKeyCount } from '@/lib/geminiKeyRotation';
 import { checkRateLimit } from '@/lib/rateLimiter';
 
-export const runtime = 'nodejs';
+
 
 const RequestSchema = z.object({
   mode:          z.enum(['exam', 'notes']).default('exam'),
