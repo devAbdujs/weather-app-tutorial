@@ -221,14 +221,14 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
                   <Bot className="w-4 h-4" />
                 </div>
               )}
-              <div className={`p-4 rounded-2xl max-w-[85%] font-sans shadow-sm ${
+              <div className={`p-4 rounded-2xl max-w-[85%] font-sans shadow-md ${
                 msg.role === 'user' 
                   ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-br-sm font-medium whitespace-pre-line' 
-                  : 'bg-white border border-black/5 rounded-bl-sm text-slate-800'
+                  : 'bg-white border border-slate-200/80 rounded-bl-sm text-slate-900'
               }`}>
                 {msg.role === 'assistant' ? (
                   msg.content ? (
-                    <div className="prose prose-sm prose-slate max-w-none prose-p:leading-relaxed prose-pre:bg-slate-100 prose-pre:text-slate-800">
+                    <div className="prose prose-sm max-w-none prose-p:leading-relaxed prose-p:text-slate-900 prose-headings:text-slate-900 prose-strong:text-slate-900 prose-li:text-slate-900 prose-a:text-blue-600 prose-pre:bg-slate-100 prose-pre:text-slate-900 font-medium tracking-tight">
                       <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
                         {msg.content}
                       </ReactMarkdown>
