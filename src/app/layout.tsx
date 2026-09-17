@@ -79,6 +79,9 @@ async function AppContent({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+
 export default function RootLayout({
   children,
 }: {
@@ -113,6 +116,8 @@ export default function RootLayout({
         <Suspense fallback={<Loading />}>
           <AppContent>{children}</AppContent>
         </Suspense>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
