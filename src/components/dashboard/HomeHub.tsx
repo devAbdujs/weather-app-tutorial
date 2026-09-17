@@ -52,7 +52,7 @@ export const HomeHub: React.FC = () => {
             {getExamLabel(userProfile?.target_exam || null)} • {userProfile?.stream || 'No Stream'}
           </p>
         </div>
-        <div className="flex flex-col items-center justify-center bg-card border-2 border-black/5 px-3 py-1.5 rounded-[16px] shadow-sm">
+        <div className="flex flex-col items-center justify-center bg-card border border-black/5 px-3 py-1.5 rounded-[16px] shadow-sm">
           <div className="flex items-center gap-1.5 mb-0.5">
             <Flame className={`w-4 h-4 ${(userProfile?.daily_streak || 0) > 0 ? 'text-accent-amber fill-accent-amber' : 'text-tertiary'}`} />
             <span className={`text-base font-black leading-none ${(userProfile?.daily_streak || 0) > 0 ? 'text-primary' : 'text-tertiary'}`}>
@@ -64,56 +64,59 @@ export const HomeHub: React.FC = () => {
       </header>
 
       {/* ── ACTION GRID ── */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="flex flex-col gap-3 mb-6">
         <button
           onClick={() => { haptic.impact('heavy'); setSetupModalType('exam'); }}
-          className="col-span-2 group bg-card p-5 rounded-[24px] border-2 border-black/5 hover:border-primary/20 shadow-sm active:scale-[0.98] transition-all text-left relative overflow-hidden focus-ring"
+          className="w-full group bg-primary p-6 rounded-[24px] shadow-md active:translate-y-1 active:shadow-none transition-all text-left relative overflow-hidden focus-ring flex items-center justify-between border border-primary/20"
         >
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out" />
-          <div className="relative z-10 flex items-center justify-between">
-            <div>
-              <div className="w-12 h-12 bg-primary/10 rounded-[16px] flex items-center justify-center mb-4">
-                <PenLine className="w-6 h-6 text-primary" />
-              </div>
-              <h2 className="text-xl font-black text-primary mb-1">Practice & Exams</h2>
-              <p className="text-sm font-bold text-tertiary">Real past papers</p>
+          <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700" />
+          <div className="relative z-10">
+            <h2 className="text-[22px] font-black text-white mb-1 tracking-tight">Practice & Exams</h2>
+            <p className="text-[13px] font-medium text-white/80">31,000+ real past papers</p>
+          </div>
+          <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:bg-white/20 transition-colors">
+            <ChevronRight className="w-6 h-6 text-white" />
+          </div>
+        </button>
+
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => { haptic.impact('medium'); setSetupModalType('notes'); }}
+            className="group bg-card p-5 rounded-[20px] border border-black/5 hover:border-accent-blue/30 shadow-sm active:scale-[0.96] transition-all text-left flex flex-col justify-between min-h-[110px]"
+          >
+            <div className="w-10 h-10 bg-primary/5 rounded-[12px] flex items-center justify-center mb-2 group-hover:bg-primary/10 transition-colors">
+              <FileText className="w-5 h-5 text-primary" />
             </div>
-            <ChevronRight className="w-6 h-6 text-tertiary group-hover:text-primary transition-colors group-hover:translate-x-1" />
-          </div>
-        </button>
+            <div>
+              <h2 className="text-[15px] font-black text-primary leading-tight mb-0.5">Short Notes</h2>
+              <p className="text-[11px] font-bold text-tertiary">Quick summaries</p>
+            </div>
+          </button>
 
-        <button
-          onClick={() => { haptic.impact('medium'); setSetupModalType('notes'); }}
-          className="group bg-card p-4 rounded-[20px] border-2 border-black/5 hover:border-purple-500/20 shadow-sm active:scale-[0.96] transition-all text-left focus-ring"
-        >
-          <div className="w-10 h-10 bg-purple-500/10 rounded-[14px] flex items-center justify-center mb-3">
-            <FileText className="w-5 h-5 text-purple-600" />
-          </div>
-          <h2 className="text-base font-black text-primary leading-tight mb-1">Short Notes</h2>
-          <p className="text-xs font-bold text-tertiary">Quick summaries</p>
-        </button>
-
-        <button
-          onClick={() => { haptic.impact('medium'); setSetupModalType('flashcards'); }}
-          className="group bg-card p-4 rounded-[20px] border-2 border-black/5 hover:border-accent-amber/30 shadow-sm active:scale-[0.96] transition-all text-left focus-ring"
-        >
-          <div className="w-10 h-10 bg-accent-amber/10 rounded-[14px] flex items-center justify-center mb-3">
-            <BookMarked className="w-5 h-5 text-accent-amber" />
-          </div>
-          <h2 className="text-base font-black text-primary leading-tight mb-1">My Notebook</h2>
-          <p className="text-xs font-bold text-tertiary">Saved highlights</p>
-        </button>
+          <button
+            onClick={() => { haptic.impact('medium'); setSetupModalType('flashcards'); }}
+            className="group bg-card p-5 rounded-[20px] border border-black/5 hover:border-accent-blue/30 shadow-sm active:scale-[0.96] transition-all text-left flex flex-col justify-between min-h-[110px]"
+          >
+            <div className="w-10 h-10 bg-primary/5 rounded-[12px] flex items-center justify-center mb-2 group-hover:bg-primary/10 transition-colors">
+              <BookMarked className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-[15px] font-black text-primary leading-tight mb-0.5">My Notebook</h2>
+              <p className="text-[11px] font-bold text-tertiary">Saved highlights</p>
+            </div>
+          </button>
+        </div>
 
         <button
           onClick={() => { haptic.impact('light'); router.push('/mastery'); }}
-          className="col-span-2 group bg-primary/5 p-4 rounded-[20px] border-2 border-primary/10 hover:border-primary/20 shadow-sm active:scale-[0.98] transition-all text-left flex items-center gap-4 focus-ring"
+          className="w-full group bg-card p-4 rounded-[20px] border border-black/5 hover:border-accent-blue/30 shadow-sm active:scale-[0.98] transition-all text-left flex items-center gap-4"
         >
-          <div className="w-12 h-12 bg-card rounded-[14px] flex items-center justify-center shadow-sm border border-black/5 shrink-0">
-            <TreeDeciduous className="w-6 h-6 text-accent-emerald" />
+          <div className="w-12 h-12 bg-primary/5 rounded-[14px] flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+            <TreeDeciduous className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1">
-            <h2 className="text-base font-black text-primary mb-0.5">Mastery Map</h2>
-            <p className="text-xs font-bold text-secondary">Track your syllabus progress</p>
+            <h2 className="text-[16px] font-black text-primary mb-0.5">Mastery Map</h2>
+            <p className="text-xs font-bold text-tertiary">Track your syllabus progress</p>
           </div>
           <ChevronRight className="w-5 h-5 text-tertiary group-hover:text-primary transition-colors group-hover:translate-x-1" />
         </button>

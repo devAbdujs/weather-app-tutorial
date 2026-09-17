@@ -235,23 +235,23 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
     return (
       <div className="min-h-screen bg-ground text-primary p-6 flex flex-col justify-center items-center max-w-md mx-auto animate-fade-in font-sans">
-        <div className="w-full bg-card border-2 border-primary rounded-[32px] p-8 text-center shadow-brutal-heavy space-y-6">
-          <div className="w-16 h-16 rounded-[16px] bg-accent-amber border-2 border-primary mx-auto flex items-center justify-center shadow-brutal-sm text-primary">
+        <div className="w-full bg-card border border-primary/20 rounded-[32px] p-8 text-center shadow-brutal-heavy space-y-6">
+          <div className="w-16 h-16 rounded-[16px] bg-primary border border-primary/20 mx-auto flex items-center justify-center shadow-sm text-primary">
             <Award className="w-8 h-8" />
           </div>
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Exam Completed!</h2>
             <p className="text-sm font-medium text-secondary mt-2">{title}</p>
           </div>
-          <div className="py-8 bg-ground rounded-[24px] border-2 border-black/5">
+          <div className="py-8 bg-ground rounded-[24px] border border-black/5">
             <div className="text-6xl font-black text-primary tracking-tight tabular-nums">{percentage}%</div>
             <p className="text-sm font-bold text-secondary mt-2">Correct: <span className="text-accent-emerald">{score}</span> / {questions.length}</p>
             {isSimulator && <p className="text-xs font-bold text-tertiary mt-2">Time: {Math.floor(timeSpentSeconds / 60)}m {timeSpentSeconds % 60}s</p>}
           </div>
           <div className="space-y-4 pt-2">
-            <button onClick={() => { haptic.impact('medium'); setIsFinished(false); setIsReviewMode(true); setCurrentIndex(0); }} className="w-full btn-brutal py-4 bg-primary text-card rounded-[16px] font-bold text-sm transition-all">Review Answers</button>
-            <button onClick={() => { haptic.impact('medium'); setIsFinished(false); setIsReviewMode(false); setCurrentIndex(0); setSelectedAnswers({}); setFlagged(new Set()); startTimeRef.current = Date.now(); setHasRecordedCompletion(false); }} className="w-full btn-brutal py-4 bg-card text-primary rounded-[16px] font-bold text-sm transition-all">Retake Exam</button>
-            <button onClick={onExit} className="w-full btn-brutal py-4 bg-ground border-black/10 text-secondary rounded-[16px] font-bold text-sm transition-all">Exit to Dashboard</button>
+            <button onClick={() => { haptic.impact('medium'); setIsFinished(false); setIsReviewMode(true); setCurrentIndex(0); }} className="w-full  py-4 bg-primary text-card rounded-[16px] font-bold text-sm transition-all">Review Answers</button>
+            <button onClick={() => { haptic.impact('medium'); setIsFinished(false); setIsReviewMode(false); setCurrentIndex(0); setSelectedAnswers({}); setFlagged(new Set()); startTimeRef.current = Date.now(); setHasRecordedCompletion(false); }} className="w-full  py-4 bg-card text-primary rounded-[16px] font-bold text-sm transition-all">Retake Exam</button>
+            <button onClick={onExit} className="w-full  py-4 bg-ground border-black/10 text-secondary rounded-[16px] font-bold text-sm transition-all">Exit to Dashboard</button>
           </div>
         </div>
       </div>
@@ -270,7 +270,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     <div className={`min-h-screen ${isSimulator && !isReviewMode ? 'exam-mode-active' : 'bg-ground'} text-primary flex flex-col justify-between max-w-md mx-auto pb-24 font-sans select-none relative`}>
       <header className="sticky top-0 z-20 bg-ground/90 backdrop-blur-md border-b-2 border-black/5 p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={onExit} className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-card border-2 border-black/5 text-secondary hover:text-primary transition-colors focus-ring active:scale-95"><ChevronLeft className="w-5 h-5" /></button>
+          <button onClick={onExit} className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-card border border-black/5 text-secondary hover:text-primary transition-colors focus-ring active:scale-95"><ChevronLeft className="w-5 h-5" /></button>
           <span className="text-sm font-bold text-secondary tabular-nums">Q {currentIndex + 1}/{questions.length}</span>
         </div>
         <div className="flex items-center gap-3">
@@ -284,14 +284,14 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
               }} 
             />
           )}
-          <button onClick={toggleBookmark} className={`w-10 h-10 flex items-center justify-center rounded-[12px] border-2 transition-all active:scale-95 ${isSaved ? 'bg-primary border-primary text-card shadow-brutal-sm' : 'bg-card border-black/5 text-secondary hover:text-primary'}`}><Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} /></button>
+          <button onClick={toggleBookmark} className={`w-10 h-10 flex items-center justify-center rounded-[12px] border-2 transition-all active:scale-95 ${isSaved ? 'bg-primary border-primary text-card shadow-sm' : 'bg-card border-black/5 text-secondary hover:text-primary'}`}><Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} /></button>
           <button onClick={() => {
             haptic.impact('light');
             const next = new Set(flagged);
             if (next.has(currentIndex)) next.delete(currentIndex);
             else next.add(currentIndex);
             setFlagged(next);
-          }} className={`w-10 h-10 flex items-center justify-center rounded-[12px] border-2 transition-all active:scale-95 ${flagged.has(currentIndex) ? 'bg-accent-amber border-primary text-primary shadow-brutal-sm' : 'bg-card border-black/5 text-secondary hover:text-primary'}`}><Flag className="w-4 h-4" fill={flagged.has(currentIndex) ? 'currentColor' : 'none'} /></button>
+          }} className={`w-10 h-10 flex items-center justify-center rounded-[12px] border-2 transition-all active:scale-95 ${flagged.has(currentIndex) ? 'bg-primary/10 border-primary text-primary shadow-sm' : 'bg-card border-black/5 text-secondary hover:text-primary'}`}><Flag className="w-4 h-4" fill={flagged.has(currentIndex) ? 'currentColor' : 'none'} /></button>
         </div>
       </header>
 
@@ -310,7 +310,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
               haptic.impact('light');
               setZoomImage(getImageUrl(currentQ.image_url!));
             }}
-            className="w-full rounded-[16px] border-2 border-black/5 overflow-hidden bg-white relative group active:scale-[0.98] transition-transform block focus-ring"
+            className="w-full rounded-[16px] border border-black/5 overflow-hidden bg-white relative group active:scale-[0.98] transition-transform block focus-ring"
           >
             <img
               src={getImageUrl(currentQ.image_url)}
@@ -328,14 +328,14 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
             {!inlineHint && !isHintLoading ? (
               <button 
                 onClick={handleGetHint} 
-                className="flex items-center gap-2 text-xs font-bold text-accent-blue bg-accent-blue/10 hover:bg-accent-blue/20 px-4 py-2 rounded-full transition-colors active:scale-95"
+                className="flex items-center gap-2 text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 px-4 py-2 rounded-full transition-colors active:scale-95"
               >
                 <Lightbulb className="w-4 h-4 text-accent-amber fill-accent-amber/20"/> Give me hint
               </button>
             ) : (
-              <div className="bg-accent-blue/5 border-2 border-accent-blue/10 rounded-[20px] p-5 text-sm font-medium text-primary">
+              <div className="bg-primary/5 border-2 border-primary/10 rounded-[20px] p-5 text-sm font-medium text-primary">
                 {isHintLoading && !inlineHint ? (
-                  <span className="animate-pulse flex items-center gap-2 font-bold text-accent-blue uppercase tracking-widest text-[10px]">
+                  <span className="animate-pulse flex items-center gap-2 font-bold text-primary uppercase tracking-widest text-[10px]">
                     <Lightbulb className="w-4 h-4 text-accent-amber"/> Thinking...
                   </span>
                 ) : (
@@ -364,16 +364,16 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
             const isWrongSelected = isSelected && normalizedAns ? letter !== normalizedAns : false;
 
             // Neobrutalist active state
-            if (isSelected) cls = 'bg-accent-amber border-primary text-primary shadow-brutal-sm font-bold -translate-y-1';
+            if (isSelected) cls = 'bg-primary border-primary text-white shadow-md font-bold -translate-y-1';
             
             // Review/Practice reveal
             if (isRevealed) {
               if (isCorrect) {
-                cls = 'bg-emerald-100 border-emerald-500 text-emerald-950 shadow-brutal-sm font-bold -translate-y-1';
+                cls = 'bg-emerald-100 border-emerald-500 text-emerald-950 shadow-sm font-bold -translate-y-1';
               } else if (isWrongSelected) {
-                cls = 'bg-red-100 border-red-500 text-red-950 shadow-brutal-sm font-bold -translate-y-1';
+                cls = 'bg-red-100 border-red-500 text-red-950 shadow-sm font-bold -translate-y-1';
               } else if (isSelected && !normalizedAns) {
-                cls = 'bg-accent-blue/20 border-primary text-primary shadow-brutal-sm font-bold -translate-y-1';
+                cls = 'bg-primary/20 border-primary text-white shadow-md font-bold -translate-y-1';
               } else {
                 cls = 'bg-card border-black/10 text-primary';
               }
@@ -437,7 +437,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                     haptic.selection();
                     setShowExplanation((prev) => !prev);
                   }}
-                  className="flex items-center gap-2 text-xs font-bold text-accent-blue hover:text-accent-blue/80 transition-colors focus-ring active:scale-[0.99]"
+                  className="flex items-center gap-2 text-xs font-bold text-primary hover:text-primary/80 transition-colors focus-ring active:scale-[0.99]"
                 >
                   {showExplanation ? 'Hide Explanation' : 'Read Explanation'}
                   <ChevronDown
@@ -481,20 +481,20 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         </button>
         <div className="flex gap-2">
           {currentIndex > 0 && (
-            <button onClick={() => { haptic.selection(); setCurrentIndex(prev => prev - 1); }} className="w-14 h-14 rounded-[16px] bg-card border-2 border-black/5 flex items-center justify-center text-primary active:scale-95 hover:border-primary transition-all"><ChevronLeft className="w-5 h-5"/></button>
+            <button onClick={() => { haptic.selection(); setCurrentIndex(prev => prev - 1); }} className="w-14 h-14 rounded-[16px] bg-card border border-black/5 flex items-center justify-center text-primary active:scale-95 hover:border-primary transition-all"><ChevronLeft className="w-5 h-5"/></button>
           )}
-          <button onClick={() => { haptic.selection(); setShowGrid(true); }} className="w-14 h-14 rounded-[16px] bg-card border-2 border-black/5 flex items-center justify-center text-primary active:scale-95 hover:border-primary transition-all"><Grid className="w-5 h-5"/></button>
+          <button onClick={() => { haptic.selection(); setShowGrid(true); }} className="w-14 h-14 rounded-[16px] bg-card border border-black/5 flex items-center justify-center text-primary active:scale-95 hover:border-primary transition-all"><Grid className="w-5 h-5"/></button>
           {currentIndex < questions.length - 1 ? (
-            <button onClick={() => { haptic.selection(); setCurrentIndex(prev => prev + 1); }} className="px-6 h-14 bg-primary text-card rounded-[16px] text-sm font-bold active:scale-95 flex items-center gap-2 shadow-brutal-sm btn-brutal">Next <ChevronRight className="w-5 h-5"/></button>
+            <button onClick={() => { haptic.selection(); setCurrentIndex(prev => prev + 1); }} className="px-6 h-14 bg-primary text-card rounded-[16px] text-sm font-bold active:scale-95 flex items-center gap-2 shadow-sm ">Next <ChevronRight className="w-5 h-5"/></button>
           ) : (
-            <button onClick={isReviewMode ? () => setIsFinished(true) : handleFinish} className="px-6 h-14 bg-accent-amber text-primary rounded-[16px] text-sm font-bold shadow-brutal-sm btn-brutal">{isReviewMode ? 'Finish Review' : 'Submit Exam'}</button>
+            <button onClick={isReviewMode ? () => setIsFinished(true) : handleFinish} className="px-6 h-14 bg-primary text-white rounded-[16px] text-sm font-bold shadow-md ">{isReviewMode ? 'Finish Review' : 'Submit Exam'}</button>
           )}
         </div>
       </footer>
 
       {showGrid && (
         <div className="fixed inset-0 z-50 bg-primary/20 backdrop-blur-sm flex flex-col items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-sm bg-card border-2 border-primary rounded-[32px] p-6 shadow-brutal-heavy animate-scale-bounce">
+          <div className="w-full max-w-sm bg-card border border-primary/20 rounded-[32px] p-6 shadow-brutal-heavy animate-scale-bounce">
             <div className="flex justify-between items-center border-b-2 border-black/5 pb-4 mb-4">
               <h3 className="font-bold tracking-tight text-lg text-primary">Question Matrix</h3>
               <button onClick={() => setShowGrid(false)} className="w-10 h-10 flex justify-center items-center rounded-[12px] bg-ground border-2 border-transparent hover:border-black/5 text-primary"><X className="w-5 h-5"/></button>
@@ -506,9 +506,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                 const isFlg = flagged.has(i);
                 
                 return (
-                  <button key={i} onClick={() => { setCurrentIndex(i); setShowGrid(false); }} className={`relative h-12 rounded-[12px] border-2 text-sm font-bold tabular-nums transition-all active:scale-95 ${currentIndex === i ? 'bg-primary border-primary text-card shadow-brutal-sm -translate-y-1' : isFlg ? 'bg-accent-amber border-primary text-primary shadow-brutal-sm -translate-y-1' : selectedAnswers[i] ? 'bg-ground border-black/20 text-primary' : 'bg-card border-black/5 text-secondary hover:border-primary hover:-translate-y-1 hover:shadow-brutal-sm'}`}>
+                  <button key={i} onClick={() => { setCurrentIndex(i); setShowGrid(false); }} className={`relative h-12 rounded-[12px] border-2 text-sm font-bold tabular-nums transition-all active:scale-95 ${currentIndex === i ? 'bg-primary border-primary text-card shadow-sm -translate-y-1' : isFlg ? 'bg-primary/10 border-primary text-primary shadow-sm -translate-y-1' : selectedAnswers[i] ? 'bg-ground border-black/20 text-primary' : 'bg-card border-black/5 text-secondary hover:border-primary hover:-translate-y-1 hover:shadow-sm'}`}>
                     {i + 1}
-                    {isBkmrk && <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-accent-blue rounded-full border-2 border-card" />}
+                    {isBkmrk && <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-primary rounded-full border-2 border-card" />}
                   </button>
                 );
               })}
@@ -532,7 +532,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
           onClick={() => { haptic.selection(); setZoomImage(null); }}
         >
-          <button className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center bg-card border-2 border-primary rounded-[12px] text-primary transition-all active:scale-95 shadow-brutal-sm">
+          <button className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center bg-card border border-primary/20 rounded-[12px] text-primary transition-all active:scale-95 shadow-sm">
             <X className="w-6 h-6" />
           </button>
           <img src={zoomImage} className="w-full max-h-[90vh] object-contain rounded-xl" alt="Zoomed diagram" />

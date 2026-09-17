@@ -57,7 +57,7 @@ export const ProductTour: React.FC = () => {
       <div className="fixed inset-0 z-[9998] bg-primary/20 backdrop-blur-sm animate-fade-in" />
       
       <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 pointer-events-none">
-        <div className="w-full max-w-[320px] bg-card border-2 border-primary rounded-[32px] p-6 shadow-[8px_8px_0px_#1a1a1a] pointer-events-auto relative overflow-hidden animate-scale-bounce">
+        <div className="w-full max-w-[320px] bg-card border border-primary/20 rounded-[32px] p-6 shadow-[8px_8px_0px_#1a1a1a] pointer-events-auto relative overflow-hidden animate-scale-bounce">
           
           <button 
             onClick={handleComplete}
@@ -67,7 +67,7 @@ export const ProductTour: React.FC = () => {
           </button>
 
           <div className="relative z-10 space-y-5">
-            <div className="w-12 h-12 rounded-[16px] bg-ground border-2 border-black/5 flex items-center justify-center shadow-sm">
+            <div className="w-12 h-12 rounded-[16px] bg-ground border border-black/5 flex items-center justify-center shadow-sm">
               {TOUR_STEPS[step].icon}
             </div>
 

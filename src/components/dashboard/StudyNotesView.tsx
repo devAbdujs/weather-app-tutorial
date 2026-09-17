@@ -118,9 +118,9 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const dept = subject && subject !== 'All' ? subject : 'General';
-  const accentBar   = SUBJECT_COLOR[dept]     ?? 'bg-purple-500';
-  const accentText  = SUBJECT_TEXT_COLOR[dept]?? 'text-purple-600';
-  const accentBg    = SUBJECT_BG_COLOR[dept]  ?? 'bg-purple-50';
+  const accentBar = 'bg-primary';
+  const accentText = 'text-primary';
+  const accentBg = 'bg-primary/5';
   const emoji       = SUBJECT_EMOJI[dept]     ?? '📚';
 
   const handleBackFromNote = useCallback(() => {
@@ -276,7 +276,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-xl border-t border-black/8 p-4 z-30 flex gap-3 pb-safe">
           <button
             onClick={() => { haptic.impact('light'); setShowTutor(true); }}
-            className={`flex-1 h-12 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-95 border-2 border-black/5 ${accentBg} ${accentText}`}
+            className={`flex-1 h-12 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-95 border border-black/5 ${accentBg} ${accentText}`}
           >
             <Sparkles className="w-4 h-4" />
             Ask AI Tutor

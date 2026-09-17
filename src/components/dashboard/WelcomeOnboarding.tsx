@@ -181,7 +181,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
           disabled={!canProceed || isSaving}
           className={`w-full py-4 rounded-[16px] border-2 font-bold text-base flex items-center justify-center gap-2 transition-all mt-auto ${
             canProceed && !isSaving
-              ? 'bg-accent-blue border-primary text-white active:scale-95 shadow-brutal-sm -translate-y-1'
+              ? 'bg-accent-blue border-primary text-white active:scale-95 shadow-sm -translate-y-1'
               : 'bg-ground border-black/10 text-tertiary cursor-not-allowed'
           }`}
         >

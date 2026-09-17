@@ -51,7 +51,7 @@ export default function AdminUploadNotes() {
 
   return (
     <div className="min-h-screen bg-ground p-8 font-sans">
-      <div className="max-w-3xl mx-auto bg-card border-2 border-primary rounded-3xl p-8 shadow-[8px_8px_0px_#1a1a1a]">
+      <div className="max-w-3xl mx-auto bg-card border border-primary/20 rounded-3xl p-8 shadow-[8px_8px_0px_#1a1a1a]">
         <h1 className="text-3xl font-black text-primary mb-6 tracking-tight">Admin: Upload Short Note</h1>
         
         <div className="space-y-4">
@@ -60,7 +60,7 @@ export default function AdminUploadNotes() {
               <label className="block text-sm font-bold mb-2">Exam Type</label>
               <select 
                 value={examType} onChange={(e) => setExamType(e.target.value)}
-                className="w-full p-3 border-2 border-primary rounded-xl bg-ground font-bold"
+                className="w-full p-3 border border-primary/20 rounded-xl bg-ground font-bold"
               >
                 <option value="freshman">University Freshman</option>
                 <option value="entrance">Grade 12 EUEE</option>
@@ -72,7 +72,7 @@ export default function AdminUploadNotes() {
               <input 
                 type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
                 placeholder="e.g. Applied Mathematics I"
-                className="w-full p-3 border-2 border-primary rounded-xl bg-ground font-bold"
+                className="w-full p-3 border border-primary/20 rounded-xl bg-ground font-bold"
               />
             </div>
           </div>
@@ -82,7 +82,7 @@ export default function AdminUploadNotes() {
             <input 
               type="text" value={title} onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Chapter 1: Limits and Continuity"
-              className="w-full p-3 border-2 border-primary rounded-xl bg-ground font-bold"
+              className="w-full p-3 border border-primary/20 rounded-xl bg-ground font-bold"
             />
           </div>
 
@@ -91,7 +91,7 @@ export default function AdminUploadNotes() {
             <textarea 
               value={content} onChange={(e) => setContent(e.target.value)}
               placeholder="Paste raw markdown here..."
-              className="w-full p-3 border-2 border-primary rounded-xl bg-ground h-64 font-mono text-sm"
+              className="w-full p-3 border border-primary/20 rounded-xl bg-ground h-64 font-mono text-sm"
             />
           </div>
 
@@ -100,7 +100,7 @@ export default function AdminUploadNotes() {
             <input 
               type="password" value={adminSecret} onChange={(e) => setAdminSecret(e.target.value)}
               placeholder="Enter ADMIN_SECRET to authorize"
-              className="w-full p-3 border-2 border-primary rounded-xl bg-ground font-bold"
+              className="w-full p-3 border border-primary/20 rounded-xl bg-ground font-bold"
             />
           </div>
 
