@@ -53,7 +53,7 @@ export default async function RootLayout({
     const { data: profile } = await supabase
       .from('profiles')
       .select('daily_streak, target_exam, stream')
-      .eq('id', session.profile_id)
+      .eq('telegram_id', session.telegram_id)
       .single();
 
     const formattedProfile = {

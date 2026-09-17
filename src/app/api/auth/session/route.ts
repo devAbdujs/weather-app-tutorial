@@ -66,18 +66,13 @@ export async function POST(req: NextRequest) {
     // 3. Upsert User into Supabase
     const supabase = await createClient();
     
-    // Deterministic UUID from Telegram ID
-    const hashId = crypto.createHash('md5').update(telegramUser.id.toString()).digest('hex');
-    const telegramUuid = `${hashId.substring(0,8)}-${hashId.substring(8,12)}-4${hashId.substring(13,16)}-a${hashId.substring(17,20)}-${hashId.substring(20,32)}`;
-
     const { data: profile, error } = await supabase
       .from('profiles')
       .upsert({ 
-        id: telegramUuid,
         telegram_id: telegramUser.id.toString(),
         full_name: `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim(),
-      }, { onConflict: 'id' })
-      .select('id, target_exam, stream')
+      }, { onConflict: 'telegram_id' })
+      .select('telegram_id, target_exam, stream')
       .single();
 
     if (error) {
@@ -88,7 +83,7 @@ export async function POST(req: NextRequest) {
     // 4. Create Encrypted HTTP-Only Session Cookie
     const sessionToken = encryptSession({
       telegram_id: telegramUser.id.toString(),
-      profile_id: profile.id,
+      profile_id: profile.telegram_id,
       first_name: telegramUser.first_name,
     });
 

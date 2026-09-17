@@ -17,7 +17,7 @@ export default async function NotesPage({ params }: { params: { subject: string 
   const { data: profile } = await supabase
     .from('profiles')
     .select('target_exam')
-    .eq('id', session.profile_id)
+    .eq('telegram_id', session.telegram_id)
     .single();
     
   const examType = profile?.target_exam || 'entrance';
