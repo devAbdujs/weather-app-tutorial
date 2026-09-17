@@ -8,7 +8,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { useRouter } from 'next/navigation';
 
 export const HomeHub: React.FC = () => {
-  const { user, haptic } = useTelegram();
+  const { user, haptic, setBackButton } = useTelegram();
   const router = useRouter();
   const userProfile = useAppStore(s => s.userProfile);
   const profileLoaded = useAppStore(s => s.profileLoaded);

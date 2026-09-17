@@ -29,7 +29,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // We only cache GET requests
+  // Skip cross-origin requests, chrome extensions, etc.
+  if (!event.request.url.startsWith('http')) return;
   if (event.request.method !== 'GET') return;
 
   // 1. Cache-First Strategy for Next.js Static Assets (JS, CSS, Fonts)
