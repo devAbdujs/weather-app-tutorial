@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { Send, Phone } from 'lucide-react';
+import { format } from 'date-fns';
 
 interface LandingPageProps {
   onLogin: (user: any) => void;
@@ -9,7 +11,16 @@ interface LandingPageProps {
 export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'signin' | 'create'>('signin');
+  const [phone, setPhone] = useState('');
+  const [pin, setPin] = useState(['', '', '', '']);
   const widgetRef = useRef<HTMLDivElement>(null);
+  const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Calculate greeting and date
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'GOOD MORNING' : hour < 18 ? 'GOOD AFTERNOON' : 'GOOD EVENING';
+  const dateStr = format(new Date(), 'MMM d').toUpperCase();
 
   useEffect(() => {
     (window as any).onTelegramAuth = async (user: any) => {
@@ -42,7 +53,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       script.setAttribute('data-size', 'large');
       script.setAttribute('data-onauth', 'onTelegramAuth(user)');
       script.setAttribute('data-request-access', 'write');
-      script.setAttribute('data-radius', '10');
+      script.setAttribute('data-radius', '12'); // matching typical native buttons
       script.async = true;
       widgetRef.current.appendChild(script);
     }
@@ -50,71 +61,173 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
     return () => { delete (window as any).onTelegramAuth; };
   }, []);
 
+  const handlePinChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+    const newPin = [...pin];
+    newPin[index] = value.slice(-1);
+    setPin(newPin);
+    if (value && index < 3) pinRefs.current[index + 1]?.focus();
+  };
+
+  const handlePinKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && !pin[index] && index > 0) {
+      pinRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const isFormValid = phone.length >= 9 && pin.join('').length === 4;
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-ground px-6">
-
-      {/* App Icon — real Temari logo */}
-      <div className="w-24 h-24 rounded-[28px] overflow-hidden mb-6 shadow-lg">
-        <img
-          src="/assets/temari logo.png"
-          alt="Temari"
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-      {/* App name */}
-      <h1 className="text-[28px] font-bold text-[#1C1C1E] tracking-tight mb-1">
-        Temari
-      </h1>
-
-      {/* Tagline */}
-      <p className="text-[15px] text-[#8E8E93] text-center mb-8 max-w-[220px] leading-snug">
-        Ethiopian exam prep, powered by AI
-      </p>
-
-      {/* White card */}
-      <div className="w-full max-w-[340px] bg-white rounded-2xl shadow-sm px-6 py-7 flex flex-col items-center gap-4">
-
-        <p className="text-[13px] text-[#8E8E93] text-center leading-relaxed">
-          Log in with your Telegram account to sync your progress across devices.
-        </p>
-
-        {/* Telegram Widget */}
-        {isLoading ? (
-          <div className="flex items-center gap-2 py-2">
-            <div className="w-5 h-5 rounded-full border-2 border-[#2AABEE]/30 border-t-[#2AABEE] animate-spin" />
-            <span className="text-sm text-[#8E8E93]">Logging you in…</span>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-ground px-4 sm:px-6 py-8">
+      
+      {/* Center Card */}
+      <div className="w-full max-w-[420px] bg-card rounded-[24px] shadow-sm px-6 py-8 flex flex-col">
+        
+        {/* 1. Header Row */}
+        <div className="flex items-center justify-between mb-8">
+          <span className="text-[11px] font-bold text-tertiary tracking-widest uppercase">
+            {greeting}
+          </span>
+          <div className="bg-ground px-2.5 py-1 rounded-full border border-black/5 flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-accent-gold" />
+            <span className="text-[10px] font-bold text-primary tracking-wider uppercase">
+              {dateStr}
+            </span>
           </div>
-        ) : (
-          <div ref={widgetRef} className="flex items-center justify-center min-h-[48px]" />
-        )}
+        </div>
 
-        {error && (
-          <p className="text-[13px] text-red-500 text-center">{error}</p>
-        )}
+        {/* 2. Logo Block */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-16 h-16 rounded-2xl overflow-hidden mb-4 shadow-sm border border-black/5">
+            <img src="/assets/temari logo.png" alt="Temari" className="w-full h-full object-cover" />
+          </div>
+          <h1 className="text-2xl font-black text-primary tracking-tight mb-1">
+            Temari App
+          </h1>
+          <p className="text-[14px] font-medium text-tertiary text-center">
+            Ethiopian exam prep, powered by AI.
+          </p>
+        </div>
+
+        {/* 3. Tab Switcher */}
+        <div className="bg-ground p-1 rounded-xl flex items-center mb-8 border border-black/5">
+          <button
+            onClick={() => setActiveTab('signin')}
+            className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all ${
+              activeTab === 'signin' ? 'bg-white text-primary shadow-sm' : 'text-tertiary hover:text-secondary'
+            }`}
+          >
+            Sign In
+          </button>
+          <button
+            onClick={() => setActiveTab('create')}
+            className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all ${
+              activeTab === 'create' ? 'bg-white text-primary shadow-sm' : 'text-tertiary hover:text-secondary'
+            }`}
+          >
+            Create account
+          </button>
+        </div>
+
+        {/* 4. Primary Telegram Button (Wrapper for native widget) */}
+        <div className="flex flex-col items-center w-full mb-6 relative">
+          {isLoading ? (
+            <div className="w-full h-12 rounded-xl bg-[#229ED9]/10 flex items-center justify-center gap-2 border border-[#229ED9]/20">
+              <div className="w-4 h-4 rounded-full border-2 border-[#229ED9]/30 border-t-[#229ED9] animate-spin" />
+              <span className="text-sm font-bold text-[#229ED9]">Connecting...</span>
+            </div>
+          ) : (
+            <div className="w-full relative group">
+              {/* Fake button for perfect styling underneath the widget */}
+              <div className="absolute inset-0 w-full h-[40px] bg-[#229ED9] rounded-xl flex items-center justify-center gap-2 pointer-events-none shadow-sm transition-transform group-active:scale-[0.98]">
+                <Send className="w-4 h-4 text-white" />
+                <span className="text-[15px] font-semibold text-white">Continue with Telegram</span>
+              </div>
+              {/* Invisible native widget on top to catch the click */}
+              <div 
+                ref={widgetRef} 
+                className="w-full h-[40px] flex items-center justify-center opacity-0 overflow-hidden relative z-10 [&>iframe]:w-full [&>iframe]:h-full cursor-pointer" 
+              />
+            </div>
+          )}
+          {error && <p className="text-[13px] text-red-500 font-medium mt-3 text-center">{error}</p>}
+        </div>
+
+        {/* 5. Divider */}
+        <div className="flex items-center gap-4 mb-6">
+          <div className="flex-1 h-px bg-black/5" />
+          <span className="text-[11px] font-bold text-tertiary tracking-widest">OR</span>
+          <div className="flex-1 h-px bg-black/5" />
+        </div>
+
+        {/* 6. Phone + PIN Fallback */}
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Phone className="w-4 h-4 text-tertiary" />
+            </div>
+            <input
+              type="tel"
+              placeholder="0912 345 678"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full h-[48px] pl-11 pr-4 bg-ground border border-black/5 rounded-xl text-[15px] font-medium text-primary placeholder:text-tertiary focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-all"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-3">
+              {pin.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={el => { pinRefs.current[index] = el; }}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={e => handlePinChange(index, e.target.value)}
+                  onKeyDown={e => handlePinKeyDown(index, e)}
+                  onFocus={e => e.target.select()}
+                  className="w-full aspect-square text-center text-xl font-bold bg-ground border border-black/5 rounded-xl text-primary focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-all"
+                />
+              ))}
+            </div>
+            <button className="text-[12px] font-semibold text-accent-blue self-end hover:underline">
+              Send me a code
+            </button>
+          </div>
+        </div>
+
+        {/* 7. Submit Button */}
+        <button
+          disabled={!isFormValid}
+          className={`w-full h-[48px] rounded-xl text-[15px] font-bold transition-all ${
+            isFormValid 
+              ? 'bg-primary text-white shadow-sm active:scale-[0.98]' 
+              : 'bg-ground text-tertiary cursor-not-allowed border border-black/5'
+          }`}
+        >
+          {activeTab === 'signin' ? 'Sign In' : 'Create Account'}
+        </button>
       </div>
 
-      {/* Fine print */}
-      <p className="text-[11px] text-[#C7C7CC] text-center mt-6 max-w-[260px] leading-relaxed">
-        By continuing, you agree to our Terms of Service. Your Telegram data is only used to identify your account.
+      {/* 8. Footer */}
+      <p className="text-[11px] text-tertiary font-medium text-center mt-6 max-w-[280px] leading-relaxed">
+        By continuing, you agree to our <a href="#" className="underline hover:text-primary">Terms of Service</a> and <a href="#" className="underline hover:text-primary">Privacy Policy</a>.
       </p>
 
-      {/* Dev bypass — localhost only */}
+      {/* Dev bypass */}
       {process.env.NODE_ENV === 'development' && (
         <button
           onClick={async () => {
             setIsLoading(true);
-            const res = await fetch('/api/auth/session', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ devMode: true }),
-            });
+            const res = await fetch('/api/auth/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ devMode: true }) });
             if (res.ok) window.location.reload();
             else setIsLoading(false);
           }}
-          className="mt-6 px-5 py-2 bg-yellow-400 border-2 border-black font-bold text-xs rounded-xl"
+          className="mt-6 px-4 py-1.5 bg-yellow-400 border border-yellow-500 text-yellow-900 font-bold text-[10px] tracking-wider rounded-lg"
         >
-          ⚡ DEV BYPASS
+          DEV BYPASS
         </button>
       )}
     </div>
