@@ -11,7 +11,7 @@ import { ExamTimer } from './ExamTimer';
 import { useTelegram } from '@/hooks/useTelegram';
 
 const AITutorDrawer = dynamic(() => import('@/components/ai/AITutorDrawer').then(m => m.AITutorDrawer), { ssr: false });
-import { createClient } from '@/utils/supabase/client';
+import { toggleSavedMistake, updateDailyStreak, getSavedMistakes } from '@/app/actions/user';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
 const getImageUrl = (imageFilename: string) => {
@@ -108,13 +108,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     const loadBookmarks = async () => {
       if (!user?.id) return;
       try {
-        const supabase = createClient();
-        const { data } = await supabase
-          .from('saved_mistakes')
-          .select('question_id')
-          .eq('telegram_id', user.id.toString());
-        if (data && data.length > 0) {
-          setSavedQuestions(new Set(data.map(d => d.question_id)));
+        const questionIds = await getSavedMistakes();
+        if (questionIds.length > 0) {
+          setSavedQuestions(new Set(questionIds));
         }
       } catch (err) {
         console.error("Error loading bookmarks from Supabase:", err);
@@ -157,18 +153,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     });
 
     try {
-      const supabase = createClient();
-      if (isSaved) {
-        await supabase
-          .from('saved_mistakes')
-          .delete()
-          .eq('question_id', qId)
-          .eq('telegram_id', telegramId);
-      } else {
-        await supabase
-          .from('saved_mistakes')
-          .insert({ question_id: qId, telegram_id: telegramId });
-      }
+      await toggleSavedMistake(qId, isSaved);
     } catch (err) {
       console.error("Error toggling bookmark in Supabase:", err);
     }
@@ -182,38 +167,15 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
       setHasRecordedCompletion(true);
       try {
         if (!user?.id) return;
-        const supabase = createClient();
-        const telegramId = user.id.toString();
-
-        // Fetch current streak
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('daily_streak, last_activity_date')
-          .eq('telegram_id', telegramId)
-          .maybeSingle();
-
-        const today = new Date().toISOString().split('T')[0];
-        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-        const lastDate = profile?.last_activity_date;
-
-        let newStreak = 1;
-        if (lastDate === today) {
-          newStreak = profile?.daily_streak ?? 1;         // Already done today — keep
-        } else if (lastDate === yesterday) {
-          newStreak = (profile?.daily_streak ?? 0) + 1;  // Consecutive — increment
-        }
-        // else: streak broken — reset to 1
-
-        await supabase.from('profiles').upsert({
-          telegram_id: telegramId,
-          full_name: `${user.first_name} ${user.last_name || ''}`.trim(),
-          username: user.username ?? null,
-          daily_streak: newStreak,
-          last_activity_date: today,
-        }, { onConflict: 'telegram_id' });
+        await updateDailyStreak();
 
         // Record subject mastery stats
-        const correctCount = answers.filter((a, i) => a === questions[i].answer).length;
+        let correctCount = 0;
+        questions.forEach((q, idx) => {
+          const norm = q.answer ? q.answer.trim().toUpperCase() : null;
+          if (norm && selectedAnswers[idx] === norm) correctCount++;
+        });
+
         await fetch('/api/exam/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

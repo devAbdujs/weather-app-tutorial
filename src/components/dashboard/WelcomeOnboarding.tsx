@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronRight, ChevronLeft, CheckCircle2 } from 'lucide-react';
-import { createClient } from '@/utils/supabase/client';
+import { updateProfilePreferences } from '@/app/actions/user';
 import { useTelegram } from '@/hooks/useTelegram';
 
 interface OnboardingResult {
@@ -72,11 +72,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
     haptic.impact('medium');
     try {
       if (user?.id) {
-        const supabase = createClient();
-        await supabase
-          .from('profiles')
-          .update({ target_exam: target, stream: finalStream })
-          .eq('telegram_id', user.id.toString());
+        await updateProfilePreferences(target, finalStream);
       }
       haptic.notification('success');
       onComplete({ target, stream: finalStream });
