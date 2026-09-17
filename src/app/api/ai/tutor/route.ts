@@ -17,7 +17,7 @@ const RequestSchema = z.object({
   options:       z.array(z.string().nullable()).max(4).optional(),
   correctAnswer: z.string().nullable().optional(),
   explanation:   z.string().nullable().optional(),
-  promptType:    z.enum(['hint', 'eli5', 'amharic', 'chat']).default('chat'),
+  promptType:    z.enum(['hint', 'explain', 'eli5', 'amharic', 'chat']).default('chat'),
   subject:       z.string().optional(),
   studentAnswer: z.string().nullable().optional(),
   chatHistory:   z.array(z.object({
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
 
       try {
         const google = createGoogleGenerativeAI({ apiKey: geminiKey });
-        const model = google('gemini-1.5-flash');
+        const model = google('gemini-3.6-flash');
 
         const stream = await streamText({
           model,
