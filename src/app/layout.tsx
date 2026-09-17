@@ -11,13 +11,23 @@ const geistSans = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'Ethio Scholar — Ethiopian Exam Prep',
-  description: 'The ultimate exam prep app for Ethiopian students. Practice EUEE, University Freshman, and Exit Exams.',
+  title: 'Temari | Ethiopian Exam Prep & AI Tutor',
+  description: 'The ultimate exam prep app for Ethiopian students. Practice EUEE (Grade 12), University Freshman, and Exit Exams with AI-powered notes and real past papers.',
+  keywords: ['Ethiopia', 'EUEE', 'Grade 12 Entrance Exam', 'Ethiopian University Exit Exam', 'Freshman courses', 'Temari App', 'Ethiopian exam prep'],
+  authors: [{ name: 'Temari' }],
   manifest: '/manifest.json',
   openGraph: {
-    title: 'Ethio Scholar — Ethiopian Exam Prep',
-    description: 'Practice 31,000+ real exam questions for EUEE, Freshman & Exit Exams.',
+    title: 'Temari | Ethiopian Exam Prep',
+    description: 'Practice 31,000+ real exam questions for EUEE, Freshman & Exit Exams with AI.',
+    url: 'https://www.temari.top',
+    siteName: 'Temari App',
+    locale: 'en_US',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Temari | Ethiopian Exam Prep',
+    description: 'Master your Ethiopian National Exams with AI-powered notes and practice papers.',
   },
 };
 
