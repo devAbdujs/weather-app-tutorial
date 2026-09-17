@@ -1,15 +1,21 @@
 import React from 'react';
-import { DesktopSidebar } from './DesktopSidebar';
+import { BottomNav } from './BottomNav';
 
 export const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex h-screen w-full bg-ground overflow-hidden">
-      <DesktopSidebar />
-      <main className="flex-1 h-full overflow-y-auto relative custom-scrollbar">
-        {/* We keep a max-width wrapper inside the main content area so text doesn't stretch infinitely on ultrawide monitors, but we increase it from max-w-lg (phone) to max-w-5xl (desktop). */}
-        <div className="w-full max-w-5xl mx-auto min-h-full flex flex-col relative">
-          {children}
+    <div className="flex h-[100dvh] w-full bg-[#EFEFF3] justify-center overflow-hidden">
+      {/* Mobile emulator wrapper for desktop, fills screen on mobile */}
+      <main className="w-full h-full max-w-md bg-ground relative shadow-2xl flex flex-col overflow-hidden sm:border-x sm:border-black/5">
+        
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar pb-20">
+          <div className="w-full min-h-full flex flex-col relative">
+            {children}
+          </div>
         </div>
+
+        {/* Fixed Mobile Bottom Nav */}
+        <BottomNav />
       </main>
     </div>
   );
