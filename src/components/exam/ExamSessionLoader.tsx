@@ -53,7 +53,15 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ subject, e
           query = query.ilike('subject', `%${subject}%`);
         }
 
-        const { data, error } = await query.limit(50);
+        const randomOffset = Math.floor(Math.random() * 300);
+        let { data, error } = await query.range(randomOffset, randomOffset + 49);
+
+        if (error || !data || data.length === 0) {
+          // Fallback: if offset is beyond table size, fetch from start
+          const fallback = await query.limit(50);
+          data = fallback.data;
+          error = fallback.error;
+        }
 
         if (error) throw error;
         

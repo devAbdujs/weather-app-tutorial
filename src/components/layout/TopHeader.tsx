@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { useAppStore } from '@/store/useAppStore';
 
 export const TopHeader = () => {
@@ -22,9 +23,9 @@ export const TopHeader = () => {
         </div>
         <span className="font-black text-primary text-[17px] tracking-tight">Temari</span>
       </div>
-      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/10 text-primary font-black text-sm">
+      <Link href="/profile" className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/10 text-primary font-black text-sm active:scale-95 transition-transform cursor-pointer">
         {initial}
-      </div>
+      </Link>
     </header>
   );
 };

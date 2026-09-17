@@ -235,7 +235,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
     return (
       <div className="min-h-screen bg-ground text-primary p-6 flex flex-col justify-center items-center max-w-md mx-auto animate-fade-in font-sans">
-        <div className="w-full bg-card border border-primary/20 rounded-[32px] p-8 text-center shadow-brutal-heavy space-y-6">
+        <div className="w-full bg-card border border-primary/20 rounded-[32px] p-8 text-center shadow-xl space-y-6">
           <div className="w-16 h-16 rounded-[16px] bg-primary border border-primary/20 mx-auto flex items-center justify-center shadow-sm text-primary">
             <Award className="w-8 h-8" />
           </div>
@@ -249,7 +249,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
             {isSimulator && <p className="text-xs font-bold text-tertiary mt-2">Time: {Math.floor(timeSpentSeconds / 60)}m {timeSpentSeconds % 60}s</p>}
           </div>
           <div className="space-y-4 pt-2">
-            <button onClick={() => { haptic.impact('medium'); setIsFinished(false); setIsReviewMode(true); setCurrentIndex(0); }} className="w-full  py-4 bg-primary text-card rounded-[16px] font-bold text-sm transition-all">Review Answers</button>
+            <button onClick={() => { haptic.impact('medium'); setIsFinished(false); setIsReviewMode(true); setCurrentIndex(0); }} className="w-full  py-4 bg-primary text-white rounded-[16px] font-bold text-sm transition-all">Review Answers</button>
             <button onClick={() => { haptic.impact('medium'); setIsFinished(false); setIsReviewMode(false); setCurrentIndex(0); setSelectedAnswers({}); setFlagged(new Set()); startTimeRef.current = Date.now(); setHasRecordedCompletion(false); }} className="w-full  py-4 bg-card text-primary rounded-[16px] font-bold text-sm transition-all">Retake Exam</button>
             <button onClick={onExit} className="w-full  py-4 bg-ground border-black/10 text-secondary rounded-[16px] font-bold text-sm transition-all">Exit to Dashboard</button>
           </div>
@@ -485,7 +485,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           )}
           <button onClick={() => { haptic.selection(); setShowGrid(true); }} className="w-14 h-14 rounded-[16px] bg-card border border-black/5 flex items-center justify-center text-primary active:scale-95 hover:border-primary transition-all"><Grid className="w-5 h-5"/></button>
           {currentIndex < questions.length - 1 ? (
-            <button onClick={() => { haptic.selection(); setCurrentIndex(prev => prev + 1); }} className="px-6 h-14 bg-primary text-card rounded-[16px] text-sm font-bold active:scale-95 flex items-center gap-2 shadow-sm ">Next <ChevronRight className="w-5 h-5"/></button>
+            <button onClick={() => { haptic.selection(); setCurrentIndex(prev => prev + 1); }} className="px-6 h-14 bg-primary text-white rounded-[16px] text-sm font-bold active:scale-95 flex items-center gap-2 shadow-sm ">Next <ChevronRight className="w-5 h-5"/></button>
           ) : (
             <button onClick={isReviewMode ? () => setIsFinished(true) : handleFinish} className="px-6 h-14 bg-primary text-white rounded-[16px] text-sm font-bold shadow-md ">{isReviewMode ? 'Finish Review' : 'Submit Exam'}</button>
           )}
@@ -494,7 +494,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
       {showGrid && (
         <div className="fixed inset-0 z-50 bg-primary/20 backdrop-blur-sm flex flex-col items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-sm bg-card border border-primary/20 rounded-[32px] p-6 shadow-brutal-heavy animate-scale-bounce">
+          <div className="w-full max-w-sm bg-card border border-primary/20 rounded-[32px] p-6 shadow-xl animate-scale-bounce">
             <div className="flex justify-between items-center border-b-2 border-black/5 pb-4 mb-4">
               <h3 className="font-bold tracking-tight text-lg text-primary">Question Matrix</h3>
               <button onClick={() => setShowGrid(false)} className="w-10 h-10 flex justify-center items-center rounded-[12px] bg-ground border-2 border-transparent hover:border-black/5 text-primary"><X className="w-5 h-5"/></button>
