@@ -1,33 +1,24 @@
-'use client';
-
 import React from 'react';
-import { useRouter } from 'next/navigation';
-import { useTelegram } from '@/hooks/useTelegram';
-import { useEffect } from 'react';
+import { getServerSession } from '@/lib/session';
+import { createClient } from '@/utils/supabase/server';
+import { MasteryTree } from '@/components/dashboard/MasteryTree';
+import { redirect } from 'next/navigation';
 
-export default function MasteryPage() {
-  const router = useRouter();
-  const { setBackButton } = useTelegram();
+export default async function MasteryPage() {
+  const session = await getServerSession();
+  if (!session) {
+    redirect('/');
+  }
 
-  useEffect(() => {
-    setBackButton(true, () => router.push('/'));
-  }, [setBackButton, router]);
+  // Fetch subject stats securely via SSR
+  const supabase = await createClient();
+  const { data: stats } = await supabase
+    .from('user_subject_stats')
+    .select('*')
+    .eq('telegram_id', session.telegram_id)
+    .order('questions_correct', { ascending: false });
 
   return (
-    <main className="min-h-screen bg-ground text-primary flex flex-col font-sans">
-      <div className="w-full max-w-lg mx-auto flex flex-col flex-1 items-center justify-center p-6 text-center">
-        <div className="text-6xl mb-4">🌱</div>
-        <h1 className="text-2xl font-black text-primary mb-2">Mastery Map</h1>
-        <p className="text-secondary font-semibold mb-8 max-w-[260px] leading-relaxed">
-          Your personal skill tree is coming soon. Keep practicing to unlock it!
-        </p>
-        <button
-          onClick={() => router.push('/')}
-          className="px-6 py-3 bg-primary text-white font-black rounded-2xl active:scale-95 transition-all"
-        >
-          Back to Home
-        </button>
-      </div>
-    </main>
+    <MasteryTree stats={stats || []} />
   );
 }

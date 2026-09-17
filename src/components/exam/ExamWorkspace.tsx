@@ -212,8 +212,21 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           last_activity_date: today,
         }, { onConflict: 'telegram_id' });
 
+        // Record subject mastery stats
+        const correctCount = answers.filter((a, i) => a === questions[i].answer).length;
+        await fetch('/api/exam/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subject,
+            attempted: questions.length,
+            correct: correctCount,
+            timeSpentSeconds: elapsed
+          })
+        });
+
       } catch (err) {
-        console.error("Error updating streak in Supabase:", err);
+        console.error("Error saving exam stats:", err);
       }
     }
   };

@@ -49,6 +49,15 @@ export async function POST(req: NextRequest) {
       
       telegramUser = userData;
     }
+    // --- FLOW 3: Dev Mode Bypass (Only works in localhost) ---
+    else if (data.devMode && process.env.NODE_ENV === 'development') {
+      telegramUser = {
+        id: 999999999, // Fake Dev ID
+        first_name: 'Dev',
+        last_name: 'Scholar',
+        username: 'dev_scholar'
+      };
+    }
 
     if (!telegramUser || !telegramUser.id) {
       return NextResponse.json({ error: 'No user data provided' }, { status: 400 });

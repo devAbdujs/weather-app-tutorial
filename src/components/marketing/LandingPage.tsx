@@ -83,7 +83,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
           {isLoading ? (
             <div className="w-8 h-8 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
           ) : (
-            <div id="telegram-login-container" className="min-h-[40px] flex items-center justify-center"></div>
+            <div className="flex flex-col items-center gap-3">
+              <div id="telegram-login-container" className="min-h-[40px] flex items-center justify-center"></div>
+              {process.env.NODE_ENV === 'development' && (
+                <button 
+                  onClick={async () => {
+                    setIsLoading(true);
+                    try {
+                      const res = await fetch('/api/auth/session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ devMode: true })
+                      });
+                      if (res.ok) window.location.reload();
+                    } catch (e) {
+                      console.error(e);
+                      setIsLoading(false);
+                    }
+                  }}
+                  className="px-4 py-2 bg-yellow-400 border-2 border-black font-bold text-xs rounded-xl shadow-brutal-sm"
+                >
+                  ⚡ DEV BYPASS LOGIN
+                </button>
+              )}
+            </div>
           )}
 
           {error && <p className="text-red-500 font-bold text-xs mt-3">{error}</p>}
