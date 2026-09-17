@@ -61,7 +61,7 @@ The options must be highly plausible to challenge the student. Ensure the correc
       try {
         const google = createGoogleGenerativeAI({ apiKey: geminiKey });
         // Use 2.0 flash as it is highly capable
-        const model = google('gemini-3.6-flash');
+        const model = google('gemini-1.5-flash');
 
         const { object } = await generateObject({
           model,

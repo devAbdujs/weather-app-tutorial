@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
 
       try {
         const google = createGoogleGenerativeAI({ apiKey: geminiKey });
-        const model = google('gemini-3.6-flash');
+        const model = google('gemini-1.5-flash');
 
         const stream = await streamText({
           model,

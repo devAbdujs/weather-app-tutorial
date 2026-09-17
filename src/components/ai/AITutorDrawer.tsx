@@ -99,7 +99,14 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
         })
       });
 
-      if (!res.ok) throw new Error('Failed to get AI response');
+      if (!res.ok) {
+        let errMessage = 'Failed to get AI response';
+        try {
+          const errData = await res.json();
+          if (errData?.error) errMessage = errData.error;
+        } catch (e) {}
+        throw new Error(errMessage);
+      }
 
       const reader = res.body?.getReader();
       if (!reader) {

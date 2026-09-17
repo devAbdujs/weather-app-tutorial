@@ -82,7 +82,14 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         })
       });
       
-      if (!res.ok) throw new Error('Failed to fetch hint');
+      if (!res.ok) {
+        let errMessage = 'Failed to fetch hint';
+        try {
+          const errData = await res.json();
+          if (errData?.error) errMessage = errData.error;
+        } catch (e) {}
+        throw new Error(errMessage);
+      }
       
       const reader = res.body?.getReader();
       if (!reader) return;
