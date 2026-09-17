@@ -23,42 +23,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
   const dateStr = format(new Date(), 'MMM d').toUpperCase();
 
   useEffect(() => {
-    (window as any).onTelegramAuth = async (user: any) => {
+    // If Telegram redirects back to us with OAuth data in the URL query params, process it
+    const params = new URLSearchParams(window.location.search);
+    const hash = params.get('hash');
+    const tgId = params.get('id');
+
+    if (hash && tgId) {
       setIsLoading(true);
-      setError(null);
-      try {
-        const res = await fetch('/api/auth/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ webData: user }),
-        });
+      
+      const userData = Object.fromEntries(params.entries());
+      
+      fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ webData: userData }),
+      })
+      .then(res => {
         if (res.ok) {
+          // Strip the oauth params from the URL cleanly without reloading
+          window.history.replaceState({}, document.title, window.location.pathname);
           window.location.reload();
         } else {
-          const data = await res.json();
-          setError(data.error || 'Authentication failed.');
+          return res.json().then(data => setError(data.error || 'Authentication failed.'));
         }
-      } catch {
-        setError('Network error. Please try again.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (widgetRef.current) {
-      widgetRef.current.innerHTML = '';
-      const script = document.createElement('script');
-      script.src = 'https://telegram.org/js/telegram-widget.js?22';
-      script.setAttribute('data-telegram-login', process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot');
-      script.setAttribute('data-size', 'large');
-      script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-      script.setAttribute('data-request-access', 'write');
-      script.setAttribute('data-radius', '12'); // matching typical native buttons
-      script.async = true;
-      widgetRef.current.appendChild(script);
+      })
+      .catch(() => setError('Network error. Please try again.'))
+      .finally(() => setIsLoading(false));
     }
-
-    return () => { delete (window as any).onTelegramAuth; };
   }, []);
 
   const handlePinChange = (index: number, value: string) => {
@@ -76,6 +67,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
   };
 
   const isFormValid = phone.length >= 9 && pin.join('').length === 4;
+
+  // Telegram Bot ID is the first part of the token (before the colon)
+  const BOT_ID = '8400954528'; 
+  const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://temari.top';
+  const oauthUrl = `https://oauth.telegram.org/auth?bot_id=${BOT_ID}&origin=${encodeURIComponent(currentOrigin)}&return_to=${encodeURIComponent(currentOrigin)}`;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-ground px-4 sm:px-6 py-8">
@@ -129,26 +125,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
           </button>
         </div>
 
-        {/* 4. Primary Telegram Button (Wrapper for native widget) */}
-        <div className="flex flex-col items-center w-full mb-6 relative">
+        {/* 4. Primary Telegram Button (Direct Redirect Flow) */}
+        <div className="flex flex-col items-center w-full mb-6">
           {isLoading ? (
             <div className="w-full h-12 rounded-xl bg-[#229ED9]/10 flex items-center justify-center gap-2 border border-[#229ED9]/20">
               <div className="w-4 h-4 rounded-full border-2 border-[#229ED9]/30 border-t-[#229ED9] animate-spin" />
               <span className="text-sm font-bold text-[#229ED9]">Connecting...</span>
             </div>
           ) : (
-            <div className="w-full relative group">
-              {/* Fake button for perfect styling underneath the widget */}
-              <div className="absolute inset-0 w-full h-[40px] bg-[#229ED9] rounded-xl flex items-center justify-center gap-2 pointer-events-none shadow-sm transition-transform group-active:scale-[0.98]">
-                <Send className="w-4 h-4 text-white" />
-                <span className="text-[15px] font-semibold text-white">Continue with Telegram</span>
-              </div>
-              {/* Invisible native widget on top to catch the click */}
-              <div 
-                ref={widgetRef} 
-                className="w-full h-[40px] flex items-center justify-center opacity-0 overflow-hidden relative z-10 [&>iframe]:w-full [&>iframe]:h-full cursor-pointer" 
-              />
-            </div>
+            <a 
+              href={oauthUrl}
+              className="w-full h-[48px] bg-[#229ED9] rounded-xl flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-[0.98] hover:bg-[#1E8CC0]"
+            >
+              <Send className="w-4 h-4 text-white" />
+              <span className="text-[15px] font-semibold text-white">Continue with Telegram</span>
+            </a>
           )}
           {error && <p className="text-[13px] text-red-500 font-medium mt-3 text-center">{error}</p>}
         </div>
