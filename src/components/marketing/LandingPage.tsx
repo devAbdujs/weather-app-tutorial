@@ -51,15 +51,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#EFEFF3] px-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-ground px-6">
 
-      {/* App Icon */}
-      <div className="w-24 h-24 rounded-[28px] bg-[#2AABEE] flex items-center justify-center mb-6 shadow-lg">
-        {/* Temari "T" logo mark */}
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-          <rect x="8" y="10" width="32" height="6" rx="3" fill="white"/>
-          <rect x="21" y="16" width="6" height="22" rx="3" fill="white"/>
-        </svg>
+      {/* App Icon — real Temari logo */}
+      <div className="w-24 h-24 rounded-[28px] overflow-hidden mb-6 shadow-lg">
+        <img
+          src="/assets/temari logo.png"
+          alt="Temari"
+          className="w-full h-full object-cover"
+        />
       </div>
 
       {/* App name */}

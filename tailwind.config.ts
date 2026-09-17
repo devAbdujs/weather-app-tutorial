@@ -9,34 +9,42 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        /* Dashboard - Calm & Structural */
-        ground:   "hsl(220 15% 96% / <alpha-value>)",
-        panel:    "hsl(220 15% 98% / <alpha-value>)",
-        card:     "hsl(0 0% 100% / <alpha-value>)",
+        /* ── Temari Brand (derived from the logo) ─────────────────────
+           Primary:  Deep Navy Blue  #1B3A6B  (the open book)
+           Accent:   Flame Gold      #F5C518  (the flame / spark)
+           Surface:  Warm Cream      #F5F0E8  (the background circle)
+        ──────────────────────────────────────────────────────────────── */
 
-        /* Typography */
-        primary:   "hsl(220 20% 20% / <alpha-value>)",
-        secondary: "hsl(220 15% 40% / <alpha-value>)",
-        tertiary:  "hsl(220 15% 60% / <alpha-value>)",
+        /* Surfaces */
+        ground: "#F5F0E8",          /* warm cream — app background      */
+        panel:  "#EDE8DF",          /* slightly deeper cream — panels    */
+        card:   "#FFFFFF",          /* pure white — content cards        */
 
-        /* Neobrutalist Borders */
-        brutal: "#1a1a1a",
+        /* Typography (navy scale) */
+        primary:   "#1B3A6B",       /* deep navy — headings, labels      */
+        secondary: "#2E5494",       /* medium navy — body text           */
+        tertiary:  "#7A94BC",       /* muted navy — hints, placeholders  */
 
-        /* Accents */
-        "accent-blue":    "hsl(217 89% 61% / <alpha-value>)",
-        "accent-amber":   "hsl(38 95% 57% / <alpha-value>)",
-        "accent-emerald": "hsl(160 64% 52% / <alpha-value>)",
-        "accent-rose":    "hsl(353 86% 64% / <alpha-value>)",
+        /* Brand Accents */
+        "accent-gold":    "#F5C518", /* flame gold — primary CTA, streaks */
+        "accent-navy":    "#1B3A6B", /* alias for direct use              */
+        "accent-blue":    "#2E5494", /* medium navy — info, links         */
+        "accent-amber":   "#F5C518", /* maps old amber → gold (compat)    */
+        "accent-emerald": "#22C55E", /* keep green for correct answers    */
+        "accent-rose":    "#EF4444", /* keep red for wrong answers        */
+        "accent-yellow":  "#F5C518", /* alias                             */
 
-        "error": "#ff0000",
+        /* Neo-Brutalist border color → navy instead of black */
+        brutal: "#1B3A6B",
 
-        /* Sticky Notes */
-        "sticky-yellow": "hsl(45 90% 85% / <alpha-value>)",
+        /* Utility */
+        error: "#EF4444",
+        "sticky-yellow": "#FEF3C7",
       },
       boxShadow: {
-        "brutal-sm": "2px 2px 0px #1a1a1a",
-        "brutal-md": "4px 4px 0px #1a1a1a",
-        "brutal-lg": "8px 8px 0px #1a1a1a",
+        "brutal-sm": "2px 2px 0px #1B3A6B",
+        "brutal-md": "4px 4px 0px #1B3A6B",
+        "brutal-lg": "8px 8px 0px #1B3A6B",
       },
       borderRadius: {
         "4":  "4px",
