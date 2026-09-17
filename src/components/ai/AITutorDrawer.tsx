@@ -49,7 +49,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
 
   if (!isOpen) return null;
 
-  const sendMessage = async (type: 'hint' | 'amharic' | 'chat', customUserText?: string) => {
+  const sendMessage = async (type: 'hint' | 'explain' | 'amharic' | 'chat', customUserText?: string) => {
     haptic.impact('light');
     
     let userText = customUserText || '';
@@ -58,6 +58,10 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
     if (type === 'hint') {
       userText = 'Please give me a small, guiding hint to help me understand this. Do not give me the full answer directly.';
       displayText = '💡 Give me a hint';
+    }
+    if (type === 'explain') {
+      userText = 'Please explain the correct answer to me in detail.';
+      displayText = '💡 Explain the answer';
     }
     if (type === 'amharic') {
       userText = 'Please translate the main idea and explain it simply in Amharic.';
@@ -174,12 +178,14 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
         {/* Quick Action Chips */}
         <div className="flex gap-2 py-3 overflow-x-auto no-scrollbar shrink-0">
           <button
-            onClick={() => sendMessage('hint')}
+            onClick={() => sendMessage(studentAnswer ? 'explain' : 'hint')}
             disabled={isLoading}
             className="flex items-center gap-1.5 text-[13px] px-3.5 py-2 rounded-xl font-bold border transition-all whitespace-nowrap bg-slate-800/80 border-slate-700 text-slate-300 hover:border-slate-600 active:scale-95"
           >
             <Lightbulb className="w-4 h-4 text-amber-400" />
-            {mode === 'exam' ? 'Give me a Hint' : 'Summarize This'}
+            {mode === 'exam' 
+              ? (studentAnswer ? 'Explain the Answer' : 'Give me a Hint') 
+              : 'Summarize This'}
           </button>
 
           <button
@@ -202,7 +208,12 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
                   : 'bg-slate-800/80 border border-slate-700/60 rounded-tl-sm text-slate-200'
               }`}>
                 {msg.role === 'assistant' ? (
-                  msg.content ? <MathText content={msg.content} /> : <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />
+                  msg.content ? <MathText content={msg.content} /> : (
+                    <div className="flex items-center gap-2 text-slate-400 py-1">
+                      <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                      <span className="text-sm font-medium animate-pulse">Mr. Helper is thinking...</span>
+                    </div>
+                  )
                 ) : (
                   msg.displayText || msg.content
                 )}
