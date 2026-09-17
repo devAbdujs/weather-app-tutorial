@@ -71,9 +71,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
     setIsSaving(true);
     haptic.impact('medium');
     try {
-      if (user?.id) {
-        await updateProfilePreferences(target, finalStream);
-      }
+      await updateProfilePreferences(target, finalStream);
       haptic.notification('success');
       onComplete({ target, stream: finalStream });
     } catch (err) {

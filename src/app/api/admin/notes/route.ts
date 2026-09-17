@@ -10,6 +10,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Missing fields' }, { status: 400 });
     }
 
+    const adminSecret = req.headers.get('x-admin-secret');
+    if (adminSecret !== process.env.ADMIN_SECRET && process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,

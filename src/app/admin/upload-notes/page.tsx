@@ -6,6 +6,7 @@ export default function AdminUploadNotes() {
   const [department, setDepartment] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [adminSecret, setAdminSecret] = useState('');
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +27,10 @@ export default function AdminUploadNotes() {
 
       const res = await fetch('/api/admin/notes', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-secret': adminSecret
+        },
         body: JSON.stringify({ examType, department, title, content: cleanContent }),
       });
 
@@ -88,6 +92,15 @@ export default function AdminUploadNotes() {
               value={content} onChange={(e) => setContent(e.target.value)}
               placeholder="Paste raw markdown here..."
               className="w-full p-3 border-2 border-primary rounded-xl bg-ground h-64 font-mono text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold mb-2">Admin Secret (Production Only)</label>
+            <input 
+              type="password" value={adminSecret} onChange={(e) => setAdminSecret(e.target.value)}
+              placeholder="Enter ADMIN_SECRET to authorize"
+              className="w-full p-3 border-2 border-primary rounded-xl bg-ground font-bold"
             />
           </div>
 

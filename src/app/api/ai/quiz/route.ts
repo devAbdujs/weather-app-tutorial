@@ -1,5 +1,5 @@
-export const runtime = 'edge';
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from '@/lib/session';
 import { generateObject } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { z } from 'zod';
@@ -21,7 +21,12 @@ const QuizSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const ip = req.ip || req.headers.get('x-forwarded-for') || 'unknown';
+    const session = await getServerSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const ip = req.ip || req.headers.get('x-forwarded-for') || session.telegram_id || 'unknown';
     const rateLimitInfo = checkRateLimit(ip, 10, 60000);
     
     if (!rateLimitInfo.allowed) {
