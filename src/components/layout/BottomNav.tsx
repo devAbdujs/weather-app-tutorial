@@ -6,7 +6,11 @@ import { usePathname } from 'next/navigation';
 import { Home, BookMarked, TreeDeciduous } from 'lucide-react';
 
 export const BottomNav = () => {
-  const pathname = usePathname();
+  const pathname = usePathname() || '';
+
+  // Hide BottomNav during active focus modes so it doesn't block footers
+  const isFocusMode = pathname.startsWith('/exam/') || pathname.startsWith('/notebook/') || pathname.startsWith('/notes/');
+  if (isFocusMode) return null;
 
   const navItems = [
     { name: 'Home', href: '/', icon: Home },
