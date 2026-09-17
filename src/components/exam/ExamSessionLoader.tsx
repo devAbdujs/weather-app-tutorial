@@ -25,12 +25,7 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ subject, e
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const typeMap: Record<string, string> = {
-          'Grade 12 EUEE': 'entrance',
-          'University Exit Exam': 'exit',
-          'University Freshman': 'freshman'
-        };
-        const dbExamType = typeMap[examType] || 'entrance';
+        const dbExamType = examType || 'entrance';
         
         // Generate a unique cache key for this exact exam configuration
         const cacheKey = `exam_${dbExamType}_${subject}_All`;
