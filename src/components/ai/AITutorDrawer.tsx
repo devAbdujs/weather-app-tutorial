@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Lightbulb, Globe, Loader2, Send, Bot } from 'lucide-react';
+import { X, Lightbulb, Globe, Loader2, Send, Bot, Sparkles } from 'lucide-react';
 import { MathText } from '@/components/MathText';
 import { Question } from '@/types';
 import { useTelegram } from '@/hooks/useTelegram';
@@ -146,22 +146,25 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-lg bg-slate-900 border-t border-slate-700 rounded-t-3xl p-5 max-h-[90vh] h-[90vh] flex flex-col shadow-2xl">
-        {/* Header - Brand Refresh */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800 shrink-0">
+    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/70 backdrop-blur-md animate-fade-in">
+      <div className="w-full max-w-lg bg-[#0f1117] border-t border-white/10 rounded-t-3xl p-5 max-h-[90vh] h-[90vh] flex flex-col shadow-2xl">
+        {/* Premium Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-white/5 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-purple-600/20 text-purple-400">
+            <div className="relative p-2.5 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 text-indigo-400 border border-indigo-500/10 shadow-[0_0_20px_rgba(99,102,241,0.15)]">
               <Bot className="w-6 h-6" />
+              <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#0f1117]" />
             </div>
             <div>
-              <h3 className="font-black text-slate-100 text-base flex items-center gap-1.5 tracking-tight">
+              <h3 className="font-black text-white text-[17px] flex items-center gap-2 tracking-tight">
                 Mr. Helper
-                <span className="text-[10px] bg-blue-500/20 text-blue-400 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                  AI Tutor
+                <span className="text-[9px] bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest shadow-lg shadow-indigo-500/20">
+                  AI PRO
                 </span>
               </h3>
-              <p className="text-xs text-slate-400 font-medium">Your personal study companion</p>
+              <p className="text-xs text-slate-400 font-medium flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-amber-400" /> Your elite study tutor
+              </p>
             </div>
           </div>
           <button
@@ -169,20 +172,20 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
               haptic.selection();
               onClose();
             }}
-            className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-slate-100 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Quick Action Chips */}
-        <div className="flex gap-2 py-3 overflow-x-auto no-scrollbar shrink-0">
+        {/* Floating Quick Action Chips */}
+        <div className="flex gap-2.5 py-4 overflow-x-auto no-scrollbar shrink-0 -mx-5 px-5">
           <button
             onClick={() => sendMessage(studentAnswer ? 'explain' : 'hint')}
             disabled={isLoading}
-            className="flex items-center gap-1.5 text-[13px] px-3.5 py-2 rounded-xl font-bold border transition-all whitespace-nowrap bg-slate-800/80 border-slate-700 text-slate-300 hover:border-slate-600 active:scale-95"
+            className="flex items-center gap-2 text-[13px] px-4 py-2.5 rounded-full font-bold border transition-all whitespace-nowrap bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:border-white/20 active:scale-95 shadow-sm"
           >
-            <Lightbulb className="w-4 h-4 text-amber-400" />
+            <Lightbulb className="w-4 h-4 text-amber-400 fill-amber-400/20" />
             {mode === 'exam' 
               ? (studentAnswer ? 'Explain the Answer' : 'Give me a Hint') 
               : 'Summarize This'}
@@ -191,7 +194,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           <button
             onClick={() => sendMessage('amharic')}
             disabled={isLoading}
-            className="flex items-center gap-1.5 text-[13px] px-3.5 py-2 rounded-xl font-bold border transition-all whitespace-nowrap bg-slate-800/80 border-slate-700 text-slate-300 hover:border-slate-600 active:scale-95"
+            className="flex items-center gap-2 text-[13px] px-4 py-2.5 rounded-full font-bold border transition-all whitespace-nowrap bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:border-white/20 active:scale-95 shadow-sm"
           >
             <Globe className="w-4 h-4 text-blue-400" />
             በአማርኛ አስረዳኝ
@@ -199,19 +202,30 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
         </div>
 
         {/* Chat Messages Area */}
-        <div className="flex-1 overflow-y-auto py-2 space-y-5 text-[15px] leading-relaxed text-slate-200 custom-scrollbar pr-1">
+        <div className="flex-1 overflow-y-auto py-2 space-y-6 text-[15px] leading-relaxed text-slate-200 custom-scrollbar pr-2">
+          {messages.length === 1 && !isLoading && (
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-60 animate-fade-up">
+              <Bot className="w-12 h-12 text-slate-600" />
+              <p className="text-sm font-medium">Don't know the answer?<br/>Just ask!</p>
+            </div>
+          )}
           {messages.map((msg) => (
-            <div key={msg.id} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`p-4 rounded-2xl max-w-[90%] whitespace-pre-line font-sans shadow-sm ${
+            <div key={msg.id} className={`flex w-full animate-fade-up ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              {msg.role === 'assistant' && (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mr-2.5 shrink-0 self-end mb-1 shadow-sm">
+                  <Bot className="w-4 h-4" />
+                </div>
+              )}
+              <div className={`p-4 rounded-2xl max-w-[82%] whitespace-pre-line font-sans shadow-md ${
                 msg.role === 'user' 
-                  ? 'bg-blue-600 text-white rounded-tr-sm font-medium' 
-                  : 'bg-slate-800/80 border border-slate-700/60 rounded-tl-sm text-slate-200'
+                  ? 'bg-gradient-to-br from-indigo-600 to-blue-600 text-white rounded-br-sm font-medium' 
+                  : 'bg-white/5 border border-white/10 rounded-bl-sm text-slate-200'
               }`}>
                 {msg.role === 'assistant' ? (
                   msg.content ? <MathText content={msg.content} /> : (
-                    <div className="flex items-center gap-2 text-slate-400 py-1">
-                      <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
-                      <span className="text-sm font-medium animate-pulse">Mr. Helper is thinking...</span>
+                    <div className="flex items-center gap-2.5 text-slate-400 py-1">
+                      <Loader2 className="w-4 h-4 animate-spin text-indigo-400" />
+                      <span className="text-sm font-medium animate-pulse text-indigo-200">Thinking...</span>
                     </div>
                   )
                 ) : (
@@ -223,22 +237,22 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           <div ref={messagesEndRef} className="h-1" />
         </div>
         
-        {/* Chat Input Box */}
-        <form onSubmit={handleFormSubmit} className="pt-3 border-t border-slate-800 shrink-0 mt-2 flex gap-2">
+        {/* Floating Input Box */}
+        <form onSubmit={handleFormSubmit} className="pt-4 border-t border-white/5 shrink-0 mt-2 flex gap-3 relative">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask Mr. Helper a question..."
+            placeholder="Ask Mr. Helper..."
             disabled={isLoading}
-            className="flex-1 bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3.5 text-[15px] text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:bg-slate-800 transition-all shadow-inner"
+            className="flex-1 bg-white/5 border border-white/10 rounded-full px-6 py-4 text-[15px] text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-500/50 focus:bg-white/10 focus:shadow-[0_0_20px_rgba(99,102,241,0.1)] transition-all"
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="w-14 flex items-center justify-center bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-600 text-white rounded-xl transition-colors shrink-0 shadow-sm active:scale-95"
+            className="w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br from-indigo-600 to-blue-600 hover:opacity-90 disabled:from-white/5 disabled:to-white/5 disabled:text-slate-600 text-white transition-all shrink-0 shadow-[0_0_15px_rgba(79,70,229,0.3)] disabled:shadow-none active:scale-95"
           >
-            <Send className="w-5 h-5" />
+            <Send className="w-5 h-5 ml-1" />
           </button>
         </form>
 
