@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 4. Create Encrypted HTTP-Only Session Cookie
-    const sessionToken = encryptSession({
+    const sessionToken = await encryptSession({
       telegram_id: telegramUser.id.toString(),
       profile_id: profile.telegram_id,
       first_name: telegramUser.first_name,

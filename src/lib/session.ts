@@ -1,13 +1,4 @@
-import crypto from 'crypto';
 import { cookies } from 'next/headers';
-
-// Use the bot token to derive an encryption key (must be 32 bytes for aes-256-gcm)
-const getSecretKey = () => {
-  const token = process.env.TELEGRAM_BOT_TOKEN || 'dev-fallback-secret-key-32-bytes!';
-  return crypto.scryptSync(token, 'ethio-scholar-salt', 32);
-};
-
-const ALGORITHM = 'aes-256-gcm';
 
 export interface SessionData {
   telegram_id: string;
@@ -15,32 +6,57 @@ export interface SessionData {
   first_name: string;
 }
 
-export function encryptSession(data: SessionData): string {
-  const iv = crypto.randomBytes(16);
-  const key = getSecretKey();
-  const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
-  
-  let encrypted = cipher.update(JSON.stringify(data), 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  const authTag = cipher.getAuthTag().toString('hex');
-  
-  return `${iv.toString('hex')}:${encrypted}:${authTag}`;
+const getSecretKey = async (): Promise<CryptoKey> => {
+  const token = process.env.TELEGRAM_BOT_TOKEN || 'dev-fallback-secret-key-32-bytes!';
+  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
+  return crypto.subtle.importKey('raw', hash, 'AES-GCM', false, ['encrypt', 'decrypt']);
+};
+
+function bufferToHex(buffer: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
-export function decryptSession(encryptedStr: string): SessionData | null {
-  try {
-    const [ivHex, encryptedHex, authTagHex] = encryptedStr.split(':');
-    if (!ivHex || !encryptedHex || !authTagHex) return null;
+function hexToBuffer(hex: string): ArrayBuffer {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+  }
+  return bytes.buffer;
+}
 
-    const iv = Buffer.from(ivHex, 'hex');
-    const key = getSecretKey();
-    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
-    decipher.setAuthTag(Buffer.from(authTagHex, 'hex'));
+export async function encryptSession(data: SessionData): Promise<string> {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await getSecretKey();
+  
+  const encoded = new TextEncoder().encode(JSON.stringify(data));
+  const encryptedBuf = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    encoded
+  );
+  
+  return `${bufferToHex(iv.buffer)}:${bufferToHex(encryptedBuf)}`;
+}
+
+export async function decryptSession(encryptedStr: string): Promise<SessionData | null> {
+  try {
+    const parts = encryptedStr.split(':');
+    if (parts.length !== 2) return null;
     
-    let decrypted = decipher.update(encryptedHex, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
+    const iv = hexToBuffer(parts[0]);
+    const encryptedBuf = hexToBuffer(parts[1]);
+    const key = await getSecretKey();
     
-    return JSON.parse(decrypted) as SessionData;
+    const decryptedBuf = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      encryptedBuf
+    );
+    
+    const decryptedStr = new TextDecoder().decode(decryptedBuf);
+    return JSON.parse(decryptedStr) as SessionData;
   } catch (err) {
     return null;
   }

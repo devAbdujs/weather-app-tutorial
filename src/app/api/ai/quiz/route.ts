@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/session';
 import { generateObject } from 'ai';

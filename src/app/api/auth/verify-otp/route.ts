@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     if (profileError) throw profileError;
 
     // Create encrypted session cookie
-    const sessionToken = encryptSession({
+    const sessionToken = await encryptSession({
       telegram_id: String(telegramUser.id),
       profile_id: profile.id,
       first_name: telegramUser.first_name,
