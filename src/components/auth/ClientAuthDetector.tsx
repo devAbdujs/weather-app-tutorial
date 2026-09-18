@@ -4,12 +4,15 @@ import React, { useEffect, useState } from 'react';
 import { LandingPage } from '@/components/marketing/LandingPage';
 
 export const ClientAuthDetector: React.FC = () => {
-  const [isWeb, setIsWeb] = useState(false);
+  // Default to showing the LandingPage immediately.
+  // We only switch to the spinner if we detect an active Telegram context.
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   useEffect(() => {
     let attempts = 0;
 
     const authenticateWithTelegram = async (initData: string) => {
+      setIsAuthenticating(true);
       try {
         const res = await fetch('/api/auth/session', {
           method: 'POST',
@@ -18,14 +21,12 @@ export const ClientAuthDetector: React.FC = () => {
         });
         
         if (res.ok) {
-          // Hard reload is massively faster and more reliable than router.refresh() 
-          // on Edge/Serverless cold starts.
           window.location.reload(); 
         } else {
-          setIsWeb(true);
+          setIsAuthenticating(false); // Failed — show LandingPage
         }
       } catch {
-        setIsWeb(true);
+        setIsAuthenticating(false);
       }
     };
 
@@ -33,42 +34,47 @@ export const ClientAuthDetector: React.FC = () => {
       const tg = typeof window !== 'undefined' ? window.Telegram?.WebApp : null;
 
       if (tg && tg.initData) {
+        // We're definitively inside the Telegram app — authenticate immediately
         authenticateWithTelegram(tg.initData);
         return;
       } 
       
-      // Check for OAuth Redirect callback parameters in URL
+      // Check for OIDC OAuth Redirect callback parameters in URL
       const searchParams = new URLSearchParams(window.location.search);
-      if (searchParams.get('id') && searchParams.get('hash')) {
-        const webData: Record<string, string> = {};
-        searchParams.forEach((value, key) => {
-          webData[key] = value;
-        });
-        
-        fetch('/api/auth/session', {
+      if (searchParams.get('code') && searchParams.get('state')) {
+        // We're in an OAuth callback - show spinner while processing
+        setIsAuthenticating(true);
+        fetch('/api/auth/oidc', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ webData })
+          body: JSON.stringify({ 
+            code: searchParams.get('code'),
+            code_verifier: sessionStorage.getItem('tg_oidc_verifier')
+          })
         }).then(res => {
-          if (res.ok) window.location.replace('/'); // Strip params and reload
-          else setIsWeb(true);
-        }).catch(() => setIsWeb(true));
-        
+          if (res.ok) {
+            sessionStorage.removeItem('tg_oidc_state');
+            sessionStorage.removeItem('tg_oidc_verifier');
+            window.location.replace('/');
+          } else {
+            setIsAuthenticating(false);
+          }
+        }).catch(() => setIsAuthenticating(false));
         return;
       }
 
       if (attempts < 10) {
         attempts++;
-        setTimeout(checkTelegram, 50); // Poll every 50ms to prevent race conditions
-      } else {
-        setIsWeb(true); // Confirmed web browser or failed to initialize
+        setTimeout(checkTelegram, 50); // Poll for Telegram context
+        // During polling we DON'T show the spinner — LandingPage stays visible
       }
+      // After 10 attempts with no Telegram context found, we just stay on LandingPage
     };
 
     checkTelegram();
   }, []);
 
-  if (!isWeb) {
+  if (isAuthenticating) {
     return (
       <div className="min-h-screen bg-ground flex flex-col items-center justify-center animate-fade-in">
         <div className="w-16 h-16 rounded-[20px] bg-primary flex items-center justify-center shadow-xl mb-6 shadow-primary/20">
