@@ -7,22 +7,29 @@ export async function POST(req: NextRequest) {
     const { code, code_verifier } = await req.json();
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
 
-    if (!botToken || !code || !code_verifier) {
-      return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
+    const clientId = process.env.TELEGRAM_CLIENT_ID || (botToken ? botToken.split(':')[0] : '');
+    const clientSecret = process.env.TELEGRAM_CLIENT_SECRET || botToken;
+
+    if (!clientId || !clientSecret || !code || !code_verifier) {
+      return NextResponse.json({ error: 'Missing required parameters or credentials' }, { status: 400 });
     }
 
-    const clientId = botToken.split(':')[0];
     const tokenEndpoint = 'https://oauth.telegram.org/token';
     const redirectUri = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top'}/auth/callback`;
 
+    // Telegram OIDC requires Basic Auth header: base64(client_id:client_secret)
+    const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+
     const tokenRes = await fetch(tokenEndpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${basicAuth}`
+      },
       body: new URLSearchParams({
         grant_type: 'authorization_code',
         code: code,
         client_id: clientId,
-        client_secret: botToken,
         redirect_uri: redirectUri,
         code_verifier: code_verifier
       }).toString()

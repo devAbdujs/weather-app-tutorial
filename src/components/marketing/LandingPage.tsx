@@ -77,7 +77,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       sessionStorage.setItem('tg_oidc_verifier', codeVerifier);
       sessionStorage.setItem('tg_oidc_state', state);
 
-      const BOT_ID = process.env.NEXT_PUBLIC_BOT_USERNAME ? process.env.NEXT_PUBLIC_BOT_USERNAME.split(':')[0] : '8400954528'; 
+      const BOT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CLIENT_ID || '8400954528'; 
       const currentOrigin = window.location.origin;
       const redirectUri = `${currentOrigin}/auth/callback`;
       
