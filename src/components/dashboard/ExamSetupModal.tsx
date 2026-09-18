@@ -86,10 +86,21 @@ export const ExamSetupModal: React.FC = () => {
     if (setupModalType === 'flashcards') {
       router.push(`/notebook/${encodedSubject}`);
     } else if (setupModalType === 'notes') {
-      router.push(`/notes/${encodedSubject}`);
+      // Pass examType so the server-side query can isolate content correctly
+      router.push(`/notes/${encodedSubject}?examType=${dbExamType}`);
     } else if (setupModalType === 'exam') {
-      const url = `/exam/${encodedSubject}/${mode}?mix=${mixType}&year=${selectedYear}`;
-      router.push(url);
+      // Bug fix: was routing to non-existent /exam/[subject]/[mode] route.
+      // Correct route is /exam/session with all params as query strings.
+      const params = new URLSearchParams({
+        examType: dbExamType,
+        subject,
+        sessionSize: '50',
+        sessionOffset: '0',
+      });
+      if (isG12 && mixType === 'past_paper' && selectedYear) {
+        params.set('year', selectedYear.toString());
+      }
+      router.push(`/exam/session?${params.toString()}`);
     }
 
     setSetupModalType(null);
@@ -211,14 +222,15 @@ export const ExamSetupModal: React.FC = () => {
               <div className="space-y-2">
                 <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">Choose Subject</label>
                 <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { id: 'All',         label: '📚 All Mixed' },
-                    { id: 'Biology',     label: '🧬 Biology' },
-                    { id: 'Chemistry',   label: '🧪 Chemistry' },
-                    { id: 'Physics',     label: '⚛️ Physics' },
-                    { id: 'Mathematics', label: '📐 Mathematics' },
-                    { id: 'English',     label: '📝 English' },
-                  ].map((s) => (
+                  {(isFreshman
+                    ? [{ id: 'All', label: '📚 All Mixed' }, ...FRESHMAN_COURSES]
+                    : isExit
+                    ? [{ id: profileStream, label: `📚 ${profileStream}` }]
+                    : [
+                        { id: 'All',         label: '📚 All Mixed' },
+                        ...g12Subjects.map(s => ({ id: s.id, label: s.label })),
+                      ]
+                  ).map((s) => (
                     <button
                       key={s.id}
                       type="button"
