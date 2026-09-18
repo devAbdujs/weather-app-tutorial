@@ -300,6 +300,12 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
+        {currentQ.section && currentQ.section.trim() !== '' && (
+          <div className="bg-primary/5 border border-primary/20 rounded-[16px] p-4 text-sm leading-relaxed text-secondary italic whitespace-pre-wrap">
+            <MathText content={currentQ.section} />
+          </div>
+        )}
+
         <div className="text-lg leading-relaxed font-bold text-primary relative whitespace-pre-wrap">
           <MathText content={currentQ.question} />
         </div>

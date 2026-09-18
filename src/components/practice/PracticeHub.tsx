@@ -20,8 +20,8 @@ const FRESHMAN_COURSES = [
   { id: 'Civics', label: 'Civics' },
 ];
 
-const EUEE_SUBJECTS = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Scholastic Aptitude (SAT)'];
-const EUEE_YEARS = [2015, 2014, 2013, 2012, 2011, 2010];
+const EUEE_SUBJECTS = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Scholastic Aptitude (SAT)', 'Geography', 'History', 'Economics', 'Civics & Citizenship', 'Agriculture'];
+const EUEE_YEARS = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010];
 const EXIT_DEPARTMENTS = ['Accounting', 'Medicine', 'Software Engineering', 'Civil Engineering', 'Economics', 'Law'];
 
 export const PracticeHub = () => {
