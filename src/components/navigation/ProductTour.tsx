@@ -7,7 +7,7 @@ import { useTelegram } from '@/hooks/useTelegram';
 const TOUR_STEPS = [
   {
     title: 'Welcome to Temari App',
-    description: 'Your ultimate companion for the Ethiopian University Entrance Exam (EUEE) and Exit Exams.',
+    description: 'The AI-powered Exam Preparation and Study Partner for Ethiopian Students.',
     icon: <Sparkles className="w-6 h-6 text-accent-blue" />,
     color: 'bg-accent-blue/10 text-accent-blue'
   },
