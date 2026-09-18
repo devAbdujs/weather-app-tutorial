@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
 
     return response;
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("OIDC Auth Error:", error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

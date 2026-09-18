@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
-import { encryptSession } from '@/lib/session';
+import {  } from '@/lib/session';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 

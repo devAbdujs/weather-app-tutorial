@@ -152,9 +152,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
           ) : (
             <button 
               onClick={handleTelegramOIDCLogin}
-                
-                
-              }}
               className="w-full h-[48px] bg-[#229ED9] rounded-xl flex items-center justify-center gap-2 shadow-sm hover:bg-[#1E8CC0] active:scale-[0.98] transition-all"
             >
               <Send className="w-5 h-5 text-white" />
