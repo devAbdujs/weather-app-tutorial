@@ -5,19 +5,22 @@ import { useAppStore } from '@/store/useAppStore';
 import { useRouter } from 'next/navigation';
 import { useTelegram } from '@/hooks/useTelegram';
 import { ArrowLeft, BookOpen, Layers, Clock, CheckCircle2 } from 'lucide-react';
-const FRESHMAN_COURSES = [
-  { id: 'Communicative English', label: 'English' },
-  { id: 'General Psychology', label: 'Psychology' },
-  { id: 'Logic and Critical Thinking', label: 'Logic' },
-  { id: 'Mathematics for Natural Sciences', label: 'Maths_Ns' },
-  { id: 'Geography of Ethiopia and the Horn', label: 'Geography' },
-  { id: 'Economics', label: 'Economics' },
-  { id: 'Global Trends', label: 'Global Trends' },
-  { id: 'Inclusiveness', label: 'Inclusiveness' },
-];
 import { getSessionCounts } from '@/app/actions/practice';
 
-const UNIVERSITIES = ['AAU', 'AASTU', 'ASTU', 'Bahir Dar', 'Hawassa', 'Jimma', 'Mekelle', 'Gondar'];
+const FRESHMAN_COURSES = [
+  { id: 'English', label: 'English' },
+  { id: 'Psychology', label: 'Psychology' },
+  { id: 'Logic', label: 'Logic' },
+  { id: 'Mathematics for Natural Sciences', label: 'Maths_Ns' },
+  { id: 'Geography', label: 'Geography' },
+  { id: 'Global Trends', label: 'Global' },
+  { id: 'Economics', label: 'Economics' },
+  { id: 'Applied Math I', label: 'Applied Math' },
+  { id: 'Emerging Technology', label: 'Emerging Tech' },
+  { id: 'Civics', label: 'Civics' },
+];
+
+const UNIVERSITIES = ['Addis Ababa', 'Jimma', 'Bahir Dar', 'Hawassa', 'Mekelle', 'ASTU', 'AASTU'];
 const EUEE_SUBJECTS = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Scholastic Aptitude (SAT)'];
 const EUEE_YEARS = [2015, 2014, 2013, 2012, 2011, 2010];
 const EXIT_DEPARTMENTS = ['Accounting', 'Medicine', 'Software Engineering', 'Civil Engineering', 'Economics', 'Law'];
@@ -25,15 +28,13 @@ const EXIT_DEPARTMENTS = ['Accounting', 'Medicine', 'Software Engineering', 'Civ
 export const PracticeHub = () => {
   const { haptic, setBackButton } = useTelegram();
   const router = useRouter();
-  const targetExam = useAppStore(s => s.userProfile?.target_exam) || 'entrance';
+  const targetExam = useAppStore(s => s.targetExam);
 
   // Shared State
   const [loading, setLoading] = useState(false);
   const [availableQuestions, setAvailableQuestions] = useState<number | null>(null);
 
   // Freshman State
-  const [uni, setUni] = useState(UNIVERSITIES[0]);
-  const [period, setPeriod] = useState<'midterm' | 'final'>('midterm');
   const [course, setCourse] = useState(FRESHMAN_COURSES[0].id);
 
   // Entrance State
@@ -59,7 +60,7 @@ export const PracticeHub = () => {
       let filters: any = { examType: targetExam };
       
       if (targetExam === 'freshman') {
-        filters = { ...filters, university: uni, period, subject: course };
+        filters = { ...filters, subject: course };
       } else if (targetExam === 'entrance') {
         filters = { ...filters, subject, year };
       } else if (targetExam === 'exit') {
@@ -74,13 +75,13 @@ export const PracticeHub = () => {
     };
     fetchCount();
     return () => { active = false; };
-  }, [targetExam, uni, period, course, subject, year, dept, variant, exitYear]);
+  }, [targetExam, course, subject, year, dept, variant, exitYear]);
 
   const sessionSize = useMemo(() => {
-    if (targetExam === 'freshman') return period === 'midterm' ? 30 : 50;
+    if (targetExam === 'freshman') return 50;
     if (targetExam === 'entrance') return ['Mathematics', 'Physics', 'Scholastic Aptitude (SAT)'].includes(subject) ? 60 : 100;
     return 100;
-  }, [targetExam, period, subject]);
+  }, [targetExam, subject]);
 
   const sessions = useMemo(() => {
     if (availableQuestions === null) return [];
@@ -135,31 +136,6 @@ export const PracticeHub = () => {
         {/* FRESHMAN HIERARCHY */}
         {targetExam === 'freshman' && (
           <div className="space-y-6 animate-fade-in">
-            {/* University */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">University</label>
-              <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                {UNIVERSITIES.map(u => (
-                  <button key={u} onClick={() => { haptic.selection(); setUni(u); }}
-                    className={`shrink-0 px-5 py-3 rounded-2xl border-2 font-bold transition-all ${uni === u ? 'bg-primary text-card border-primary shadow-[0_4px_12px_rgba(27,58,107,0.2)]' : 'bg-card text-secondary border-black/5 hover:border-black/10'}`}
-                  >{u}</button>
-                ))}
-              </div>
-            </div>
-
-            {/* Period */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">Exam Type</label>
-              <div className="flex gap-2">
-                <button onClick={() => { haptic.selection(); setPeriod('midterm'); }}
-                  className={`flex-1 py-3 rounded-2xl border-2 font-bold transition-all ${period === 'midterm' ? 'bg-primary text-card border-primary' : 'bg-card text-secondary border-black/5'}`}
-                >Midterm</button>
-                <button onClick={() => { haptic.selection(); setPeriod('final'); }}
-                  className={`flex-1 py-3 rounded-2xl border-2 font-bold transition-all ${period === 'final' ? 'bg-primary text-card border-primary' : 'bg-card text-secondary border-black/5'}`}
-                >Final Exam</button>
-              </div>
-            </div>
-
             {/* Course */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">Course</label>
