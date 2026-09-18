@@ -21,7 +21,7 @@ export const ClientAuthDetector: React.FC = () => {
         });
         
         if (res.ok) {
-          window.location.reload(); 
+          window.location.replace('/'); 
         } else {
           setIsAuthenticating(false); // Failed — show LandingPage
         }
@@ -97,7 +97,7 @@ export const ClientAuthDetector: React.FC = () => {
         body: JSON.stringify({ webData }) 
       });
       if (res.ok) {
-        window.location.reload(); 
+        window.location.replace('/'); 
       }
     }} />
   );

@@ -1,12 +1,16 @@
 const crypto = require('crypto');
-// From telegram docs example:
-const botToken = '8400954528:AAFSgBJyWAbAFUa9I_r5FBPmkDBHXW_Ures'; // dummy token
+const botToken = '8400954528:AAFSgBJyWAbAFUa9I_r5FBPmkDBHXW_Ures';
+const initData = 'user=%7B%22id%22%3A123%7D&auth_date=123&hash=abc';
 
-// Option 1: Key is WebAppData, Data is botToken
-const sk1 = crypto.createHmac('sha256', 'WebAppData').update(botToken).digest('hex');
+const urlParams = new URLSearchParams(initData);
+const hash = urlParams.get('hash');
+urlParams.delete('hash');
 
-// Option 2: Key is botToken, Data is WebAppData
-const sk2 = crypto.createHmac('sha256', botToken).update('WebAppData').digest('hex');
+const params = Array.from(urlParams.entries());
+params.sort((a, b) => a[0].localeCompare(b[0]));
+const dataCheckString = params.map(([key, value]) => `${key}=${value}`).join('\n');
 
-console.log("SK1 (Key=WebAppData, Data=botToken):", sk1);
-console.log("SK2 (Key=botToken, Data=WebAppData):", sk2);
+const secretKey = crypto.createHmac('sha256', 'WebAppData').update(botToken).digest();
+const calculatedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
+
+console.log(calculatedHash);
