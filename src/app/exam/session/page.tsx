@@ -14,8 +14,6 @@ function ExamSessionPageContent() {
 
   const subject = searchParams.get('subject') || 'All';
   const year = searchParams.get('year') || undefined;
-  const department = searchParams.get('department') || undefined;
-  const variant = searchParams.get('variant') || undefined;
 
   return (
     <ExamSessionLoader 
@@ -25,8 +23,6 @@ function ExamSessionPageContent() {
       
       subject={subject}
       year={year}
-      department={department}
-      variant={variant}
     />
   );
 }

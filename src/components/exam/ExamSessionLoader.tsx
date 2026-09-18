@@ -15,12 +15,10 @@ interface ExamSessionLoaderProps {
   
   subject?: string;
   year?: string;
-  department?: string;
-  variant?: string;
 }
 
 export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ 
-  examType, sessionSize, sessionOffset, subject, year, department, variant 
+  examType, sessionSize, sessionOffset, subject, year
 }) => {
   const router = useRouter();
   const onExit = () => router.push('/practice');
@@ -35,7 +33,7 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         const dbExamType = examType || 'entrance';
         
         // Generate a unique cache key for this exact session
-        const cacheKey = `exam_${dbExamType}_${subject}_${year}_${department}_${variant}_${sessionOffset}_${sessionSize}`;
+        const cacheKey = `exam_${dbExamType}_${subject}_${year}_${sessionOffset}_${sessionSize}`;
         
         // 1. Try to load instantly from IndexedDB cache
         const cachedData = await getCachedQuestions(cacheKey);
@@ -57,8 +55,6 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         // Apply dynamic filters
         if (subject && subject !== 'All') query = query.eq('subject', subject);
         if (year) query = query.eq('year_ec', parseInt(year, 10));
-        if (department) query = query.eq('department', department);
-        if (variant) query = query.eq('exam_variant', variant);
 
         // Fetch exactly the slice we need for this session
         const { data, error } = await query.range(sessionOffset, sessionOffset + sessionSize - 1);
@@ -83,7 +79,7 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
     };
 
     fetchQuestions();
-  }, [examType, subject, year, department, variant, sessionOffset, sessionSize]);
+  }, [examType, subject, year, sessionOffset, sessionSize]);
 
   if (loading) {
     return <SkeletonScreen message={`Building Session...`} />;
@@ -116,7 +112,7 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
   let title = subject || 'Practice Session';
   if (examType === 'freshman') title = `${subject} (Freshman)`;
   else if (examType === 'entrance') title = `${subject} (${year})`;
-  else if (examType === 'exit') title = `${department} - ${variant} (${year})`;
+  else if (examType === 'exit') title = `${subject} (Exit Exam)`;
 
   return (
     <ExamWorkspace

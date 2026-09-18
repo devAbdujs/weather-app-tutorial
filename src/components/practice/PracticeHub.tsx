@@ -22,7 +22,15 @@ const FRESHMAN_COURSES = [
 
 const EUEE_SUBJECTS = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Scholastic Aptitude (SAT)', 'Geography', 'History', 'Economics', 'Civics & Citizenship', 'Agriculture'];
 const EUEE_YEARS = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010];
-const EXIT_DEPARTMENTS = ['Accounting', 'Medicine', 'Software Engineering', 'Civil Engineering', 'Economics', 'Law'];
+const EXIT_DEPARTMENTS = [
+  'Accounting and Finance', 'Architecture and Urban Planning', 'Biology', 
+  'Chemical Engineering', 'Civil Engineering', 'Computer Science', 
+  'Economics', 'Electrical and Computer Engineering', 'English', 
+  'Geography', 'History', 'Information Technology (IT)', 'Law', 
+  'Management', 'Mechanical Engineering', 'Medicine', 'Nursing', 
+  'Pharmacy', 'Physics', 'Psychology', 'Public Health Science', 
+  'Sociology', 'Software Engineering', 'Water Resource Engineering'
+];
 
 export const PracticeHub = () => {
   const { haptic, setBackButton } = useTelegram();
@@ -42,8 +50,6 @@ export const PracticeHub = () => {
 
   // Exit State
   const [dept, setDept] = useState(EXIT_DEPARTMENTS[0]);
-  const [variant, setVariant] = useState<'mock' | 'model'>('model');
-  const [exitYear, setExitYear] = useState(2015);
 
   useEffect(() => {
     setBackButton(true, () => router.push('/'));
@@ -63,18 +69,16 @@ export const PracticeHub = () => {
       } else if (targetExam === 'entrance') {
         filters = { ...filters, subject, year };
       } else if (targetExam === 'exit') {
-        filters = { ...filters, department: dept, year: exitYear, variant };
+        filters = { ...filters, subject: dept };
       }
-
-      const count = await getSessionCounts(filters);
-      if (active) {
-        setAvailableQuestions(count);
-        setLoading(false);
-      }
+      
+      const counts = await getSessionCounts(filters);
+      if (active) setAvailableQuestions(counts);
+      setLoading(false);
     };
     fetchCount();
     return () => { active = false; };
-  }, [targetExam, course, subject, year, dept, variant, exitYear]);
+  }, [targetExam, course, subject, year, dept]);
 
   const sessionSize = useMemo(() => {
     if (targetExam === 'freshman') return 50;
@@ -109,9 +113,7 @@ export const PracticeHub = () => {
       params.set('subject', subject);
       params.set('year', year.toString());
     } else if (targetExam === 'exit') {
-      params.set('department', dept);
-      params.set('year', exitYear.toString());
-      params.set('variant', variant);
+      params.set('subject', dept);
     }
 
     // Pass this to ExamSessionLoader via URL
@@ -184,27 +186,6 @@ export const PracticeHub = () => {
               >
                 {EXIT_DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
-            </div>
-            <div className="flex gap-4">
-              <div className="space-y-2 flex-1">
-                <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">Year</label>
-                <select 
-                  value={exitYear} onChange={(e) => setExitYear(parseInt(e.target.value))}
-                  className="w-full p-4 border-2 border-primary/20 rounded-2xl bg-card font-bold text-primary focus:border-primary focus:outline-none"
-                >
-                  {[2015, 2014, 2013, 2012].map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
-              </div>
-              <div className="space-y-2 flex-1">
-                <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">Variant</label>
-                <select 
-                  value={variant} onChange={(e) => setVariant(e.target.value as any)}
-                  className="w-full p-4 border-2 border-primary/20 rounded-2xl bg-card font-bold text-primary focus:border-primary focus:outline-none"
-                >
-                  <option value="model">Model</option>
-                  <option value="mock">Mock</option>
-                </select>
-              </div>
             </div>
           </div>
         )}
