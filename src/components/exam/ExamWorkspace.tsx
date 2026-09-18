@@ -47,6 +47,12 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
   const [isFinished, setIsFinished] = useState(false);
   const [isReviewMode, setIsReviewMode] = useState(false);
   const startTimeRef = React.useRef(Date.now());
+  const mainRef = React.useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to top when question changes
+  useEffect(() => {
+    if (mainRef.current) mainRef.current.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentIndex]);
   const [timeSpentSeconds, setTimeSpentSeconds] = useState(0);
   const [hasRecordedCompletion, setHasRecordedCompletion] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -295,7 +301,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         </div>
       </header>
 
-      <main 
+      <main ref={mainRef} 
         className="flex-1 px-5 py-6 space-y-6 overflow-y-auto relative"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { useRouter } from 'next/navigation';
 import { useTelegram } from '@/hooks/useTelegram';
@@ -56,6 +56,8 @@ export const PracticeHub = () => {
     return () => setBackButton(false);
   }, [router, setBackButton]);
 
+  const cache = useRef<Map<string, number>>(new Map());
+
   // Fetch counts when filters change
   useEffect(() => {
     let active = true;
@@ -72,9 +74,20 @@ export const PracticeHub = () => {
         filters = { ...filters, subject: dept };
       }
       
+      const cacheKey = JSON.stringify(filters);
+      if (cache.current.has(cacheKey)) {
+        setAvailableQuestions(cache.current.get(cacheKey)!);
+        setLoading(false);
+        return;
+      }
+
       const counts = await getSessionCounts(filters);
-      if (active) setAvailableQuestions(counts);
-      setLoading(false);
+      
+      if (active) {
+        cache.current.set(cacheKey, counts);
+        setAvailableQuestions(counts);
+        setLoading(false);
+      }
     };
     fetchCount();
     return () => { active = false; };
