@@ -47,7 +47,9 @@ export async function POST(req: NextRequest) {
       .upsert({ 
         id: telegramUuid,
         telegram_id: data.id.toString(),
-        full_name: `${data.first_name} ${data.last_name || ''}`.trim(),
+        full_name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
+        username: data.username || null,
+        avatar_url: data.photo_url || null,
       }, { onConflict: 'id' });
 
     if (error) throw error;

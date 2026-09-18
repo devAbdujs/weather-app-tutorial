@@ -112,6 +112,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
         {/* 2. Logo Block */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 rounded-2xl overflow-hidden mb-4 shadow-sm border border-black/5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/assets/temari logo.png" alt="Temari" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-2xl font-black text-primary tracking-tight mb-1">

@@ -42,8 +42,18 @@ export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) 
       {/* Header Profile Section */}
       <div className="flex flex-col items-center mb-8">
         <div className="w-24 h-24 bg-gradient-to-br from-[#229ED9] to-[#1E8CC0] rounded-[28px] flex items-center justify-center text-white mb-4 relative shadow-lg shadow-[#229ED9]/20 transform rotate-3">
-          <div className="w-full h-full absolute inset-0 bg-black/10 rounded-[28px] transform -rotate-6 transition-transform" />
-          <span className="text-3xl font-black tracking-tighter relative z-10">{initials}</span>
+          <div className="w-full h-full absolute inset-0 bg-black/10 rounded-[28px] transform -rotate-6 transition-transform overflow-hidden" />
+          {profile.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img 
+              src={profile.avatar_url} 
+              alt={profile.full_name || 'Avatar'} 
+              className="w-full h-full object-cover rounded-[28px] relative z-10 transform -rotate-3"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <span className="text-3xl font-black tracking-tighter relative z-10">{initials}</span>
+          )}
           {isPremium && (
             <div className="absolute -bottom-2 -right-2 bg-accent-gold text-primary p-1.5 rounded-xl shadow-md z-20">
               <Zap className="w-4 h-4 fill-primary" />

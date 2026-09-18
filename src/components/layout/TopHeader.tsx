@@ -19,6 +19,7 @@ export const TopHeader = () => {
     <header className="w-full h-14 bg-ground/90 backdrop-blur-md border-b border-black/5 flex items-center justify-between px-4 z-40 shrink-0">
       <div className="flex items-center gap-2.5">
         <div className="w-8 h-8 rounded-[8px] overflow-hidden shadow-sm border border-black/5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/assets/temari logo.png" alt="Temari" className="w-full h-full object-cover" />
         </div>
         <span className="font-black text-primary text-[17px] tracking-tight">Temari</span>

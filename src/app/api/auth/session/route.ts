@@ -71,6 +71,8 @@ export async function POST(req: NextRequest) {
       .upsert({ 
         telegram_id: telegramUser.id.toString(),
         full_name: `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim(),
+        username: telegramUser.username || null,
+        avatar_url: telegramUser.photo_url || null,
       }, { onConflict: 'telegram_id' })
       .select('telegram_id, target_exam, stream')
       .single();
