@@ -5,6 +5,7 @@ import { loginAdmin } from '@/app/actions/admin';
 import { Lock } from 'lucide-react';
 
 export const AdminLogin = () => {
+  const [username, setUsername] = useState('');
   const [secret, setSecret] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,7 @@ export const AdminLogin = () => {
     setError('');
     
     try {
-      const res = await loginAdmin(secret);
+      const res = await loginAdmin(username, secret);
       if (res.success) {
         window.location.reload();
       } else {
@@ -35,15 +36,24 @@ export const AdminLogin = () => {
           <Lock className="w-8 h-8 text-primary" />
         </div>
         <h1 className="text-2xl font-black text-primary text-center mb-2">Admin Portal</h1>
-        <p className="text-tertiary text-center font-medium mb-8">Enter the master secret to continue.</p>
+        <p className="text-tertiary text-center font-medium mb-8">Sign in to manage Temari.</p>
         
         <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <input 
+              type="text" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username..."
+              className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold text-primary focus:border-primary focus:outline-none transition-colors"
+            />
+          </div>
           <div>
             <input 
               type="password" 
               value={secret} 
               onChange={(e) => setSecret(e.target.value)}
-              placeholder="Admin Secret..."
+              placeholder="Passcode..."
               className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold text-primary focus:border-primary focus:outline-none transition-colors"
             />
           </div>
@@ -51,9 +61,9 @@ export const AdminLogin = () => {
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full py-4 bg-primary text-white font-black rounded-xl border-b-4 border-black/20 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-50"
+            className="w-full py-4 bg-primary text-white font-black rounded-xl border-b-4 border-black/20 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-50 mt-2"
           >
-            {loading ? 'VERIFYING...' : 'UNLOCK'}
+            {loading ? 'VERIFYING...' : 'SIGN IN'}
           </button>
         </form>
       </div>

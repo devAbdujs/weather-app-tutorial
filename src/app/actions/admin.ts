@@ -3,46 +3,99 @@
 import { cookies } from 'next/headers';
 import { createAdminClient } from '@/utils/supabase/admin';
 
-const ADMIN_COOKIE_NAME = 'temari_admin_token';
+const ADMIN_COOKIE_NAME = 'temari_admin_session';
 
-export async function loginAdmin(secret: string) {
-  const correctSecret = process.env.ADMIN_SECRET;
+export async function loginAdmin(username: string, passcode: string) {
+  const supabase = await createAdminClient();
   
-  if (!correctSecret) {
-    throw new Error('ADMIN_SECRET is not configured on the server.');
+  const { data: admin, error } = await supabase
+    .from('admin_users')
+    .select('id, username, role, passcode')
+    .eq('username', username)
+    .single();
+
+  if (error || !admin || admin.passcode !== passcode) {
+    return { success: false, error: 'Invalid username or password' };
   }
 
-  if (secret === correctSecret) {
-    // In a real app, use a JWT. For this MVP, we just set a secure cookie 
-    // that we verify the existence of. 
-    cookies().set({
-      name: ADMIN_COOKIE_NAME,
-      value: secret, // store the secret itself in the httpOnly cookie to verify later
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/admin',
-      maxAge: 60 * 60 * 24 // 1 day
-    });
-    return { success: true };
-  }
-  
-  return { success: false, error: 'Invalid secret' };
+  // Simple encoded session for MVP. We verify against DB on every action for security.
+  const sessionData = JSON.stringify({ id: admin.id, username: admin.username, role: admin.role });
+  const encoded = Buffer.from(sessionData).toString('base64');
+
+  cookies().set({
+    name: ADMIN_COOKIE_NAME,
+    value: encoded,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/admin',
+    maxAge: 60 * 60 * 24 // 1 day
+  });
+
+  return { success: true };
 }
 
 export async function verifyAdmin() {
   const token = cookies().get(ADMIN_COOKIE_NAME)?.value;
-  const correctSecret = process.env.ADMIN_SECRET;
-  
-  // If no secret is configured locally, we allow dev access, otherwise require match
-  if (!correctSecret && process.env.NODE_ENV !== 'production') return true;
-  
-  return token === correctSecret;
+  if (!token) return null;
+
+  try {
+    const decoded = Buffer.from(token, 'base64').toString('utf-8');
+    const session = JSON.parse(decoded);
+    
+    // Always verify against DB to ensure role changes apply instantly and deleted users lose access
+    const supabase = await createAdminClient();
+    const { data: admin } = await supabase
+      .from('admin_users')
+      .select('id, username, role')
+      .eq('id', session.id)
+      .single();
+    
+    return admin || null;
+  } catch {
+    return null;
+  }
+}
+
+export async function logoutAdmin() {
+  cookies().delete(ADMIN_COOKIE_NAME);
+  return { success: true };
+}
+
+export async function getAdmins() {
+  const admin = await verifyAdmin();
+  if (admin?.role !== 'superadmin') throw new Error('Unauthorized');
+
+  const supabase = await createAdminClient();
+  const { data, error } = await supabase
+    .from('admin_users')
+    .select('id, username, role, created_at')
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function createAdminAccount(username: string, passcode: string, role: string) {
+  const admin = await verifyAdmin();
+  if (admin?.role !== 'superadmin') throw new Error('Unauthorized: Only Superadmins can create accounts.');
+
+  const supabase = await createAdminClient();
+  const { error } = await supabase
+    .from('admin_users')
+    .insert({ username, passcode, role });
+
+  if (error) {
+    if (error.code === '23505') return { success: false, error: 'Username already exists.' };
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
 }
 
 export async function getAdminStats() {
-  const isAdmin = await verifyAdmin();
-  if (!isAdmin) throw new Error('Unauthorized');
+  const admin = await verifyAdmin();
+  if (!admin) throw new Error('Unauthorized');
 
   const supabase = await createAdminClient();
   
@@ -60,8 +113,8 @@ export async function getAdminStats() {
 }
 
 export async function getUsers() {
-  const isAdmin = await verifyAdmin();
-  if (!isAdmin) throw new Error('Unauthorized');
+  const admin = await verifyAdmin();
+  if (!admin) throw new Error('Unauthorized');
 
   const supabase = await createAdminClient();
   const { data, error } = await supabase
@@ -74,8 +127,8 @@ export async function getUsers() {
 }
 
 export async function getQuestions(limit = 100) {
-  const isAdmin = await verifyAdmin();
-  if (!isAdmin) throw new Error('Unauthorized');
+  const admin = await verifyAdmin();
+  if (!admin) throw new Error('Unauthorized');
 
   const supabase = await createAdminClient();
   const { data, error } = await supabase
