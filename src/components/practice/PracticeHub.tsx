@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { useRouter } from 'next/navigation';
 import { useTelegram } from '@/hooks/useTelegram';
-import { ArrowLeft, BookOpen, Layers, Clock, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Layers, CheckCircle2 } from 'lucide-react';
 import { getSessionCounts } from '@/app/actions/practice';
 
 const FRESHMAN_COURSES = [
@@ -20,7 +20,6 @@ const FRESHMAN_COURSES = [
   { id: 'Civics', label: 'Civics' },
 ];
 
-const UNIVERSITIES = ['Addis Ababa', 'Jimma', 'Bahir Dar', 'Hawassa', 'Mekelle', 'ASTU', 'AASTU'];
 const EUEE_SUBJECTS = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Scholastic Aptitude (SAT)'];
 const EUEE_YEARS = [2015, 2014, 2013, 2012, 2011, 2010];
 const EXIT_DEPARTMENTS = ['Accounting', 'Medicine', 'Software Engineering', 'Civil Engineering', 'Economics', 'Law'];
@@ -106,8 +105,6 @@ export const PracticeHub = () => {
     
     if (targetExam === 'freshman') {
       params.set('subject', course);
-      params.set('university', uni);
-      params.set('period', period);
     } else if (targetExam === 'entrance') {
       params.set('subject', subject);
       params.set('year', year.toString());

@@ -87,7 +87,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         try {
           const errData = await res.json();
           if (errData?.error) errMessage = errData.error;
-        } catch (e) {}
+        } catch {}
         throw new Error(errMessage);
       }
       
@@ -149,7 +149,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     haptic.impact('light');
     const qId = currentQ.id || `${subject}-${currentQ.question.substring(0, 20)}`;
     const isSaved = savedQuestions.has(qId);
-    const telegramId = user.id.toString();
+    
 
     // Optimistic UI update
     setSavedQuestions(prev => {
@@ -300,7 +300,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <div className="text-lg leading-relaxed font-bold text-primary relative">
+        <div className="text-lg leading-relaxed font-bold text-primary relative whitespace-pre-wrap">
           <MathText content={currentQ.question} />
         </div>
 
@@ -388,7 +388,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
               >
                 <div className="flex items-start gap-4 flex-1 min-w-0">
                   <span className="text-sm font-black uppercase tracking-widest mt-0.5 w-6 shrink-0">{letter}</span>
-                  <span className="text-sm leading-relaxed flex-1 font-medium"><MathText content={opt} /></span>
+                  <span className="text-sm leading-relaxed flex-1 font-medium whitespace-pre-wrap"><MathText content={opt} /></span>
                 </div>
 
                 {isRevealed && isCorrect && (
@@ -446,7 +446,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                 </button>
 
                 {showExplanation && (
-                  <div className="text-sm text-secondary font-medium leading-relaxed pt-3 animate-fade-in">
+                  <div className="text-sm text-secondary font-medium leading-relaxed pt-3 animate-fade-in whitespace-pre-wrap">
                     <MathText content={currentQ.explanation} />
                   </div>
                 )}

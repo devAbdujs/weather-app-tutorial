@@ -13,8 +13,6 @@ function ExamSessionPageContent() {
   const sessionOffset = parseInt(searchParams.get('sessionOffset') || '0', 10);
 
   const subject = searchParams.get('subject') || 'All';
-  const university = searchParams.get('university') || undefined;
-  const period = searchParams.get('period') || undefined;
   const year = searchParams.get('year') || undefined;
   const department = searchParams.get('department') || undefined;
   const variant = searchParams.get('variant') || undefined;
@@ -26,8 +24,6 @@ function ExamSessionPageContent() {
       sessionOffset={sessionOffset}
       
       subject={subject}
-      university={university}
-      period={period}
       year={year}
       department={department}
       variant={variant}

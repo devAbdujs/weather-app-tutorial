@@ -14,15 +14,13 @@ interface ExamSessionLoaderProps {
   sessionOffset: number;
   
   subject?: string;
-  university?: string;
-  period?: string;
   year?: string;
   department?: string;
   variant?: string;
 }
 
 export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ 
-  examType, sessionSize, sessionOffset, subject, university, period, year, department, variant 
+  examType, sessionSize, sessionOffset, subject, year, department, variant 
 }) => {
   const router = useRouter();
   const onExit = () => router.push('/practice');
@@ -37,7 +35,7 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         const dbExamType = examType || 'entrance';
         
         // Generate a unique cache key for this exact session
-        const cacheKey = `exam_${dbExamType}_${subject}_${university}_${period}_${year}_${department}_${variant}_${sessionOffset}_${sessionSize}`;
+        const cacheKey = `exam_${dbExamType}_${subject}_${year}_${department}_${variant}_${sessionOffset}_${sessionSize}`;
         
         // 1. Try to load instantly from IndexedDB cache
         const cachedData = await getCachedQuestions(cacheKey);
@@ -59,8 +57,6 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         // Apply dynamic filters
         if (subject && subject !== 'All') query = query.eq('subject', subject);
         if (year) query = query.eq('year_ec', parseInt(year, 10));
-        if (university) query = query.eq('university', university);
-        if (period) query = query.eq('exam_period', period);
         if (department) query = query.eq('department', department);
         if (variant) query = query.eq('exam_variant', variant);
 
@@ -87,7 +83,7 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
     };
 
     fetchQuestions();
-  }, [examType, subject, university, period, year, department, variant, sessionOffset, sessionSize]);
+  }, [examType, subject, year, department, variant, sessionOffset, sessionSize]);
 
   if (loading) {
     return <SkeletonScreen message={`Building Session...`} />;
@@ -118,7 +114,7 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
   }
 
   let title = subject || 'Practice Session';
-  if (examType === 'freshman') title = `${university} - ${subject} (${period})`;
+  if (examType === 'freshman') title = `${subject} (Freshman)`;
   else if (examType === 'entrance') title = `${subject} (${year})`;
   else if (examType === 'exit') title = `${department} - ${variant} (${year})`;
 
