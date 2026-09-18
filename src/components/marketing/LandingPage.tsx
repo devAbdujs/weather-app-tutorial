@@ -40,8 +40,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
 
   const handlePhoneAuth = async () => {
     if (!phone || pin.join('').length !== 4) return;
-    setIsLoading(true);
+    
     setError(null);
+    setIsLoading(true);
     try {
       const res = await fetch('/api/auth/phone', {
         method: 'POST',
@@ -63,10 +64,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
 
   const isFormValid = phone.length >= 9 && pin.join('').length === 4 && !isLoading;
 
-  // Telegram Bot ID is the first part of the token (before the colon)
-  const BOT_ID = '8400954528'; 
-  const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://temari.top';
-  const oauthUrl = `https://oauth.telegram.org/auth?bot_id=${BOT_ID}&origin=${encodeURIComponent(currentOrigin)}&return_to=${encodeURIComponent(currentOrigin)}`;
+  const handleTelegramOIDCLogin = async () => {
+    
+    setIsLoading(true);
+    try {
+      const { generateRandomString, generateCodeChallenge } = await import('@/lib/pkce');
+      
+      const codeVerifier = generateRandomString(64);
+      const state = generateRandomString(32);
+      const codeChallenge = await generateCodeChallenge(codeVerifier);
+      
+      sessionStorage.setItem('tg_oidc_verifier', codeVerifier);
+      sessionStorage.setItem('tg_oidc_state', state);
+
+      const BOT_ID = process.env.NEXT_PUBLIC_BOT_USERNAME ? process.env.NEXT_PUBLIC_BOT_USERNAME.split(':')[0] : '8400954528'; 
+      const currentOrigin = window.location.origin;
+      const redirectUri = `${currentOrigin}/auth/callback`;
+      
+      const authUrl = `https://oauth.telegram.org/auth?client_id=${BOT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid+profile+phone+telegram:bot_access&state=${state}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+      
+      window.location.href = authUrl;
+    } catch (err) {
+      setError('Failed to initialize login. Please try again.');
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-ground px-4 sm:px-6 py-8">
@@ -129,9 +151,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             </div>
           ) : (
             <button 
-              onClick={() => {
-                setIsLoading(true);
-                window.location.href = oauthUrl;
+              onClick={handleTelegramOIDCLogin}
+                
+                
               }}
               className="w-full h-[48px] bg-[#229ED9] rounded-xl flex items-center justify-center gap-2 shadow-sm hover:bg-[#1E8CC0] active:scale-[0.98] transition-all"
             >
@@ -210,7 +232,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       {process.env.NODE_ENV === 'development' && (
         <button
           onClick={async () => {
-            setIsLoading(true);
+            
             const res = await fetch('/api/auth/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ devMode: true }) });
             if (res.ok) window.location.reload();
             else setIsLoading(false);
