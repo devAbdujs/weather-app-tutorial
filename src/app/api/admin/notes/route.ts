@@ -1,25 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createAdminClient } from '@/utils/supabase/admin';
 import crypto from 'crypto';
+import { verifyAdmin } from '@/app/actions/admin';
 
 export async function POST(req: NextRequest) {
   try {
+    const isAdmin = await verifyAdmin();
+    if (!isAdmin) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { examType, department, title, content } = await req.json();
 
     if (!examType || !department || !title || !content) {
       return NextResponse.json({ success: false, error: 'Missing fields' }, { status: 400 });
     }
 
-    const adminSecret = req.headers.get('x-admin-secret');
-    if (adminSecret !== process.env.ADMIN_SECRET && process.env.NODE_ENV === 'production') {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { persistSession: false } }
-    );
+    const supabase = await createAdminClient();
 
     const { error } = await supabase.from('study_notes').insert({
       id: crypto.randomUUID(),

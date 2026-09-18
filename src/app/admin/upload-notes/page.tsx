@@ -6,7 +6,6 @@ export default function AdminUploadNotes() {
   const [department, setDepartment] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [adminSecret, setAdminSecret] = useState('');
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -27,10 +26,7 @@ export default function AdminUploadNotes() {
 
       const res = await fetch('/api/admin/notes', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-admin-secret': adminSecret
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ examType, department, title, content: cleanContent }),
       });
 
@@ -50,17 +46,18 @@ export default function AdminUploadNotes() {
   };
 
   return (
-    <div className="min-h-screen bg-ground p-8 font-sans">
-      <div className="max-w-3xl mx-auto bg-card border border-primary/20 rounded-3xl p-8 shadow-[8px_8px_0px_#1a1a1a]">
-        <h1 className="text-3xl font-black text-primary mb-6 tracking-tight">Admin: Upload Short Note</h1>
-        
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+    <div>
+      <h1 className="text-3xl font-black text-primary mb-6 tracking-tight">Upload Short Note</h1>
+      <p className="text-tertiary mb-8 font-medium">Paste raw markdown generated from NotebookLM to insert directly into the database.</p>
+      
+      <div className="bg-card border-2 border-primary/10 rounded-3xl p-8 shadow-sm max-w-4xl">
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-bold mb-2">Exam Type</label>
+              <label className="block text-sm font-bold mb-2 text-secondary">Exam Type</label>
               <select 
                 value={examType} onChange={(e) => setExamType(e.target.value)}
-                className="w-full p-3 border border-primary/20 rounded-xl bg-ground font-bold"
+                className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold focus:border-primary focus:outline-none transition-colors"
               >
                 <option value="freshman">University Freshman</option>
                 <option value="entrance">Grade 12 EUEE</option>
@@ -68,51 +65,42 @@ export default function AdminUploadNotes() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-bold mb-2">Course / Department</label>
+              <label className="block text-sm font-bold mb-2 text-secondary">Course / Department</label>
               <input 
                 type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
                 placeholder="e.g. Applied Mathematics I"
-                className="w-full p-3 border border-primary/20 rounded-xl bg-ground font-bold"
+                className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold focus:border-primary focus:outline-none transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-2">Chapter Title</label>
+            <label className="block text-sm font-bold mb-2 text-secondary">Chapter Title</label>
             <input 
               type="text" value={title} onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Chapter 1: Limits and Continuity"
-              className="w-full p-3 border border-primary/20 rounded-xl bg-ground font-bold"
+              className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold focus:border-primary focus:outline-none transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-2">NotebookLM Markdown</label>
+            <label className="block text-sm font-bold mb-2 text-secondary">NotebookLM Markdown</label>
             <textarea 
               value={content} onChange={(e) => setContent(e.target.value)}
               placeholder="Paste raw markdown here..."
-              className="w-full p-3 border border-primary/20 rounded-xl bg-ground h-64 font-mono text-sm"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-bold mb-2">Admin Secret (Production Only)</label>
-            <input 
-              type="password" value={adminSecret} onChange={(e) => setAdminSecret(e.target.value)}
-              placeholder="Enter ADMIN_SECRET to authorize"
-              className="w-full p-3 border border-primary/20 rounded-xl bg-ground font-bold"
+              className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground h-96 font-mono text-sm focus:border-primary focus:outline-none transition-colors"
             />
           </div>
 
           <button 
             onClick={handleUpload} disabled={loading}
-            className="w-full py-4 bg-primary text-white font-black rounded-xl border-b-4 border-black active:border-b-0 active:translate-y-1 transition-all disabled:opacity-50"
+            className="w-full py-5 bg-primary text-white font-black rounded-xl border-b-4 border-black/20 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-50"
           >
             {loading ? 'UPLOADING...' : 'SAVE TO DATABASE'}
           </button>
 
           {status && (
-            <div className={`p-4 font-bold rounded-xl ${status.includes('✅') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+            <div className={`p-4 font-bold rounded-xl text-center ${status.includes('✅') ? 'bg-accent-emerald/10 text-accent-emerald' : 'bg-error/10 text-error'}`}>
               {status}
             </div>
           )}
