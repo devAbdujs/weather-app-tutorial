@@ -30,7 +30,7 @@ export const HomeHub: React.FC = () => {
     updateDailyStreak().then(res => {
       if (res.success) {
         useAppStore.setState(state => ({
-          profile: state.profile ? { ...state.profile, daily_streak: res.streak } : null
+          userProfile: state.userProfile ? { ...state.userProfile, daily_streak: res.streak } : null
         }));
       }
     }).catch(() => {});
@@ -82,7 +82,7 @@ export const HomeHub: React.FC = () => {
       {/* ── ACTION GRID ── */}
       <div className="flex flex-col gap-3 mb-6">
         <button
-          onClick={() => { haptic.impact('heavy'); setSetupModalType('exam'); }}
+          onClick={() => { haptic.impact('heavy'); router.push('/practice'); }}
           className="w-full group bg-primary p-6 rounded-[24px] shadow-md active:translate-y-1 active:shadow-none transition-all text-left relative overflow-hidden focus-ring flex items-center justify-between border border-primary/20"
         >
           <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700" />

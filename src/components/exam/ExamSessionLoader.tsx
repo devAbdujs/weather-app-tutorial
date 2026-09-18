@@ -9,16 +9,23 @@ import { getCachedQuestions, setCachedQuestions } from '@/lib/cache';
 import { useRouter } from 'next/navigation';
 
 interface ExamSessionLoaderProps {
-  subject: string;
-  examType: string; // 'freshman' | 'entrance' | 'exit'
-  mode: string;
-  mix?: string;
+  examType: string;
+  sessionSize: number;
+  sessionOffset: number;
+  
+  subject?: string;
+  university?: string;
+  period?: string;
   year?: string;
+  department?: string;
+  variant?: string;
 }
 
-export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ subject, examType, mode, mix, year }) => {
+export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ 
+  examType, sessionSize, sessionOffset, subject, university, period, year, department, variant 
+}) => {
   const router = useRouter();
-  const onExit = () => router.push('/');
+  const onExit = () => router.push('/practice');
   
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,14 +36,12 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ subject, e
       try {
         const dbExamType = examType || 'entrance';
         
-        // Generate a unique cache key for this exact exam configuration
-        const cacheKey = `exam_${dbExamType}_${subject}_${mix === 'past_paper' ? year : 'random'}`;
+        // Generate a unique cache key for this exact session
+        const cacheKey = `exam_${dbExamType}_${subject}_${university}_${period}_${year}_${department}_${variant}_${sessionOffset}_${sessionSize}`;
         
         // 1. Try to load instantly from IndexedDB cache
         const cachedData = await getCachedQuestions(cacheKey);
         if (cachedData && cachedData.length > 0) {
-          console.log(`[Cache Hit] Loaded ${cachedData.length} questions instantly.`);
-          // Shuffle again so they aren't always in the exact same cached order
           setQuestions(cachedData.sort(() => 0.5 - Math.random()));
           setLoading(false);
           return;
@@ -51,42 +56,26 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ subject, e
           .not('answer', 'is', null)
           .neq('answer', '');
 
-        if (subject !== 'All' && subject) {
-          query = query.ilike('subject', `%${subject}%`);
-        }
+        // Apply dynamic filters
+        if (subject && subject !== 'All') query = query.eq('subject', subject);
+        if (year) query = query.eq('year_ec', parseInt(year, 10));
+        if (university) query = query.eq('university', university);
+        if (period) query = query.eq('exam_period', period);
+        if (department) query = query.eq('department', department);
+        if (variant) query = query.eq('exam_variant', variant);
 
-        let fetchedData;
-        let fetchError;
+        // Fetch exactly the slice we need for this session
+        const { data, error } = await query.range(sessionOffset, sessionOffset + sessionSize - 1);
 
-        if (mix === 'past_paper' && year) {
-          // Mock Exam Mode: Fetch exact 100 questions for the specific year
-          query = query.eq('year_ec', parseInt(year, 10));
-          const result = await query.limit(100);
-          fetchedData = result.data;
-          fetchError = result.error;
-        } else {
-          // Quick Drill Mode: Random slice of 50 questions
-          const randomOffset = Math.floor(Math.random() * 300);
-          const result = await query.range(randomOffset, randomOffset + 49);
-          fetchedData = result.data;
-          fetchError = result.error;
-
-          if (fetchError || !fetchedData || fetchedData.length === 0) {
-            // Fallback if offset overshoots
-            const fallback = await query.limit(50);
-            fetchedData = fallback.data;
-            fetchError = fallback.error;
-          }
-        }
-
-        if (fetchError) throw fetchError;
+        if (error) throw error;
         
         // 3. Save the results to the IndexedDB cache for next time
-        if (fetchedData && fetchedData.length > 0) {
-          await setCachedQuestions(cacheKey, fetchedData as Question[]);
+        if (data && data.length > 0) {
+          await setCachedQuestions(cacheKey, data as Question[]);
         }
 
-        const shuffled = (fetchedData as Question[]).sort(() => 0.5 - Math.random());
+        // Randomize questions *within* the session slice as requested
+        const shuffled = (data as Question[]).sort(() => 0.5 - Math.random());
         setQuestions(shuffled);
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Failed to fetch questions';
@@ -98,10 +87,10 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ subject, e
     };
 
     fetchQuestions();
-  }, [examType, subject]);
+  }, [examType, subject, university, period, year, department, variant, sessionOffset, sessionSize]);
 
   if (loading) {
-    return <SkeletonScreen message={`Building your exam...`} />;
+    return <SkeletonScreen message={`Building Session...`} />;
   }
 
   if (error) {
@@ -121,23 +110,26 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ subject, e
     return (
       <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6 text-center">
         <span className="text-4xl mb-4">📭</span>
-        <h2 className="text-xl font-black text-primary">No questions found</h2>
-        <p className="text-sm font-bold text-tertiary mt-2">We couldn&apos;t find any questions for {subject}.</p>
+        <h2 className="text-xl font-black text-primary">Session Empty</h2>
+        <p className="text-sm font-bold text-tertiary mt-2">No questions available for this session slice.</p>
         <button onClick={onExit} className="mt-8 px-6 py-3 bg-primary text-card font-bold rounded-xl focus-ring active:scale-95">Go Back</button>
       </div>
     );
   }
 
-  const title = `${subject} - Full Exam`;
+  let title = subject || 'Practice Session';
+  if (examType === 'freshman') title = `${university} - ${subject} (${period})`;
+  else if (examType === 'entrance') title = `${subject} (${year})`;
+  else if (examType === 'exit') title = `${department} - ${variant} (${year})`;
 
   return (
     <ExamWorkspace
       questions={questions}
       title={title}
-      isSimulator={mode === 'simulator'}
-      timeLimitMinutes={mode === 'simulator' ? 60 : undefined}
-      examType={examType || 'entrance'}
-      subject={subject}
+      isSimulator={true} // Hardcode simulator mode UI layout
+      timeLimitMinutes={examType === 'entrance' ? (sessionSize === 100 ? 120 : 60) : undefined}
+      examType={examType as any}
+      subject={subject || 'Mixed'}
       onExit={onExit}
     />
   );

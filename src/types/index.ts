@@ -21,6 +21,11 @@ export interface Question {
   explanation: string | null;
   image_url: string | null;
   source: string;
+  // New Hierarchy Fields
+  university?: string | null;
+  exam_period?: 'midterm' | 'final' | null;
+  department?: string | null;
+  exam_variant?: 'mock' | 'model' | null;
 }
 
 export interface Flashcard {
@@ -44,14 +49,14 @@ export interface StudyNote {
 }
 
 export interface UserProfile {
-  telegram_id: string;          // Primary identity — Telegram numeric user ID
+  telegram_id: string;
   full_name: string | null;
-  username: string | null;      // Telegram @username (may be absent)
+  username: string | null;
   avatar_url: string | null;
   daily_streak: number;
   last_activity_date: string | null;
   subscription_status: 'free' | 'premium';
-  target_exam: string | null;   // e.g., 'entrance', 'freshman', 'exit'
+  target_exam: string | null;
   created_at: string;
   updated_at: string;
 }
