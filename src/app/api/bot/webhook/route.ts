@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { createAdminClient as createClient } from '@/utils/supabase/admin';
-import {  } from '@/lib/session';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 
@@ -25,30 +23,14 @@ export async function POST(req: NextRequest) {
     const telegramUser = message.from;
     const text = message.text || '';
 
-    // Respond to /start or any message by generating an OTP
-    if (text.startsWith('/start') || text.trim().length > 0) {
-      const supabase = await createClient();
-
-      // Generate a secure 6-digit OTP
-      const code = String(Math.floor(100000 + Math.random() * 900000));
-      const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 min expiry
-
-      // Upsert: if they already have an unused code, replace it
-      await supabase.from('otp_codes').upsert({
-        telegram_id: String(telegramUser.id),
-        telegram_user: telegramUser,
-        code,
-        expires_at: expiresAt,
-        used: false,
-      }, { onConflict: 'telegram_id' });
-
-      // Send the OTP back to the user via bot
+    // Only respond to the /start command now
+    if (text.startsWith('/start')) {
       await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: telegramUser.id,
-          text: `👋 Hey ${telegramUser.first_name}!\n\nYour Temari login code is:\n\n*${code}*\n\n⏱ This code expires in 5 minutes. Enter it on the website to log in.`,
+          text: `👋 Welcome to Temari, ${telegramUser.first_name}!\n\nI am your AI study assistant. Click the big **Open App 🚀** button at the bottom left of your screen to launch the app and start practicing!`,
           parse_mode: 'Markdown',
         }),
       });
