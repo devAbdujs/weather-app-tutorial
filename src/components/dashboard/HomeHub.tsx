@@ -54,7 +54,7 @@ export const HomeHub: React.FC = () => {
       <header className="flex justify-between items-center mb-6 pt-2">
         <div>
           <h1 className="text-2xl font-black text-primary tracking-tight leading-none mb-1" suppressHydrationWarning>
-            {getGreeting()}, {userProfile?.first_name || 'Scholar'} ✨
+            {getGreeting()}, {userProfile?.first_name || 'Scholar'} 😉
           </h1>
           <p className="text-sm font-bold text-tertiary">
             {getExamLabel(userProfile?.target_exam || null)} • {userProfile?.stream || 'No Stream'}
