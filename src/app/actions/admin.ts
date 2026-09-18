@@ -58,3 +58,32 @@ export async function getAdminStats() {
     totalQuestions: questionsReq.count || 0,
   };
 }
+
+export async function getUsers() {
+  const isAdmin = await verifyAdmin();
+  if (!isAdmin) throw new Error('Unauthorized');
+
+  const supabase = await createAdminClient();
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getQuestions(limit = 100) {
+  const isAdmin = await verifyAdmin();
+  if (!isAdmin) throw new Error('Unauthorized');
+
+  const supabase = await createAdminClient();
+  const { data, error } = await supabase
+    .from('exam_questions')
+    .select('id, exam_type, subject, year, question_text, created_at')
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data || [];
+}

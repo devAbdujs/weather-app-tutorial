@@ -25,14 +25,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <LayoutDashboard className="w-5 h-5 text-accent-gold" />
             Dashboard
           </Link>
-          {/* <Link href="/admin/users" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors font-bold text-sm">
+          <Link href="/admin/users" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors font-bold text-sm">
             <Users className="w-5 h-5 text-accent-blue" />
             Users
           </Link>
           <Link href="/admin/questions" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors font-bold text-sm">
             <BookOpen className="w-5 h-5 text-accent-emerald" />
             Questions
-          </Link> */}
+          </Link>
           <Link href="/admin/upload-notes" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors font-bold text-sm">
             <FileText className="w-5 h-5 text-white/80" />
             Upload Notes

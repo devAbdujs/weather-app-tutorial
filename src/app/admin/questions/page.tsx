@@ -1,0 +1,66 @@
+import React from 'react';
+import { getQuestions } from '@/app/actions/admin';
+import { BookOpen } from 'lucide-react';
+
+export default async function AdminQuestionsPage() {
+  const questions = await getQuestions(100);
+
+  return (
+    <div>
+      <header className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-black text-primary tracking-tight">Question Bank</h1>
+          <p className="text-tertiary font-medium mt-1">Showing the latest 100 questions from the database.</p>
+        </div>
+        <div className="bg-accent-emerald/10 text-accent-emerald px-4 py-2 rounded-xl font-bold flex items-center gap-2">
+          <BookOpen className="w-5 h-5" />
+          <span>{questions.length} Questions</span>
+        </div>
+      </header>
+
+      <div className="bg-card border-2 border-primary/10 rounded-3xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-ground/50 border-b-2 border-primary/10">
+                <th className="p-4 font-bold text-tertiary uppercase tracking-wider text-xs w-1/2">Question</th>
+                <th className="p-4 font-bold text-tertiary uppercase tracking-wider text-xs">Subject</th>
+                <th className="p-4 font-bold text-tertiary uppercase tracking-wider text-xs">Exam</th>
+                <th className="p-4 font-bold text-tertiary uppercase tracking-wider text-xs text-right">Year</th>
+              </tr>
+            </thead>
+            <tbody>
+              {questions.map((q: any) => (
+                <tr key={q.id} className="border-b border-primary/5 hover:bg-ground/50 transition-colors">
+                  <td className="p-4">
+                    <p className="font-bold text-primary line-clamp-2">{q.question_text}</p>
+                    <p className="text-xs text-tertiary font-mono mt-1 text-ellipsis overflow-hidden">ID: {q.id}</p>
+                  </td>
+                  <td className="p-4 font-bold text-secondary text-sm">
+                    {q.subject}
+                  </td>
+                  <td className="p-4">
+                    <span className="px-2 py-1 bg-primary/5 text-primary rounded-lg text-xs font-bold border border-primary/10 uppercase tracking-wider">
+                      {q.exam_type}
+                    </span>
+                  </td>
+                  <td className="p-4 text-right font-black text-primary">
+                    {q.year}
+                  </td>
+                </tr>
+              ))}
+              
+              {questions.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="p-8 text-center text-tertiary font-bold">
+                    No questions found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
