@@ -118,7 +118,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             Temari App
           </h1>
           <p className="text-[14px] font-medium text-tertiary text-center">
-            Ethiopian exam prep, powered by AI.
+            AI-powered Exam Preparation and Study Partner for Ethiopian Students.
           </p>
         </div>
 
