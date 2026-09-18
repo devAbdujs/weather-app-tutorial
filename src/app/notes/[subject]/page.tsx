@@ -23,12 +23,11 @@ export default async function NotesPage({ params }: { params: { subject: string 
   const examType = profile?.target_exam || 'entrance';
 
   // 2. Fetch all chapters for this subject instantly on the server
+  // DB Note: All notes are currently marked as 'exit' and use 'department' instead of 'subject'
   const { data: notes } = await supabase
     .from('study_notes')
     .select('*')
-    .eq('exam_type', examType)
-    .eq('subject', subject)
-    .order('order_index', { ascending: true })
+    .ilike('department', `%${subject}%`)
     .limit(200);
 
   return (

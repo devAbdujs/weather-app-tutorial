@@ -24,41 +24,7 @@ const SUBJECT_EMOJI: Record<string, string> = {
   'Software Engineering': '🖥️', 'Emerging Technology': '🚀', 'Aptitude': '🎯',
 };
 
-const SUBJECT_COLOR: Record<string, string> = {
-  'Mathematics':         'bg-blue-500',
-  'Physics':             'bg-violet-500',
-  'Chemistry':           'bg-emerald-500',
-  'Biology':             'bg-green-500',
-  'Economics':           'bg-amber-500',
-  'History':             'bg-orange-500',
-  'Geography':           'bg-teal-500',
-  'English':             'bg-sky-500',
-  'Logic':               'bg-indigo-500',
-  'Civics':              'bg-rose-500',
-  'Psychology':          'bg-purple-500',
-  'Computer Science':    'bg-cyan-500',
-  'Software Engineering':'bg-blue-600',
-  'Emerging Technology': 'bg-fuchsia-500',
-  'Aptitude':            'bg-yellow-500',
-};
 
-const SUBJECT_TEXT_COLOR: Record<string, string> = {
-  'Mathematics':         'text-blue-600',
-  'Physics':             'text-violet-600',
-  'Chemistry':           'text-emerald-600',
-  'Biology':             'text-green-600',
-  'Economics':           'text-amber-600',
-  'History':             'text-orange-600',
-  'Geography':           'text-teal-600',
-  'English':             'text-sky-600',
-  'Logic':               'text-indigo-600',
-  'Civics':              'text-rose-600',
-  'Psychology':          'text-purple-600',
-  'Computer Science':    'text-cyan-600',
-  'Software Engineering':'text-blue-700',
-  'Emerging Technology': 'text-fuchsia-600',
-  'Aptitude':            'text-yellow-600',
-};
 
 const SUBJECT_BG_COLOR: Record<string, string> = {
   'Mathematics':         'bg-blue-50',
