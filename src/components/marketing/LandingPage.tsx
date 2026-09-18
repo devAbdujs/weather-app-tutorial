@@ -22,44 +22,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
   const greeting = hour < 12 ? 'GOOD MORNING' : hour < 18 ? 'GOOD AFTERNOON' : 'GOOD EVENING';
   const dateStr = format(new Date(), 'MMM d').toUpperCase();
 
-  useEffect(() => {
-    (window as any).onTelegramAuth = async (user: any) => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const res = await fetch('/api/auth/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ webData: user }),
-        });
-        if (res.ok) {
-          window.location.reload();
-        } else {
-          const data = await res.json();
-          setError(data.error || 'Authentication failed.');
-        }
-      } catch {
-        setError('Network error. Please try again.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (widgetRef.current) {
-      widgetRef.current.innerHTML = '';
-      const script = document.createElement('script');
-      script.src = 'https://telegram.org/js/telegram-widget.js?22';
-      script.setAttribute('data-telegram-login', process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot');
-      script.setAttribute('data-size', 'large');
-      script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-      script.setAttribute('data-request-access', 'write');
-      script.setAttribute('data-radius', '12'); 
-      script.async = true;
-      widgetRef.current.appendChild(script);
-    }
-
-    return () => { delete (window as any).onTelegramAuth; };
-  }, []);
+  // Removed legacy invisible widget logic
 
   const handlePinChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -165,18 +128,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
               <span className="text-sm font-bold text-[#229ED9]">Connecting...</span>
             </div>
           ) : (
-            <div className="w-full relative group flex justify-center items-center">
-              {/* Fake button for perfect styling underneath the widget */}
-              <div className="absolute inset-0 w-full h-[40px] bg-[#229ED9] rounded-xl flex items-center justify-center gap-2 pointer-events-none shadow-sm transition-transform group-active:scale-[0.98]">
-                <Send className="w-4 h-4 text-white" />
-                <span className="text-[15px] font-semibold text-white">Continue with Telegram</span>
-              </div>
-              {/* Invisible native widget on top to catch the click */}
-              <div 
-                ref={widgetRef} 
-                className="w-full h-[40px] flex items-center justify-center opacity-0 overflow-hidden relative z-10 [&>iframe]:w-full [&>iframe]:h-full cursor-pointer" 
-              />
-            </div>
+            <button 
+              onClick={() => {
+                setIsLoading(true);
+                window.location.href = oauthUrl;
+              }}
+              className="w-full h-[48px] bg-[#229ED9] rounded-xl flex items-center justify-center gap-2 shadow-sm hover:bg-[#1E8CC0] active:scale-[0.98] transition-all"
+            >
+              <Send className="w-5 h-5 text-white" />
+              <span className="text-[15px] font-bold text-white tracking-wide">Continue with Telegram</span>
+            </button>
           )}
           {error && <p className="text-[13px] text-red-500 font-medium mt-3 text-center">{error}</p>}
         </div>

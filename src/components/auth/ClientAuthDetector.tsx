@@ -34,7 +34,30 @@ export const ClientAuthDetector: React.FC = () => {
 
       if (tg && tg.initData) {
         authenticateWithTelegram(tg.initData);
-      } else if (attempts < 10) {
+        return;
+      } 
+      
+      // Check for OAuth Redirect callback parameters in URL
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get('id') && searchParams.get('hash')) {
+        const webData: Record<string, string> = {};
+        searchParams.forEach((value, key) => {
+          webData[key] = value;
+        });
+        
+        fetch('/api/auth/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ webData })
+        }).then(res => {
+          if (res.ok) window.location.replace('/'); // Strip params and reload
+          else setIsWeb(true);
+        }).catch(() => setIsWeb(true));
+        
+        return;
+      }
+
+      if (attempts < 10) {
         attempts++;
         setTimeout(checkTelegram, 50); // Poll every 50ms to prevent race conditions
       } else {
