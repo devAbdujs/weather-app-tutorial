@@ -4,6 +4,7 @@ import { PenLine, BookMarked, TreeDeciduous, Flame, ChevronRight, FileText } fro
 import { useTelegram } from '@/hooks/useTelegram';
 import { } from '@/utils/supabase/client';
 import { WelcomeOnboarding } from './WelcomeOnboarding';
+import { updateDailyStreak } from '@/app/actions/user';
 import { useAppStore } from '@/store/useAppStore';
 import { useRouter } from 'next/navigation';
 
@@ -24,8 +25,15 @@ export const HomeHub: React.FC = () => {
   const setSetupModalType = useAppStore(s => s.setSetupModalType);
 
   useEffect(() => {
-    // Hide Telegram native back button on the Hub
     setBackButton(false);
+    // Ping the streak engine on mount
+    updateDailyStreak().then(res => {
+      if (res.success) {
+        useAppStore.setState(state => ({
+          profile: state.profile ? { ...state.profile, daily_streak: res.streak } : null
+        }));
+      }
+    }).catch(() => {});
   }, [setBackButton]);
 
   // Profile is guaranteed to exist because of StoreInitializer

@@ -82,7 +82,7 @@ export async function updateDailyStreak() {
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
   const lastDate = profile?.last_activity_date;
 
-  if (lastDate === today) return { success: true, streak: profile?.daily_streak || 0 };
+  if (lastDate === today) return { success: true, streak: Math.max(1, profile?.daily_streak || 1) };
 
   let newStreak = 1;
   if (lastDate === yesterday) {
