@@ -55,20 +55,15 @@ async function AppContent({ children }: { children: React.ReactNode }) {
   if (!session) {
     return <ClientAuthDetector />;
   }
-  
-  const supabase = await createClient();
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('daily_streak, target_exam, stream')
-    .eq('telegram_id', session.telegram_id)
-    .single();
 
+  // Use the cached profile straight from the encrypted session cookie!
+  // No blocking database calls on the root level! Instant render!
   const formattedProfile = {
     telegram_id: session.telegram_id,
     first_name: session.first_name,
-    target_exam: profile?.target_exam || null,
-    stream: profile?.stream || '',
-    daily_streak: profile?.daily_streak || 0,
+    target_exam: session.target_exam || null,
+    stream: session.stream || '',
+    daily_streak: 0, // Hydrated client-side by HomeHub
   };
 
   return (

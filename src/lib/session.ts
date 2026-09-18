@@ -4,6 +4,8 @@ export interface SessionData {
   telegram_id: string;
   profile_id: string;
   first_name: string;
+  target_exam?: string | null;
+  stream?: string | null;
 }
 
 const getSecretKey = async (): Promise<CryptoKey> => {

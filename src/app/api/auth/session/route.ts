@@ -85,6 +85,8 @@ export async function POST(req: NextRequest) {
       telegram_id: telegramUser.id.toString(),
       profile_id: profile.telegram_id,
       first_name: telegramUser.first_name,
+      target_exam: profile.target_exam,
+      stream: profile.stream,
     });
 
     const response = NextResponse.json({ success: true, hasTargetExam: !!profile.target_exam });

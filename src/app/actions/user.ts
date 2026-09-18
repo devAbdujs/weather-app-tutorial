@@ -1,7 +1,8 @@
 'use server';
 
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
-import { getServerSession } from '@/lib/session';
+import { getServerSession, encryptSession } from '@/lib/session';
+import { cookies } from 'next/headers';
 
 /**
  * Updates the user's onboarding preferences.
@@ -18,6 +19,24 @@ export async function updateProfilePreferences(target_exam: string, stream: stri
     .eq('telegram_id', session.telegram_id);
 
   if (error) throw new Error(error.message);
+
+  // Re-issue session cookie with new preferences for instant root hydration
+  const newToken = await encryptSession({
+    ...session,
+    target_exam,
+    stream
+  });
+
+  cookies().set({
+    name: 'es_session',
+    value: newToken,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 30, // 30 days
+  });
+
   return { success: true };
 }
 
