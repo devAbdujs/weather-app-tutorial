@@ -9,6 +9,7 @@ declare global {
         ready: () => void;
         expand: () => void;
         colorScheme?: 'light' | 'dark';
+        initData?: string;
         initDataUnsafe?: {
           user?: TelegramUser;
         };

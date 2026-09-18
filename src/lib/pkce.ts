@@ -13,7 +13,7 @@ export async function generateCodeChallenge(codeVerifier: string): Promise<strin
   const encoder = new TextEncoder();
   const data = encoder.encode(codeVerifier);
   const digest = await crypto.subtle.digest('SHA-256', data);
-  const base64Digest = btoa(String.fromCharCode(...new Uint8Array(digest)));
+  const base64Digest = btoa(Array.from(new Uint8Array(digest)).map(b => String.fromCharCode(b)).join(''));
   
   return base64Digest
     .replace(/\+/g, '-')

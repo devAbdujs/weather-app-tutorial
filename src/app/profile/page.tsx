@@ -11,15 +11,14 @@ export default async function ProfilePage() {
   }
 
   const supabase = await createAdminClient();
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('telegram_id', session.telegram_id)
-    .single();
+  const [{ data: profile }, { data: stats }] = await Promise.all([
+    supabase.from('profiles').select('*').eq('telegram_id', session.telegram_id).single(),
+    supabase.from('user_subject_stats').select('*').eq('telegram_id', session.telegram_id)
+  ]);
 
   if (!profile) {
     redirect('/');
   }
 
-  return <ProfileView profile={profile} />;
+  return <ProfileView profile={profile} stats={stats || []} />;
 }
