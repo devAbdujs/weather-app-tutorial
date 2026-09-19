@@ -58,12 +58,6 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
           query = query.eq('year', year);
         }
 
-        // Filter by exam period (midterm/final) if questions are tagged
-        // Otherwise rely on offset-based slicing (deterministic assignment)
-        if (period) {
-          query = query.eq('exam_period', period);
-        }
-
         const { data, error } = await query.range(sessionOffset, sessionOffset + sessionSize - 1);
 
         if (error) throw error;
