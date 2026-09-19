@@ -10,7 +10,7 @@ import {
   Landmark, Users, HeartHandshake, Terminal, Settings2, 
   Server, Database, Building2, Wrench, Zap, Coins, 
   Briefcase, Scale, Stethoscope, Pill, FlaskConical,
-  Atom, Dna, Calculator, ScrollText, Sprout
+  Atom, Dna, Calculator, ScrollText
 } from 'lucide-react';
 
 const FRESHMAN_COURSES = [
@@ -39,7 +39,6 @@ const EUEE_SUBJECTS = [
   { id: 'History', Icon: ScrollText, color: 'bg-amber-50 border-amber-100 text-amber-600' },
   { id: 'Economics', Icon: TrendingUp, color: 'bg-orange-50 border-orange-100 text-orange-600' },
   { id: 'Civics & Citizenship', Icon: Landmark, color: 'bg-stone-50 border-stone-100 text-stone-600' },
-  { id: 'Agriculture', Icon: Sprout, color: 'bg-lime-50 border-lime-100 text-lime-600' },
 ];
 const EUEE_YEARS = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010];
 
