@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Lightbulb, Globe, Loader2, Send, Bot, Sparkles } from 'lucide-react';
+import { X, Lightbulb, Globe, Loader2, Send, Bot, Sparkles, GraduationCap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -168,7 +168,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
                 </span>
               </h3>
               <p className="text-xs text-slate-500 font-medium flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-amber-500" /> Your elite study tutor
+                <GraduationCap className="w-3 h-3 text-indigo-500" /> Your study partner
               </p>
             </div>
           </div>
