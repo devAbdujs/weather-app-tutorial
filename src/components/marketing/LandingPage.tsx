@@ -78,8 +78,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       sessionStorage.setItem('tg_oidc_state', state);
 
       const BOT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CLIENT_ID || '8400954528'; 
-      const currentOrigin = window.location.origin;
-      const redirectUri = `${currentOrigin}/auth/callback`;
+      // Force using the root domain to prevent 'redirect_uri required' errors from Telegram
+      // if the user accessed the site via www.temari.top but BotFather expects temari.top
+      const baseOrigin = process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top';
+      const redirectUri = `${baseOrigin}/auth/callback`;
       
       const authUrl = `https://oauth.telegram.org/auth?client_id=${BOT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid+profile+phone+telegram:bot_access&state=${state}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
       

@@ -50,7 +50,7 @@ export const ClientAuthDetector: React.FC = () => {
           body: JSON.stringify({ 
             code: searchParams.get('code'),
             code_verifier: sessionStorage.getItem('tg_oidc_verifier'),
-            redirect_uri: window.location.origin + '/auth/callback'
+            redirect_uri: (process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top') + '/auth/callback'
           })
         }).then(res => {
           if (res.ok) {
