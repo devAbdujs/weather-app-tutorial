@@ -56,7 +56,11 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         }
         
         if (year) {
-          query = query.eq('year', year);
+          query = query.eq('year_ec', parseInt(year, 10));
+        }
+
+        if (period) {
+          query = query.eq('exam_period', period);
         }
 
         const { data, error } = await query.range(sessionOffset, sessionOffset + sessionSize - 1);
