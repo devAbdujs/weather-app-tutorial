@@ -51,6 +51,7 @@
     "eslint-config-next": "14.2.15",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
+    "node-fetch": "^2.7.0",
     "playwright": "^1.63.0",
     "postcss": "^8",
     "puppeteer-core": "^24.43.1",

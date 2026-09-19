@@ -3,6 +3,8 @@ import crypto from 'crypto';
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { encryptSession } from '@/lib/session';
 
+import { validateMiniAppInitData, validateWebWidgetData } from '@/lib/telegramAuth';
+
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
@@ -17,37 +19,13 @@ export async function POST(req: NextRequest) {
 
     // --- FLOW 1: Mini App Auth (initData) ---
     if (initData) {
-      const urlParams = new URLSearchParams(initData);
-      const hash = urlParams.get('hash');
-      urlParams.delete('hash');
-
-      const params = Array.from(urlParams.entries());
-      params.sort((a, b) => a[0].localeCompare(b[0]));
-      const dataCheckString = params.map(([key, value]) => `${key}=${value}`).join('\n');
-
-      const secretKey = crypto.createHmac('sha256', 'WebAppData').update(botToken).digest();
-      const calculatedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
-
-      if (calculatedHash !== hash) return NextResponse.json({ error: 'Invalid Mini App signature' }, { status: 403 });
-
-      const userString = urlParams.get('user');
-      if (userString) telegramUser = JSON.parse(userString);
+      telegramUser = validateMiniAppInitData(initData, botToken);
+      if (!telegramUser) return NextResponse.json({ error: 'Invalid Mini App signature' }, { status: 403 });
     } 
     // --- FLOW 2: Web Login Widget (webData) ---
     else if (webData) {
-      const { hash, ...userData } = webData;
-      
-      const checkString = Object.keys(userData)
-        .sort()
-        .map(k => `${k}=${userData[k as keyof typeof userData]}`)
-        .join('\n');
-
-      const secretKey = crypto.createHash('sha256').update(botToken).digest();
-      const calculatedHash = crypto.createHmac('sha256', secretKey).update(checkString).digest('hex');
-
-      if (calculatedHash !== hash) return NextResponse.json({ error: 'Invalid Web signature' }, { status: 403 });
-      
-      telegramUser = userData;
+      telegramUser = validateWebWidgetData(webData, botToken);
+      if (!telegramUser) return NextResponse.json({ error: 'Invalid Web signature' }, { status: 403 });
     }
     // --- FLOW 3: Dev Mode Bypass (Only works in localhost) ---
     else if (data.devMode && process.env.NODE_ENV === 'development') {
