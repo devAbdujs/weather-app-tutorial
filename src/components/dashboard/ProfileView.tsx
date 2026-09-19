@@ -9,7 +9,7 @@ import { logout } from '@/app/actions/user';
 
 export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) => {
   const router = useRouter();
-  const { haptic } = useTelegram();
+  const { haptic, isTelegram } = useTelegram();
   const setSetupModalType = useAppStore(s => s.setSetupModalType);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -152,17 +152,19 @@ export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) 
           </div>
         )}
 
-        {/* Logout */}
-        <button disabled={isLoggingOut} onClick={handleLogout} className="w-full mt-2 bg-card border border-red-500/10 shadow-sm rounded-[24px] p-5 flex items-center justify-center gap-2 active:scale-95 transition-all group hover:bg-red-500/5 disabled:opacity-50 disabled:active:scale-100">
-          {isLoggingOut ? (
-            <div className="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <LogOut className="w-5 h-5 text-red-500 group-active:scale-90 transition-transform" />
-          )}
-          <span className="text-[15px] font-black text-red-500 tracking-wide">
-            {isLoggingOut ? 'Signing Out...' : 'Sign Out'}
-          </span>
-        </button>
+        {/* Logout (Only visible on web, Telegram Mini App handles auth implicitly) */}
+        {!isTelegram && (
+          <button disabled={isLoggingOut} onClick={handleLogout} className="w-full mt-2 bg-card border border-red-500/10 shadow-sm rounded-[24px] p-5 flex items-center justify-center gap-2 active:scale-95 transition-all group hover:bg-red-500/5 disabled:opacity-50 disabled:active:scale-100">
+            {isLoggingOut ? (
+              <div className="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <LogOut className="w-5 h-5 text-red-500 group-active:scale-90 transition-transform" />
+            )}
+            <span className="text-[15px] font-black text-red-500 tracking-wide">
+              {isLoggingOut ? 'Signing Out...' : 'Sign Out'}
+            </span>
+          </button>
+        )}
       </div>
 
     </div>
