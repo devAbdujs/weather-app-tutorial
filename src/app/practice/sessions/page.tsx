@@ -39,34 +39,43 @@ function SessionsContent() {
     return () => setBackButton(false);
   }, [setBackButton, router]);
 
+  const isFreshman = examType === 'freshman';
+  const isEntrance = examType === 'entrance';
+  const STANDARD_SIZE = isEntrance ? 50 : 50;
+
   useEffect(() => {
     const fetchCounts = async () => {
       setLoading(true);
       const base = { examType: examType || undefined, subject: subject || undefined };
 
-      // Fetch tagged counts in parallel
-      const [mCount, fCount, total] = await Promise.all([
-        getSessionCounts({ ...base, period: 'midterm' }),
-        getSessionCounts({ ...base, period: 'final' }),
-        getSessionCounts(base),
-      ]);
+      if (isFreshman) {
+        // Fetch tagged counts in parallel
+        const [mCount, fCount, total] = await Promise.all([
+          getSessionCounts({ ...base, period: 'midterm' }),
+          getSessionCounts({ ...base, period: 'final' }),
+          getSessionCounts(base),
+        ]);
 
-      const untagged = total - mCount - fCount;
-      // Assign untagged: first half → midterm, second half → final
-      const untaggedMidShare = Math.floor(untagged * 0.5);
-      const untaggedFinalShare = untagged - untaggedMidShare;
+        const untagged = total - mCount - fCount;
+        const untaggedMidShare = Math.floor(untagged * 0.5);
+        const untaggedFinalShare = untagged - untaggedMidShare;
 
-      setMidtermCount(mCount + untaggedMidShare);
-      setFinalCount(fCount + untaggedFinalShare);
-      setUntaggedCount(untagged);
+        setMidtermCount(mCount + untaggedMidShare);
+        setFinalCount(fCount + untaggedFinalShare);
+        setUntaggedCount(untagged);
+      } else {
+        // Entrance / Exit: Just count everything and treat as standard sessions
+        const total = await getSessionCounts({ ...base, year: year || undefined });
+        setUntaggedCount(total);
+      }
       setLoading(false);
     };
     fetchCounts();
-  }, [examType, subject]);
+  }, [examType, subject, year, isFreshman]);
 
   // Build session lists from counts
   const midtermSessions = useMemo((): SessionItem[] => {
-    if (midtermCount === 0) return [];
+    if (!isFreshman || midtermCount === 0) return [];
     const full = Math.floor(midtermCount / MIDTERM_SIZE);
     const rem = midtermCount % MIDTERM_SIZE;
     const list: SessionItem[] = Array.from({ length: full }, (_, i) => ({
@@ -77,25 +86,39 @@ function SessionsContent() {
     }));
     if (rem >= 10) list.push({ id: full + 1, count: rem, offset: full * MIDTERM_SIZE, label: `Midterm Exam ${full + 1}` });
     return list;
-  }, [midtermCount]);
+  }, [midtermCount, isFreshman]);
 
   const finalSessions = useMemo((): SessionItem[] => {
-    if (finalCount === 0) return [];
-    const full = Math.floor(finalCount / FINAL_SIZE);
-    const rem = finalCount % FINAL_SIZE;
-    // Final sessions start after the midterm pool in the DB
-    const finalBaseOffset = midtermCount; 
-    const list: SessionItem[] = Array.from({ length: full }, (_, i) => ({
-      id: i + 1,
-      count: FINAL_SIZE,
-      offset: finalBaseOffset + i * FINAL_SIZE,
-      label: `Final Exam ${i + 1}`,
-    }));
-    if (rem >= 10) list.push({ id: full + 1, count: rem, offset: finalBaseOffset + full * FINAL_SIZE, label: `Final Exam ${full + 1}` });
-    return list;
-  }, [finalCount, midtermCount]);
+    if (isFreshman) {
+      if (finalCount === 0) return [];
+      const full = Math.floor(finalCount / FINAL_SIZE);
+      const rem = finalCount % FINAL_SIZE;
+      const finalBaseOffset = midtermCount; 
+      const list: SessionItem[] = Array.from({ length: full }, (_, i) => ({
+        id: i + 1,
+        count: FINAL_SIZE,
+        offset: finalBaseOffset + (i * FINAL_SIZE),
+        label: `Final Exam ${i + 1}`,
+      }));
+      if (rem >= 10) list.push({ id: full + 1, count: rem, offset: finalBaseOffset + (full * FINAL_SIZE), label: `Final Exam ${full + 1}` });
+      return list;
+    } else {
+      if (untaggedCount === 0) return [];
+      const full = Math.floor(untaggedCount / STANDARD_SIZE);
+      const rem = untaggedCount % STANDARD_SIZE;
+      const list: SessionItem[] = Array.from({ length: full }, (_, i) => ({
+        id: i + 1,
+        count: STANDARD_SIZE,
+        offset: i * STANDARD_SIZE,
+        label: `Practice Set ${i + 1}`,
+      }));
+      if (rem >= 10) list.push({ id: full + 1, count: rem, offset: full * STANDARD_SIZE, label: `Practice Set ${full + 1}` });
+      return list;
+    }
+  }, [finalCount, untaggedCount, midtermCount, isFreshman]);
 
-  const currentSessions = activeTab === 'midterm' ? midtermSessions : finalSessions;
+  const displayedSessions = isFreshman ? (activeTab === 'midterm' ? midtermSessions : finalSessions) : finalSessions;
+
 
   const handleStart = (session: SessionItem, mode: 'practice' | 'exam') => {
     haptic.impact('heavy');
@@ -118,13 +141,13 @@ function SessionsContent() {
     });
     if (subject) params.set('subject', subject);
     if (year) params.set('year', year);
-    // Pass period so ExamSessionLoader can filter correctly
-    params.set('period', activeTab);
+    if (isFreshman) params.set('period', activeTab);
 
     router.push(`/exam/session?${params.toString()}`);
   };
 
   const title = subject;
+  const subtitle = isFreshman ? 'Freshman Exam Bank' : isEntrance ? `Grade 12 Entrance • ${year || 'All Years'}` : 'University Exit Exam';
 
   return (
     <div className="min-h-screen bg-ground pb-28 text-primary animate-fade-in">
@@ -139,52 +162,56 @@ function SessionsContent() {
         </button>
         <div className="min-w-0">
           <h1 className="text-[22px] font-black text-primary tracking-tight leading-tight truncate">{title}</h1>
-          <p className="text-xs font-medium text-tertiary mt-0.5">Freshman Exam Bank</p>
+          <p className="text-xs font-medium text-tertiary mt-0.5">{subtitle}</p>
         </div>
       </div>
 
       {/* ── TABS ── */}
-      <div className="px-5 pt-2 pb-4">
-        <div className="bg-black/5 p-1 rounded-[16px] flex gap-1">
-          <button
-            onClick={() => { haptic.selection(); setActiveTab('midterm'); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[12px] text-sm font-bold transition-all duration-200 ${
-              activeTab === 'midterm' ? 'bg-card text-primary shadow-sm' : 'text-tertiary'
-            }`}
-          >
-            <Clock className="w-3.5 h-3.5" />
-            Midterm
-            {!loading && (
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${activeTab === 'midterm' ? 'bg-primary/10 text-primary' : 'bg-black/10 text-tertiary'}`}>
-                {midtermSessions.length}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => { haptic.selection(); setActiveTab('final'); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[12px] text-sm font-bold transition-all duration-200 ${
-              activeTab === 'final' ? 'bg-card text-primary shadow-sm' : 'text-tertiary'
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            Final
-            {!loading && (
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${activeTab === 'final' ? 'bg-primary/10 text-primary' : 'bg-black/10 text-tertiary'}`}>
-                {finalSessions.length}
-              </span>
-            )}
-          </button>
+      {isFreshman && (
+        <div className="px-5 pt-2 pb-4">
+          <div className="bg-black/5 p-1 rounded-[16px] flex gap-1">
+            <button
+              onClick={() => { haptic.selection(); setActiveTab('midterm'); }}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[12px] text-sm font-bold transition-all duration-200 ${
+                activeTab === 'midterm' ? 'bg-card text-primary shadow-sm' : 'text-tertiary'
+              }`}
+            >
+              <Clock className="w-3.5 h-3.5" />
+              Midterm
+              {!loading && (
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${activeTab === 'midterm' ? 'bg-primary/10 text-primary' : 'bg-black/10 text-tertiary'}`}>
+                  {midtermSessions.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => { haptic.selection(); setActiveTab('final'); }}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[12px] text-sm font-bold transition-all duration-200 ${
+                activeTab === 'final' ? 'bg-card text-primary shadow-sm' : 'text-tertiary'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              Final
+              {!loading && (
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${activeTab === 'final' ? 'bg-primary/10 text-primary' : 'bg-black/10 text-tertiary'}`}>
+                  {finalSessions.length}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
+      )}
 
         {/* Hint about question count */}
         {!loading && (
           <p className="text-center text-[11px] font-medium text-tertiary mt-2">
-            {activeTab === 'midterm'
-              ? `${MIDTERM_SIZE} questions per exam · ${midtermCount} total`
-              : `${FINAL_SIZE} questions per exam · ${finalCount} total`}
+            {isFreshman 
+              ? (activeTab === 'midterm' 
+                ? `${MIDTERM_SIZE} questions per exam · ${midtermCount} total`
+                : `${FINAL_SIZE} questions per exam · ${finalCount} total`)
+              : `${STANDARD_SIZE} questions per exam · ${untaggedCount} total`}
           </p>
         )}
-      </div>
 
       {/* ── SESSION LIST ── */}
       <div className="px-5 animate-fade-in">
@@ -194,24 +221,24 @@ function SessionsContent() {
               <div key={i} className="h-[72px] bg-primary/5 animate-pulse rounded-2xl" />
             ))}
           </div>
-        ) : currentSessions.length === 0 ? (
+        ) : displayedSessions.length === 0 ? (
           <div className="bg-card border-2 border-dashed border-black/8 rounded-3xl p-10 text-center mt-2">
             <div className="text-4xl mb-3">📭</div>
             <h3 className="font-bold text-primary mb-1">No exams yet</h3>
             <p className="text-sm font-medium text-tertiary leading-relaxed">
-              No {activeTab} exams available for this subject yet. Check the other tab!
+              No exams available for this subject yet.
             </p>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            {currentSessions.map((s) => (
+            {displayedSessions.map((s) => (
               <button
                 key={s.id}
                 onClick={() => { haptic.selection(); setSelectedSession(s); }}
                 className="w-full group bg-card p-4 rounded-2xl border-2 border-black/5 hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all flex items-center gap-4"
               >
                 <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center font-black text-lg shrink-0 ${
-                  activeTab === 'midterm' ? 'bg-blue-50 text-blue-700' : 'bg-violet-50 text-violet-700'
+                  isFreshman && activeTab === 'midterm' ? 'bg-blue-50 text-blue-700' : 'bg-violet-50 text-violet-700'
                 }`}>
                   {s.id}
                 </div>
