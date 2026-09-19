@@ -65,6 +65,7 @@ const config: Config = {
         "fade-up":       "fade-up 0.38s cubic-bezier(0.25,0.46,0.45,0.94) both",
         "fade-in-right": "fade-in-right 0.32s ease both",
         "sheet-up":      "sheet-up 0.42s cubic-bezier(0.25,0.46,0.45,0.94) both",
+        "drawer-up":     "drawer-up 0.55s cubic-bezier(0.25,1,0.5,1) both",
         "scale-bounce":  "scale-bounce 0.48s cubic-bezier(0.34,1.56,0.64,1) both",
         "shake":         "shake 0.4s cubic-bezier(.36,.07,.19,.97) both",
       },
@@ -83,6 +84,10 @@ const config: Config = {
         },
         "sheet-up": {
           from: { opacity: "0", transform: "translateY(100%)" },
+          to:   { opacity: "1", transform: "translateY(0)" },
+        },
+        "drawer-up": {
+          from: { opacity: "0", transform: "translateY(15%)" },
           to:   { opacity: "1", transform: "translateY(0)" },
         },
         "scale-bounce": {

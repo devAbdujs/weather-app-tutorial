@@ -151,8 +151,8 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-lg bg-[#F8F9FA] border-t border-black/5 rounded-t-3xl p-5 max-h-[90vh] h-[90vh] flex flex-col shadow-2xl">
+    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm animate-fade-in transition-all duration-500">
+      <div className="w-full max-w-lg bg-[#F8F9FA] border-t border-black/5 rounded-t-3xl p-5 max-h-[90vh] h-[90vh] flex flex-col shadow-2xl animate-drawer-up">
         {/* Premium Header */}
         <div className="flex items-center justify-between pb-4 border-b border-black/5 shrink-0">
           <div className="flex items-center gap-3">
