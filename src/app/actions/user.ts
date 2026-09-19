@@ -12,13 +12,15 @@ export async function updateProfilePreferences(target_exam: string, stream: stri
   const session = await getServerSession();
   if (!session?.telegram_id) throw new Error('Unauthorized');
 
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from('profiles')
-    .update({ target_exam, stream })
-    .eq('telegram_id', session.telegram_id);
+  if (!session.devMode) {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from('profiles')
+      .update({ target_exam, stream })
+      .eq('telegram_id', session.telegram_id);
 
-  if (error) throw new Error(error.message);
+    if (error) throw new Error(error.message);
+  }
 
   // Re-issue session cookie with new preferences for instant root hydration
   const newToken = await encryptSession({

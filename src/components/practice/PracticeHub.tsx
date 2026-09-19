@@ -35,7 +35,7 @@ const EXIT_DEPARTMENTS = [
 export const PracticeHub = () => {
   const { haptic, setBackButton } = useTelegram();
   const router = useRouter();
-  const targetExam = useAppStore(s => s.targetExam);
+  const targetExam = useAppStore(s => s.userProfile?.target_exam);
 
   // Shared State
   const [loading, setLoading] = useState(false);
