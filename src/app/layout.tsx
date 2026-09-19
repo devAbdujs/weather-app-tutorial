@@ -39,10 +39,6 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-import { getServerSession } from '@/lib/session';
-import { ClientAuthDetector } from '@/components/auth/ClientAuthDetector';
-import { StoreInitializer } from '@/components/auth/StoreInitializer';
-import { DashboardShell } from '@/components/layout/DashboardShell';
 import { PWARegistry } from '@/components/layout/PWARegistry';
 import { Suspense } from 'react';
 import Loading from './loading';
@@ -67,29 +63,6 @@ const themeScript = `
 })();
 `;
 
-async function AppContent({ children }: { children: React.ReactNode }) {
-  const session = await getServerSession();
-
-  if (!session) {
-    return <ClientAuthDetector />;
-  }
-
-  const formattedProfile = {
-    telegram_id: session.telegram_id,
-    first_name: session.first_name,
-    target_exam: session.target_exam || null,
-    stream: session.stream || '',
-    daily_streak: 0,
-  };
-
-  return (
-    <DashboardShell>
-      <StoreInitializer profile={formattedProfile} />
-      {children}
-    </DashboardShell>
-  );
-}
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -105,7 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${geistSans.variable} font-sans bg-ground text-gray-900 dark:text-gray-100 min-h-screen antialiased overscroll-none`}>
         <PWARegistry />
         <Suspense fallback={<Loading />}>
-          <AppContent>{children}</AppContent>
+          {children}
         </Suspense>
         <Analytics />
         <SpeedInsights />
