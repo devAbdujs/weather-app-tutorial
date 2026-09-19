@@ -167,15 +167,20 @@ export const HomeHub: React.FC = () => {
         {/* ── HERO CTA (Always present) ── */}
         <button
           onClick={() => { haptic.impact('heavy'); router.push('/practice'); }}
-          className="w-full group bg-primary p-5 rounded-[24px] shadow-md active:scale-[0.97] transition-all text-left relative overflow-hidden"
+          className="w-full group bg-primary p-5 rounded-[24px] shadow-lg active:scale-[0.97] transition-all text-left relative overflow-hidden"
         >
-          <div className="absolute -right-6 -top-6 w-28 h-28 bg-white/5 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700" />
-          <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1 relative z-10">31,000+ real past papers</p>
-          <h2 className="text-xl font-black text-white tracking-tight relative z-10 mb-3">Practice & Exams</h2>
+          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+          <div className="relative z-10">
+            <p className="text-white/70 text-[10px] font-bold uppercase tracking-widest mb-1">31,000+ real past papers</p>
+            <h2 className="text-[22px] font-black text-white tracking-tight mb-4">Practice & Exams</h2>
+          </div>
           <div className="flex items-center justify-between relative z-10">
-            <span className="text-white/70 text-xs font-bold">Pick a subject →</span>
-            <div className="w-9 h-9 bg-white/15 rounded-full flex items-center justify-center group-hover:bg-white/25 transition-colors">
-              <BookOpen className="w-4 h-4 text-white" />
+            <div className="bg-white text-primary px-4 py-2 rounded-full font-black text-[13px] shadow-sm flex items-center gap-1.5 group-hover:scale-105 transition-transform">
+              Start Practicing
+              <ArrowRight className="w-4 h-4" />
+            </div>
+            <div className="w-10 h-10 bg-white/15 rounded-full flex items-center justify-center group-hover:bg-white/25 transition-colors backdrop-blur-sm">
+              <BookOpen className="w-5 h-5 text-white" />
             </div>
           </div>
         </button>
