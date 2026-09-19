@@ -14,15 +14,18 @@ interface AppState {
   setupModalType: SetupModalType;
   userProfile: UserProfile | null;
   profileLoaded: boolean;
+  devMode: boolean;
 
   setSetupModalType: (type: SetupModalType) => void;
   setUserProfile: (profile: Partial<UserProfile>) => void;
+  toggleDevMode: () => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
   setupModalType: null,
   userProfile: null,
   profileLoaded: false,
+  devMode: false,
 
   setSetupModalType: (type) => set({ setupModalType: type }),
 
@@ -35,4 +38,6 @@ export const useAppStore = create<AppState>((set) => ({
     },
     profileLoaded: true
   })),
+
+  toggleDevMode: () => set((state) => ({ devMode: !state.devMode })),
 }));

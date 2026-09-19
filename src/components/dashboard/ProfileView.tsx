@@ -12,6 +12,9 @@ export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) 
   const { haptic, isTelegram } = useTelegram();
   const setSetupModalType = useAppStore(s => s.setSetupModalType);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [devClicks, setDevClicks] = useState(0);
+  const toggleDevMode = useAppStore(s => s.toggleDevMode);
+  const devMode = useAppStore(s => s.devMode);
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -32,6 +35,18 @@ export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) 
     router.push('/');
   };
 
+  const handleAvatarClick = () => {
+    setDevClicks(prev => {
+      const next = prev + 1;
+      if (next === 5) {
+        haptic.notification('success');
+        toggleDevMode();
+        return 0;
+      }
+      return next;
+    });
+  };
+
   const isPremium = profile.subscription_status === 'premium';
   
   const initials = useMemo(() => {
@@ -49,8 +64,9 @@ export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) 
     <div className="flex-1 flex flex-col pt-6 px-4 pb-24 overflow-y-auto animate-fade-in bg-ground custom-scrollbar">
       
       {/* Header Profile Section */}
-      <div className="flex flex-col items-center mb-8">
-        <div className="w-24 h-24 bg-gradient-to-br from-[#229ED9] to-[#1E8CC0] rounded-[28px] flex items-center justify-center text-white mb-4 relative shadow-lg shadow-[#229ED9]/20 transform rotate-3">
+      <div className="flex flex-col items-center mb-8 relative">
+        {devMode && <div className="absolute top-0 right-5 text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-50 px-2 py-1 rounded-full">Dev Mode</div>}
+        <div onClick={handleAvatarClick} className="w-24 h-24 bg-gradient-to-br from-[#229ED9] to-[#1E8CC0] rounded-[28px] flex items-center justify-center text-white mb-4 relative shadow-lg shadow-[#229ED9]/20 transform rotate-3 active:scale-95 transition-transform">
           <div className="w-full h-full absolute inset-0 bg-black/10 rounded-[28px] transform -rotate-6 transition-transform overflow-hidden" />
           {profile.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element

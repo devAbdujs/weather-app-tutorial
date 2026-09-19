@@ -48,7 +48,20 @@ const EXIT_DEPARTMENTS = [
 export const PracticeHub = () => {
   const { haptic, setBackButton } = useTelegram();
   const router = useRouter();
-  const targetExam = useAppStore(s => s.userProfile?.target_exam);
+  const profileTarget = useAppStore(s => s.userProfile?.target_exam);
+  const devMode = useAppStore(s => s.devMode);
+
+  // If devMode is true, we allow overriding. Otherwise lock to profile.
+  const [activeTab, setActiveTab] = useState<string>(profileTarget || 'entrance');
+  
+  // Ensure we sync if profileTarget loads late or changes, but don't force it if in devMode
+  useEffect(() => {
+    if (!devMode && profileTarget) {
+      setActiveTab(profileTarget);
+    }
+  }, [profileTarget, devMode]);
+
+  const targetExam = devMode ? activeTab : profileTarget;
 
   // Entrance state
   const [subject, setSubject] = useState(EUEE_SUBJECTS[0]);
@@ -78,6 +91,24 @@ export const PracticeHub = () => {
         <h1 className="text-[26px] font-black text-primary tracking-tight">Practice</h1>
         <p className="text-sm font-medium text-tertiary mt-0.5">{examTypeLabel()}</p>
       </div>
+
+      {devMode && (
+        <div className="px-5 mb-6">
+          <div className="flex p-1 bg-black/5 rounded-[16px]">
+            {['entrance', 'freshman', 'exit'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => { haptic.selection(); setActiveTab(tab); }}
+                className={`flex-1 py-2 text-[13px] font-bold capitalize rounded-[12px] transition-all ${
+                  activeTab === tab ? 'bg-white text-primary shadow-sm' : 'text-tertiary hover:text-secondary'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="px-5">
 
