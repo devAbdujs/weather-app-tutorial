@@ -9,8 +9,7 @@ import Image from 'next/image';
 
 const TelegramIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#229ED9"/>
-    <path d="M10.28 15.688L9.988 19.824C10.404 19.824 10.584 19.644 10.8 19.428L12.752 17.548L16.8 20.536C17.544 20.948 18.068 20.732 18.264 19.864L20.92 7.348L20.924 7.344C21.156 6.248 20.528 5.82 19.808 6.088L4.256 12.084C3.204 12.504 3.22 13.092 4.068 13.352L8.048 14.596L17.288 8.772C17.724 8.48 18.12 8.644 17.776 8.948L10.28 15.688Z" fill="white"/>
+    <path d="M10.28 15.688L9.988 19.824C10.404 19.824 10.584 19.644 10.8 19.428L12.752 17.548L16.8 20.536C17.544 20.948 18.068 20.732 18.264 19.864L20.92 7.348L20.924 7.344C21.156 6.248 20.528 5.82 19.808 6.088L4.256 12.084C3.204 12.504 3.22 13.092 4.068 13.352L8.048 14.596L17.288 8.772C17.724 8.48 18.12 8.644 17.776 8.948L10.28 15.688Z" fill="currentColor"/>
   </svg>
 );
 
@@ -95,13 +94,11 @@ export const TopHeader = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="
-              flex items-center gap-1.5 px-3 py-1.5 
-              bg-blue-50 dark:bg-[#229ED9]/15 
-              text-[#229ED9] dark:text-[#229ED9]
-              hover:bg-blue-100 dark:hover:bg-[#229ED9]/25 
+              flex items-center gap-1.5 px-4 py-1.5 
+              bg-[#229ED9] hover:bg-[#1C88BA] 
+              text-white dark:text-white
               rounded-full transition-colors 
-              font-bold text-[13px] tracking-tight shadow-sm 
-              border border-blue-100 dark:border-[#229ED9]/20
+              font-bold text-[13px] tracking-tight shadow-md 
             "
           >
             <TelegramIcon className="w-4 h-4 shrink-0" />
