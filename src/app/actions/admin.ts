@@ -58,7 +58,12 @@ export async function verifyAdmin() {
 }
 
 export async function logoutAdmin() {
-  cookies().delete(ADMIN_COOKIE_NAME);
+  cookies().set({
+    name: ADMIN_COOKIE_NAME,
+    value: '',
+    expires: new Date(0),
+    path: '/admin'
+  });
   return { success: true };
 }
 

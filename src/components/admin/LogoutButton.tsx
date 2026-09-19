@@ -9,7 +9,7 @@ export function LogoutButton() {
     <button 
       onClick={async () => {
         await logoutAdmin();
-        window.location.reload();
+        window.location.href = '/admin';
       }}
       className="flex items-center gap-3 px-4 py-3 w-full rounded-xl hover:bg-error/20 text-error transition-colors font-bold text-sm"
     >
