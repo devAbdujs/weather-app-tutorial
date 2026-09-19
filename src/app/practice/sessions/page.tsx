@@ -52,19 +52,11 @@ function SessionsContent() {
       const base = { examType: examType || undefined, subject: subject || undefined };
 
       if (isFreshman) {
-        const [mCount, fCount, total] = await Promise.all([
-          getSessionCounts({ ...base, period: 'midterm' }),
-          getSessionCounts({ ...base, period: 'final' }),
-          getSessionCounts(base),
-        ]);
-
-        const untagged = total - mCount - fCount;
-        const untaggedMidShare = Math.floor(untagged * 0.5);
-        const untaggedFinalShare = untagged - untaggedMidShare;
-
-        setMidtermCount(mCount + untaggedMidShare);
-        setFinalCount(fCount + untaggedFinalShare);
-        setUntaggedCount(untagged);
+        const total = await getSessionCounts(base);
+        const half = Math.floor(total / 2);
+        setMidtermCount(half);
+        setFinalCount(total - half);
+        setUntaggedCount(total);
       } else if (isEntrance) {
         // Fetch counts for all years in parallel
         const yearCounts = await Promise.all(
@@ -166,7 +158,9 @@ function SessionsContent() {
     } else if (year) {
       params.set('year', year);
     }
-    if (isFreshman) params.set('period', activeTab);
+    
+    // We do NOT set 'period' here anymore because the DB doesn't have it populated.
+    // The sessionOffset handles slicing it properly.
 
     router.push(`/exam/session?${params.toString()}`);
   };
