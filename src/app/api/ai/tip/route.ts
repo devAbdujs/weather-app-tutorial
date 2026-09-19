@@ -4,12 +4,20 @@ import { getServerSession } from '@/lib/session';
 import { getNextGeminiKey } from '@/lib/geminiKeyRotation';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText } from 'ai';
+import { checkRateLimit } from '@/lib/rateLimiter';
 
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const ip = req.ip || req.headers.get('x-forwarded-for') || session.telegram_id || 'unknown';
+    const rateLimitInfo = checkRateLimit(ip, 1, 60000); // Max 1 tip per minute
+    
+    if (!rateLimitInfo.allowed) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 
     const body = await req.json();

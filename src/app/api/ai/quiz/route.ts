@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     }
 
     const ip = req.ip || req.headers.get('x-forwarded-for') || session.telegram_id || 'unknown';
-    const rateLimitInfo = checkRateLimit(ip, 10, 60000);
+    const rateLimitInfo = checkRateLimit(ip, 1, 60000);
     
     if (!rateLimitInfo.allowed) {
       return NextResponse.json({ error: 'Too many AI requests. Please wait a minute.' }, { status: 429 });
