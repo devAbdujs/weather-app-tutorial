@@ -34,7 +34,11 @@ function CallbackContent() {
     fetch('/api/auth/oidc', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, code_verifier: codeVerifier })
+      body: JSON.stringify({ 
+        code, 
+        code_verifier: codeVerifier,
+        redirect_uri: window.location.origin + '/auth/callback'
+      })
     })
     .then(res => res.json().then(data => ({ status: res.status, ok: res.ok, data })))
     .then(({ ok, data }) => {
