@@ -207,7 +207,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
         <div className="flex-1 overflow-y-auto py-2 space-y-6 text-[15px] leading-relaxed text-slate-800 custom-scrollbar pr-2">
           {messages.length === 1 && !isLoading && (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-60 animate-fade-up">
-              <Bot className="w-12 h-12 text-slate-300" />
+              <User className="w-12 h-12 text-slate-300" />
               <p className="text-sm font-medium text-slate-500">Don't know the answer?<br/>Just ask!</p>
             </div>
           )}
@@ -215,7 +215,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
             <div key={msg.id} className={`flex w-full animate-fade-up ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               {msg.role === 'assistant' && (
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 mr-2.5 shrink-0 self-end mb-1 shadow-sm">
-                  <Bot className="w-4 h-4" />
+                  <User className="w-4 h-4" />
                 </div>
               )}
               <div className={`p-4 rounded-2xl max-w-[85%] font-sans shadow-md ${
