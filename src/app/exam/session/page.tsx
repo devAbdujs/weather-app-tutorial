@@ -14,15 +14,16 @@ function ExamSessionPageContent() {
 
   const subject = searchParams.get('subject') || 'All';
   const year = searchParams.get('year') || undefined;
+  const mode = searchParams.get('mode') || 'exam'; // Default to exam
 
   return (
     <ExamSessionLoader 
       examType={examType} 
       sessionSize={sessionSize} 
       sessionOffset={sessionOffset}
-      
       subject={subject}
       year={year}
+      mode={mode as 'practice' | 'exam'}
     />
   );
 }

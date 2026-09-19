@@ -15,14 +15,13 @@ interface ExamSessionLoaderProps {
   
   subject?: string;
   year?: string;
+  mode?: 'practice' | 'exam';
 }
 
 export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ 
-  examType, sessionSize, sessionOffset, subject, year
+  examType, sessionSize, sessionOffset, subject, year, mode = 'exam'
 }) => {
   const router = useRouter();
-  const onExit = () => router.push('/practice');
-  
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,30 +32,32 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         const dbExamType = examType || 'entrance';
         
         // Generate a unique cache key for this exact session
-        const cacheKey = `exam_${dbExamType}_${subject}_${year}_${sessionOffset}_${sessionSize}`;
+        const cacheKey = `exam_${dbExamType}_${subject}_${year || 'all'}_${sessionOffset}_${sessionSize}`;
         
-        // 1. Try to load instantly from IndexedDB cache
-        const cachedData = await getCachedQuestions(cacheKey);
-        if (cachedData && cachedData.length > 0) {
-          setQuestions(cachedData.sort(() => 0.5 - Math.random()));
+        // 1. Try to load from IndexedDB cache first
+        const cached = await getCachedQuestions(cacheKey);
+        if (cached && cached.length > 0) {
+          setQuestions(cached);
           setLoading(false);
-          return;
+          return; // Skip network fetch
         }
 
-        // 2. Cache miss -> Fetch from Supabase
+        // 2. Fetch from Supabase
         const supabase = createClient();
+        
         let query = supabase
           .from('questions')
           .select('*')
-          .eq('exam_type', dbExamType)
-          .not('answer', 'is', null)
-          .neq('answer', '');
+          .eq('exam_type', dbExamType);
 
-        // Apply dynamic filters
-        if (subject && subject !== 'All') query = query.eq('subject', subject);
-        if (year) query = query.eq('year_ec', parseInt(year, 10));
+        if (subject && subject !== 'All') {
+          query = query.eq('subject', subject);
+        }
+        
+        if (year) {
+          query = query.eq('year', year);
+        }
 
-        // Fetch exactly the slice we need for this session
         const { data, error } = await query.range(sessionOffset, sessionOffset + sessionSize - 1);
 
         if (error) throw error;
@@ -65,24 +66,21 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         if (data && data.length > 0) {
           await setCachedQuestions(cacheKey, data as Question[]);
         }
-
-        // Randomize questions *within* the session slice as requested
-        const shuffled = (data as Question[]).sort(() => 0.5 - Math.random());
-        setQuestions(shuffled);
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Failed to fetch questions';
-        console.error("Error fetching questions:", msg);
-        setError(msg);
+        
+        setQuestions(data as Question[]);
+      } catch (err: any) {
+        console.error("Failed to load questions:", err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchQuestions();
-  }, [examType, subject, year, sessionOffset, sessionSize]);
+  }, [examType, sessionSize, sessionOffset, subject, year]);
 
   if (loading) {
-    return <SkeletonScreen message={`Building Session...`} />;
+    return <SkeletonScreen />;
   }
 
   if (error) {
@@ -91,9 +89,11 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
           <span className="text-3xl">⚠️</span>
         </div>
-        <h2 className="text-xl font-black text-primary">Connection Error</h2>
-        <p className="text-sm font-bold text-tertiary mt-2">{error}</p>
-        <button onClick={onExit} className="mt-8 px-6 py-3 bg-primary text-card font-bold rounded-xl focus-ring active:scale-95">Go Back</button>
+        <h2 className="text-xl font-bold text-primary mb-2">Error Loading Session</h2>
+        <p className="text-sm text-secondary mb-6">{error}</p>
+        <button onClick={() => router.back()} className="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-sm active:scale-95 transition-all">
+          Go Back
+        </button>
       </div>
     );
   }
@@ -104,25 +104,26 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         <span className="text-4xl mb-4">📭</span>
         <h2 className="text-xl font-black text-primary">Session Empty</h2>
         <p className="text-sm font-bold text-tertiary mt-2">No questions available for this session slice.</p>
-        <button onClick={onExit} className="mt-8 px-6 py-3 bg-primary text-card font-bold rounded-xl focus-ring active:scale-95">Go Back</button>
+        <button onClick={() => router.back()} className="mt-8 px-8 h-12 bg-primary text-card rounded-[14px] font-bold shadow-md active:scale-95 transition-all">
+          Go Back
+        </button>
       </div>
     );
   }
 
-  let title = subject || 'Practice Session';
-  if (examType === 'freshman') title = `${subject} (Freshman)`;
-  else if (examType === 'entrance') title = `${subject} (${year})`;
-  else if (examType === 'exit') title = `${subject} (Exit Exam)`;
+  const title = examType === 'freshman' 
+    ? `${subject} • Part ${(sessionOffset / sessionSize) + 1}`
+    : `${subject} ${year || ''} • Session ${(sessionOffset / sessionSize) + 1}`;
 
   return (
     <ExamWorkspace
       questions={questions}
       title={title}
-      isSimulator={true} // Hardcode simulator mode UI layout
-      timeLimitMinutes={examType === 'entrance' ? (sessionSize === 100 ? 120 : 60) : undefined}
+      isSimulator={mode === 'exam'} // Dynamically set simulator mode
+      timeLimitMinutes={mode === 'exam' ? (examType === 'entrance' && sessionSize === 100 ? 120 : 60) : undefined}
       examType={examType as any}
-      subject={subject || 'Mixed'}
-      onExit={onExit}
+      subject={subject}
+      onExit={() => router.back()}
     />
   );
 };

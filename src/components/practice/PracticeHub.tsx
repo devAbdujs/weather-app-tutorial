@@ -58,6 +58,8 @@ export const PracticeHub = () => {
 
   const cache = useRef<Map<string, number>>(new Map());
 
+  const [selectedSession, setSelectedSession] = useState<{ id: number, count: number } | null>(null);
+
   // Fetch counts when filters change
   useEffect(() => {
     let active = true;
@@ -111,13 +113,14 @@ export const PracticeHub = () => {
     return list;
   }, [availableQuestions, sessionSize]);
 
-  const handleStartSession = (sessionId: number, count: number) => {
+  const handleStartSession = (sessionId: number, count: number, mode: 'practice' | 'exam') => {
     haptic.impact('heavy');
     // Build query params
     const params = new URLSearchParams({
-      examType: targetExam,
+      examType: targetExam || '',
       sessionSize: count.toString(),
       sessionOffset: ((sessionId - 1) * sessionSize).toString(),
+      mode: mode,
     });
     
     if (targetExam === 'freshman') {
@@ -233,7 +236,7 @@ export const PracticeHub = () => {
               {sessions.map((s) => (
                 <button
                   key={s.id}
-                  onClick={() => handleStartSession(s.id, s.count)}
+                  onClick={() => setSelectedSession({ id: s.id, count: s.count })}
                   className="w-full group bg-card p-4 rounded-2xl border-2 border-black/5 hover:border-primary/50 shadow-sm active:scale-[0.98] transition-all flex items-center justify-between"
                 >
                   <div className="flex items-center gap-4">
@@ -259,6 +262,45 @@ export const PracticeHub = () => {
           )}
         </div>
       </div>
+
+      {/* MODE SELECTION MODAL */}
+      {selectedSession && (
+        <div className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex flex-col justify-end p-4 animate-fade-in" onClick={() => setSelectedSession(null)}>
+          <div className="bg-card w-full max-w-md mx-auto rounded-[32px] p-6 shadow-2xl animate-scale-bounce" onClick={e => e.stopPropagation()}>
+            <div className="w-12 h-1.5 bg-black/10 rounded-full mx-auto mb-6" />
+            <h3 className="text-2xl font-black text-primary tracking-tight mb-2">Choose Mode</h3>
+            <p className="text-sm font-medium text-tertiary mb-6">How would you like to tackle this session?</p>
+            
+            <div className="space-y-3">
+              <button 
+                onClick={() => handleStartSession(selectedSession.id, selectedSession.count, 'practice')} 
+                className="w-full text-left p-4 rounded-[20px] bg-emerald-50 border-2 border-emerald-500/20 hover:border-emerald-500 hover:bg-emerald-100 transition-all active:scale-[0.98] flex items-center gap-4"
+              >
+                <div className="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                  <BookOpen className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-emerald-950 text-base mb-0.5">Practice Mode</h4>
+                  <p className="text-xs font-medium text-emerald-900/70">Instant feedback, learn as you go</p>
+                </div>
+              </button>
+
+              <button 
+                onClick={() => handleStartSession(selectedSession.id, selectedSession.count, 'exam')} 
+                className="w-full text-left p-4 rounded-[20px] bg-rose-50 border-2 border-rose-500/20 hover:border-rose-500 hover:bg-rose-100 transition-all active:scale-[0.98] flex items-center gap-4"
+              >
+                <div className="w-12 h-12 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0">
+                  <Layers className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-rose-950 text-base mb-0.5">Exam Mode</h4>
+                  <p className="text-xs font-medium text-rose-900/70">Timed, answers hidden until the end</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
