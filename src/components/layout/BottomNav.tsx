@@ -3,41 +3,43 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookMarked, TreeDeciduous } from 'lucide-react';
+import { Home, BookOpen, BarChart2, User } from 'lucide-react';
 
 export const BottomNav = () => {
   const pathname = usePathname() || '';
 
-  // Hide BottomNav during active focus modes so it doesn't block footers
+  // Hide during deep focus screens
   const isFocusMode = pathname.startsWith('/exam/') || pathname.startsWith('/notebook/') || pathname.startsWith('/notes/');
   if (isFocusMode) return null;
 
   const navItems = [
-    { name: 'Home', href: '/', icon: Home },
-    { name: 'Notebook', href: '/notebook/All', icon: BookMarked },
-    { name: 'Mastery', href: '/mastery', icon: TreeDeciduous },
+    { name: 'Home',     href: '/',          icon: Home      },
+    { name: 'Practice', href: '/practice',  icon: BookOpen  },
+    { name: 'Progress', href: '/mastery',   icon: BarChart2 },
+    { name: 'Profile',  href: '/profile',   icon: User      },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-black/5 pb-safe pt-2 px-4 shadow-[0_-4px_24px_rgba(0,0,0,0.02)] sm:max-w-md sm:mx-auto">
-      <div className="flex justify-between items-center h-14">
+    <div className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto pb-safe bg-card/95 backdrop-blur-xl border-t border-black/5 shadow-[0_-1px_0_rgba(0,0,0,0.04),0_-8px_24px_rgba(0,0,0,0.04)]">
+      <div className="flex justify-around items-center h-16 px-2">
         {navItems.map((item) => {
-          // Precise active logic
-          const isActive = 
-            item.href === '/' ? pathname === '/' : pathname.startsWith(item.href.split('/')[1]);
+          const isActive =
+            item.href === '/'
+              ? pathname === '/'
+              : pathname.startsWith(item.href);
           const Icon = item.icon;
 
           return (
             <Link key={item.name} href={item.href} className="flex-1">
-              <div className="flex flex-col items-center justify-center gap-1 group active:scale-95 transition-transform">
-                <div className={`flex items-center justify-center w-12 h-8 rounded-full transition-colors ${
-                  isActive ? 'bg-primary/10' : 'bg-transparent'
+              <div className="flex flex-col items-center justify-center gap-1 active:scale-90 transition-transform duration-150">
+                <div className={`relative flex items-center justify-center w-12 h-7 rounded-full transition-all duration-200 ${
+                  isActive ? 'bg-primary' : 'bg-transparent'
                 }`}>
-                  <Icon className={`w-5 h-5 transition-colors ${
-                    isActive ? 'text-primary' : 'text-tertiary group-hover:text-secondary'
+                  <Icon className={`w-[18px] h-[18px] transition-colors duration-200 ${
+                    isActive ? 'text-white' : 'text-tertiary'
                   }`} />
                 </div>
-                <span className={`text-[10px] font-bold transition-colors ${
+                <span className={`text-[10px] font-bold tracking-wide transition-colors duration-200 ${
                   isActive ? 'text-primary' : 'text-tertiary'
                 }`}>
                   {item.name}

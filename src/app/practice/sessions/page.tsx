@@ -59,6 +59,18 @@ function SessionsContent() {
 
   const handleStartSession = (sessionId: number, count: number, mode: 'practice' | 'exam') => {
     haptic.impact('heavy');
+    
+    // Save last session for "Continue where I left off" on Home
+    try {
+      localStorage.setItem('temari_last_session', JSON.stringify({
+        subject,
+        examType: examType || '',
+        sessionId,
+        sessionSize: count,
+        mode,
+      }));
+    } catch {}
+
     const params = new URLSearchParams({
       examType: examType || '',
       sessionSize: count.toString(),
@@ -75,27 +87,25 @@ function SessionsContent() {
   const title = examType === 'entrance' && year ? `${subject} (${year})` : subject;
 
   return (
-    <div className="min-h-screen bg-ground pb-24 text-primary">
-      <header className="bg-primary text-card pt-safe pb-6 px-4 rounded-b-[32px] shadow-sm relative overflow-hidden flex flex-col pt-8">
-        <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
-        <div className="flex items-center gap-3 relative z-10 mb-4">
-          <button onClick={() => { haptic.selection(); router.back(); }} className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-white/10 hover:bg-white/20 transition-colors">
-            <ChevronLeft className="w-6 h-6 text-white" />
-          </button>
-          <div>
-            <h1 className="text-xl font-black tracking-tight">{title}</h1>
-            <p className="text-white/80 font-medium text-xs mt-0.5 capitalize">
-              {examType} {examType === 'entrance' ? 'Exams' : 'Sessions'}
-            </p>
-          </div>
+    <div className="min-h-screen bg-ground pb-24 text-primary animate-fade-in">
+      {/* ── HEADER ── */}
+      <div className="px-5 pt-safe pt-5 pb-4 flex items-center gap-3">
+        <button
+          onClick={() => { haptic.selection(); router.back(); }}
+          className="w-10 h-10 flex items-center justify-center rounded-[14px] bg-card border border-black/5 text-secondary hover:text-primary active:scale-95 transition-all shadow-sm"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+        <div>
+          <h1 className="text-[22px] font-black text-primary tracking-tight leading-tight">{title}</h1>
+          <p className="text-xs font-medium text-tertiary capitalize mt-0.5">
+            {examType === 'entrance' ? 'EUEE Past Papers' : examType === 'exit' ? 'Exit Exam Sessions' : 'Freshman Practice'}
+          </p>
         </div>
-      </header>
+      </div>
 
-      <div className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Layers className="w-5 h-5 text-accent-blue" />
-          <h2 className="text-xl font-black text-primary">Question Bank</h2>
-        </div>
+      <div className="px-5">
+        <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-4">Available sessions</p>
 
         {loading ? (
           <div className="flex flex-col gap-3">

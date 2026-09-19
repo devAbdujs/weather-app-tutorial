@@ -7,28 +7,42 @@ import { useAppStore } from '@/store/useAppStore';
 import { Compass, ChevronRight } from 'lucide-react';
 
 const FRESHMAN_COURSES = [
-  { id: 'English', label: 'English' },
-  { id: 'Psychology', label: 'Psychology' },
-  { id: 'Logic', label: 'Logic' },
-  { id: 'Mathematics for Natural Sciences', label: 'Maths_Ns' },
-  { id: 'Geography', label: 'Geography' },
-  { id: 'Global Trends', label: 'Global' },
-  { id: 'Economics', label: 'Economics' },
-  { id: 'Applied Math I', label: 'Applied Math' },
-  { id: 'Emerging Technology', label: 'Emerging Tech' },
-  { id: 'Civics', label: 'Civics' },
-  { id: 'Anthropology', label: 'Anthropology' },
-  { id: 'Inclusiveness', label: 'Inclusiveness' },
+  { id: 'English', emoji: '📖', color: 'bg-blue-50 border-blue-100' },
+  { id: 'Psychology', emoji: '🧠', color: 'bg-violet-50 border-violet-100' },
+  { id: 'Logic', emoji: '💡', color: 'bg-amber-50 border-amber-100' },
+  { id: 'Mathematics for Natural Sciences', emoji: '📐', color: 'bg-emerald-50 border-emerald-100' },
+  { id: 'Geography', emoji: '🌍', color: 'bg-sky-50 border-sky-100' },
+  { id: 'Global Trends', emoji: '🌐', color: 'bg-teal-50 border-teal-100' },
+  { id: 'Economics', emoji: '📈', color: 'bg-orange-50 border-orange-100' },
+  { id: 'Applied Math I', emoji: '🔢', color: 'bg-indigo-50 border-indigo-100' },
+  { id: 'Emerging Technology', emoji: '🚀', color: 'bg-rose-50 border-rose-100' },
+  { id: 'Civics', emoji: '🏛️', color: 'bg-stone-50 border-stone-100' },
+  { id: 'Anthropology', emoji: '🫂', color: 'bg-pink-50 border-pink-100' },
+  { id: 'Inclusiveness', emoji: '🤝', color: 'bg-lime-50 border-lime-100' },
 ];
 
-const EUEE_SUBJECTS = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Scholastic Aptitude (SAT)', 'Geography', 'History', 'Economics', 'Civics & Citizenship', 'Agriculture'];
+const EUEE_SUBJECTS = [
+  'Mathematics', 'Physics', 'Chemistry', 'Biology', 'English',
+  'Scholastic Aptitude (SAT)', 'Geography', 'History', 'Economics',
+  'Civics & Citizenship', 'Agriculture'
+];
 const EUEE_YEARS = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010];
 
 const EXIT_DEPARTMENTS = [
-  'Computer Science', 'Software Engineering', 'Information Technology', 'Information Systems',
-  'Civil Engineering', 'Mechanical Engineering', 'Electrical Engineering',
-  'Accounting and Finance', 'Management', 'Economics',
-  'Law', 'Medicine', 'Nursing', 'Pharmacy'
+  { id: 'Computer Science', emoji: '💻' },
+  { id: 'Software Engineering', emoji: '⚙️' },
+  { id: 'Information Technology', emoji: '🖧' },
+  { id: 'Information Systems', emoji: '📊' },
+  { id: 'Civil Engineering', emoji: '🏗️' },
+  { id: 'Mechanical Engineering', emoji: '🔧' },
+  { id: 'Electrical Engineering', emoji: '⚡' },
+  { id: 'Accounting and Finance', emoji: '💰' },
+  { id: 'Management', emoji: '📋' },
+  { id: 'Economics', emoji: '📈' },
+  { id: 'Law', emoji: '⚖️' },
+  { id: 'Medicine', emoji: '🩺' },
+  { id: 'Nursing', emoji: '💊' },
+  { id: 'Pharmacy', emoji: '🧪' },
 ];
 
 export const PracticeHub = () => {
@@ -36,127 +50,122 @@ export const PracticeHub = () => {
   const router = useRouter();
   const targetExam = useAppStore(s => s.userProfile?.target_exam);
 
-  // Entrance State
+  // Entrance state
   const [subject, setSubject] = useState(EUEE_SUBJECTS[0]);
   const [year, setYear] = useState(EUEE_YEARS[0]);
 
-  // Exit State
-  const [dept, setDept] = useState(EXIT_DEPARTMENTS[0]);
-
   useEffect(() => {
-    setBackButton(true, () => router.push('/'));
-    return () => setBackButton(false);
-  }, [setBackButton, router]);
+    setBackButton(false);
+  }, [setBackButton]);
 
-  const handleFreshmanSelect = (courseId: string) => {
-    haptic.selection();
-    const params = new URLSearchParams({ examType: 'freshman', subject: courseId });
-    router.push(`/practice/sessions?${params.toString()}`);
+  const navigate = (examType: string, params: Record<string, string>) => {
+    const p = new URLSearchParams({ examType, ...params });
+    router.push(`/practice/sessions?${p.toString()}`);
   };
 
-  const handleExitSelect = (deptId: string) => {
-    haptic.selection();
-    const params = new URLSearchParams({ examType: 'exit', subject: deptId });
-    router.push(`/practice/sessions?${params.toString()}`);
-  };
-
-  const handleEntranceContinue = () => {
-    haptic.impact('heavy');
-    const params = new URLSearchParams({ examType: 'entrance', subject, year: year.toString() });
-    router.push(`/practice/sessions?${params.toString()}`);
+  const examTypeLabel = () => {
+    if (targetExam === 'entrance') return 'Grade 12 EUEE';
+    if (targetExam === 'freshman') return 'University Freshman';
+    if (targetExam === 'exit') return 'University Exit Exam';
+    return 'Practice';
   };
 
   return (
-    <div className="min-h-screen bg-ground pb-24 text-primary">
-      <header className="bg-primary text-card pt-8 pb-6 px-6 rounded-b-[32px] shadow-sm relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
-        <h1 className="text-3xl font-black tracking-tight relative z-10">Practice Hub</h1>
-        <p className="text-white/80 font-medium text-sm mt-1 relative z-10">
-          {targetExam === 'freshman' ? 'University Freshman Exams' : targetExam === 'entrance' ? 'Grade 12 EUEE' : 'University Exit Exams'}
-        </p>
-      </header>
+    <div className="flex flex-col pt-safe pb-8 animate-fade-in">
 
-      <div className="p-6 space-y-6">
-        
-        {/* FRESHMAN HIERARCHY */}
+      {/* ── PAGE HEADER ── */}
+      <div className="px-5 pt-5 pb-5">
+        <h1 className="text-[26px] font-black text-primary tracking-tight">Practice</h1>
+        <p className="text-sm font-medium text-tertiary mt-0.5">{examTypeLabel()}</p>
+      </div>
+
+      <div className="px-5">
+
+        {/* ── FRESHMAN: course grid ── */}
         {targetExam === 'freshman' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="space-y-3">
-              <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">Select Course</label>
-              <div className="grid grid-cols-2 gap-3">
-                {FRESHMAN_COURSES.map(c => (
-                  <button 
-                    key={c.id} 
-                    onClick={() => handleFreshmanSelect(c.id)}
-                    className="px-4 py-4 rounded-[20px] bg-card border-2 border-black/5 hover:border-primary/50 text-primary shadow-sm font-bold transition-all text-left flex flex-col justify-between h-24 active:scale-95 group"
-                  >
-                    <span className="text-sm leading-tight">{c.label}</span>
-                    <div className="w-8 h-8 rounded-full bg-ground flex items-center justify-center self-end group-hover:bg-primary group-hover:text-white transition-colors">
-                      <ChevronRight className="w-4 h-4" />
-                    </div>
-                  </button>
-                ))}
-              </div>
+          <div className="animate-fade-in">
+            <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-4">Select a course</p>
+            <div className="grid grid-cols-2 gap-3">
+              {FRESHMAN_COURSES.map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => { haptic.selection(); navigate('freshman', { subject: c.id }); }}
+                  className={`group p-4 rounded-[20px] border-2 ${c.color} active:scale-95 transition-all text-left flex flex-col gap-3 shadow-sm`}
+                >
+                  <span className="text-2xl">{c.emoji}</span>
+                  <div className="flex items-end justify-between">
+                    <span className="text-sm font-black text-primary leading-tight flex-1">{c.id}</span>
+                    <ChevronRight className="w-4 h-4 text-tertiary shrink-0 group-hover:text-primary transition-colors" />
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-        {/* ENTRANCE HIERARCHY */}
+        {/* ── ENTRANCE: subject + year picker ── */}
         {targetExam === 'entrance' && (
-          <div className="space-y-6 animate-fade-in flex flex-col min-h-[60vh]">
-            <div className="space-y-3">
-              <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">Select Subject</label>
+          <div className="animate-fade-in space-y-5">
+            <div>
+              <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-3">Select subject</p>
               <div className="grid grid-cols-2 gap-2">
                 {EUEE_SUBJECTS.map(s => (
-                  <button key={s} onClick={() => { haptic.selection(); setSubject(s); }}
-                    className={`px-3 py-3 rounded-[16px] border-2 text-sm font-bold transition-all text-left ${subject === s ? 'bg-primary text-card border-primary shadow-sm' : 'bg-card text-secondary border-black/5'}`}
+                  <button
+                    key={s}
+                    onClick={() => { haptic.selection(); setSubject(s); }}
+                    className={`px-3 py-3 rounded-[14px] border-2 text-sm font-bold transition-all text-left active:scale-95 ${
+                      subject === s
+                        ? 'bg-primary text-white border-primary shadow-sm'
+                        : 'bg-card text-secondary border-black/5 hover:border-black/15'
+                    }`}
                   >{s}</button>
                 ))}
               </div>
             </div>
-            
-            <div className="space-y-3">
-              <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">Year (E.C.)</label>
-              <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+
+            <div>
+              <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-3">Year (E.C.)</p>
+              <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
                 {EUEE_YEARS.map(y => (
-                  <button key={y} onClick={() => { haptic.selection(); setYear(y); }}
-                    className={`shrink-0 px-5 py-3 rounded-2xl border-2 font-bold transition-all ${year === y ? 'bg-primary text-card border-primary shadow-[0_4px_12px_rgba(27,58,107,0.2)]' : 'bg-card text-secondary border-black/5 hover:border-black/10'}`}
+                  <button
+                    key={y}
+                    onClick={() => { haptic.selection(); setYear(y); }}
+                    className={`shrink-0 px-4 py-2.5 rounded-[14px] border-2 font-bold text-sm transition-all active:scale-95 ${
+                      year === y
+                        ? 'bg-primary text-white border-primary shadow-sm'
+                        : 'bg-card text-secondary border-black/5'
+                    }`}
                   >{y}</button>
                 ))}
               </div>
             </div>
-            
-            <div className="mt-auto pt-6">
-              <button 
-                onClick={handleEntranceContinue}
-                className="w-full h-14 bg-primary text-white rounded-[20px] font-black flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all"
-              >
-                <Compass className="w-5 h-5" />
-                View Available Sessions
-              </button>
-            </div>
+
+            <button
+              onClick={() => { haptic.impact('heavy'); navigate('entrance', { subject, year: year.toString() }); }}
+              className="w-full h-14 bg-primary text-white rounded-[20px] font-black flex items-center justify-center gap-2 shadow-sm active:scale-[0.97] transition-all"
+            >
+              <Compass className="w-5 h-5" />
+              View Sessions
+            </button>
           </div>
         )}
 
-        {/* EXIT HIERARCHY */}
+        {/* ── EXIT: department list ── */}
         {targetExam === 'exit' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="space-y-3">
-              <label className="text-xs font-bold text-tertiary uppercase tracking-widest pl-1">Select Department</label>
-              <div className="flex flex-col gap-3">
-                {EXIT_DEPARTMENTS.map(d => (
-                  <button 
-                    key={d} 
-                    onClick={() => handleExitSelect(d)}
-                    className="w-full p-4 rounded-[20px] bg-card border-2 border-black/5 hover:border-primary/50 text-primary shadow-sm font-bold transition-all text-left flex items-center justify-between active:scale-95 group"
-                  >
-                    <span className="text-sm leading-tight">{d}</span>
-                    <div className="w-8 h-8 rounded-full bg-ground flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-                      <ChevronRight className="w-4 h-4" />
-                    </div>
-                  </button>
-                ))}
-              </div>
+          <div className="animate-fade-in">
+            <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-4">Select department</p>
+            <div className="flex flex-col gap-2.5">
+              {EXIT_DEPARTMENTS.map(d => (
+                <button
+                  key={d.id}
+                  onClick={() => { haptic.selection(); navigate('exit', { subject: d.id }); }}
+                  className="w-full group bg-card p-4 rounded-[20px] border-2 border-black/5 hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all flex items-center gap-4"
+                >
+                  <span className="text-xl w-8 text-center">{d.emoji}</span>
+                  <span className="flex-1 text-sm font-bold text-primary text-left">{d.id}</span>
+                  <ChevronRight className="w-4 h-4 text-tertiary group-hover:text-primary transition-colors" />
+                </button>
+              ))}
             </div>
           </div>
         )}
