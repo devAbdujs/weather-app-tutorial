@@ -112,3 +112,11 @@ export async function getSavedMistakes() {
     
   return data?.map(d => d.question_id) || [];
 }
+
+/**
+ * Logs out the user by clearing the HttpOnly session cookie.
+ */
+export async function logout() {
+  cookies().delete('es_session');
+  return { success: true };
+}

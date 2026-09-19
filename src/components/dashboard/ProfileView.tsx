@@ -1,20 +1,29 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { LogOut, Award, ChevronRight, Zap, GraduationCap, Target, BarChart2 } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
+import { logout } from '@/app/actions/user';
 
 export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) => {
   const router = useRouter();
   const { haptic } = useTelegram();
   const setSetupModalType = useAppStore(s => s.setSetupModalType);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
     haptic.impact('heavy');
-    document.cookie = "es_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = '/';
+    try {
+      await logout();
+      window.location.href = '/';
+    } catch (e) {
+      console.error('Logout failed', e);
+      setIsLoggingOut(false);
+    }
   };
 
   const handleRetakeOnboarding = () => {
@@ -144,9 +153,15 @@ export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) 
         )}
 
         {/* Logout */}
-        <button onClick={handleLogout} className="w-full mt-2 bg-card border border-red-500/10 shadow-sm rounded-[24px] p-5 flex items-center justify-center gap-2 active:scale-95 transition-all group hover:bg-red-500/5">
-          <LogOut className="w-5 h-5 text-red-500 group-active:scale-90 transition-transform" />
-          <span className="text-[15px] font-black text-red-500 tracking-wide">Sign Out</span>
+        <button disabled={isLoggingOut} onClick={handleLogout} className="w-full mt-2 bg-card border border-red-500/10 shadow-sm rounded-[24px] p-5 flex items-center justify-center gap-2 active:scale-95 transition-all group hover:bg-red-500/5 disabled:opacity-50 disabled:active:scale-100">
+          {isLoggingOut ? (
+            <div className="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <LogOut className="w-5 h-5 text-red-500 group-active:scale-90 transition-transform" />
+          )}
+          <span className="text-[15px] font-black text-red-500 tracking-wide">
+            {isLoggingOut ? 'Signing Out...' : 'Sign Out'}
+          </span>
         </button>
       </div>
 
