@@ -160,37 +160,35 @@ export const HomeHub: React.FC = () => {
 
       <div className="px-5 space-y-4">
 
-        {/* ── HERO CTA ── */}
-        {lastSession ? (
+        {/* ── HERO CTA (Always present) ── */}
+        <button
+          onClick={() => { haptic.impact('heavy'); router.push('/practice'); }}
+          className="w-full group bg-primary p-5 rounded-[24px] shadow-md active:scale-[0.97] transition-all text-left relative overflow-hidden"
+        >
+          <div className="absolute -right-6 -top-6 w-28 h-28 bg-white/5 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700" />
+          <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1 relative z-10">31,000+ real past papers</p>
+          <h2 className="text-xl font-black text-white tracking-tight relative z-10 mb-3">Practice & Exams</h2>
+          <div className="flex items-center justify-between relative z-10">
+            <span className="text-white/70 text-xs font-bold">Pick a subject →</span>
+            <div className="w-9 h-9 bg-white/15 rounded-full flex items-center justify-center group-hover:bg-white/25 transition-colors">
+              <BookOpen className="w-4 h-4 text-white" />
+            </div>
+          </div>
+        </button>
+
+        {/* ── CONTINUE ROW (If session exists) ── */}
+        {lastSession && (
           <button
             onClick={handleContinue}
-            className="w-full group bg-primary p-5 rounded-[24px] shadow-md active:scale-[0.97] transition-all text-left relative overflow-hidden"
+            className="w-full group bg-card p-4 rounded-[20px] border border-black/5 hover:border-primary/20 shadow-sm active:scale-[0.97] transition-all text-left flex items-center justify-between"
           >
-            <div className="absolute -right-6 -top-6 w-28 h-28 bg-white/5 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700" />
-            <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1 relative z-10">Continue where you left off</p>
-            <h2 className="text-xl font-black text-white tracking-tight relative z-10 mb-3">
-              {lastSession.label || lastSession.subject}
-            </h2>
-            <div className="flex items-center justify-between relative z-10">
-              <span className="text-white/70 text-xs font-bold capitalize">{lastSession.mode} mode</span>
-              <div className="w-9 h-9 bg-white/15 rounded-full flex items-center justify-center group-hover:bg-white/25 transition-colors">
-                <ArrowRight className="w-4 h-4 text-white" />
-              </div>
+            <div>
+              <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-0.5">Resume</p>
+              <h3 className="font-black text-primary text-[15px]">{lastSession.subject}</h3>
+              <p className="text-xs font-medium text-tertiary mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
             </div>
-          </button>
-        ) : (
-          <button
-            onClick={() => { haptic.impact('heavy'); router.push('/practice'); }}
-            className="w-full group bg-primary p-5 rounded-[24px] shadow-md active:scale-[0.97] transition-all text-left relative overflow-hidden"
-          >
-            <div className="absolute -right-6 -top-6 w-28 h-28 bg-white/5 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700" />
-            <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1 relative z-10">31,000+ real past papers</p>
-            <h2 className="text-xl font-black text-white tracking-tight relative z-10 mb-3">Start practicing now</h2>
-            <div className="flex items-center justify-between relative z-10">
-              <span className="text-white/70 text-xs font-bold">Pick a subject →</span>
-              <div className="w-9 h-9 bg-white/15 rounded-full flex items-center justify-center group-hover:bg-white/25 transition-colors">
-                <BookOpen className="w-4 h-4 text-white" />
-              </div>
+            <div className="w-10 h-10 bg-primary/5 rounded-[12px] flex items-center justify-center group-hover:bg-primary/10 transition-colors shrink-0">
+              <ArrowRight className="w-5 h-5 text-primary" />
             </div>
           </button>
         )}
