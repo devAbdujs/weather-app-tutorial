@@ -172,10 +172,10 @@ function SessionsContent() {
     <div className="min-h-screen bg-ground pb-28 text-gray-900 animate-fade-in">
 
       {/* ── HEADER ── */}
-      <div className="sticky top-0 z-10 bg-[#F2F2F7]/80 backdrop-blur-xl border-b border-black/5 px-5 pt-safe pt-5 pb-3 mb-4 flex items-center gap-3">
+      <div className="sticky top-0 z-10 bg-ground/90 dark:bg-ground/95 backdrop-blur-xl border-b border-black/5 dark:border-white/8 px-5 pt-safe pt-5 pb-3 mb-4 flex items-center gap-3">
         <button
           onClick={() => { haptic.selection(); router.back(); }}
-          className="w-10 h-10 flex items-center justify-center rounded-[14px] bg-card border border-black/5 text-gray-600 hover:text-gray-900 active:scale-[0.98] active:opacity-80 transition-all shadow-sm shrink-0"
+          className="w-10 h-10 flex items-center justify-center rounded-[14px] bg-card border border-black/5 dark:border-white/8 text-gray-600 hover:text-gray-900 active:scale-[0.98] active:opacity-80 transition-all shadow-sm shrink-0"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -254,7 +254,7 @@ function SessionsContent() {
               <button
                 key={s.id}
                 onClick={() => { haptic.selection(); setSelectedSession(s); }}
-                className="w-full group bg-card p-4 rounded-2xl border border-black/5 shadow-sm hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all flex items-center gap-4"
+                className="w-full group bg-card p-4 rounded-2xl border border-black/5 dark:border-white/8 shadow-sm hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all flex items-center gap-4"
               >
                 <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center font-black text-lg shrink-0 ${
                   isFreshman && activeTab === 'midterm' ? 'bg-blue-50 text-blue-700' : 'bg-violet-50 text-violet-700'
@@ -288,7 +288,7 @@ function SessionsContent() {
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="px-6 pt-6 pb-5 border-b border-black/5">
+            <div className="px-6 pt-6 pb-5 border-b border-black/5 dark:border-white/8">
               <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">{selectedSession.count} questions</p>
               <h3 className="text-2xl font-black text-gray-900 tracking-tight">{selectedSession.label}</h3>
             </div>

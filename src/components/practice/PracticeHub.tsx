@@ -98,7 +98,7 @@ export const PracticeHub = () => {
     <div className="flex flex-col pt-safe pb-8 animate-fade-in">
 
       {/* ── PAGE HEADER ── */}
-      <div className="sticky top-0 z-10 bg-[#F2F2F7]/80 backdrop-blur-xl border-b border-black/5 px-5 pt-safe pt-5 pb-4 mb-5">
+      <div className="sticky top-0 z-10 bg-ground/90 dark:bg-ground/95 backdrop-blur-xl border-b border-black/5 dark:border-white/8 px-5 pt-safe pt-5 pb-4 mb-5">
         <h1 className="text-[28px] font-black text-gray-900 tracking-tight leading-none">Practice</h1>
         <p className="text-[13px] font-bold text-gray-500 mt-1">{examTypeLabel()}</p>
       </div>
@@ -132,7 +132,7 @@ export const PracticeHub = () => {
                 <button
                   key={c.id}
                   onClick={() => { haptic.selection(); navigate('freshman', { subject: c.id }); }}
-                  className="group p-4 rounded-[20px] border border-black/5 bg-card hover:border-primary/30 active:scale-[0.98] active:opacity-80 transition-all text-left flex flex-col gap-3 shadow-sm"
+                  className="group p-4 rounded-[20px] border border-black/5 dark:border-white/8 bg-card hover:border-primary/30 active:scale-[0.98] active:opacity-80 transition-all text-left flex flex-col gap-3 shadow-sm"
                 >
                   <div className={`w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 ${c.color}`}>
                     <c.Icon className="w-5 h-5" strokeWidth={2.5} />
@@ -156,7 +156,7 @@ export const PracticeHub = () => {
                 <button
                   key={c.id}
                   onClick={() => { haptic.selection(); navigate('entrance', { subject: c.id }); }}
-                  className="group p-4 rounded-[20px] border border-black/5 bg-card hover:border-primary/30 active:scale-[0.98] active:opacity-80 transition-all text-left flex flex-col gap-3 shadow-sm"
+                  className="group p-4 rounded-[20px] border border-black/5 dark:border-white/8 bg-card hover:border-primary/30 active:scale-[0.98] active:opacity-80 transition-all text-left flex flex-col gap-3 shadow-sm"
                 >
                   <div className={`w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 ${c.color}`}>
                     <c.Icon className="w-5 h-5" strokeWidth={2.5} />
@@ -175,7 +175,7 @@ export const PracticeHub = () => {
         {targetExam === 'exit' && (
           <div className="animate-fade-in">
             <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 px-2">Select department</p>
-            <div className="bg-card rounded-[24px] border border-black/5 shadow-sm overflow-hidden flex flex-col mb-10">
+            <div className="bg-card rounded-[24px] border border-black/5 dark:border-white/8 shadow-sm overflow-hidden flex flex-col mb-10">
               {EXIT_DEPARTMENTS.map((d, index) => (
                 <React.Fragment key={d.id}>
                   <button

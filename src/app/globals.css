@@ -2,12 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── CSS Custom Properties ─────────────────────────────────────── */
 :root {
-  --background: hsl(220, 15%, 96%);
-  --foreground: hsl(220, 20%, 20%);
+  /* Light mode surfaces */
+  --background:    #F2F2F7;
+  --foreground:    #1C1C1E;
+  --surface:       #FFFFFF;
+  --surface-2:     #E5E5EA;
+  --border:        rgba(0, 0, 0, 0.06);
+  --border-strong: rgba(0, 0, 0, 0.12);
+
+  /* Brand */
+  --primary:       #1B3A6B;
+  --primary-rgb:   27, 58, 107;
+  --accent:        #F5C518;
+
+  /* Text */
+  --text-primary:  #1C1C1E;
+  --text-secondary:#6C6C70;
+  --text-tertiary: #AEAEB2;
 }
 
+.dark {
+  --background:    #000000;
+  --foreground:    #F2F2F7;
+  --surface:       #1C1C1E;
+  --surface-2:     #2C2C2E;
+  --border:        rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
+
+  --primary:       #4A90D9;
+  --primary-rgb:   74, 144, 217;
+  --accent:        #F5C518;
+
+  --text-primary:  #F2F2F7;
+  --text-secondary:#AEAEB2;
+  --text-tertiary: #6C6C70;
+}
+
+/* ─── Base Reset ─────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
+
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
 
 body {
   background-color: var(--background);
@@ -17,11 +58,15 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ─── Scrollbar ──────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
+.dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
+.dark ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 
+/* ─── Utilities ──────────────────────────────────────────────────── */
 @layer utilities {
   .text-balance { text-wrap: balance; }
   .tabular-nums { font-variant-numeric: tabular-nums; }
@@ -39,35 +84,23 @@ body {
   .backface-hidden { backface-visibility: hidden; }
   .rotate-y-180 { transform: rotateY(180deg); }
 
-  /* Neobrutalist Interactions */
-  . {
-    border: 2px solid #1a1a1a;
-    box-shadow: 4px 4px 0px #1a1a1a;
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
-  }
-  .:active:not(:disabled) {
-    transform: translate(4px, 4px);
-    box-shadow: 0px 0px 0px #1a1a1a;
-  }
-
   .ease-spring { transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   .ease-snap { transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
 
   .focus-ring { outline: none; }
   .focus-ring:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px hsl(220, 15%, 96%), 0 0 0 4px hsl(220, 20%, 20%);
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--primary);
   }
 
   .stagger-1 { animation-delay: 0.04s; }
   .stagger-2 { animation-delay: 0.08s; }
 
-  /* Safe area padding for mobile notched devices (iPhone/Android) */
   .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
   .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
 }
 
-/* Exam Mode Override */
+/* ─── Exam Mode ──────────────────────────────────────────────────── */
 .exam-mode-active {
   filter: grayscale(100%);
   background-color: #f0f0f0 !important;
@@ -77,6 +110,6 @@ body {
   color: #111 !important;
 }
 .exam-mode-active .text-error {
-  color: #ff0000 !important; /* Keep timer red */
+  color: #ff0000 !important;
   filter: none;
 }

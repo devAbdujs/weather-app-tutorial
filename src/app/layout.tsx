@@ -40,30 +40,46 @@ export const viewport: Viewport = {
 };
 
 import { getServerSession } from '@/lib/session';
-import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { ClientAuthDetector } from '@/components/auth/ClientAuthDetector';
 import { StoreInitializer } from '@/components/auth/StoreInitializer';
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { PWARegistry } from '@/components/layout/PWARegistry';
-
 import { Suspense } from 'react';
 import Loading from './loading';
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
+// Inline script — runs before paint to prevent FOUC.
+// Reads localStorage 'theme' or falls back to system preference.
+const themeScript = `
+(function() {
+  try {
+    var stored = localStorage.getItem('theme');
+    if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+    // Apply Telegram theme color if in Mini App
+    if (window.Telegram && window.Telegram.WebApp) {
+      var tgBg = window.Telegram.WebApp.backgroundColor || (window.Telegram.WebApp.themeParams && window.Telegram.WebApp.themeParams.bg_color);
+      if (tgBg) document.documentElement.style.backgroundColor = tgBg;
+    }
+  } catch (e) {}
+})();
+`;
 
 async function AppContent({ children }: { children: React.ReactNode }) {
   const session = await getServerSession();
-  
+
   if (!session) {
     return <ClientAuthDetector />;
   }
 
-  // Use the cached profile straight from the encrypted session cookie!
-  // No blocking database calls on the root level! Instant render!
   const formattedProfile = {
     telegram_id: session.telegram_id,
     first_name: session.first_name,
     target_exam: session.target_exam || null,
     stream: session.stream || '',
-    daily_streak: 0, // Hydrated client-side by HomeHub
+    daily_streak: 0,
   };
 
   return (
@@ -74,39 +90,19 @@ async function AppContent({ children }: { children: React.ReactNode }) {
   );
 }
 
-import { Analytics } from "@vercel/analytics/next"
-import { SpeedInsights } from "@vercel/speed-insights/next"
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Telegram WebApp Script */}
+        {/* Anti-FOUC theme script — must run synchronously before first paint */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/* Telegram WebApp SDK */}
         <Script
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                if (window.Telegram && window.Telegram.WebApp) {
-                  const tgBg = window.Telegram.WebApp.backgroundColor || window.Telegram.WebApp.themeParams.bg_color;
-                  if (tgBg) {
-                    document.documentElement.style.backgroundColor = tgBg;
-                    document.documentElement.style.setProperty('--background', tgBg);
-                  }
-                }
-              } catch (e) {}
-            `,
-          }}
-        />
       </head>
-      <body className={`${geistSans.className} bg-ground text-gray-900 min-h-screen antialiased selection:bg-accent-blue selection:text-white overscroll-none`}>
+      <body className={`${geistSans.variable} font-sans bg-ground text-gray-900 dark:text-gray-100 min-h-screen antialiased overscroll-none`}>
         <PWARegistry />
         <Suspense fallback={<Loading />}>
           <AppContent>{children}</AppContent>

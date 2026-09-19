@@ -6,28 +6,32 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: "class",   // Toggle via .dark class on <html>
   theme: {
     extend: {
       colors: {
-        /* Surfaces */
-        ground: "#F2F2F7",          /* iOS light gray background */
-        panel:  "#E5E5EA",          /* iOS secondary gray background */
-        card:   "#FFFFFF",          /* Pure white cards */
+        /* ── Semantic surfaces (use CSS vars so dark mode works) ── */
+        ground:  "var(--background)",
+        panel:   "var(--surface-2)",
+        card:    "var(--surface)",
 
-        /* Brand (for backgrounds/buttons) */
-        primary:   "#1B3A6B",       /* Deep navy blue */
-        accent:    "#F5C518",       /* Flame gold */
+        /* ── Brand ── */
+        primary: "var(--primary)",
+        accent:  "#F5C518",       /* Flame gold — same in dark */
 
-        "accent-amber":   "#F5C518", /* maps old amber → gold (compat)    */
-        "accent-emerald": "#22C55E", /* keep green for correct answers    */
-        "accent-rose":    "#EF4444", /* keep red for wrong answers        */
-        "accent-yellow":  "#F5C518", /* alias                             */
+        /* ── Accent aliases ── */
+        "accent-amber":   "#F5C518",
+        "accent-emerald": "#22C55E",
+        "accent-rose":    "#EF4444",
+        "accent-yellow":  "#F5C518",
+        "accent-blue":    "#229ED9",  /* Telegram blue — was missing! */
+        "accent-gold":    "#F5C518",  /* alias used in LandingPage — was missing! */
 
-        /* Neo-Brutalist border color → navy instead of black */
+        /* ── Neo-Brutalist ── */
         brutal: "#1B3A6B",
 
-        /* Utility */
-        error: "#EF4444",
+        /* ── Utility ── */
+        error:          "#EF4444",
         "sticky-yellow": "#FEF3C7",
       },
       boxShadow: {
