@@ -1,4 +1,6 @@
-'use client';
+const fs = require('fs');
+
+const newContent = `'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -51,19 +53,19 @@ export const PracticeHub = () => {
   const handleFreshmanSelect = (courseId: string) => {
     haptic.selection();
     const params = new URLSearchParams({ examType: 'freshman', subject: courseId });
-    router.push(`/practice/sessions?${params.toString()}`);
+    router.push(\`/practice/sessions?\${params.toString()}\`);
   };
 
   const handleExitSelect = (deptId: string) => {
     haptic.selection();
     const params = new URLSearchParams({ examType: 'exit', subject: deptId });
-    router.push(`/practice/sessions?${params.toString()}`);
+    router.push(\`/practice/sessions?\${params.toString()}\`);
   };
 
   const handleEntranceContinue = () => {
     haptic.impact('heavy');
     const params = new URLSearchParams({ examType: 'entrance', subject, year: year.toString() });
-    router.push(`/practice/sessions?${params.toString()}`);
+    router.push(\`/practice/sessions?\${params.toString()}\`);
   };
 
   return (
@@ -109,7 +111,7 @@ export const PracticeHub = () => {
               <div className="grid grid-cols-2 gap-2">
                 {EUEE_SUBJECTS.map(s => (
                   <button key={s} onClick={() => { haptic.selection(); setSubject(s); }}
-                    className={`px-3 py-3 rounded-[16px] border-2 text-sm font-bold transition-all text-left ${subject === s ? 'bg-primary text-card border-primary shadow-sm' : 'bg-card text-secondary border-black/5'}`}
+                    className={\`px-3 py-3 rounded-[16px] border-2 text-sm font-bold transition-all text-left \${subject === s ? 'bg-primary text-card border-primary shadow-sm' : 'bg-card text-secondary border-black/5'}\`}
                   >{s}</button>
                 ))}
               </div>
@@ -120,7 +122,7 @@ export const PracticeHub = () => {
               <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
                 {EUEE_YEARS.map(y => (
                   <button key={y} onClick={() => { haptic.selection(); setYear(y); }}
-                    className={`shrink-0 px-5 py-3 rounded-2xl border-2 font-bold transition-all ${year === y ? 'bg-primary text-card border-primary shadow-[0_4px_12px_rgba(27,58,107,0.2)]' : 'bg-card text-secondary border-black/5 hover:border-black/10'}`}
+                    className={\`shrink-0 px-5 py-3 rounded-2xl border-2 font-bold transition-all \${year === y ? 'bg-primary text-card border-primary shadow-[0_4px_12px_rgba(27,58,107,0.2)]' : 'bg-card text-secondary border-black/5 hover:border-black/10'}\`}
                   >{y}</button>
                 ))}
               </div>
@@ -165,3 +167,6 @@ export const PracticeHub = () => {
     </div>
   );
 };
+`;
+
+fs.writeFileSync('/home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx', newContent);
