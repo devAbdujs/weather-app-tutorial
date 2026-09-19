@@ -288,10 +288,7 @@ export const ExamSetupModal: React.FC = () => {
                 </div>
               )}
 
-              <div className="p-4 rounded-[20px] bg-primary/5 border border-black/5 flex items-center gap-3">
-                <FileText className="w-6 h-6 text-primary shrink-0" />
-                <p className="text-xs font-bold text-primary leading-relaxed">Formula-rich summary sheets compiled for Ethiopian students.</p>
-              </div>
+
             </div>
           )}
         </div>
