@@ -9,7 +9,8 @@ import {
   Sigma, Globe, Network, TrendingUp, Binary, Rocket, 
   Landmark, Users, HeartHandshake, Terminal, Settings2, 
   Server, Database, Building2, Wrench, Zap, Coins, 
-  Briefcase, Scale, Stethoscope, Pill, FlaskConical 
+  Briefcase, Scale, Stethoscope, Pill, FlaskConical,
+  Atom, Dna, Calculator, ScrollText, Sprout
 } from 'lucide-react';
 
 const FRESHMAN_COURSES = [
@@ -28,9 +29,17 @@ const FRESHMAN_COURSES = [
 ];
 
 const EUEE_SUBJECTS = [
-  'Mathematics', 'Physics', 'Chemistry', 'Biology', 'English',
-  'Scholastic Aptitude (SAT)', 'Geography', 'History', 'Economics',
-  'Civics & Citizenship', 'Agriculture'
+  { id: 'Mathematics', Icon: Sigma, color: 'bg-emerald-50 border-emerald-100 text-emerald-600' },
+  { id: 'Physics', Icon: Atom, color: 'bg-blue-50 border-blue-100 text-blue-600' },
+  { id: 'Chemistry', Icon: FlaskConical, color: 'bg-fuchsia-50 border-fuchsia-100 text-fuchsia-600' },
+  { id: 'Biology', Icon: Dna, color: 'bg-green-50 border-green-100 text-green-600' },
+  { id: 'English', Icon: BookOpen, color: 'bg-rose-50 border-rose-100 text-rose-600' },
+  { id: 'Scholastic Aptitude (SAT)', Icon: Brain, color: 'bg-violet-50 border-violet-100 text-violet-600' },
+  { id: 'Geography', Icon: Globe, color: 'bg-sky-50 border-sky-100 text-sky-600' },
+  { id: 'History', Icon: ScrollText, color: 'bg-amber-50 border-amber-100 text-amber-600' },
+  { id: 'Economics', Icon: TrendingUp, color: 'bg-orange-50 border-orange-100 text-orange-600' },
+  { id: 'Civics & Citizenship', Icon: Landmark, color: 'bg-stone-50 border-stone-100 text-stone-600' },
+  { id: 'Agriculture', Icon: Sprout, color: 'bg-lime-50 border-lime-100 text-lime-600' },
 ];
 const EUEE_YEARS = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010];
 
@@ -142,16 +151,21 @@ export const PracticeHub = () => {
         {/* ── ENTRANCE: subject picker ── */}
         {targetExam === 'entrance' && (
           <div className="animate-fade-in">
-            <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-3">Select subject</p>
-            <div className="flex flex-col gap-2.5">
-              {EUEE_SUBJECTS.map(s => (
+            <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-4">Select subject</p>
+            <div className="grid grid-cols-2 gap-3">
+              {EUEE_SUBJECTS.map(c => (
                 <button
-                  key={s}
-                  onClick={() => { haptic.selection(); navigate('entrance', { subject: s }); }}
-                  className="w-full group bg-card p-4 rounded-[20px] border-2 border-black/5 hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all flex items-center justify-between"
+                  key={c.id}
+                  onClick={() => { haptic.selection(); navigate('entrance', { subject: c.id }); }}
+                  className={`group p-4 rounded-[20px] border-2 ${c.color} active:scale-95 transition-all text-left flex flex-col gap-3 shadow-sm`}
                 >
-                  <span className="text-sm font-bold text-primary">{s}</span>
-                  <ChevronRight className="w-4 h-4 text-tertiary group-hover:text-primary transition-colors" />
+                  <div className="w-9 h-9 rounded-[12px] bg-white/60 flex items-center justify-center shrink-0">
+                    <c.Icon className="w-5 h-5" strokeWidth={2.5} />
+                  </div>
+                  <div className="flex items-end justify-between">
+                    <span className="text-sm font-black text-primary leading-tight flex-1">{c.id}</span>
+                    <ChevronRight className="w-4 h-4 text-tertiary shrink-0 group-hover:text-primary transition-colors" />
+                  </div>
                 </button>
               ))}
             </div>
