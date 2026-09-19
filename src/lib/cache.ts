@@ -38,6 +38,18 @@ export const setCachedQuestions = async (cacheKey: string, data: Question[]) => 
       timestamp: Date.now(),
       data
     });
+    
+    // Cleanup old caches (e.g. ones without v2 prefix) in the background
+    setTimeout(async () => {
+      try {
+        const keys = await localforage.keys();
+        for (const key of keys) {
+          if (key.startsWith('exam_')) {
+            await localforage.removeItem(key);
+          }
+        }
+      } catch (e) {}
+    }, 2000);
   } catch (err) {
     console.warn('Failed to write to cache:', err);
   }

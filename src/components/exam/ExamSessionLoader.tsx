@@ -32,7 +32,8 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         const dbExamType = examType || 'entrance';
         
         // Generate a unique cache key for this exact session
-        const cacheKey = `exam_${dbExamType}_${subject}_${year || 'all'}_${period || 'all'}_${sessionOffset}_${sessionSize}`;
+        // Added v2 prefix to invalidate older cached lists that might contain deleted/bad questions
+        const cacheKey = `v2_exam_${dbExamType}_${subject}_${year || 'all'}_${period || 'all'}_${sessionOffset}_${sessionSize}`;
         
         // 1. Try to load from IndexedDB cache first
         const cached = await getCachedQuestions(cacheKey);
