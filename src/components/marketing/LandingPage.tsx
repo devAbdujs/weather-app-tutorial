@@ -100,12 +100,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
         
         {/* 1. Header Row */}
         <div className="flex items-center justify-between mb-8">
-          <span className="text-[11px] font-bold text-tertiary tracking-widest uppercase">
+          <span className="text-[11px] font-bold text-gray-500 tracking-widest uppercase">
             {greeting}
           </span>
           <div className="bg-ground px-2.5 py-1 rounded-full border border-black/5 flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-accent-gold" />
-            <span className="text-[10px] font-bold text-primary tracking-wider uppercase">
+            <span className="text-[10px] font-bold text-gray-900 tracking-wider uppercase">
               {dateStr}
             </span>
           </div>
@@ -117,10 +117,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/assets/temari logo.png" alt="Temari" className="w-full h-full object-cover" />
           </div>
-          <h1 className="text-2xl font-black text-primary tracking-tight mb-1">
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight mb-1">
             Temari App
           </h1>
-          <p className="text-[14px] font-medium text-tertiary text-center">
+          <p className="text-[14px] font-medium text-gray-500 text-center">
             AI-powered Exam Preparation and Study Partner for Ethiopian Students.
           </p>
         </div>
@@ -130,7 +130,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
           <button
             onClick={() => setActiveTab('signin')}
             className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all ${
-              activeTab === 'signin' ? 'bg-white text-primary shadow-sm' : 'text-tertiary hover:text-secondary'
+              activeTab === 'signin' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-600'
             }`}
           >
             Sign In
@@ -138,7 +138,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
           <button
             onClick={() => setActiveTab('create')}
             className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all ${
-              activeTab === 'create' ? 'bg-white text-primary shadow-sm' : 'text-tertiary hover:text-secondary'
+              activeTab === 'create' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-600'
             }`}
           >
             Create account
@@ -167,7 +167,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
         {/* 5. Divider */}
         <div className="flex items-center gap-4 mb-6">
           <div className="flex-1 h-px bg-black/5" />
-          <span className="text-[11px] font-bold text-tertiary tracking-widest">OR</span>
+          <span className="text-[11px] font-bold text-gray-500 tracking-widest">OR</span>
           <div className="flex-1 h-px bg-black/5" />
         </div>
 
@@ -175,14 +175,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
         <div className="flex flex-col gap-4 mb-6">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Phone className="w-4 h-4 text-tertiary" />
+              <Phone className="w-4 h-4 text-gray-500" />
             </div>
             <input
               type="tel"
               placeholder="0912 345 678"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full h-[48px] pl-11 pr-4 bg-ground border border-black/5 rounded-xl text-[15px] font-medium text-primary placeholder:text-tertiary focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-all"
+              className="w-full h-[48px] pl-11 pr-4 bg-ground border border-black/5 rounded-xl text-[15px] font-medium text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-all"
             />
           </div>
 
@@ -199,7 +199,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                   onChange={e => handlePinChange(index, e.target.value)}
                   onKeyDown={e => handlePinKeyDown(index, e)}
                   onFocus={e => e.target.select()}
-                  className="w-full aspect-square text-center text-xl font-bold bg-ground border border-black/5 rounded-xl text-primary focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-all"
+                  className="w-full aspect-square text-center text-xl font-bold bg-ground border border-black/5 rounded-xl text-gray-900 focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-all"
                 />
               ))}
             </div>
@@ -216,7 +216,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
           className={`w-full h-[48px] rounded-xl text-[15px] font-bold flex justify-center items-center gap-2 transition-all ${
             isFormValid 
               ? 'bg-primary text-white shadow-sm active:scale-[0.98]' 
-              : 'bg-ground text-tertiary cursor-not-allowed border border-black/5'
+              : 'bg-ground text-gray-500 cursor-not-allowed border border-black/5'
           }`}
         >
           {isLoading ? <div className="w-5 h-5 rounded-full border-2 border-white/20 border-t-white animate-spin" /> : (activeTab === 'signin' ? 'Sign In' : 'Create Account')}
@@ -224,8 +224,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       </div>
 
       {/* 8. Footer */}
-      <p className="text-[11px] text-tertiary font-medium text-center mt-6 max-w-[280px] leading-relaxed">
-        By continuing, you agree to our <a href="#" className="underline hover:text-primary">Terms of Service</a> and <a href="#" className="underline hover:text-primary">Privacy Policy</a>.
+      <p className="text-[11px] text-gray-500 font-medium text-center mt-6 max-w-[280px] leading-relaxed">
+        By continuing, you agree to our <a href="#" className="underline hover:text-gray-900">Terms of Service</a> and <a href="#" className="underline hover:text-gray-900">Privacy Policy</a>.
       </p>
 
       {/* Dev bypass */}

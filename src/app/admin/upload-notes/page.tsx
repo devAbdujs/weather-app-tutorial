@@ -47,14 +47,14 @@ export default function AdminUploadNotes() {
 
   return (
     <div>
-      <h1 className="text-3xl font-black text-primary mb-6 tracking-tight">Upload Short Note</h1>
-      <p className="text-tertiary mb-8 font-medium">Paste raw markdown generated from NotebookLM to insert directly into the database.</p>
+      <h1 className="text-3xl font-black text-gray-900 mb-6 tracking-tight">Upload Short Note</h1>
+      <p className="text-gray-500 mb-8 font-medium">Paste raw markdown generated from NotebookLM to insert directly into the database.</p>
       
       <div className="bg-card border-2 border-primary/10 rounded-3xl p-8 shadow-sm max-w-4xl">
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-bold mb-2 text-secondary">Exam Type</label>
+              <label className="block text-sm font-bold mb-2 text-gray-600">Exam Type</label>
               <select 
                 value={examType} onChange={(e) => setExamType(e.target.value)}
                 className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold focus:border-primary focus:outline-none transition-colors"
@@ -65,7 +65,7 @@ export default function AdminUploadNotes() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-bold mb-2 text-secondary">Course / Department</label>
+              <label className="block text-sm font-bold mb-2 text-gray-600">Course / Department</label>
               <input 
                 type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
                 placeholder="e.g. Applied Mathematics I"
@@ -75,7 +75,7 @@ export default function AdminUploadNotes() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-2 text-secondary">Chapter Title</label>
+            <label className="block text-sm font-bold mb-2 text-gray-600">Chapter Title</label>
             <input 
               type="text" value={title} onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Chapter 1: Limits and Continuity"
@@ -84,7 +84,7 @@ export default function AdminUploadNotes() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-2 text-secondary">NotebookLM Markdown</label>
+            <label className="block text-sm font-bold mb-2 text-gray-600">NotebookLM Markdown</label>
             <textarea 
               value={content} onChange={(e) => setContent(e.target.value)}
               placeholder="Paste raw markdown here..."

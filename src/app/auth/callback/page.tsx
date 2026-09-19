@@ -60,8 +60,8 @@ function CallbackContent() {
         <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
           <span className="text-red-500 text-2xl">⚠️</span>
         </div>
-        <h2 className="text-xl font-bold text-primary mb-2">Authentication Failed</h2>
-        <p className="text-sm text-secondary text-center mb-6">{error}</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Authentication Failed</h2>
+        <p className="text-sm text-gray-600 text-center mb-6">{error}</p>
         <button 
           onClick={() => window.location.replace('/')}
           className="px-6 py-3 bg-[#229ED9] text-white font-bold rounded-xl shadow-sm"
@@ -79,7 +79,7 @@ function CallbackContent() {
       </div>
       <div className="flex flex-col items-center gap-3">
         <div className="w-8 h-8 rounded-full border-[3px] border-black/5 border-t-[#229ED9] animate-spin" />
-        <p className="text-[10px] font-black text-tertiary tracking-[0.2em] uppercase">Verifying Secure Login</p>
+        <p className="text-[10px] font-black text-gray-500 tracking-[0.2em] uppercase">Verifying Secure Login</p>
       </div>
     </div>
   );

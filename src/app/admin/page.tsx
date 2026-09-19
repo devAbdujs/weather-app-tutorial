@@ -16,8 +16,8 @@ export default async function AdminDashboard() {
   return (
     <div>
       <header className="mb-8">
-        <h1 className="text-3xl font-black text-primary tracking-tight">Overview Dashboard</h1>
-        <p className="text-tertiary font-medium mt-1">Welcome back. Here is what is happening across the platform.</p>
+        <h1 className="text-3xl font-black text-gray-900 tracking-tight">Overview Dashboard</h1>
+        <p className="text-gray-500 font-medium mt-1">Welcome back. Here is what is happening across the platform.</p>
       </header>
 
       {error && (
@@ -49,10 +49,10 @@ export default async function AdminDashboard() {
 
       <div className="bg-card border-2 border-primary/10 rounded-3xl p-8 text-center shadow-sm">
         <div className="w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <BrainCircuit className="w-8 h-8 text-tertiary" />
+          <BrainCircuit className="w-8 h-8 text-gray-500" />
         </div>
-        <h2 className="text-xl font-black text-primary mb-2">More Features Coming Soon</h2>
-        <p className="text-secondary max-w-md mx-auto">
+        <h2 className="text-xl font-black text-gray-900 mb-2">More Features Coming Soon</h2>
+        <p className="text-gray-600 max-w-md mx-auto">
           User management, question editing, and detailed analytics will be added to this panel in the next update.
         </p>
       </div>
@@ -67,8 +67,8 @@ function StatCard({ title, value, icon, color }: { title: string, value: string,
         {icon}
       </div>
       <div>
-        <p className="text-sm font-bold text-tertiary uppercase tracking-wider mb-1">{title}</p>
-        <p className="text-4xl font-black text-primary leading-none">{value}</p>
+        <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">{title}</p>
+        <p className="text-4xl font-black text-gray-900 leading-none">{value}</p>
       </div>
     </div>
   );

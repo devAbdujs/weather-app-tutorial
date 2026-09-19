@@ -26,8 +26,8 @@ const TOUR_STEPS = [
   {
     title: 'Smart Flashcards',
     description: 'Review key concepts fast with our Tinder-style swipeable flashcards and spaced repetition.',
-    icon: <BookOpen className="w-6 h-6 text-primary" />,
-    color: 'bg-primary/10 text-primary'
+    icon: <BookOpen className="w-6 h-6 text-gray-900" />,
+    color: 'bg-primary/10 text-gray-900'
   }
 ];
 
@@ -79,7 +79,7 @@ export const ProductTour: React.FC = () => {
 
           <button 
             onClick={handleComplete}
-            className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 flex items-center justify-center rounded-full bg-ground text-tertiary hover:text-primary transition-colors active:scale-95 z-10"
+            className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 flex items-center justify-center rounded-full bg-ground text-gray-500 hover:text-gray-900 transition-colors active:scale-[0.98] active:opacity-80 z-10"
           >
             <X className="w-5 h-5" />
           </button>
@@ -93,10 +93,10 @@ export const ProductTour: React.FC = () => {
 
             {/* Content */}
             <div className="space-y-3 min-h-[90px]">
-              <h3 className="text-2xl font-bold text-primary tracking-tight transition-opacity duration-300">
+              <h3 className="text-2xl font-bold text-gray-900 tracking-tight transition-opacity duration-300">
                 {TOUR_STEPS[step].title}
               </h3>
-              <p className="text-[15px] font-medium text-secondary leading-relaxed transition-opacity duration-300">
+              <p className="text-[15px] font-medium text-gray-600 leading-relaxed transition-opacity duration-300">
                 {TOUR_STEPS[step].description}
               </p>
             </div>
@@ -116,7 +116,7 @@ export const ProductTour: React.FC = () => {
 
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-3.5 bg-primary text-white rounded-[16px] font-bold text-[15px] shadow-md transition-all active:scale-95"
+                className="flex items-center gap-2 px-6 py-3.5 bg-primary text-white rounded-[16px] font-bold text-[15px] shadow-md transition-all active:scale-[0.98] active:opacity-80"
               >
                 {step === TOUR_STEPS.length - 1 ? (
                   <>Start Practicing <Check className="w-5 h-5" /></>

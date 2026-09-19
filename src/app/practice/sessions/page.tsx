@@ -175,19 +175,19 @@ function SessionsContent() {
   const subtitle = isFreshman ? 'Freshman Exam Bank' : isEntrance ? 'Grade 12 Entrance' : 'University Exit Exam';
 
   return (
-    <div className="min-h-screen bg-ground pb-28 text-primary animate-fade-in">
+    <div className="min-h-screen bg-ground pb-28 text-gray-900 animate-fade-in">
 
       {/* ── HEADER ── */}
-      <div className="px-5 pt-safe pt-5 pb-3 flex items-center gap-3">
+      <div className="sticky top-0 z-10 bg-[#F2F2F7]/80 backdrop-blur-xl border-b border-black/5 px-5 pt-safe pt-5 pb-3 mb-4 flex items-center gap-3">
         <button
           onClick={() => { haptic.selection(); router.back(); }}
-          className="w-10 h-10 flex items-center justify-center rounded-[14px] bg-card border border-black/5 text-secondary hover:text-primary active:scale-95 transition-all shadow-sm shrink-0"
+          className="w-10 h-10 flex items-center justify-center rounded-[14px] bg-card border border-black/5 text-gray-600 hover:text-gray-900 active:scale-[0.98] active:opacity-80 transition-all shadow-sm shrink-0"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <div className="min-w-0">
-          <h1 className="text-[22px] font-black text-primary tracking-tight leading-tight truncate">{title}</h1>
-          <p className="text-xs font-medium text-tertiary mt-0.5">{subtitle}</p>
+        <div className="min-w-0 flex-1">
+          <h1 className="text-[22px] font-black text-gray-900 tracking-tight leading-tight truncate">{title}</h1>
+          <p className="text-[12px] font-bold text-gray-500 mt-0.5">{subtitle}</p>
         </div>
       </div>
 
@@ -198,13 +198,13 @@ function SessionsContent() {
             <button
               onClick={() => { haptic.selection(); setActiveTab('midterm'); }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[12px] text-sm font-bold transition-all duration-200 ${
-                activeTab === 'midterm' ? 'bg-card text-primary shadow-sm' : 'text-tertiary'
+                activeTab === 'midterm' ? 'bg-card text-gray-900 shadow-sm' : 'text-gray-500'
               }`}
             >
               <Clock className="w-3.5 h-3.5" />
               Midterm
               {!loading && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${activeTab === 'midterm' ? 'bg-primary/10 text-primary' : 'bg-black/10 text-tertiary'}`}>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${activeTab === 'midterm' ? 'bg-primary/10 text-gray-900' : 'bg-black/10 text-gray-500'}`}>
                   {midtermSessions.length}
                 </span>
               )}
@@ -212,13 +212,13 @@ function SessionsContent() {
             <button
               onClick={() => { haptic.selection(); setActiveTab('final'); }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[12px] text-sm font-bold transition-all duration-200 ${
-                activeTab === 'final' ? 'bg-card text-primary shadow-sm' : 'text-tertiary'
+                activeTab === 'final' ? 'bg-card text-gray-900 shadow-sm' : 'text-gray-500'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
               Final
               {!loading && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${activeTab === 'final' ? 'bg-primary/10 text-primary' : 'bg-black/10 text-tertiary'}`}>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${activeTab === 'final' ? 'bg-primary/10 text-gray-900' : 'bg-black/10 text-gray-500'}`}>
                   {finalSessions.length}
                 </span>
               )}
@@ -229,7 +229,7 @@ function SessionsContent() {
 
         {/* Hint about question count */}
         {!loading && (
-          <p className="text-center text-[11px] font-medium text-tertiary mt-2">
+          <p className="text-center text-[11px] font-medium text-gray-500 mt-2">
             {isFreshman 
               ? (activeTab === 'midterm' 
                 ? `${MIDTERM_SIZE} questions per exam · ${midtermCount} total`
@@ -249,8 +249,8 @@ function SessionsContent() {
         ) : displayedSessions.length === 0 ? (
           <div className="bg-card border-2 border-dashed border-black/8 rounded-3xl p-10 text-center mt-2">
             <div className="text-4xl mb-3">📭</div>
-            <h3 className="font-bold text-primary mb-1">No exams yet</h3>
-            <p className="text-sm font-medium text-tertiary leading-relaxed">
+            <h3 className="font-bold text-gray-900 mb-1">No exams yet</h3>
+            <p className="text-sm font-medium text-gray-500 leading-relaxed">
               No exams available for this subject yet.
             </p>
           </div>
@@ -260,7 +260,7 @@ function SessionsContent() {
               <button
                 key={s.id}
                 onClick={() => { haptic.selection(); setSelectedSession(s); }}
-                className="w-full group bg-card p-4 rounded-2xl border-2 border-black/5 hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all flex items-center gap-4"
+                className="w-full group bg-card p-4 rounded-2xl border border-black/5 shadow-sm hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all flex items-center gap-4"
               >
                 <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center font-black text-lg shrink-0 ${
                   isFreshman && activeTab === 'midterm' ? 'bg-blue-50 text-blue-700' : 'bg-violet-50 text-violet-700'
@@ -268,8 +268,8 @@ function SessionsContent() {
                   {s.id}
                 </div>
                 <div className="text-left flex-1 min-w-0">
-                  <h3 className="font-black text-primary text-[15px]">{s.label}</h3>
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-tertiary mt-0.5">
+                  <h3 className="font-black text-gray-900 text-[15px]">{s.label}</h3>
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500 mt-0.5">
                     <CheckCircle2 className="w-3 h-3" />
                     {s.count} questions
                   </div>
@@ -295,8 +295,8 @@ function SessionsContent() {
           >
             {/* Header */}
             <div className="px-6 pt-6 pb-5 border-b border-black/5">
-              <p className="text-[10px] font-black text-tertiary uppercase tracking-widest mb-1">{selectedSession.count} questions</p>
-              <h3 className="text-2xl font-black text-primary tracking-tight">{selectedSession.label}</h3>
+              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">{selectedSession.count} questions</p>
+              <h3 className="text-2xl font-black text-gray-900 tracking-tight">{selectedSession.label}</h3>
             </div>
 
             {/* Mode options */}
@@ -325,10 +325,10 @@ function SessionsContent() {
                   <Layers className="w-6 h-6" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-black text-primary text-[17px] leading-tight">Exam Mode</h4>
-                  <p className="text-xs font-medium text-tertiary mt-0.5">Timed · answers revealed at the end</p>
+                  <h4 className="font-black text-gray-900 text-[17px] leading-tight">Exam Mode</h4>
+                  <p className="text-xs font-medium text-gray-500 mt-0.5">Timed · answers revealed at the end</p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-tertiary group-hover:text-primary transition-colors shrink-0" />
+                <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-gray-900 transition-colors shrink-0" />
               </button>
             </div>
 
@@ -336,7 +336,7 @@ function SessionsContent() {
             <div className="px-4 pb-4">
               <button
                 onClick={() => setSelectedSession(null)}
-                className="w-full py-3.5 rounded-[16px] bg-black/5 hover:bg-black/8 text-sm font-bold text-secondary active:scale-[0.98] transition-all"
+                className="w-full py-3.5 rounded-[16px] bg-black/5 hover:bg-black/8 text-sm font-bold text-gray-600 active:scale-[0.98] transition-all"
               >
                 Cancel
               </button>

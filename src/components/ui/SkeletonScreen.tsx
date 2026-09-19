@@ -19,7 +19,7 @@ export const SkeletonScreen = ({ message = "Loading..." }: { message?: string })
       {/* Loading Message */}
       <div className="flex flex-col items-center justify-center pt-8 pb-4">
         <div className="w-8 h-8 border-4 border-black/10 border-t-accent-blue rounded-full animate-spin mb-4" />
-        <p className="text-primary font-bold animate-pulse">{message}</p>
+        <p className="text-gray-900 font-bold animate-pulse">{message}</p>
       </div>
 
       {/* Main Stats Card Skeleton */}

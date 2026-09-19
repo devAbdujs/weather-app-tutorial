@@ -188,7 +188,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           <button
             onClick={() => sendMessage(studentAnswer ? 'explain' : 'hint')}
             disabled={isLoading}
-            className="flex items-center gap-2 text-[13px] px-4 py-2.5 rounded-full font-bold border transition-all whitespace-nowrap bg-white border-black/5 text-slate-700 hover:bg-slate-50 active:scale-95 shadow-sm"
+            className="flex items-center gap-2 text-[13px] px-4 py-2.5 rounded-full font-bold border transition-all whitespace-nowrap bg-white border-black/5 text-slate-700 hover:bg-slate-50 active:scale-[0.98] active:opacity-80 shadow-sm"
           >
             <Lightbulb className="w-4 h-4 text-amber-500 fill-amber-500/20" />
             {mode === 'exam' 
@@ -199,7 +199,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           <button
             onClick={() => sendMessage('amharic')}
             disabled={isLoading}
-            className="flex items-center gap-2 text-[13px] px-4 py-2.5 rounded-full font-bold border transition-all whitespace-nowrap bg-white border-black/5 text-slate-700 hover:bg-slate-50 active:scale-95 shadow-sm"
+            className="flex items-center gap-2 text-[13px] px-4 py-2.5 rounded-full font-bold border transition-all whitespace-nowrap bg-white border-black/5 text-slate-700 hover:bg-slate-50 active:scale-[0.98] active:opacity-80 shadow-sm"
           >
             <Globe className="w-4 h-4 text-blue-500" />
             በአማርኛ አስረዳኝ
@@ -261,7 +261,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-600 hover:opacity-90 disabled:from-black/5 disabled:to-black/5 disabled:text-slate-400 text-white transition-all shrink-0 shadow-md disabled:shadow-none active:scale-95"
+            className="w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-600 hover:opacity-90 disabled:from-black/5 disabled:to-black/5 disabled:text-slate-400 text-white transition-all shrink-0 shadow-md disabled:shadow-none active:scale-[0.98] active:opacity-80"
           >
             <Send className="w-5 h-5 ml-1" />
           </button>

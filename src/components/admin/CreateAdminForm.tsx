@@ -39,26 +39,26 @@ export function CreateAdminForm() {
     <div className="bg-card border-2 border-primary/10 rounded-3xl p-6 shadow-sm">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-          <ShieldPlus className="w-5 h-5 text-primary" />
+          <ShieldPlus className="w-5 h-5 text-gray-900" />
         </div>
-        <h2 className="text-xl font-bold text-primary">New Admin</h2>
+        <h2 className="text-xl font-bold text-gray-900">New Admin</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs font-bold text-tertiary uppercase tracking-wider mb-2">Username</label>
+          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Username</label>
           <input 
             type="text" 
             value={username} onChange={e => setUsername(e.target.value)}
-            className="w-full p-3 border-2 border-primary/10 rounded-xl bg-ground font-bold text-primary focus:border-primary focus:outline-none"
+            className="w-full p-3 border-2 border-primary/10 rounded-xl bg-ground font-bold text-gray-900 focus:border-primary focus:outline-none"
             placeholder="e.g. teacher_alex"
           />
         </div>
         <div>
-          <label className="block text-xs font-bold text-tertiary uppercase tracking-wider mb-2">Role</label>
+          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Role</label>
           <select 
             value={role} onChange={e => setRole(e.target.value)}
-            className="w-full p-3 border-2 border-primary/10 rounded-xl bg-ground font-bold text-primary focus:border-primary focus:outline-none"
+            className="w-full p-3 border-2 border-primary/10 rounded-xl bg-ground font-bold text-gray-900 focus:border-primary focus:outline-none"
           >
             <option value="readonly">Read-Only Viewer</option>
             <option value="editor">Content Editor</option>
@@ -66,11 +66,11 @@ export function CreateAdminForm() {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-bold text-tertiary uppercase tracking-wider mb-2">Passcode</label>
+          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Passcode</label>
           <input 
             type="password" 
             value={passcode} onChange={e => setPasscode(e.target.value)}
-            className="w-full p-3 border-2 border-primary/10 rounded-xl bg-ground font-bold text-primary focus:border-primary focus:outline-none"
+            className="w-full p-3 border-2 border-primary/10 rounded-xl bg-ground font-bold text-gray-900 focus:border-primary focus:outline-none"
             placeholder="Temporary password"
           />
         </div>

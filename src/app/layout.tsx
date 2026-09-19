@@ -106,7 +106,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${geistSans.className} bg-ground text-primary min-h-screen antialiased selection:bg-accent-blue selection:text-white overscroll-none`}>
+      <body className={`${geistSans.className} bg-ground text-gray-900 min-h-screen antialiased selection:bg-accent-blue selection:text-white overscroll-none`}>
         <PWARegistry />
         <Suspense fallback={<Loading />}>
           <AppContent>{children}</AppContent>

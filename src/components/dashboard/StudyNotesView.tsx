@@ -85,7 +85,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
   const dept = subject && subject !== 'All' ? subject : 'General';
   const accentBar = 'bg-primary';
-  const accentText = 'text-primary';
+  const accentText = 'text-gray-900';
   const accentBg = 'bg-primary/5';
   const emoji       = SUBJECT_EMOJI[dept]     ?? '📚';
 
@@ -181,7 +181,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             <button
               onClick={savePin}
               disabled={isPinning || pinSuccess}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-full font-black text-sm shadow-2xl border-2 transition-all active:scale-95 ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-full font-black text-sm shadow-2xl border-2 transition-all active:scale-[0.98] active:opacity-80 ${
                 pinSuccess
                   ? 'bg-emerald-500 text-white border-emerald-600'
                   : 'bg-amber-300 text-amber-900 border-amber-400 hover:bg-amber-400'
@@ -200,16 +200,16 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               {emoji}
             </span>
             <div className="flex-1 min-w-0">
-              <h1 className="text-[15px] font-black text-primary leading-snug line-clamp-1 tracking-tight">
+              <h1 className="text-[15px] font-black text-gray-900 leading-snug line-clamp-1 tracking-tight">
                 {selectedNote.title}
               </h1>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className={`text-[11px] font-black uppercase tracking-widest ${accentText}`}>
                   {selectedNote.department}
                 </span>
-                <span className="text-tertiary text-[11px]">·</span>
-                <Clock className="w-3 h-3 text-tertiary" />
-                <span className="text-[11px] font-semibold text-tertiary">{readMins} min read</span>
+                <span className="text-gray-500 text-[11px]">·</span>
+                <Clock className="w-3 h-3 text-gray-500" />
+                <span className="text-[11px] font-semibold text-gray-500">{readMins} min read</span>
               </div>
             </div>
           </div>
@@ -232,7 +232,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
           <div className={`mt-10 mb-4 p-5 rounded-2xl ${accentBg} border border-black/5 text-center`}>
             <div className="text-3xl mb-2">🎓</div>
             <p className={`font-black text-[15px] ${accentText}`}>End of Chapter</p>
-            <p className="text-[13px] text-primary/50 font-medium mt-1">
+            <p className="text-[13px] text-gray-900/50 font-medium mt-1">
               Highlight any text to save it to your notebook
             </p>
           </div>
@@ -242,14 +242,14 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-xl border-t border-black/8 p-4 z-30 flex gap-3 pb-safe">
           <button
             onClick={() => { haptic.impact('light'); setShowTutor(true); }}
-            className={`flex-1 h-12 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-95 border border-black/5 ${accentBg} ${accentText}`}
+            className={`flex-1 h-12 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] active:opacity-80 border border-black/5 ${accentBg} ${accentText}`}
           >
             <Sparkles className="w-4 h-4" />
             Ask AI Tutor
           </button>
           <button
             onClick={handleBackFromNote}
-            className="flex-1 h-12 bg-primary text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-95"
+            className="flex-1 h-12 bg-primary text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] active:opacity-80"
           >
             <List className="w-4 h-4" />
             Chapters
@@ -279,10 +279,10 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             <p className={`text-[11px] font-black uppercase tracking-widest ${accentText} mb-1`}>
               Study Notes
             </p>
-            <h1 className="text-[22px] font-black text-primary leading-tight tracking-tight">
+            <h1 className="text-[22px] font-black text-gray-900 leading-tight tracking-tight">
               {courseDisplayName}
             </h1>
-            <p className="text-[13px] font-semibold text-secondary mt-0.5">
+            <p className="text-[13px] font-semibold text-gray-600 mt-0.5">
               {examType} · {initialNotes.length > 0 ? `${initialNotes.length} chapters` : 'Loading…'}
             </p>
           </div>
@@ -291,11 +291,11 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
       {initialNotes.length > 0 && (
         <div className="px-5 py-3 flex gap-3 border-b border-black/5">
-          <div className="flex items-center gap-1.5 text-[12px] font-bold text-tertiary">
+          <div className="flex items-center gap-1.5 text-[12px] font-bold text-gray-500">
             <Layers className="w-3.5 h-3.5" />
             {initialNotes.length} Chapters
           </div>
-          <div className="flex items-center gap-1.5 text-[12px] font-bold text-tertiary">
+          <div className="flex items-center gap-1.5 text-[12px] font-bold text-gray-500">
             <Clock className="w-3.5 h-3.5" />
             {initialNotes.reduce((sum, n) => sum + calculateReadTime(n.content || ''), 0)} min total read
           </div>
@@ -308,8 +308,8 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             <div className={`w-20 h-20 ${accentBg} rounded-3xl flex items-center justify-center mb-5 text-4xl`}>
               {emoji}
             </div>
-            <h3 className="text-xl font-black text-primary mb-2">No notes yet</h3>
-            <p className="text-sm font-semibold text-tertiary max-w-[240px] leading-relaxed">
+            <h3 className="text-xl font-black text-gray-900 mb-2">No notes yet</h3>
+            <p className="text-sm font-semibold text-gray-500 max-w-[240px] leading-relaxed">
               We haven&apos;t uploaded summary notes for this subject yet. Check back soon!
             </p>
           </div>
@@ -329,14 +329,14 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-black text-primary text-[15px] leading-snug line-clamp-2 tracking-tight">
+                    <h3 className="font-black text-gray-900 text-[15px] leading-snug line-clamp-2 tracking-tight">
                       {note.title}
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
                       <span className={`text-[11px] font-black uppercase tracking-wider ${accentText} ${accentBg} px-2 py-0.5 rounded-md`}>
                         {note.department}
                       </span>
-                      <span className="text-[12px] font-semibold text-tertiary flex items-center gap-1">
+                      <span className="text-[12px] font-semibold text-gray-500 flex items-center gap-1">
                         <Clock className="w-3 h-3" /> {mins} min
                       </span>
                     </div>

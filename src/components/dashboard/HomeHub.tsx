@@ -132,29 +132,29 @@ export const HomeHub: React.FC = () => {
   return (
     <div className="flex flex-col pt-safe animate-fade-in">
 
-      {/* ── TOP BAR ── */}
-      <div className="flex justify-between items-center px-5 pt-5 pb-4">
+      {/* ── TOP BAR (Sticky Glass) ── */}
+      <div className="sticky top-0 z-20 bg-[#F2F2F7]/80 backdrop-blur-xl border-b border-black/5 flex justify-between items-center px-5 pt-safe pt-5 pb-4">
         <div>
-          <p className="text-xs font-bold text-tertiary uppercase tracking-widest" suppressHydrationWarning>
+          <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest" suppressHydrationWarning>
             {getGreeting()} 👋
           </p>
-          <h1 className="text-[26px] font-black text-primary tracking-tight leading-tight mt-0.5">
+          <h1 className="text-[28px] font-black text-gray-900 tracking-tight leading-none mt-1">
             {firstName}
           </h1>
         </div>
         {/* Streak pill */}
         <div className={`flex items-center gap-1.5 px-3 py-2 rounded-[14px] border ${streak > 0 ? 'bg-amber-50 border-amber-200' : 'bg-card border-black/5'}`}>
-          <Flame className={`w-4 h-4 ${streak > 0 ? 'text-amber-500 fill-amber-400' : 'text-tertiary'}`} />
-          <span className={`text-sm font-black ${streak > 0 ? 'text-amber-700' : 'text-tertiary'}`}>{streak}</span>
-          <span className="text-[10px] font-bold text-tertiary">day{streak !== 1 ? 's' : ''}</span>
+          <Flame className={`w-4 h-4 ${streak > 0 ? 'text-amber-500 fill-amber-400' : 'text-gray-500'}`} />
+          <span className={`text-sm font-black ${streak > 0 ? 'text-amber-700' : 'text-gray-500'}`}>{streak}</span>
+          <span className="text-[10px] font-bold text-gray-500">day{streak !== 1 ? 's' : ''}</span>
         </div>
       </div>
 
       {/* ── EXAM TYPE BADGE (read-only, no change button) ── */}
       <div className="mx-5 mb-5">
         <div className="bg-primary/5 border border-primary/10 rounded-[14px] px-4 py-2.5 flex items-center gap-2">
-          <Target className="w-3.5 h-3.5 text-primary/50 shrink-0" />
-          <span className="text-xs font-bold text-primary/60">{examLabel(userProfile?.target_exam || null)}</span>
+          <Target className="w-3.5 h-3.5 text-gray-900/50 shrink-0" />
+          <span className="text-xs font-bold text-gray-900/60">{examLabel(userProfile?.target_exam || null)}</span>
         </div>
       </div>
 
@@ -183,12 +183,12 @@ export const HomeHub: React.FC = () => {
             className="w-full group bg-card p-4 rounded-[20px] border border-black/5 hover:border-primary/20 shadow-sm active:scale-[0.97] transition-all text-left flex items-center justify-between"
           >
             <div>
-              <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-0.5">Resume</p>
-              <h3 className="font-black text-primary text-[15px]">{lastSession.subject}</h3>
-              <p className="text-xs font-medium text-tertiary mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">Resume</p>
+              <h3 className="font-black text-gray-900 text-[15px]">{lastSession.subject}</h3>
+              <p className="text-xs font-medium text-gray-500 mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
             </div>
             <div className="w-10 h-10 bg-primary/5 rounded-[12px] flex items-center justify-center group-hover:bg-primary/10 transition-colors shrink-0">
-              <ArrowRight className="w-5 h-5 text-primary" />
+              <ArrowRight className="w-5 h-5 text-gray-900" />
             </div>
           </button>
         )}
@@ -202,8 +202,8 @@ export const HomeHub: React.FC = () => {
             <div className="w-10 h-10 bg-blue-50 rounded-[12px] flex items-center justify-center mb-3 group-hover:bg-blue-100 transition-colors">
               <FileText className="w-5 h-5 text-blue-600" />
             </div>
-            <h3 className="text-[14px] font-black text-primary leading-tight">Short Notes</h3>
-            <p className="text-[11px] font-medium text-tertiary mt-0.5">AI summaries</p>
+            <h3 className="text-[14px] font-black text-gray-900 leading-tight">Short Notes</h3>
+            <p className="text-[11px] font-medium text-gray-500 mt-0.5">AI summaries</p>
           </button>
 
           <button
@@ -213,8 +213,8 @@ export const HomeHub: React.FC = () => {
             <div className="w-10 h-10 bg-violet-50 rounded-[12px] flex items-center justify-center mb-3 group-hover:bg-violet-100 transition-colors">
               <BookMarked className="w-5 h-5 text-violet-600" />
             </div>
-            <h3 className="text-[14px] font-black text-primary leading-tight">My Notebook</h3>
-            <p className="text-[11px] font-medium text-tertiary mt-0.5">Saved questions</p>
+            <h3 className="text-[14px] font-black text-gray-900 leading-tight">My Notebook</h3>
+            <p className="text-[11px] font-medium text-gray-500 mt-0.5">Saved questions</p>
           </button>
         </div>
 
@@ -225,14 +225,14 @@ export const HomeHub: React.FC = () => {
               <div className="w-7 h-7 bg-amber-100 rounded-full flex items-center justify-center">
                 <Sparkles className="w-3.5 h-3.5 text-amber-600" />
               </div>
-              <span className="text-[11px] font-black text-tertiary uppercase tracking-widest">Daily Insight</span>
+              <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest">Daily Insight</span>
             </div>
             <button
               onClick={() => { haptic.selection(); fetchTip(true); }}
               className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/5 active:scale-90 transition-all"
               title="Get a new tip"
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-tertiary ${tipLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-gray-500 ${tipLoading ? 'animate-spin' : ''}`} />
             </button>
           </div>
 
@@ -242,7 +242,7 @@ export const HomeHub: React.FC = () => {
               <div className="h-3.5 bg-black/5 rounded-full animate-pulse w-4/5" />
             </div>
           ) : tip ? (
-            <p className="text-sm font-medium text-primary/80 leading-relaxed animate-fade-in">
+            <p className="text-sm font-medium text-gray-900/80 leading-relaxed animate-fade-in">
               {tip}
             </p>
           ) : null}

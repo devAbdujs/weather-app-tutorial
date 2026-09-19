@@ -96,7 +96,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
               : 'border-black/5 bg-card hover:border-black/10'
           }`}
         >
-          <span className={`font-bold text-sm ${value === o.id ? 'text-accent-blue' : 'text-primary'}`}>
+          <span className={`font-bold text-sm ${value === o.id ? 'text-accent-blue' : 'text-gray-900'}`}>
             {o.label}
           </span>
           <div className={`w-5 h-5 rounded-full flex items-center justify-center border-2 shrink-0 ${value === o.id ? 'border-accent-blue bg-accent-blue text-white' : 'border-black/10'}`}>
@@ -120,7 +120,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
 
         {/* Back button for steps 2+ */}
         {step > 1 && (
-          <button onClick={() => { haptic.impact('light'); setStep(1); setStream(''); }} className="flex items-center gap-1 text-sm font-bold text-secondary w-fit">
+          <button onClick={() => { haptic.impact('light'); setStep(1); setStream(''); }} className="flex items-center gap-1 text-sm font-bold text-gray-600 w-fit">
             <ChevronLeft className="w-4 h-4" /> Back
           </button>
         )}
@@ -138,8 +138,8 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
         {step === 1 && (
           <>
             <div>
-              <h1 className="text-3xl font-black text-primary tracking-tight">What are you<br/>preparing for?</h1>
-              <p className="text-sm font-medium text-tertiary mt-2">This personalizes your entire experience.</p>
+              <h1 className="text-3xl font-black text-gray-900 tracking-tight">What are you<br/>preparing for?</h1>
+              <p className="text-sm font-medium text-gray-500 mt-2">This personalizes your entire experience.</p>
             </div>
             <PillList
               options={[
@@ -157,8 +157,8 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
         {step === 2 && (
           <>
             <div>
-              <h1 className="text-3xl font-black text-primary tracking-tight">Your Stream</h1>
-              <p className="text-sm font-medium text-tertiary mt-2">You can switch subjects freely each session within your stream.</p>
+              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Your Stream</h1>
+              <p className="text-sm font-medium text-gray-500 mt-2">You can switch subjects freely each session within your stream.</p>
             </div>
             <PillList options={G12_STREAMS} value={stream} onChange={setStream} />
           </>
@@ -168,8 +168,8 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
         {step === 3 && (
           <>
             <div>
-              <h1 className="text-3xl font-black text-primary tracking-tight">Your Discipline</h1>
-              <p className="text-sm font-medium text-tertiary mt-2">Select your field of study for the Exit Exam.</p>
+              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Your Discipline</h1>
+              <p className="text-sm font-medium text-gray-500 mt-2">Select your field of study for the Exit Exam.</p>
             </div>
             <PillList options={EXIT_DISCIPLINES} value={stream} onChange={setStream} />
           </>
@@ -181,8 +181,8 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
           disabled={!canProceed || isSaving}
           className={`w-full py-4 rounded-[16px] border-2 font-bold text-base flex items-center justify-center gap-2 transition-all mt-auto ${
             canProceed && !isSaving
-              ? 'bg-accent-blue border-primary text-white active:scale-95 shadow-sm -translate-y-1'
-              : 'bg-ground border-black/10 text-tertiary cursor-not-allowed'
+              ? 'bg-accent-blue border-primary text-white active:scale-[0.98] active:opacity-80 shadow-sm -translate-y-1'
+              : 'bg-ground border-black/10 text-gray-500 cursor-not-allowed'
           }`}
         >
           {isSaving ? 'Saving...' : step === 1 && target === 'freshman' ? 'Get Started' : step >= 2 ? 'Finish Setup' : 'Continue'}

@@ -94,9 +94,9 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
           <span className="text-3xl">⚠️</span>
         </div>
-        <h2 className="text-xl font-bold text-primary mb-2">Error Loading Session</h2>
-        <p className="text-sm text-secondary mb-6">{error}</p>
-        <button onClick={() => router.back()} className="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-sm active:scale-95 transition-all">
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Error Loading Session</h2>
+        <p className="text-sm text-gray-600 mb-6">{error}</p>
+        <button onClick={() => router.back()} className="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-sm active:scale-[0.98] active:opacity-80 transition-all">
           Go Back
         </button>
       </div>
@@ -107,9 +107,9 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
     return (
       <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6 text-center">
         <span className="text-4xl mb-4">📭</span>
-        <h2 className="text-xl font-black text-primary">Session Empty</h2>
-        <p className="text-sm font-bold text-tertiary mt-2">No questions available for this session slice.</p>
-        <button onClick={() => router.back()} className="mt-8 px-8 h-12 bg-primary text-card rounded-[14px] font-bold shadow-md active:scale-95 transition-all">
+        <h2 className="text-xl font-black text-gray-900">Session Empty</h2>
+        <p className="text-sm font-bold text-gray-500 mt-2">No questions available for this session slice.</p>
+        <button onClick={() => router.back()} className="mt-8 px-8 h-12 bg-primary text-card rounded-[14px] font-bold shadow-md active:scale-[0.98] active:opacity-80 transition-all">
           Go Back
         </button>
       </div>

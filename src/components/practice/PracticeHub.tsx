@@ -14,31 +14,31 @@ import {
 } from 'lucide-react';
 
 const FRESHMAN_COURSES = [
-  { id: 'English', Icon: BookOpen, color: 'bg-blue-50 border-blue-100 text-blue-600' },
-  { id: 'Psychology', Icon: Brain, color: 'bg-violet-50 border-violet-100 text-violet-600' },
-  { id: 'Logic', Icon: Lightbulb, color: 'bg-amber-50 border-amber-100 text-amber-600' },
-  { id: 'Mathematics for Natural Sciences', Icon: Sigma, color: 'bg-emerald-50 border-emerald-100 text-emerald-600' },
-  { id: 'Geography', Icon: Globe, color: 'bg-sky-50 border-sky-100 text-sky-600' },
-  { id: 'Global Trends', Icon: Network, color: 'bg-teal-50 border-teal-100 text-teal-600' },
-  { id: 'Economics', Icon: TrendingUp, color: 'bg-orange-50 border-orange-100 text-orange-600' },
-  { id: 'Applied Math I', Icon: Binary, color: 'bg-indigo-50 border-indigo-100 text-indigo-600' },
-  { id: 'Emerging Technology', Icon: Rocket, color: 'bg-rose-50 border-rose-100 text-rose-600' },
-  { id: 'Civics', Icon: Landmark, color: 'bg-stone-50 border-stone-100 text-stone-600' },
-  { id: 'Anthropology', Icon: Users, color: 'bg-pink-50 border-pink-100 text-pink-600' },
-  { id: 'Inclusiveness', Icon: HeartHandshake, color: 'bg-lime-50 border-lime-100 text-lime-600' },
+  { id: 'English', Icon: BookOpen, color: 'text-blue-600 bg-blue-50' },
+  { id: 'Psychology', Icon: Brain, color: 'text-violet-600 bg-violet-50' },
+  { id: 'Logic', Icon: Lightbulb, color: 'text-amber-600 bg-amber-50' },
+  { id: 'Mathematics for Natural Sciences', Icon: Sigma, color: 'text-emerald-600 bg-emerald-50' },
+  { id: 'Geography', Icon: Globe, color: 'text-sky-600 bg-sky-50' },
+  { id: 'Global Trends', Icon: Network, color: 'text-teal-600 bg-teal-50' },
+  { id: 'Economics', Icon: TrendingUp, color: 'text-orange-600 bg-orange-50' },
+  { id: 'Applied Math I', Icon: Binary, color: 'text-indigo-600 bg-indigo-50' },
+  { id: 'Emerging Technology', Icon: Rocket, color: 'text-rose-600 bg-rose-50' },
+  { id: 'Civics', Icon: Landmark, color: 'text-stone-600 bg-stone-100' },
+  { id: 'Anthropology', Icon: Users, color: 'text-pink-600 bg-pink-50' },
+  { id: 'Inclusiveness', Icon: HeartHandshake, color: 'text-lime-600 bg-lime-50' },
 ];
 
 const EUEE_SUBJECTS = [
-  { id: 'Mathematics', Icon: Sigma, color: 'bg-emerald-50 border-emerald-100 text-emerald-600' },
-  { id: 'Physics', Icon: Atom, color: 'bg-blue-50 border-blue-100 text-blue-600' },
-  { id: 'Chemistry', Icon: FlaskConical, color: 'bg-fuchsia-50 border-fuchsia-100 text-fuchsia-600' },
-  { id: 'Biology', Icon: Dna, color: 'bg-green-50 border-green-100 text-green-600' },
-  { id: 'English', Icon: BookOpen, color: 'bg-rose-50 border-rose-100 text-rose-600' },
-  { id: 'Scholastic Aptitude (SAT)', Icon: Brain, color: 'bg-violet-50 border-violet-100 text-violet-600' },
-  { id: 'Geography', Icon: Globe, color: 'bg-sky-50 border-sky-100 text-sky-600' },
-  { id: 'History', Icon: ScrollText, color: 'bg-amber-50 border-amber-100 text-amber-600' },
-  { id: 'Economics', Icon: TrendingUp, color: 'bg-orange-50 border-orange-100 text-orange-600' },
-  { id: 'Civics & Citizenship', Icon: Landmark, color: 'bg-stone-50 border-stone-100 text-stone-600' },
+  { id: 'Mathematics', Icon: Sigma, color: 'text-emerald-600 bg-emerald-50' },
+  { id: 'Physics', Icon: Atom, color: 'text-blue-600 bg-blue-50' },
+  { id: 'Chemistry', Icon: FlaskConical, color: 'text-fuchsia-600 bg-fuchsia-50' },
+  { id: 'Biology', Icon: Dna, color: 'text-green-600 bg-green-50' },
+  { id: 'English', Icon: BookOpen, color: 'text-rose-600 bg-rose-50' },
+  { id: 'Scholastic Aptitude (SAT)', Icon: Brain, color: 'text-violet-600 bg-violet-50' },
+  { id: 'Geography', Icon: Globe, color: 'text-sky-600 bg-sky-50' },
+  { id: 'History', Icon: ScrollText, color: 'text-amber-600 bg-amber-50' },
+  { id: 'Economics', Icon: TrendingUp, color: 'text-orange-600 bg-orange-50' },
+  { id: 'Civics & Citizenship', Icon: Landmark, color: 'text-stone-600 bg-stone-100' },
 ];
 const EUEE_YEARS = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010];
 
@@ -98,9 +98,9 @@ export const PracticeHub = () => {
     <div className="flex flex-col pt-safe pb-8 animate-fade-in">
 
       {/* ── PAGE HEADER ── */}
-      <div className="px-5 pt-5 pb-5">
-        <h1 className="text-[26px] font-black text-primary tracking-tight">Practice</h1>
-        <p className="text-sm font-medium text-tertiary mt-0.5">{examTypeLabel()}</p>
+      <div className="sticky top-0 z-10 bg-[#F2F2F7]/80 backdrop-blur-xl border-b border-black/5 px-5 pt-safe pt-5 pb-4 mb-5">
+        <h1 className="text-[28px] font-black text-gray-900 tracking-tight leading-none">Practice</h1>
+        <p className="text-[13px] font-bold text-gray-500 mt-1">{examTypeLabel()}</p>
       </div>
 
       {devMode && (
@@ -111,7 +111,7 @@ export const PracticeHub = () => {
                 key={tab}
                 onClick={() => { haptic.selection(); setActiveTab(tab); }}
                 className={`flex-1 py-2 text-[13px] font-bold capitalize rounded-[12px] transition-all ${
-                  activeTab === tab ? 'bg-white text-primary shadow-sm' : 'text-tertiary hover:text-secondary'
+                  activeTab === tab ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-600'
                 }`}
               >
                 {tab}
@@ -126,20 +126,20 @@ export const PracticeHub = () => {
         {/* ── FRESHMAN: course grid ── */}
         {targetExam === 'freshman' && (
           <div className="animate-fade-in">
-            <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-4">Select a course</p>
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Select a course</p>
             <div className="grid grid-cols-2 gap-3">
               {FRESHMAN_COURSES.map(c => (
                 <button
                   key={c.id}
                   onClick={() => { haptic.selection(); navigate('freshman', { subject: c.id }); }}
-                  className={`group p-4 rounded-[20px] border-2 ${c.color} active:scale-95 transition-all text-left flex flex-col gap-3 shadow-sm`}
+                  className="group p-4 rounded-[20px] border border-black/5 bg-card hover:border-primary/30 active:scale-[0.98] active:opacity-80 transition-all text-left flex flex-col gap-3 shadow-sm"
                 >
-                  <div className="w-9 h-9 rounded-[12px] bg-white/60 flex items-center justify-center shrink-0">
+                  <div className={`w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 ${c.color}`}>
                     <c.Icon className="w-5 h-5" strokeWidth={2.5} />
                   </div>
                   <div className="flex items-end justify-between">
-                    <span className="text-sm font-black text-primary leading-tight flex-1">{c.id}</span>
-                    <ChevronRight className="w-4 h-4 text-tertiary shrink-0 group-hover:text-primary transition-colors" />
+                    <span className="text-sm font-black text-gray-900 leading-tight flex-1">{c.id}</span>
+                    <ChevronRight className="w-4 h-4 text-gray-500 shrink-0 group-hover:text-gray-900 transition-colors" />
                   </div>
                 </button>
               ))}
@@ -150,20 +150,20 @@ export const PracticeHub = () => {
         {/* ── ENTRANCE: subject picker ── */}
         {targetExam === 'entrance' && (
           <div className="animate-fade-in">
-            <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-4">Select subject</p>
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Select subject</p>
             <div className="grid grid-cols-2 gap-3">
               {EUEE_SUBJECTS.map(c => (
                 <button
                   key={c.id}
                   onClick={() => { haptic.selection(); navigate('entrance', { subject: c.id }); }}
-                  className={`group p-4 rounded-[20px] border-2 ${c.color} active:scale-95 transition-all text-left flex flex-col gap-3 shadow-sm`}
+                  className="group p-4 rounded-[20px] border border-black/5 bg-card hover:border-primary/30 active:scale-[0.98] active:opacity-80 transition-all text-left flex flex-col gap-3 shadow-sm"
                 >
-                  <div className="w-9 h-9 rounded-[12px] bg-white/60 flex items-center justify-center shrink-0">
+                  <div className={`w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 ${c.color}`}>
                     <c.Icon className="w-5 h-5" strokeWidth={2.5} />
                   </div>
                   <div className="flex items-end justify-between">
-                    <span className="text-sm font-black text-primary leading-tight flex-1">{c.id}</span>
-                    <ChevronRight className="w-4 h-4 text-tertiary shrink-0 group-hover:text-primary transition-colors" />
+                    <span className="text-sm font-black text-gray-900 leading-tight flex-1">{c.id}</span>
+                    <ChevronRight className="w-4 h-4 text-gray-500 shrink-0 group-hover:text-gray-900 transition-colors" />
                   </div>
                 </button>
               ))}
@@ -174,20 +174,24 @@ export const PracticeHub = () => {
         {/* ── EXIT: department list ── */}
         {targetExam === 'exit' && (
           <div className="animate-fade-in">
-            <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-4">Select department</p>
-            <div className="flex flex-col gap-2.5">
-              {EXIT_DEPARTMENTS.map(d => (
-                <button
-                  key={d.id}
-                  onClick={() => { haptic.selection(); navigate('exit', { subject: d.id }); }}
-                  className="w-full group bg-card p-4 rounded-[20px] border-2 border-black/5 hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all flex items-center gap-4"
-                >
-                  <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center shrink-0 ${d.color}`}>
-                    <d.Icon className="w-5 h-5" strokeWidth={2.5} />
-                  </div>
-                  <span className="flex-1 text-sm font-bold text-primary text-left">{d.id}</span>
-                  <ChevronRight className="w-4 h-4 text-tertiary group-hover:text-primary transition-colors" />
-                </button>
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 px-2">Select department</p>
+            <div className="bg-card rounded-[24px] border border-black/5 shadow-sm overflow-hidden flex flex-col mb-10">
+              {EXIT_DEPARTMENTS.map((d, index) => (
+                <React.Fragment key={d.id}>
+                  <button
+                    onClick={() => { haptic.selection(); navigate('exit', { subject: d.id }); }}
+                    className="w-full group bg-card p-4 active:bg-black/5 transition-colors flex items-center gap-4"
+                  >
+                    <div className={`w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0 ${d.color}`}>
+                      <d.Icon className="w-4 h-4" strokeWidth={2.5} />
+                    </div>
+                    <span className="flex-1 text-[15px] font-bold text-gray-900 text-left">{d.id}</span>
+                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-900 transition-colors shrink-0" />
+                  </button>
+                  {index < EXIT_DEPARTMENTS.length - 1 && (
+                    <div className="h-[1px] bg-black/5 ml-16" />
+                  )}
+                </React.Fragment>
               ))}
             </div>
           </div>

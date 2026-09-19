@@ -83,7 +83,7 @@ export const ClientAuthDetector: React.FC = () => {
         </div>
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 rounded-full border-[3px] border-black/5 border-t-primary animate-spin" />
-          <p className="text-[10px] font-black text-tertiary tracking-[0.2em] uppercase">Authenticating</p>
+          <p className="text-[10px] font-black text-gray-500 tracking-[0.2em] uppercase">Authenticating</p>
         </div>
       </div>
     );

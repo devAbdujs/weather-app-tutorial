@@ -36,11 +36,11 @@ export const BottomNav = () => {
                   isActive ? 'bg-primary' : 'bg-transparent'
                 }`}>
                   <Icon className={`w-[18px] h-[18px] transition-colors duration-200 ${
-                    isActive ? 'text-white' : 'text-tertiary'
+                    isActive ? 'text-white' : 'text-gray-500'
                   }`} />
                 </div>
                 <span className={`text-[10px] font-bold tracking-wide transition-colors duration-200 ${
-                  isActive ? 'text-primary' : 'text-tertiary'
+                  isActive ? 'text-gray-900' : 'text-gray-500'
                 }`}>
                   {item.name}
                 </span>

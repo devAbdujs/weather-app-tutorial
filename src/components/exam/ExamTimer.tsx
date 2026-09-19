@@ -38,7 +38,7 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({ initialSeconds, isPaused, 
         ? 'bg-red-600 border-red-700 text-white shadow-brutal-heavy animate-pulse'
         : secondsLeft < 300
         ? 'bg-error/20 border-error text-error shadow-sm'
-        : 'bg-card border-primary text-primary shadow-sm'
+        : 'bg-card border-primary text-gray-900 shadow-sm'
     }`}>
       <Clock className="w-4 h-4 inline mr-1.5 -mt-0.5" />
       {Math.floor(secondsLeft / 60)}:{(secondsLeft % 60).toString().padStart(2, '0')}

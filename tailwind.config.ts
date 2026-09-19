@@ -9,26 +9,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        /* ── Temari Brand (derived from the logo) ─────────────────────
-           Primary:  Deep Navy Blue  #1B3A6B  (the open book)
-           Accent:   Flame Gold      #F5C518  (the flame / spark)
-           Surface:  Warm Cream      #F5F0E8  (the background circle)
-        ──────────────────────────────────────────────────────────────── */
-
         /* Surfaces */
-        ground: "#F5F0E8",          /* warm cream — app background      */
-        panel:  "#EDE8DF",          /* slightly deeper cream — panels    */
-        card:   "#FFFFFF",          /* pure white — content cards        */
+        ground: "#F2F2F7",          /* iOS light gray background */
+        panel:  "#E5E5EA",          /* iOS secondary gray background */
+        card:   "#FFFFFF",          /* Pure white cards */
 
-        /* Typography (navy scale) */
-        primary:   "#1B3A6B",       /* deep navy — headings, labels      */
-        secondary: "#2E5494",       /* medium navy — body text           */
-        tertiary:  "#7A94BC",       /* muted navy — hints, placeholders  */
+        /* Brand (for backgrounds/buttons) */
+        primary:   "#1B3A6B",       /* Deep navy blue */
+        accent:    "#F5C518",       /* Flame gold */
 
-        /* Brand Accents */
-        "accent-gold":    "#F5C518", /* flame gold — primary CTA, streaks */
-        "accent-navy":    "#1B3A6B", /* alias for direct use              */
-        "accent-blue":    "#2E5494", /* medium navy — info, links         */
         "accent-amber":   "#F5C518", /* maps old amber → gold (compat)    */
         "accent-emerald": "#22C55E", /* keep green for correct answers    */
         "accent-rose":    "#EF4444", /* keep red for wrong answers        */

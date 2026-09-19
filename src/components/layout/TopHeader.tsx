@@ -22,9 +22,9 @@ export const TopHeader = () => {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/assets/temari logo.png" alt="Temari" className="w-full h-full object-cover" />
         </div>
-        <span className="font-black text-primary text-[17px] tracking-tight">Temari</span>
+        <span className="font-black text-gray-900 text-[17px] tracking-tight">Temari</span>
       </div>
-      <Link href="/profile" className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/10 text-primary font-black text-sm active:scale-95 transition-transform cursor-pointer">
+      <Link href="/profile" className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/10 text-gray-900 font-black text-sm active:scale-[0.98] active:opacity-80 transition-transform cursor-pointer">
         {initial}
       </Link>
     </header>

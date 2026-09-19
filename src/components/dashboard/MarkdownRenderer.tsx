@@ -17,22 +17,22 @@ interface MarkdownRendererProps {
   accentText?: string;
 }
 
-export default function MarkdownRenderer({ content, accentBg = 'bg-primary/5', accentText = 'text-primary' }: MarkdownRendererProps) {
+export default function MarkdownRenderer({ content, accentBg = 'bg-primary/5', accentText = 'text-gray-900' }: MarkdownRendererProps) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[rehypeKatex]}
       components={{
-        h1: ({ children }) => <h1 className="text-2xl font-black mt-8 mb-4 text-primary leading-tight tracking-tight">{children}</h1>,
-        h2: ({ children }) => <h2 className="text-xl font-black mt-8 mb-3 text-primary tracking-tight">{children}</h2>,
-        h3: ({ children }) => <h3 className="text-lg font-bold mt-6 mb-3 text-primary">{children}</h3>,
-        p: ({ children }) => <p className="mb-4 text-[15px] leading-relaxed text-secondary font-medium">{children}</p>,
-        ul: ({ children }) => <ul className="list-disc pl-5 mb-5 space-y-2 text-[15px] text-secondary font-medium">{children}</ul>,
-        ol: ({ children }) => <ol className="list-decimal pl-5 mb-5 space-y-2 text-[15px] text-secondary font-medium">{children}</ol>,
+        h1: ({ children }) => <h1 className="text-2xl font-black mt-8 mb-4 text-gray-900 leading-tight tracking-tight">{children}</h1>,
+        h2: ({ children }) => <h2 className="text-xl font-black mt-8 mb-3 text-gray-900 tracking-tight">{children}</h2>,
+        h3: ({ children }) => <h3 className="text-lg font-bold mt-6 mb-3 text-gray-900">{children}</h3>,
+        p: ({ children }) => <p className="mb-4 text-[15px] leading-relaxed text-gray-600 font-medium">{children}</p>,
+        ul: ({ children }) => <ul className="list-disc pl-5 mb-5 space-y-2 text-[15px] text-gray-600 font-medium">{children}</ul>,
+        ol: ({ children }) => <ol className="list-decimal pl-5 mb-5 space-y-2 text-[15px] text-gray-600 font-medium">{children}</ol>,
         li: ({ children }) => <li className="pl-1">{children}</li>,
-        strong: ({ children }) => <strong className="font-bold text-primary">{children}</strong>,
+        strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
         blockquote: ({ children }) => (
-          <blockquote className={`pl-4 border-l-4 border-primary/20 ${accentBg} py-2 pr-4 rounded-r-xl my-5 italic text-secondary`}>
+          <blockquote className={`pl-4 border-l-4 border-primary/20 ${accentBg} py-2 pr-4 rounded-r-xl my-5 italic text-gray-600`}>
             {children}
           </blockquote>
         ),

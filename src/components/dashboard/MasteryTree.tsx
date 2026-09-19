@@ -58,19 +58,19 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats }) => {
       
       <header className="mb-6 pt-2 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-black text-primary tracking-tight leading-none mb-1 flex items-center gap-2">
-            <Brain className="w-6 h-6 text-primary" />
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1 flex items-center gap-2">
+            <Brain className="w-6 h-6 text-gray-900" />
             Scholar Tree
           </h1>
-          <p className="text-sm font-bold text-tertiary">Your exam readiness radar</p>
+          <p className="text-sm font-bold text-gray-500">Your exam readiness radar</p>
         </div>
       </header>
 
       {/* Global Stats Overview */}
       <div className="grid grid-cols-2 gap-3 mb-8">
         <div className="bg-card border border-black/5 shadow-sm rounded-[20px] p-5 flex flex-col justify-between">
-          <span className="text-[10px] font-black text-tertiary uppercase tracking-wider mb-2 flex items-center gap-1.5"><Target className="w-3.5 h-3.5"/> Accuracy</span>
-          <span className="text-4xl font-black text-primary tracking-tighter">{overallAccuracy}%</span>
+          <span className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Target className="w-3.5 h-3.5"/> Accuracy</span>
+          <span className="text-4xl font-black text-gray-900 tracking-tighter">{overallAccuracy}%</span>
         </div>
         <div className="bg-primary shadow-sm rounded-[20px] p-5 flex flex-col justify-between relative overflow-hidden">
           <div className="absolute -right-4 -bottom-4 opacity-10"><Trophy className="w-24 h-24 text-white" /></div>
@@ -79,15 +79,15 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats }) => {
         </div>
       </div>
 
-      <h2 className="text-[15px] font-black text-primary mb-4 uppercase tracking-wider flex items-center gap-2">
-        <ArrowUpRight className="w-5 h-5 text-tertiary" /> Subject Ranks
+      <h2 className="text-[15px] font-black text-gray-900 mb-4 uppercase tracking-wider flex items-center gap-2">
+        <ArrowUpRight className="w-5 h-5 text-gray-500" /> Subject Ranks
       </h2>
 
       {stats.length === 0 ? (
         <div className="bg-card border-2 border-dashed border-black/10 rounded-[24px] p-8 flex flex-col items-center text-center">
-          <Brain className="w-12 h-12 text-tertiary opacity-30 mb-4" />
-          <h3 className="text-[17px] font-black text-primary mb-1">Tree is Empty</h3>
-          <p className="text-[13px] font-bold text-tertiary">Take an exam or quick practice to start leveling up your scholar tree!</p>
+          <Brain className="w-12 h-12 text-gray-500 opacity-30 mb-4" />
+          <h3 className="text-[17px] font-black text-gray-900 mb-1">Tree is Empty</h3>
+          <p className="text-[13px] font-bold text-gray-500">Take an exam or quick practice to start leveling up your scholar tree!</p>
           <button onClick={() => router.push('/')} className="mt-6 px-6 py-3.5 bg-primary text-white font-black text-sm rounded-[16px] shadow-sm active:translate-y-1 active:shadow-none transition-all">Start Training</button>
         </div>
       ) : (
@@ -100,21 +100,21 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats }) => {
               <div key={stat.subject} className="bg-card border border-black/5 shadow-sm rounded-[20px] p-5 relative overflow-hidden group">
                 <div className="flex justify-between items-start mb-4 relative z-10">
                   <div>
-                    <h3 className="text-[15px] font-black text-primary leading-tight line-clamp-1">{stat.subject}</h3>
+                    <h3 className="text-[15px] font-black text-gray-900 leading-tight line-clamp-1">{stat.subject}</h3>
                     <div className="flex gap-2 items-center mt-1.5">
-                      <span className="text-[10px] font-black bg-primary/10 text-primary px-2.5 py-0.5 rounded-full uppercase tracking-widest border border-primary/20">Lvl {level}</span>
-                      <span className="text-[11px] font-bold text-tertiary">{accuracy}% Win Rate</span>
+                      <span className="text-[10px] font-black bg-primary/10 text-gray-900 px-2.5 py-0.5 rounded-full uppercase tracking-widest border border-primary/20">Lvl {level}</span>
+                      <span className="text-[11px] font-bold text-gray-500">{accuracy}% Win Rate</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-black text-primary tracking-tighter block leading-none">{stat.questions_correct}</span>
-                    <span className="text-[9px] font-bold text-tertiary uppercase tracking-widest mt-1 block">Correct</span>
+                    <span className="text-2xl font-black text-gray-900 tracking-tighter block leading-none">{stat.questions_correct}</span>
+                    <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1 block">Correct</span>
                   </div>
                 </div>
 
                 {/* Premium Progress Bar */}
                 <div className="mt-1 relative z-10">
-                  <div className="flex justify-between text-[10px] font-black text-tertiary uppercase tracking-widest mb-1.5">
+                  <div className="flex justify-between text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1.5">
                     <span>XP Progress</span>
                     <span>{isMax ? 'MAX LEVEL' : `${stat.questions_correct} / ${nextThreshold}`}</span>
                   </div>
