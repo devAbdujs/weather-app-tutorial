@@ -12,14 +12,14 @@ interface ExamSessionLoaderProps {
   examType: string;
   sessionSize: number;
   sessionOffset: number;
-  
   subject?: string;
   year?: string;
   mode?: 'practice' | 'exam';
+  period?: 'midterm' | 'final';
 }
 
 export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ 
-  examType, sessionSize, sessionOffset, subject, year, mode = 'exam'
+  examType, sessionSize, sessionOffset, subject, year, mode = 'exam', period
 }) => {
   const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -32,7 +32,7 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         const dbExamType = examType || 'entrance';
         
         // Generate a unique cache key for this exact session
-        const cacheKey = `exam_${dbExamType}_${subject}_${year || 'all'}_${sessionOffset}_${sessionSize}`;
+        const cacheKey = `exam_${dbExamType}_${subject}_${year || 'all'}_${period || 'all'}_${sessionOffset}_${sessionSize}`;
         
         // 1. Try to load from IndexedDB cache first
         const cached = await getCachedQuestions(cacheKey);
@@ -56,6 +56,12 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         
         if (year) {
           query = query.eq('year', year);
+        }
+
+        // Filter by exam period (midterm/final) if questions are tagged
+        // Otherwise rely on offset-based slicing (deterministic assignment)
+        if (period) {
+          query = query.eq('exam_period', period);
         }
 
         const { data, error } = await query.range(sessionOffset, sessionOffset + sessionSize - 1);
