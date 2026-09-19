@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Lightbulb, Globe, Loader2, Send, Bot, Sparkles, GraduationCap } from 'lucide-react';
+import { X, Lightbulb, Globe, Loader2, Send, User, Sparkles, GraduationCap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -157,15 +157,12 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
         <div className="flex items-center justify-between pb-4 border-b border-black/5 shrink-0">
           <div className="flex items-center gap-3">
             <div className="relative p-2.5 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 text-indigo-600 border border-indigo-500/20 shadow-sm">
-              <Bot className="w-6 h-6" />
+              <User className="w-6 h-6" />
               <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#F8F9FA]" />
             </div>
             <div>
               <h3 className="font-black text-slate-900 text-[17px] flex items-center gap-2 tracking-tight">
                 Mr. Helper
-                <span className="text-[9px] bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest shadow-sm">
-                  AI PRO
-                </span>
               </h3>
               <p className="text-xs text-slate-500 font-medium flex items-center gap-1">
                 <GraduationCap className="w-3 h-3 text-indigo-500" /> Your study partner
