@@ -49,7 +49,8 @@ export const ClientAuthDetector: React.FC = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             code: searchParams.get('code'),
-            code_verifier: sessionStorage.getItem('tg_oidc_verifier')
+            code_verifier: sessionStorage.getItem('tg_oidc_verifier'),
+            redirect_uri: window.location.origin + '/auth/callback'
           })
         }).then(res => {
           if (res.ok) {

@@ -4,7 +4,7 @@ import { encryptSession } from '@/lib/session';
 
 export async function POST(req: NextRequest) {
   try {
-    const { code, code_verifier } = await req.json();
+    const { code, code_verifier, redirect_uri } = await req.json();
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
 
     const clientId = process.env.TELEGRAM_CLIENT_ID || (botToken ? botToken.split(':')[0] : '');
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     }
 
     const tokenEndpoint = 'https://oauth.telegram.org/token';
-    const redirectUri = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top'}/auth/callback`;
+    const finalRedirectUri = redirect_uri || `${process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top'}/auth/callback`;
 
     // Telegram OIDC requires Basic Auth header: base64(client_id:client_secret)
     const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
         grant_type: 'authorization_code',
         code: code,
         client_id: clientId,
-        redirect_uri: redirectUri,
+        redirect_uri: finalRedirectUri,
         code_verifier: code_verifier
       }).toString()
     });
