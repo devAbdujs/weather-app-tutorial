@@ -1,4 +1,5 @@
 'use server';
+import { calculateNewStreak } from '@/lib/streak';
 
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { getServerSession, encryptSession } from '@/lib/session';
@@ -64,6 +65,7 @@ export async function toggleSavedMistake(question_id: string, isSaved: boolean) 
   return { success: true };
 }
 
+
 /**
  * Updates the daily streak for the authenticated user.
  */
@@ -81,15 +83,14 @@ export async function updateDailyStreak() {
     .single();
 
   const today = new Date().toISOString().split('T')[0];
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-  const lastDate = profile?.last_activity_date;
+  
+  const { newStreak, isUpdated } = calculateNewStreak(
+    profile?.daily_streak || 0,
+    profile?.last_activity_date,
+    today
+  );
 
-  if (lastDate === today) return { success: true, streak: Math.max(1, profile?.daily_streak || 1) };
-
-  let newStreak = 1;
-  if (lastDate === yesterday) {
-    newStreak = (profile?.daily_streak || 0) + 1;
-  }
+  if (!isUpdated) return { success: true, streak: newStreak };
 
   await supabase.from('profiles').update({
     daily_streak: newStreak,

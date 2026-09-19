@@ -61,7 +61,7 @@ describe('ExamWorkspace Component', () => {
     fireEvent.click(screen.getByText('Berlin'));
     
     // Submit exam
-    fireEvent.click(screen.getByText('Submit Exam'));
+    fireEvent.click(screen.getByText('Submit'));
 
     // Verify Score Result: 1 out of 2 correct = 50%
     expect(screen.getByText('50%')).toBeInTheDocument();
