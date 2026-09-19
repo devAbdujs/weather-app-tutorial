@@ -234,42 +234,59 @@ function SessionsContent() {
       {/* ── MODE SELECTION MODAL ── */}
       {selectedSession && (
         <div
-          className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex flex-col justify-end animate-fade-in"
+          className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-5 animate-fade-in"
           onClick={() => setSelectedSession(null)}
         >
           <div
-            className="bg-card w-full max-w-md mx-auto rounded-t-[32px] p-6 shadow-2xl animate-sheet-up"
+            className="bg-card w-full max-w-sm rounded-[32px] shadow-2xl animate-scale-bounce overflow-hidden"
             onClick={e => e.stopPropagation()}
           >
-            <div className="w-10 h-1 bg-black/10 rounded-full mx-auto mb-5" />
-            <h3 className="text-xl font-black text-primary mb-1">{selectedSession.label}</h3>
-            <p className="text-sm font-medium text-tertiary mb-5">{selectedSession.count} questions · Choose how to take it</p>
+            {/* Header */}
+            <div className="px-6 pt-6 pb-5 border-b border-black/5">
+              <p className="text-[10px] font-black text-tertiary uppercase tracking-widest mb-1">{selectedSession.count} questions</p>
+              <h3 className="text-2xl font-black text-primary tracking-tight">{selectedSession.label}</h3>
+            </div>
 
-            <div className="space-y-3">
+            {/* Mode options */}
+            <div className="p-4 space-y-3">
+              {/* Practice */}
               <button
                 onClick={() => handleStart(selectedSession, 'practice')}
-                className="w-full text-left p-4 rounded-[20px] bg-emerald-50 border-2 border-emerald-100 hover:border-emerald-400 transition-all active:scale-[0.98] flex items-center gap-4"
+                className="w-full group text-left p-4 rounded-[20px] bg-emerald-50 hover:bg-emerald-100 active:scale-[0.97] transition-all flex items-center gap-4"
               >
-                <div className="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
-                  <BookOpen className="w-5 h-5" />
+                <div className="w-14 h-14 rounded-[18px] bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+                  <BookOpen className="w-6 h-6" />
                 </div>
-                <div>
-                  <h4 className="font-black text-emerald-950 text-base">Practice Mode</h4>
-                  <p className="text-xs font-medium text-emerald-800/70 mt-0.5">Instant feedback · learn as you go</p>
+                <div className="flex-1">
+                  <h4 className="font-black text-emerald-950 text-[17px] leading-tight">Practice Mode</h4>
+                  <p className="text-xs font-medium text-emerald-800/60 mt-0.5">Instant feedback · learn as you go</p>
                 </div>
+                <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:text-emerald-600 transition-colors shrink-0" />
               </button>
 
+              {/* Exam */}
               <button
                 onClick={() => handleStart(selectedSession, 'exam')}
-                className="w-full text-left p-4 rounded-[20px] bg-rose-50 border-2 border-rose-100 hover:border-rose-400 transition-all active:scale-[0.98] flex items-center gap-4"
+                className="w-full group text-left p-4 rounded-[20px] bg-primary/5 hover:bg-primary/10 active:scale-[0.97] transition-all flex items-center gap-4"
               >
-                <div className="w-12 h-12 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0">
-                  <Layers className="w-5 h-5" />
+                <div className="w-14 h-14 rounded-[18px] bg-primary text-white flex items-center justify-center shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+                  <Layers className="w-6 h-6" />
                 </div>
-                <div>
-                  <h4 className="font-black text-rose-950 text-base">Exam Mode</h4>
-                  <p className="text-xs font-medium text-rose-800/70 mt-0.5">Timed · answers hidden until the end</p>
+                <div className="flex-1">
+                  <h4 className="font-black text-primary text-[17px] leading-tight">Exam Mode</h4>
+                  <p className="text-xs font-medium text-tertiary mt-0.5">Timed · answers revealed at the end</p>
                 </div>
+                <ArrowRight className="w-4 h-4 text-tertiary group-hover:text-primary transition-colors shrink-0" />
+              </button>
+            </div>
+
+            {/* Cancel */}
+            <div className="px-4 pb-4">
+              <button
+                onClick={() => setSelectedSession(null)}
+                className="w-full py-3.5 rounded-[16px] bg-black/5 hover:bg-black/8 text-sm font-bold text-secondary active:scale-[0.98] transition-all"
+              >
+                Cancel
               </button>
             </div>
           </div>
