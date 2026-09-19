@@ -16,6 +16,7 @@ interface SessionItem {
   count: number;
   offset: number;
   label: string;
+  year?: number;
 }
 
 function SessionsContent() {
@@ -31,6 +32,7 @@ function SessionsContent() {
   const [midtermCount, setMidtermCount] = useState(0);
   const [finalCount, setFinalCount] = useState(0);
   const [untaggedCount, setUntaggedCount] = useState(0);
+  const [entranceYears, setEntranceYears] = useState<{year: number, count: number}[]>([]);
   const [activeTab, setActiveTab] = useState<SessionTab>('midterm');
   const [selectedSession, setSelectedSession] = useState<SessionItem | null>(null);
 
@@ -41,7 +43,8 @@ function SessionsContent() {
 
   const isFreshman = examType === 'freshman';
   const isEntrance = examType === 'entrance';
-  const STANDARD_SIZE = isEntrance ? 50 : 50;
+  const STANDARD_SIZE = 50;
+  const EUEE_YEARS = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010];
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -49,7 +52,6 @@ function SessionsContent() {
       const base = { examType: examType || undefined, subject: subject || undefined };
 
       if (isFreshman) {
-        // Fetch tagged counts in parallel
         const [mCount, fCount, total] = await Promise.all([
           getSessionCounts({ ...base, period: 'midterm' }),
           getSessionCounts({ ...base, period: 'final' }),
@@ -63,15 +65,26 @@ function SessionsContent() {
         setMidtermCount(mCount + untaggedMidShare);
         setFinalCount(fCount + untaggedFinalShare);
         setUntaggedCount(untagged);
+      } else if (isEntrance) {
+        // Fetch counts for all years in parallel
+        const yearCounts = await Promise.all(
+          EUEE_YEARS.map(async y => {
+            const c = await getSessionCounts({ ...base, year: y });
+            return { year: y, count: c };
+          })
+        );
+        setEntranceYears(yearCounts.filter(yc => yc.count > 0));
+        // We still fetch total just for display if needed
+        const total = yearCounts.reduce((acc, curr) => acc + curr.count, 0);
+        setUntaggedCount(total);
       } else {
-        // Entrance / Exit: Just count everything and treat as standard sessions
         const total = await getSessionCounts({ ...base, year: year || undefined });
         setUntaggedCount(total);
       }
       setLoading(false);
     };
     fetchCounts();
-  }, [examType, subject, year, isFreshman]);
+  }, [examType, subject, year, isFreshman, isEntrance]);
 
   // Build session lists from counts
   const midtermSessions = useMemo((): SessionItem[] => {
@@ -102,6 +115,14 @@ function SessionsContent() {
       }));
       if (rem >= 10) list.push({ id: full + 1, count: rem, offset: finalBaseOffset + (full * FINAL_SIZE), label: `Final Exam ${full + 1}` });
       return list;
+    } else if (isEntrance) {
+      return entranceYears.map((yc, i) => ({
+        id: yc.year, // Use year as ID
+        count: yc.count,
+        offset: 0, // Year based, not offset based
+        label: `${yc.year} E.C. Exam`,
+        year: yc.year // Add custom property
+      }));
     } else {
       if (untaggedCount === 0) return [];
       const full = Math.floor(untaggedCount / STANDARD_SIZE);
@@ -115,7 +136,7 @@ function SessionsContent() {
       if (rem >= 10) list.push({ id: full + 1, count: rem, offset: full * STANDARD_SIZE, label: `Practice Set ${full + 1}` });
       return list;
     }
-  }, [finalCount, untaggedCount, midtermCount, isFreshman]);
+  }, [finalCount, untaggedCount, midtermCount, isFreshman, isEntrance, entranceYears]);
 
   const displayedSessions = isFreshman ? (activeTab === 'midterm' ? midtermSessions : finalSessions) : finalSessions;
 
@@ -140,14 +161,18 @@ function SessionsContent() {
       mode,
     });
     if (subject) params.set('subject', subject);
-    if (year) params.set('year', year);
+    if (session.year) {
+      params.set('year', session.year.toString());
+    } else if (year) {
+      params.set('year', year);
+    }
     if (isFreshman) params.set('period', activeTab);
 
     router.push(`/exam/session?${params.toString()}`);
   };
 
   const title = subject;
-  const subtitle = isFreshman ? 'Freshman Exam Bank' : isEntrance ? `Grade 12 Entrance • ${year || 'All Years'}` : 'University Exit Exam';
+  const subtitle = isFreshman ? 'Freshman Exam Bank' : isEntrance ? 'Grade 12 Entrance' : 'University Exit Exam';
 
   return (
     <div className="min-h-screen bg-ground pb-28 text-primary animate-fade-in">

@@ -69,9 +69,6 @@ export const PracticeHub = () => {
 
   const targetExam = devMode ? activeTab : profileTarget;
 
-  // Entrance state
-  const [subject, setSubject] = useState(EUEE_SUBJECTS[0]);
-  const [year, setYear] = useState(EUEE_YEARS[0]);
 
   useEffect(() => {
     setBackButton(false);
@@ -142,50 +139,22 @@ export const PracticeHub = () => {
           </div>
         )}
 
-        {/* ── ENTRANCE: subject + year picker ── */}
+        {/* ── ENTRANCE: subject picker ── */}
         {targetExam === 'entrance' && (
-          <div className="animate-fade-in space-y-5">
-            <div>
-              <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-3">Select subject</p>
-              <div className="grid grid-cols-2 gap-2">
-                {EUEE_SUBJECTS.map(s => (
-                  <button
-                    key={s}
-                    onClick={() => { haptic.selection(); setSubject(s); }}
-                    className={`px-3 py-3 rounded-[14px] border-2 text-sm font-bold transition-all text-left active:scale-95 ${
-                      subject === s
-                        ? 'bg-primary text-white border-primary shadow-sm'
-                        : 'bg-card text-secondary border-black/5 hover:border-black/15'
-                    }`}
-                  >{s}</button>
-                ))}
-              </div>
+          <div className="animate-fade-in">
+            <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-3">Select subject</p>
+            <div className="flex flex-col gap-2.5">
+              {EUEE_SUBJECTS.map(s => (
+                <button
+                  key={s}
+                  onClick={() => { haptic.selection(); navigate('entrance', { subject: s }); }}
+                  className="w-full group bg-card p-4 rounded-[20px] border-2 border-black/5 hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all flex items-center justify-between"
+                >
+                  <span className="text-sm font-bold text-primary">{s}</span>
+                  <ChevronRight className="w-4 h-4 text-tertiary group-hover:text-primary transition-colors" />
+                </button>
+              ))}
             </div>
-
-            <div>
-              <p className="text-[10px] font-bold text-tertiary uppercase tracking-widest mb-3">Year (E.C.)</p>
-              <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                {EUEE_YEARS.map(y => (
-                  <button
-                    key={y}
-                    onClick={() => { haptic.selection(); setYear(y); }}
-                    className={`shrink-0 px-4 py-2.5 rounded-[14px] border-2 font-bold text-sm transition-all active:scale-95 ${
-                      year === y
-                        ? 'bg-primary text-white border-primary shadow-sm'
-                        : 'bg-card text-secondary border-black/5'
-                    }`}
-                  >{y}</button>
-                ))}
-              </div>
-            </div>
-
-            <button
-              onClick={() => { haptic.impact('heavy'); navigate('entrance', { subject, year: year.toString() }); }}
-              className="w-full h-14 bg-primary text-white rounded-[20px] font-black flex items-center justify-center gap-2 shadow-sm active:scale-[0.97] transition-all"
-            >
-              <Compass className="w-5 h-5" />
-              View Sessions
-            </button>
           </div>
         )}
 
