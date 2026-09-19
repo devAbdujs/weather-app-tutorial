@@ -207,7 +207,9 @@ export const PracticeHub = () => {
         <div className="mt-8 pt-8 border-t-2 border-black/5">
           <div className="flex items-center gap-2 mb-4">
             <Layers className="w-5 h-5 text-accent-blue" />
-            <h2 className="text-xl font-black text-primary">Available Sessions</h2>
+            <h2 className="text-xl font-black text-primary">
+              {targetExam === 'entrance' ? 'Available Sessions' : 'Question Bank'}
+            </h2>
           </div>
 
           {loading ? (
@@ -239,7 +241,9 @@ export const PracticeHub = () => {
                       {s.id}
                     </div>
                     <div className="text-left">
-                      <h3 className="font-bold text-primary">Session {s.id}</h3>
+                      <h3 className="font-bold text-primary">
+                        {targetExam === 'entrance' ? `Session ${s.id}` : `Practice Part ${s.id}`}
+                      </h3>
                       <div className="flex items-center gap-2 text-xs font-bold text-tertiary mt-1">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         {s.count} Questions
