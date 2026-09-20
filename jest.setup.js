@@ -1,29 +1,39 @@
-require("dotenv").config({ path: ".env.local" });
-import '@testing-library/jest-dom'
+// jest.setup.js — plain JavaScript, no TypeScript types allowed here
 
-// Mock matchMedia which is not implemented in JSDOM
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(), // Deprecated
-    removeListener: jest.fn(), // Deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-});
+// Prevent "No Gemini API keys found" warning during test runs
+process.env.gemini_api_key_dummy = 'test-dummy-key';
 
-// Mock Element.scrollTo which is not implemented in JSDOM
-Element.prototype.scrollTo = jest.fn();
+require('@testing-library/jest-dom');
 
+// ── JSDOM shims ───────────────────────────────────────────────────────────────
+if (typeof window !== 'undefined') {
+  // matchMedia is not implemented in JSDOM
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: jest.fn().mockImplementation(function(query) {
+      return {
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      };
+    }),
+  });
 
-// Mock global fetch for UI components
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    ok: true,
-    json: () => Promise.resolve({}),
-  })
-);
+  // scrollTo is not implemented in JSDOM
+  Element.prototype.scrollTo = jest.fn();
+
+  // Mock global fetch so UI component tests don't hit the network
+  global.fetch = jest.fn(function() {
+    return Promise.resolve(
+      new Response(JSON.stringify({}), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+  });
+}

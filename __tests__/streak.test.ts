@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import { calculateNewStreak } from '@/lib/streak';
 
 describe('calculateNewStreak', () => {

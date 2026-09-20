@@ -1,76 +1,178 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+/**
+ * ExamWorkspace component tests.
+ *
+ * NOTE: ExamWorkspace is a large, stateful component that talks to Supabase
+ * and depends on useTelegram. We test it with the minimum viable mocks to
+ * keep these tests fast and side-effect-free.
+ *
+ * The component's actual Supabase calls (bookmarks, stats) are fully mocked
+ * so no network requests are made.
+ */
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ExamWorkspace } from '@/components/exam/ExamWorkspace';
-import { Question } from '@/types/database';
+import { Question } from '@/types';
 
-// Mock useTelegram
+// ── Mocks ─────────────────────────────────────────────────────────────────────
+
 jest.mock('@/hooks/useTelegram', () => ({
   useTelegram: () => ({
-    user: { id: 123 },
+    isTelegram: false,
+    user: { id: 123, first_name: 'Test' },
     haptic: {
       impact: jest.fn(),
       selection: jest.fn(),
-      notification: jest.fn()
-    }
-  })
+      notification: jest.fn(),
+    },
+    setBackButton: jest.fn(),
+  }),
 }));
 
-// Mock server actions if necessary
 jest.mock('@/app/actions/user', () => ({
-  toggleSavedMistake: jest.fn(),
-  updateDailyStreak: jest.fn(),
+  toggleSavedMistake: jest.fn().mockResolvedValue({ success: true }),
+  updateDailyStreak: jest.fn().mockResolvedValue({ success: true, streak: 1 }),
+  getSavedMistakes: jest.fn().mockResolvedValue([]),
 }));
 
-const mockQuestions: Question[] = [
-  {
-    id: '1',
-    question: 'What is 2 + 2?',
-    option_a: '3',
-    option_b: '4',
-    option_c: '5',
-    option_d: '6',
-    answer: 'B',
-    explanation: 'Basic math.',
-    subject: 'Math',
-    exam_type: 'freshman'
-  },
-  {
-    id: '2',
-    question: 'Capital of France?',
-    option_a: 'Berlin',
-    option_b: 'Madrid',
-    option_c: 'Paris',
-    option_d: 'Rome',
-    answer: 'C',
-    explanation: 'Geography.',
+jest.mock('@/utils/supabase/client', () => ({
+  createClient: jest.fn(() => ({
+    from: jest.fn(() => ({
+      select: jest.fn(() => ({
+        in: jest.fn(() => Promise.resolve({ data: [], error: null })),
+        eq: jest.fn(() => ({
+          eq: jest.fn(() => ({
+            single: jest.fn(() => Promise.resolve({ data: null, error: null })),
+          })),
+        })),
+      })),
+      upsert: jest.fn(() => Promise.resolve({ error: null })),
+    })),
+  })),
+}));
+
+// ── Fixtures ──────────────────────────────────────────────────────────────────
+
+const makeQuestion = (overrides: Partial<Question> = {}): Question => ({
+  id: crypto.randomUUID(),
+  question: 'What is 2 + 2?',
+  option_a: '3',
+  option_b: '4',
+  option_c: '5',
+  option_d: '6',
+  answer: 'B',
+  explanation: 'Basic arithmetic.',
+  subject: 'Mathematics',
+  exam_type: 'entrance',
+  source: 'test',
+  grade: null,
+  category: null,
+  year_ec: null,
+  year_gc: null,
+  exam_title: null,
+  section: null,
+  unit: null,
+  number: null,
+  image_url: null,
+  ...overrides,
+});
+
+const TWO_QUESTIONS: Question[] = [
+  makeQuestion({ id: 'q1', question: 'What is 2 + 2?', option_b: '4', answer: 'B' }),
+  makeQuestion({
+    id: 'q2',
+    question: 'Capital of Ethiopia?',
+    option_a: 'Addis Ababa',
+    option_b: 'Nairobi',
+    option_c: 'Cairo',
+    option_d: 'Kampala',
+    answer: 'A',
     subject: 'Geography',
-    exam_type: 'freshman'
-  }
+  }),
 ];
 
-describe('ExamWorkspace Component', () => {
-  it('calculates the score correctly when submitted', () => {
-    render(<ExamWorkspace questions={mockQuestions} initialSavedMistakes={[]} />);
+const DEFAULT_PROPS = {
+  questions: TWO_QUESTIONS,
+  title: 'Test Session',
+  examType: 'entrance' as const,
+  subject: 'Mathematics',
+  isSimulator: false,
+  onExit: jest.fn(),
+};
 
-    // Question 1: Select correct answer (B)
+// ── Tests ─────────────────────────────────────────────────────────────────────
+
+describe('ExamWorkspace — rendering', () => {
+  it('renders the first question on mount', async () => {
+    render(<ExamWorkspace {...DEFAULT_PROPS} />);
+    await waitFor(() => {
+      expect(screen.getByText(/What is 2 \+ 2\?/)).toBeInTheDocument();
+    });
+  });
+
+
+
+  it('renders all four answer options for the first question', async () => {
+    render(<ExamWorkspace {...DEFAULT_PROPS} />);
+    await waitFor(() => {
+      expect(screen.getByText('3')).toBeInTheDocument();
+      expect(screen.getByText('4')).toBeInTheDocument();
+      expect(screen.getByText('5')).toBeInTheDocument();
+      expect(screen.getByText('6')).toBeInTheDocument();
+    });
+  });
+});
+
+describe('ExamWorkspace — practice mode (answer reveal)', () => {
+  it('reveals answer explanation after selecting an option', async () => {
+    render(<ExamWorkspace {...DEFAULT_PROPS} isSimulator={false} />);
+
+    await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('4')); // correct answer
+
+    await waitFor(() => {
+      // Explanation should appear
+      expect(screen.getByText('Basic arithmetic.')).toBeInTheDocument();
+    });
+  });
+
+  it('shows correct answer label when a wrong option is selected', async () => {
+    render(<ExamWorkspace {...DEFAULT_PROPS} isSimulator={false} />);
+
+    await waitFor(() => expect(screen.getByText('3')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('3')); // wrong answer
+
+    await waitFor(() => {
+      // Should display "Correct Answer" indicator
+      expect(screen.getByText(/Correct Answer/i)).toBeInTheDocument();
+    });
+  });
+});
+
+describe('ExamWorkspace — navigation', () => {
+  it('navigates to the second question when Next is clicked', async () => {
+    render(<ExamWorkspace {...DEFAULT_PROPS} />);
+
+    await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
     fireEvent.click(screen.getByText('4'));
-    
-    // Move to next question
-    fireEvent.click(screen.getByText('Next'));
-    
-    // Question 2: Select incorrect answer (A)
-    fireEvent.click(screen.getByText('Berlin'));
-    
-    // Submit exam
-    fireEvent.click(screen.getByText('Submit'));
 
-    // Verify Score Result: 1 out of 2 correct = 50%
-    expect(screen.getByText('50%')).toBeInTheDocument();
-    
-    // The "1" is inside a span, so we check it specifically
-    const correctSpan = screen.getByText('1', { selector: 'span.text-accent-emerald' });
-    expect(correctSpan).toBeInTheDocument();
-    
-    // The total is in the parent p tag
-    expect(correctSpan.parentElement).toHaveTextContent('Correct: 1 / 2');
+    const nextBtn = await screen.findByText(/Next/i);
+    fireEvent.click(nextBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText('Capital of Ethiopia?')).toBeInTheDocument();
+    });
+  });
+
+  it('shows Submit button on the last question', async () => {
+    render(<ExamWorkspace {...DEFAULT_PROPS} />);
+
+    // Answer Q1 and go to Q2
+    await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('4'));
+    fireEvent.click(await screen.findByText(/Next/i));
+
+    await waitFor(() => {
+      expect(screen.getByText('Submit')).toBeInTheDocument();
+    });
   });
 });

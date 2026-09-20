@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest --passWithNoTests",
+    "test:unit": "jest --passWithNoTests --testPathIgnorePatterns='<rootDir>/node_modules/' '<rootDir>/.next/' '<rootDir>/e2e/' '<rootDir>/__tests__/supabase-rls.test.ts'",
+    "test:ci": "jest --ci --passWithNoTests --testPathIgnorePatterns='<rootDir>/node_modules/' '<rootDir>/.next/' '<rootDir>/e2e/' '<rootDir>/__tests__/supabase-rls.test.ts'"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.121",
@@ -46,6 +49,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "dotenv": "^18.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.2.15",
     "jest": "^30.5.2",

@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { validateMiniAppInitData, validateWebWidgetData } from '@/lib/telegramAuth';
 import crypto from 'crypto';
 

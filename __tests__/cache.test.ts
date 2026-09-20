@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import { getCachedQuestions, setCachedQuestions } from '@/lib/cache';
 import localforage from 'localforage';
 
