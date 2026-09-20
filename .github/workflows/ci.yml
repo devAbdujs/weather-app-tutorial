@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Job 1: Type check + Unit tests ────────────────────────────────────────
+  test:
+    name: Type Check & Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Run unit tests
+        run: npm run test:ci
+        env:
+          # No real secrets needed — lib tests mock external services.
+          # The supabase-rls integration test is excluded from test:ci.
+          NODE_ENV: test
+
+  # ── Job 2: Build verification ──────────────────────────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Only run build check on PRs and main pushes (skip for draft PRs)
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # Minimal env vars required for Next.js to compile.
+          # These are dummy values — the build only needs them to be present.
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder_anon_key
+          NEXT_PUBLIC_BOT_USERNAME: placeholder_bot
+          NEXT_PUBLIC_TELEGRAM_CLIENT_ID: "0"
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: placeholder_cloud
+          NEXT_PUBLIC_SITE_URL: https://temari.top
+          TELEGRAM_BOT_TOKEN: placeholder_token
+          SUPABASE_SERVICE_ROLE_KEY: placeholder_service_key
+          TELEGRAM_CLIENT_SECRET: placeholder_secret
+          gemini_api_key1: placeholder_gemini_key
