@@ -13,8 +13,6 @@ const GEMINI_KEYS: string[] = Object.keys(process.env)
 
 if (GEMINI_KEYS.length === 0) {
   console.warn('[GeminiKeys] ⚠️  No Gemini API keys found. AI Tutor unavailable.');
-} else {
-  console.log(`[GeminiKeys] 🚀 Loaded ${GEMINI_KEYS.length} Gemini API keys for round-robin rotation.`);
 }
 
 // Track cooldown expiry timestamps per key index (in-memory)

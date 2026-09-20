@@ -18,7 +18,7 @@ interface RateLimitEntry {
 const store = new Map<string, RateLimitEntry>();
 
 // Purge identifiers that haven't been seen in 10 minutes to prevent memory leak
-setInterval(() => {
+const cleanupInterval = setInterval(() => {
   const cutoff = Date.now() - 600_000;
   store.forEach((entry, key) => {
     if (entry.timestamps.length === 0 || entry.timestamps[entry.timestamps.length - 1] < cutoff) {
@@ -26,6 +26,10 @@ setInterval(() => {
     }
   });
 }, 300_000); // cleanup every 5 minutes
+
+if (cleanupInterval.unref) {
+  cleanupInterval.unref();
+}
 
 export interface RateLimitResult {
   allowed: boolean;

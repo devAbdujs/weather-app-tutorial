@@ -64,9 +64,6 @@ export function useTelegram() {
           try {
             setUser(JSON.parse(webUser));
           } catch(e) {}
-        } else if (process.env.NODE_ENV === 'development') {
-           // Optional: Uncomment for local dev without internet
-           // setUser({ id: 123456789, first_name: 'Dev' });
         }
         setIsLoadingAuth(false);
       }

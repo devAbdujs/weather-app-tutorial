@@ -9,8 +9,8 @@ export function PWARegistry() {
       window.addEventListener('load', () => {
         navigator.serviceWorker
           .register('/sw.js')
-          .then((registration) => {
-            console.log('Ethio Scholar PWA Active. Scope:', registration.scope);
+          .then(() => {
+            // Service Worker registered successfully
           })
           .catch((err) => {
             console.error('PWA Registration failed:', err);

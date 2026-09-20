@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
       name: 'es_session',
       value: sessionToken,
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/',
       maxAge: 60 * 60 * 24 * 30, // 30 days

@@ -40,7 +40,7 @@ export const setCachedQuestions = async (cacheKey: string, data: Question[]) => 
     });
     
     // Cleanup old caches (e.g. ones without v2 prefix) in the background
-    setTimeout(async () => {
+    const cleanupTimer = setTimeout(async () => {
       try {
         const keys = await localforage.keys();
         for (const key of keys) {
@@ -50,6 +50,10 @@ export const setCachedQuestions = async (cacheKey: string, data: Question[]) => 
         }
       } catch (e) {}
     }, 2000);
+    
+    if (cleanupTimer.unref) {
+      cleanupTimer.unref();
+    }
   } catch (err) {
     console.warn('Failed to write to cache:', err);
   }

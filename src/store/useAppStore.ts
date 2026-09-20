@@ -2,6 +2,11 @@ import { create } from 'zustand';
 
 export type SetupModalType = 'exam' | 'flashcards' | 'notes' | null;
 
+/**
+ * Lightweight session profile stored in the Zustand store.
+ * Note: differs from the database UserProfile type in src/types/index.ts
+ * which reflects the full Supabase 'profiles' table shape.
+ */
 export interface UserProfile {
   telegram_id?: string;
   first_name?: string;
