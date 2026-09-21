@@ -6,12 +6,14 @@ import { useTelegram } from '@/hooks/useTelegram';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import { logout } from '@/app/actions/user';
+import { WelcomeOnboarding } from './WelcomeOnboarding';
 
 export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) => {
   const router = useRouter();
   const { haptic, isTelegram } = useTelegram();
-  const setSetupModalType = useAppStore(s => s.setSetupModalType);
+  const updateProfile = useAppStore(s => s.updateProfile);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isChangingExam, setIsChangingExam] = useState(false);
   const [devClicks, setDevClicks] = useState(0);
   const toggleDevMode = useAppStore(s => s.toggleDevMode);
   const devMode = useAppStore(s => s.devMode);
@@ -31,8 +33,7 @@ export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) 
 
   const handleRetakeOnboarding = () => {
     haptic.selection();
-    setSetupModalType('exam');
-    router.push('/');
+    setIsChangingExam(true);
   };
 
   const handleAvatarClick = () => {
@@ -61,9 +62,20 @@ export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) 
   const overallAccuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
 
   return (
-    <div className="flex-1 flex flex-col pt-6 px-4 pb-24 overflow-y-auto animate-fade-in bg-ground custom-scrollbar">
-      
-      {/* Header Profile Section */}
+    <>
+      {isChangingExam && (
+        <WelcomeOnboarding 
+          onComplete={(res) => {
+            updateProfile({ target_exam: res.target, stream: res.stream });
+            setIsChangingExam(false);
+            router.refresh();
+          }}
+          onCancel={() => setIsChangingExam(false)}
+        />
+      )}
+      <div className="flex-1 flex flex-col pt-6 px-4 pb-24 overflow-y-auto animate-fade-in bg-ground custom-scrollbar">
+        
+        {/* Header Profile Section */}
       <div className="flex flex-col items-center mb-8 relative">
         {devMode && <div className="absolute top-0 right-5 text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-50 px-2 py-1 rounded-full">Dev Mode</div>}
         <div onClick={handleAvatarClick} className="w-24 h-24 bg-gradient-to-br from-[#229ED9] to-[#1E8CC0] rounded-[28px] flex items-center justify-center text-white mb-4 relative shadow-lg shadow-[#229ED9]/20 transform rotate-3 active:scale-[0.98] active:opacity-80 transition-transform">
@@ -184,5 +196,6 @@ export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) 
       </div>
 
     </div>
+    </>
   );
 };

@@ -10,6 +10,7 @@ interface OnboardingResult {
 
 interface WelcomeOnboardingProps {
   onComplete: (result: OnboardingResult) => void;
+  onCancel?: () => void;
 }
 
 // ── Data ──────────────────────────────────────────────────────────────────────
@@ -44,7 +45,7 @@ const EXIT_DISCIPLINES = [
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete }) => {
+export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete, onCancel }) => {
   const { user, haptic } = useTelegram();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [target, setTarget] = useState<string>('');
@@ -118,12 +119,20 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
     <div className="fixed inset-0 z-50 bg-ground flex flex-col px-6 py-12 overflow-y-auto animate-fade-in">
       <div className="w-full max-w-md mx-auto flex flex-col gap-6 flex-1">
 
-        {/* Back button for steps 2+ */}
-        {step > 1 && (
-          <button onClick={() => { haptic.impact('light'); setStep(1); setStream(''); }} className="flex items-center gap-1 text-sm font-bold text-gray-600 w-fit">
-            <ChevronLeft className="w-4 h-4" /> Back
-          </button>
-        )}
+        {/* Navigation / Header */}
+        <div className="flex items-center justify-between">
+          {step > 1 ? (
+            <button onClick={() => { haptic.impact('light'); setStep(1); setStream(''); }} className="flex items-center gap-1 text-sm font-bold text-gray-600 w-fit">
+              <ChevronLeft className="w-4 h-4" /> Back
+            </button>
+          ) : (
+            onCancel ? (
+              <button onClick={() => { haptic.impact('light'); onCancel(); }} className="flex items-center gap-1 text-sm font-bold text-gray-600 w-fit">
+                <ChevronLeft className="w-4 h-4" /> Cancel
+              </button>
+            ) : <div />
+          )}
+        </div>
 
         {/* Progress dots */}
         <div className="flex gap-2">
