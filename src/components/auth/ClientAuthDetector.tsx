@@ -82,8 +82,8 @@ export const ClientAuthDetector: React.FC = () => {
            <span className="text-white font-black text-3xl tracking-tighter">Te</span>
         </div>
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-[3px] border-black/5 border-t-primary animate-spin" />
-          <p className="text-[10px] font-black text-gray-500 tracking-[0.2em] uppercase">Authenticating</p>
+          <div className="w-8 h-8 rounded-full border-[3px] border-black/5 dark:border-white/10 border-t-primary animate-spin" />
+          <p className="text-[10px] font-black text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">Authenticating</p>
         </div>
       </div>
     );

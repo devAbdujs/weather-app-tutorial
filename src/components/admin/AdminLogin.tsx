@@ -33,10 +33,10 @@ export const AdminLogin = () => {
     <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-md bg-card border-2 border-primary rounded-3xl p-8 shadow-[8px_8px_0px_#1B3A6B]">
         <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-          <Lock className="w-8 h-8 text-gray-900" />
+          <Lock className="w-8 h-8 text-gray-900 dark:text-gray-100" />
         </div>
-        <h1 className="text-2xl font-black text-gray-900 text-center mb-2">Admin Portal</h1>
-        <p className="text-gray-500 text-center font-medium mb-8">Sign in to manage Temari.</p>
+        <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 text-center mb-2">Admin Portal</h1>
+        <p className="text-gray-500 dark:text-gray-400 text-center font-medium mb-8">Sign in to manage Temari.</p>
         
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
@@ -45,7 +45,7 @@ export const AdminLogin = () => {
               value={username} 
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Username..."
-              className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold text-gray-900 focus:border-primary focus:outline-none transition-colors"
+              className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold text-gray-900 dark:text-gray-100 focus:border-primary focus:outline-none transition-colors"
             />
           </div>
           <div>
@@ -54,14 +54,14 @@ export const AdminLogin = () => {
               value={secret} 
               onChange={(e) => setSecret(e.target.value)}
               placeholder="Passcode..."
-              className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold text-gray-900 focus:border-primary focus:outline-none transition-colors"
+              className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold text-gray-900 dark:text-gray-100 focus:border-primary focus:outline-none transition-colors"
             />
           </div>
           {error && <p className="text-error text-sm font-bold">{error}</p>}
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full py-4 bg-primary text-white font-black rounded-xl border-b-4 border-black/20 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-50 mt-2"
+            className="w-full py-4 bg-primary text-white font-black rounded-xl border-b-4 border-black/20 dark:border-white/30 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-50 mt-2"
           >
             {loading ? 'VERIFYING...' : 'SIGN IN'}
           </button>

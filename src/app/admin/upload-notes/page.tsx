@@ -47,14 +47,14 @@ export default function AdminUploadNotes() {
 
   return (
     <div>
-      <h1 className="text-3xl font-black text-gray-900 mb-6 tracking-tight">Upload Short Note</h1>
-      <p className="text-gray-500 mb-8 font-medium">Paste raw markdown generated from NotebookLM to insert directly into the database.</p>
+      <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 mb-6 tracking-tight">Upload Short Note</h1>
+      <p className="text-gray-500 dark:text-gray-400 mb-8 font-medium">Paste raw markdown generated from NotebookLM to insert directly into the database.</p>
       
       <div className="bg-card border-2 border-primary/10 rounded-3xl p-8 shadow-sm max-w-4xl">
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-bold mb-2 text-gray-600">Exam Type</label>
+              <label className="block text-sm font-bold mb-2 text-gray-600 dark:text-gray-400">Exam Type</label>
               <select 
                 value={examType} onChange={(e) => setExamType(e.target.value)}
                 className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold focus:border-primary focus:outline-none transition-colors"
@@ -65,7 +65,7 @@ export default function AdminUploadNotes() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-bold mb-2 text-gray-600">Course / Department</label>
+              <label className="block text-sm font-bold mb-2 text-gray-600 dark:text-gray-400">Course / Department</label>
               <input 
                 type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
                 placeholder="e.g. Applied Mathematics I"
@@ -75,7 +75,7 @@ export default function AdminUploadNotes() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-2 text-gray-600">Chapter Title</label>
+            <label className="block text-sm font-bold mb-2 text-gray-600 dark:text-gray-400">Chapter Title</label>
             <input 
               type="text" value={title} onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Chapter 1: Limits and Continuity"
@@ -84,7 +84,7 @@ export default function AdminUploadNotes() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-2 text-gray-600">NotebookLM Markdown</label>
+            <label className="block text-sm font-bold mb-2 text-gray-600 dark:text-gray-400">NotebookLM Markdown</label>
             <textarea 
               value={content} onChange={(e) => setContent(e.target.value)}
               placeholder="Paste raw markdown here..."
@@ -94,7 +94,7 @@ export default function AdminUploadNotes() {
 
           <button 
             onClick={handleUpload} disabled={loading}
-            className="w-full py-5 bg-primary text-white font-black rounded-xl border-b-4 border-black/20 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-50"
+            className="w-full py-5 bg-primary text-white font-black rounded-xl border-b-4 border-black/20 dark:border-white/30 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-50"
           >
             {loading ? 'UPLOADING...' : 'SAVE TO DATABASE'}
           </button>

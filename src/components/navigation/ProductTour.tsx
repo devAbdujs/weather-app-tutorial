@@ -26,8 +26,8 @@ const TOUR_STEPS = [
   {
     title: 'Smart Flashcards',
     description: 'Review key concepts fast with our Tinder-style swipeable flashcards and spaced repetition.',
-    icon: <BookOpen className="w-6 h-6 text-gray-900" />,
-    color: 'bg-primary/10 text-gray-900'
+    icon: <BookOpen className="w-6 h-6 text-gray-900 dark:text-gray-100" />,
+    color: 'bg-primary/10 text-gray-900 dark:text-gray-100'
   }
 ];
 
@@ -74,12 +74,12 @@ export const ProductTour: React.FC = () => {
         >
           {/* Subtle drag handle indicator for mobile feel */}
           <div className="w-full flex justify-center pt-3 pb-1 md:hidden">
-            <div className="w-12 h-1.5 rounded-full bg-black/10" />
+            <div className="w-12 h-1.5 rounded-full bg-black/10 dark:bg-white/10" />
           </div>
 
           <button 
             onClick={handleComplete}
-            className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 flex items-center justify-center rounded-full bg-ground text-gray-500 hover:text-gray-900 transition-colors active:scale-[0.98] active:opacity-80 z-10"
+            className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 flex items-center justify-center rounded-full bg-ground text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 transition-colors active:scale-[0.98] active:opacity-80 z-10"
           >
             <X className="w-5 h-5" />
           </button>
@@ -93,10 +93,10 @@ export const ProductTour: React.FC = () => {
 
             {/* Content */}
             <div className="space-y-3 min-h-[90px]">
-              <h3 className="text-2xl font-bold text-gray-900 tracking-tight transition-opacity duration-300">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight transition-opacity duration-300">
                 {TOUR_STEPS[step].title}
               </h3>
-              <p className="text-[15px] font-medium text-gray-600 leading-relaxed transition-opacity duration-300">
+              <p className="text-[15px] font-medium text-gray-600 dark:text-gray-400 leading-relaxed transition-opacity duration-300">
                 {TOUR_STEPS[step].description}
               </p>
             </div>
@@ -108,7 +108,7 @@ export const ProductTour: React.FC = () => {
                   <div 
                     key={i}
                     className={`h-2 rounded-full transition-all duration-300 ease-out ${
-                      i === step ? 'w-6 bg-primary' : 'w-2 bg-black/10'
+                      i === step ? 'w-6 bg-primary' : 'w-2 bg-black/10 dark:bg-white/10'
                     }`}
                   />
                 ))}

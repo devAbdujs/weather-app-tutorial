@@ -59,7 +59,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin: _onLogin }) =
 
         {/* Header Row */}
         <div className="flex items-center justify-between mb-8">
-          <span className="text-[11px] font-bold text-gray-500 tracking-widest uppercase">
+          <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 tracking-widest uppercase">
             {greeting}
           </span>
           <div className="bg-ground dark:bg-surface-2 px-2.5 py-1 rounded-full border border-black/5 dark:border-white/8 flex items-center gap-1.5">
@@ -116,13 +116,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin: _onLogin }) =
         )}
 
         {/* Footer */}
-        <p className="text-[11px] text-gray-400 font-medium text-center mt-6 leading-relaxed">
+        <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium text-center mt-6 leading-relaxed">
           By continuing, you agree to our{' '}
-          <a href="#" className="underline hover:text-gray-600 dark:hover:text-gray-300">
+          <a href="#" className="underline hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400 dark:hover:text-gray-300">
             Terms
           </a>{' '}
           and{' '}
-          <a href="#" className="underline hover:text-gray-600 dark:hover:text-gray-300">
+          <a href="#" className="underline hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400 dark:hover:text-gray-300">
             Privacy Policy
           </a>
           .

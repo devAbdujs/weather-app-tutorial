@@ -157,8 +157,8 @@ export const HomeHub: React.FC = () => {
       {/* ── EXAM TYPE BADGE ── */}
       <div className="mx-5 mb-5">
         <div className="bg-primary/5 dark:bg-primary/15 border border-primary/10 dark:border-primary/25 rounded-[14px] px-4 py-2.5 flex items-center gap-2">
-          <Target className="w-3.5 h-3.5 text-gray-900/50 dark:text-gray-100/50 shrink-0" />
-          <span className="text-xs font-bold text-gray-900/60 dark:text-gray-100/60">{examLabel(userProfile?.target_exam || null)}</span>
+          <Target className="w-3.5 h-3.5 text-gray-900/50 dark:text-gray-100/50 dark:text-gray-100/50 shrink-0" />
+          <span className="text-xs font-bold text-gray-900/60 dark:text-gray-100/60 dark:text-gray-100/60">{examLabel(userProfile?.target_exam || null)}</span>
         </div>
       </div>
 
@@ -208,7 +208,7 @@ export const HomeHub: React.FC = () => {
             onClick={() => { haptic.impact('medium'); setSetupModalType('notes'); }}
             className="group bg-card dark:bg-card p-5 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.96] transition-all text-left"
           >
-            <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-[12px] flex items-center justify-center mb-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
+            <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-[12px] flex items-center justify-center mb-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 dark:hover:bg-blue-900/50 dark:group-hover:bg-blue-900/50 transition-colors">
               <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <h3 className="text-[14px] font-black text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
@@ -219,7 +219,7 @@ export const HomeHub: React.FC = () => {
             onClick={() => { haptic.impact('medium'); router.push('/notebook/All'); }}
             className="group bg-card dark:bg-card p-5 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.96] transition-all text-left"
           >
-            <div className="w-10 h-10 bg-violet-50 dark:bg-violet-900/30 rounded-[12px] flex items-center justify-center mb-3 group-hover:bg-violet-100 dark:group-hover:bg-violet-900/50 transition-colors">
+            <div className="w-10 h-10 bg-violet-50 dark:bg-violet-900/30 rounded-[12px] flex items-center justify-center mb-3 group-hover:bg-violet-100 dark:group-hover:bg-violet-900/50 dark:hover:bg-violet-900/50 dark:group-hover:bg-violet-900/50 transition-colors">
               <BookMarked className="w-5 h-5 text-violet-600 dark:text-violet-400" />
             </div>
             <h3 className="text-[14px] font-black text-gray-900 dark:text-gray-100 leading-tight">My Notebook</h3>
@@ -238,7 +238,7 @@ export const HomeHub: React.FC = () => {
             </div>
             <button
               onClick={() => { haptic.selection(); fetchTip(true); }}
-              className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 active:scale-90 transition-all"
+              className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/5 dark:bg-white/5 dark:hover:bg-white/10 active:scale-90 transition-all"
               title="Get a new tip"
             >
               <RefreshCw className={`w-3.5 h-3.5 text-gray-500 dark:text-gray-400 ${tipLoading ? 'animate-spin' : ''}`} />
@@ -251,7 +251,7 @@ export const HomeHub: React.FC = () => {
               <div className="h-3.5 bg-black/5 dark:bg-white/8 rounded-full animate-pulse w-4/5" />
             </div>
           ) : tip ? (
-            <p className="text-sm font-medium text-gray-900/80 dark:text-gray-100/80 leading-relaxed animate-fade-in">
+            <p className="text-sm font-medium text-gray-900/80 dark:text-gray-100/80 dark:text-gray-100/80 leading-relaxed animate-fade-in">
               {tip}
             </p>
           ) : null}

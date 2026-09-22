@@ -94,13 +94,13 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
           className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl border-2 text-left transition-all active:scale-[0.98] ${
             value === o.id
               ? 'border-accent-blue bg-accent-blue/5'
-              : 'border-black/5 bg-card hover:border-black/10'
+              : 'border-black/5 dark:border-white/10 bg-card hover:border-black/10 dark:hover:border-white/20 dark:border-white/20'
           }`}
         >
-          <span className={`font-bold text-sm ${value === o.id ? 'text-accent-blue' : 'text-gray-900'}`}>
+          <span className={`font-bold text-sm ${value === o.id ? 'text-accent-blue' : 'text-gray-900 dark:text-gray-100'}`}>
             {o.label}
           </span>
-          <div className={`w-5 h-5 rounded-full flex items-center justify-center border-2 shrink-0 ${value === o.id ? 'border-accent-blue bg-accent-blue text-white' : 'border-black/10'}`}>
+          <div className={`w-5 h-5 rounded-full flex items-center justify-center border-2 shrink-0 ${value === o.id ? 'border-accent-blue bg-accent-blue text-white' : 'border-black/10 dark:border-white/20'}`}>
             {value === o.id && <CheckCircle2 className="w-3 h-3" />}
           </div>
         </button>
@@ -122,12 +122,12 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
         {/* Navigation / Header */}
         <div className="flex items-center justify-between">
           {step > 1 ? (
-            <button onClick={() => { haptic.impact('light'); setStep(1); setStream(''); }} className="flex items-center gap-1 text-sm font-bold text-gray-600 w-fit">
+            <button onClick={() => { haptic.impact('light'); setStep(1); setStream(''); }} className="flex items-center gap-1 text-sm font-bold text-gray-600 dark:text-gray-400 w-fit">
               <ChevronLeft className="w-4 h-4" /> Back
             </button>
           ) : (
             onCancel ? (
-              <button onClick={() => { haptic.impact('light'); onCancel(); }} className="flex items-center gap-1 text-sm font-bold text-gray-600 w-fit">
+              <button onClick={() => { haptic.impact('light'); onCancel(); }} className="flex items-center gap-1 text-sm font-bold text-gray-600 dark:text-gray-400 w-fit">
                 <ChevronLeft className="w-4 h-4" /> Cancel
               </button>
             ) : <div />
@@ -139,7 +139,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
           {[1, target === 'entrance' ? 2 : null, target === 'exit' ? 3 : null]
             .filter(Boolean)
             .map((s, i) => (
-              <div key={i} className={`h-1.5 flex-1 rounded-full transition-all ${step >= (s as number) ? 'bg-accent-blue' : 'bg-black/10'}`} />
+              <div key={i} className={`h-1.5 flex-1 rounded-full transition-all ${step >= (s as number) ? 'bg-accent-blue' : 'bg-black/10 dark:bg-white/10'}`} />
             ))}
         </div>
 
@@ -147,8 +147,8 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
         {step === 1 && (
           <>
             <div>
-              <h1 className="text-3xl font-black text-gray-900 tracking-tight">What are you<br/>preparing for?</h1>
-              <p className="text-sm font-medium text-gray-500 mt-2">This personalizes your entire experience.</p>
+              <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">What are you<br/>preparing for?</h1>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">This personalizes your entire experience.</p>
             </div>
             <PillList
               options={[
@@ -166,8 +166,8 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
         {step === 2 && (
           <>
             <div>
-              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Your Stream</h1>
-              <p className="text-sm font-medium text-gray-500 mt-2">You can switch subjects freely each session within your stream.</p>
+              <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Your Stream</h1>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">You can switch subjects freely each session within your stream.</p>
             </div>
             <PillList options={G12_STREAMS} value={stream} onChange={setStream} />
           </>
@@ -177,8 +177,8 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
         {step === 3 && (
           <>
             <div>
-              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Your Discipline</h1>
-              <p className="text-sm font-medium text-gray-500 mt-2">Select your field of study for the Exit Exam.</p>
+              <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Your Discipline</h1>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">Select your field of study for the Exit Exam.</p>
             </div>
             <PillList options={EXIT_DISCIPLINES} value={stream} onChange={setStream} />
           </>
@@ -191,7 +191,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
           className={`w-full py-4 rounded-[16px] border-2 font-bold text-base flex items-center justify-center gap-2 transition-all mt-auto ${
             canProceed && !isSaving
               ? 'bg-accent-blue border-primary text-white active:scale-[0.98] active:opacity-80 shadow-sm -translate-y-1'
-              : 'bg-ground border-black/10 text-gray-500 cursor-not-allowed'
+              : 'bg-ground border-black/10 dark:border-white/20 text-gray-500 dark:text-gray-400 cursor-not-allowed'
           }`}
         >
           {isSaving ? 'Saving...' : step === 1 && target === 'freshman' ? 'Get Started' : step >= 2 ? 'Finish Setup' : 'Continue'}

@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 const AITutorDrawer = dynamic(() => import('@/components/ai/AITutorDrawer').then(m => m.AITutorDrawer), { ssr: false });
-const MarkdownRenderer = dynamic(() => import('./MarkdownRenderer'), { ssr: false, loading: () => <div className="animate-pulse h-32 bg-black/5 rounded-xl" /> });
+const MarkdownRenderer = dynamic(() => import('./MarkdownRenderer'), { ssr: false, loading: () => <div className="animate-pulse h-32 bg-black/5 dark:bg-white dark:bg-card/5 rounded-xl" /> });
 
 interface StudyNotesViewProps {
   subject: string;
@@ -27,19 +27,19 @@ const SUBJECT_EMOJI: Record<string, string> = {
 
 
 const SUBJECT_BG_COLOR: Record<string, string> = {
-  'Mathematics':         'bg-blue-50',
-  'Physics':             'bg-violet-50',
-  'Chemistry':           'bg-emerald-50',
+  'Mathematics':         'bg-blue-50 dark:bg-blue-900/30',
+  'Physics':             'bg-violet-50 dark:bg-violet-900/30',
+  'Chemistry':           'bg-emerald-50 dark:bg-emerald-900/30',
   'Biology':             'bg-green-50',
-  'Economics':           'bg-amber-50',
+  'Economics':           'bg-amber-50 dark:bg-amber-900/30',
   'History':             'bg-orange-50',
   'Geography':           'bg-teal-50',
   'English':             'bg-sky-50',
   'Logic':               'bg-indigo-50',
-  'Civics':              'bg-rose-50',
-  'Psychology':          'bg-purple-50',
+  'Civics':              'bg-rose-50 dark:bg-rose-900/30',
+  'Psychology':          'bg-purple-50 dark:bg-purple-900/30',
   'Computer Science':    'bg-cyan-50',
-  'Software Engineering':'bg-blue-50',
+  'Software Engineering':'bg-blue-50 dark:bg-blue-900/30',
   'Emerging Technology': 'bg-fuchsia-50',
   'Aptitude':            'bg-yellow-50',
 };
@@ -61,7 +61,7 @@ const ReadingProgress = ({ scrollRef }: { scrollRef: React.RefObject<HTMLDivElem
   }, [scrollRef]);
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/5">
+    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/5 dark:bg-white dark:bg-card/5">
       <div
         className="h-full bg-gradient-to-r from-violet-500 to-blue-500 transition-all duration-150 ease-out rounded-full"
         style={{ width: `${progress}%` }}
@@ -85,7 +85,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
   const dept = subject && subject !== 'All' ? subject : 'General';
   const accentBar = 'bg-primary';
-  const accentText = 'text-gray-900';
+  const accentText = 'text-gray-900 dark:text-gray-100';
   const accentBg = 'bg-primary/5';
   const emoji       = SUBJECT_EMOJI[dept]     ?? '📚';
 
@@ -194,22 +194,22 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         )}
 
         {/* Sticky Header */}
-        <header className="sticky top-0 bg-white/90 backdrop-blur-xl z-40 border-b border-black/8 px-4 pt-3 pb-0">
+        <header className="sticky top-0 bg-white dark:bg-card/90 backdrop-blur-xl z-40 border-b border-black/8 px-4 pt-3 pb-0">
           <div className="flex items-center gap-3 pb-3">
             <span className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0 ${accentBg}`}>
               {emoji}
             </span>
             <div className="flex-1 min-w-0">
-              <h1 className="text-[15px] font-black text-gray-900 leading-snug line-clamp-1 tracking-tight">
+              <h1 className="text-[15px] font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-1 tracking-tight">
                 {selectedNote.title}
               </h1>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className={`text-[11px] font-black uppercase tracking-widest ${accentText}`}>
                   {selectedNote.department}
                 </span>
-                <span className="text-gray-500 text-[11px]">·</span>
-                <Clock className="w-3 h-3 text-gray-500" />
-                <span className="text-[11px] font-semibold text-gray-500">{readMins} min read</span>
+                <span className="text-gray-500 dark:text-gray-400 text-[11px]">·</span>
+                <Clock className="w-3 h-3 text-gray-500 dark:text-gray-400" />
+                <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">{readMins} min read</span>
               </div>
             </div>
           </div>
@@ -229,20 +229,20 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             />
           </div>
 
-          <div className={`mt-10 mb-4 p-5 rounded-2xl ${accentBg} border border-black/5 text-center`}>
+          <div className={`mt-10 mb-4 p-5 rounded-2xl ${accentBg} border border-black/5 dark:border-white/10 text-center`}>
             <div className="text-3xl mb-2">🎓</div>
             <p className={`font-black text-[15px] ${accentText}`}>End of Chapter</p>
-            <p className="text-[13px] text-gray-900/50 font-medium mt-1">
+            <p className="text-[13px] text-gray-900/50 dark:text-gray-100/50 font-medium mt-1">
               Highlight any text to save it to your notebook
             </p>
           </div>
         </div>
 
         {/* Footer Action Bar */}
-        <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-xl border-t border-black/8 p-4 z-30 flex gap-3 pb-safe">
+        <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white dark:bg-card/95 backdrop-blur-xl border-t border-black/8 p-4 z-30 flex gap-3 pb-safe">
           <button
             onClick={() => { haptic.impact('light'); setShowTutor(true); }}
-            className={`flex-1 h-12 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] active:opacity-80 border border-black/5 ${accentBg} ${accentText}`}
+            className={`flex-1 h-12 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] active:opacity-80 border border-black/5 dark:border-white/10 ${accentBg} ${accentText}`}
           >
             <Sparkles className="w-4 h-4" />
             Ask AI Tutor
@@ -279,10 +279,10 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             <p className={`text-[11px] font-black uppercase tracking-widest ${accentText} mb-1`}>
               Study Notes
             </p>
-            <h1 className="text-[22px] font-black text-gray-900 leading-tight tracking-tight">
+            <h1 className="text-[22px] font-black text-gray-900 dark:text-gray-100 leading-tight tracking-tight">
               {courseDisplayName}
             </h1>
-            <p className="text-[13px] font-semibold text-gray-600 mt-0.5">
+            <p className="text-[13px] font-semibold text-gray-600 dark:text-gray-400 mt-0.5">
               {examType} · {initialNotes.length > 0 ? `${initialNotes.length} chapters` : 'Loading…'}
             </p>
           </div>
@@ -290,12 +290,12 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
       </div>
 
       {initialNotes.length > 0 && (
-        <div className="px-5 py-3 flex gap-3 border-b border-black/5">
-          <div className="flex items-center gap-1.5 text-[12px] font-bold text-gray-500">
+        <div className="px-5 py-3 flex gap-3 border-b border-black/5 dark:border-white/10">
+          <div className="flex items-center gap-1.5 text-[12px] font-bold text-gray-500 dark:text-gray-400">
             <Layers className="w-3.5 h-3.5" />
             {initialNotes.length} Chapters
           </div>
-          <div className="flex items-center gap-1.5 text-[12px] font-bold text-gray-500">
+          <div className="flex items-center gap-1.5 text-[12px] font-bold text-gray-500 dark:text-gray-400">
             <Clock className="w-3.5 h-3.5" />
             {initialNotes.reduce((sum, n) => sum + calculateReadTime(n.content || ''), 0)} min total read
           </div>
@@ -308,8 +308,8 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             <div className={`w-20 h-20 ${accentBg} rounded-3xl flex items-center justify-center mb-5 text-4xl`}>
               {emoji}
             </div>
-            <h3 className="text-xl font-black text-gray-900 mb-2">No notes yet</h3>
-            <p className="text-sm font-semibold text-gray-500 max-w-[240px] leading-relaxed">
+            <h3 className="text-xl font-black text-gray-900 dark:text-gray-100 mb-2">No notes yet</h3>
+            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 max-w-[240px] leading-relaxed">
               We haven&apos;t uploaded summary notes for this subject yet. Check back soon!
             </p>
           </div>
@@ -320,7 +320,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               <button
                 key={note.id}
                 onClick={() => { haptic.selection(); setSelectedNote(note); }}
-                className="w-full bg-white rounded-2xl border border-black/5 hover:border-black/10 shadow-sm active:scale-[0.98] transition-all text-left group overflow-hidden animate-fade-up"
+                className="w-full bg-white dark:bg-card rounded-2xl border border-black/5 dark:border-white/10 hover:border-black/10 dark:hover:border-white/20 dark:border-white/20 shadow-sm active:scale-[0.98] transition-all text-left group overflow-hidden animate-fade-up"
                 style={{ animationDelay: `${idx * 0.04}s` }}
               >
                 <div className="flex items-center gap-4 p-4">
@@ -329,14 +329,14 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-black text-gray-900 text-[15px] leading-snug line-clamp-2 tracking-tight">
+                    <h3 className="font-black text-gray-900 dark:text-gray-100 text-[15px] leading-snug line-clamp-2 tracking-tight">
                       {note.title}
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
                       <span className={`text-[11px] font-black uppercase tracking-wider ${accentText} ${accentBg} px-2 py-0.5 rounded-md`}>
                         {note.department}
                       </span>
-                      <span className="text-[12px] font-semibold text-gray-500 flex items-center gap-1">
+                      <span className="text-[12px] font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1">
                         <Clock className="w-3 h-3" /> {mins} min
                       </span>
                     </div>

@@ -39,26 +39,26 @@ export function CreateAdminForm() {
     <div className="bg-card border-2 border-primary/10 rounded-3xl p-6 shadow-sm">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-          <ShieldPlus className="w-5 h-5 text-gray-900" />
+          <ShieldPlus className="w-5 h-5 text-gray-900 dark:text-gray-100" />
         </div>
-        <h2 className="text-xl font-bold text-gray-900">New Admin</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">New Admin</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Username</label>
+          <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Username</label>
           <input 
             type="text" 
             value={username} onChange={e => setUsername(e.target.value)}
-            className="w-full p-3 border-2 border-primary/10 rounded-xl bg-ground font-bold text-gray-900 focus:border-primary focus:outline-none"
+            className="w-full p-3 border-2 border-primary/10 rounded-xl bg-ground font-bold text-gray-900 dark:text-gray-100 focus:border-primary focus:outline-none"
             placeholder="e.g. teacher_alex"
           />
         </div>
         <div>
-          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Role</label>
+          <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Role</label>
           <select 
             value={role} onChange={e => setRole(e.target.value)}
-            className="w-full p-3 border-2 border-primary/10 rounded-xl bg-ground font-bold text-gray-900 focus:border-primary focus:outline-none"
+            className="w-full p-3 border-2 border-primary/10 rounded-xl bg-ground font-bold text-gray-900 dark:text-gray-100 focus:border-primary focus:outline-none"
           >
             <option value="readonly">Read-Only Viewer</option>
             <option value="editor">Content Editor</option>
@@ -66,11 +66,11 @@ export function CreateAdminForm() {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Passcode</label>
+          <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Passcode</label>
           <input 
             type="password" 
             value={passcode} onChange={e => setPasscode(e.target.value)}
-            className="w-full p-3 border-2 border-primary/10 rounded-xl bg-ground font-bold text-gray-900 focus:border-primary focus:outline-none"
+            className="w-full p-3 border-2 border-primary/10 rounded-xl bg-ground font-bold text-gray-900 dark:text-gray-100 focus:border-primary focus:outline-none"
             placeholder="Temporary password"
           />
         </div>
@@ -84,7 +84,7 @@ export function CreateAdminForm() {
         <button 
           type="submit" 
           disabled={loading || !username || !passcode}
-          className="w-full py-3 mt-4 bg-primary text-white font-black rounded-xl border-b-4 border-black/20 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-50"
+          className="w-full py-3 mt-4 bg-primary text-white font-black rounded-xl border-b-4 border-black/20 dark:border-white/30 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-50"
         >
           {loading ? 'CREATING...' : 'CREATE ACCOUNT'}
         </button>

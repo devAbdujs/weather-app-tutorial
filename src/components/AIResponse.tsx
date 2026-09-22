@@ -48,7 +48,7 @@ function renderInline(text: string, key: string): React.ReactNode[] {
       return <span key={k} dangerouslySetInnerHTML={{ __html: html }} className="inline-block px-0.5" />;
     }
     if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={k} className="font-bold text-gray-900">{part.slice(2, -2)}</strong>;
+      return <strong key={k} className="font-bold text-gray-900 dark:text-gray-100">{part.slice(2, -2)}</strong>;
     }
     if (part.startsWith('*') && part.endsWith('*')) {
       return <em key={k} className="italic">{part.slice(1, -1)}</em>;
@@ -98,8 +98,8 @@ export const AIResponse: React.FC<AIResponseProps> = ({ content, className = '' 
       const level = headingMatch[1].length;
       const text = headingMatch[2];
       const cls = level === 1
-        ? 'text-base font-black text-gray-900 mt-4 mb-2'
-        : 'text-sm font-bold text-gray-900 mt-3 mb-1';
+        ? 'text-base font-black text-gray-900 dark:text-gray-100 mt-4 mb-2'
+        : 'text-sm font-bold text-gray-900 dark:text-gray-100 mt-3 mb-1';
       elements.push(
         <div key={`h-${i}`} className={cls}>
           {renderInline(text, `h-${i}`)}
@@ -115,7 +115,7 @@ export const AIResponse: React.FC<AIResponseProps> = ({ content, className = '' 
       const text = listMatch ? listMatch[1] : numListMatch![2];
       const bullet = listMatch ? '•' : `${numListMatch![1]}.`;
       listItems.push(
-        <li key={`li-${i}`} className="flex gap-2 text-sm text-gray-900 leading-relaxed">
+        <li key={`li-${i}`} className="flex gap-2 text-sm text-gray-900 dark:text-gray-100 leading-relaxed">
           <span className="text-accent-blue font-black mt-0.5 shrink-0">{bullet}</span>
           <span className="flex-1">{renderInline(text, `li-${i}`)}</span>
         </li>
@@ -126,7 +126,7 @@ export const AIResponse: React.FC<AIResponseProps> = ({ content, className = '' 
     // Normal Paragraph
     flushList();
     elements.push(
-      <p key={`p-${i}`} className="text-sm text-gray-900 leading-relaxed mb-1.5">
+      <p key={`p-${i}`} className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed mb-1.5">
         {renderInline(trimmed, `p-${i}`)}
       </p>
     );

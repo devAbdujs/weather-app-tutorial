@@ -66,7 +66,7 @@ export const TopHeader = () => {
               w-9 h-9 flex items-center justify-center
               rounded-full
               text-gray-600 dark:text-gray-400
-              hover:bg-black/5 dark:hover:bg-white/10
+              hover:bg-black/5 dark:hover:bg-white/5 dark:bg-white/5 dark:hover:bg-white/10
               active:scale-90 transition-all
             "
           >
@@ -120,7 +120,7 @@ export const TopHeader = () => {
             w-9 h-9 flex items-center justify-center
             rounded-full
             text-gray-600 dark:text-gray-400
-            hover:bg-black/5 dark:hover:bg-white/10
+            hover:bg-black/5 dark:hover:bg-white/5 dark:bg-white/5 dark:hover:bg-white/10
             active:scale-90 transition-all
           "
         >

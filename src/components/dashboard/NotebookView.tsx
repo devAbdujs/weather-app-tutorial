@@ -78,17 +78,17 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ subject, initialPins
       
       <header className="mb-6 pt-2 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1 flex items-center gap-2">
-            <BookMarked className="w-6 h-6 text-gray-900" />
+          <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none mb-1 flex items-center gap-2">
+            <BookMarked className="w-6 h-6 text-gray-900 dark:text-gray-100" />
             {courseDisplayName}
           </h1>
-          <p className="text-sm font-bold text-gray-500">Your physical sticky board</p>
+          <p className="text-sm font-bold text-gray-500 dark:text-gray-400">Your physical sticky board</p>
         </div>
         
         {/* Sticky Note Counter (Marketing Teaser) */}
         <div className="bg-card border border-primary/20 shadow-sm rounded-[12px] px-3 py-1.5 flex flex-col items-center justify-center rotate-2">
-          <span className="text-[10px] font-black text-gray-500 uppercase tracking-wider leading-none">Sticky Notes</span>
-          <span className={`text-lg font-black leading-none mt-0.5 ${pinsUsed >= MAX_FREE_PINS ? 'text-red-500' : 'text-gray-900'}`}>
+          <span className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider leading-none">Sticky Notes</span>
+          <span className={`text-lg font-black leading-none mt-0.5 ${pinsUsed >= MAX_FREE_PINS ? 'text-red-500' : 'text-gray-900 dark:text-gray-100'}`}>
             {pinsUsed}/{MAX_FREE_PINS}
           </span>
         </div>
@@ -96,11 +96,11 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ subject, initialPins
 
       {pins.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center px-4">
-          <div className="w-20 h-20 bg-primary/5 border border-black/5 rounded-[24px] flex items-center justify-center mb-6">
-            <Pin className="w-8 h-8 text-gray-900" />
+          <div className="w-20 h-20 bg-primary/5 border border-black/5 dark:border-white/10 rounded-[24px] flex items-center justify-center mb-6">
+            <Pin className="w-8 h-8 text-gray-900 dark:text-gray-100" />
           </div>
-          <h3 className="text-xl font-black text-gray-900 mb-2">Board is empty</h3>
-          <p className="text-sm font-bold text-gray-500 max-w-[250px] leading-relaxed">
+          <h3 className="text-xl font-black text-gray-900 dark:text-gray-100 mb-2">Board is empty</h3>
+          <p className="text-sm font-bold text-gray-500 dark:text-gray-400 max-w-[250px] leading-relaxed">
             While reading Study Notes, highlight text to pin sticky notes to this board!
           </p>
         </div>
@@ -117,10 +117,10 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ subject, initialPins
                 }}
               >
                 {/* Physical Masking Tape */}
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-12 h-5 bg-white/40 border border-black/10 rotate-[-4deg] shadow-sm z-10 backdrop-blur-sm" />
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-12 h-5 bg-white/40 border border-black/10 dark:border-white/20 rotate-[-4deg] shadow-sm z-10 backdrop-blur-sm" />
                 
                 {/* Folded Corner Effect (Bottom Right) */}
-                <div className={`absolute bottom-0 right-0 w-4 h-4 bg-black/10`} style={{ clipPath: 'polygon(0 100%, 100% 0, 100% 100%)' }} />
+                <div className={`absolute bottom-0 right-0 w-4 h-4 bg-black/10 dark:bg-white/10`} style={{ clipPath: 'polygon(0 100%, 100% 0, 100% 100%)' }} />
 
                 <div className="flex justify-between items-start mb-2 mt-1 gap-2">
                   <span className={`text-[9px] font-black uppercase tracking-wider ${style.text} ${style.tag} px-1.5 py-0.5 rounded leading-tight line-clamp-1`}>

@@ -7,12 +7,12 @@ import { FileQuestion, Home } from 'lucide-react';
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6 text-center animate-fade-in">
-      <div className="w-full max-w-sm bg-card border border-black/5 rounded-[32px] p-8 shadow-sm flex flex-col items-center">
+      <div className="w-full max-w-sm bg-card border border-black/5 dark:border-white/10 rounded-[32px] p-8 shadow-sm flex flex-col items-center">
         <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
-          <FileQuestion className="w-8 h-8 text-gray-900" />
+          <FileQuestion className="w-8 h-8 text-gray-900 dark:text-gray-100" />
         </div>
-        <h2 className="text-xl font-black text-gray-900 tracking-tight mb-2">Page Not Found</h2>
-        <p className="text-sm font-medium text-gray-500 mb-8">
+        <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight mb-2">Page Not Found</h2>
+        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-8">
           The page you are looking for doesn't exist or has been moved.
         </p>
         <Link
