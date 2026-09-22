@@ -35,7 +35,7 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({ initialSeconds, isPaused, 
   return (
     <div className={`px-3 py-1.5 rounded-[12px] text-sm font-black tabular-nums border-2 transition-all ${
       secondsLeft < 60
-        ? 'bg-red-600 border-red-700 text-white shadow-brutal-heavy animate-pulse'
+        ? 'bg-red-600 border-red-700 text-white shadow-md animate-pulse'
         : secondsLeft < 300
         ? 'bg-error/20 border-error text-error shadow-sm'
         : 'bg-card border-primary text-gray-900 dark:text-gray-100 shadow-sm'

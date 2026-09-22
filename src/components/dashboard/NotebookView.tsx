@@ -74,7 +74,7 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ subject, initialPins
   const pinsUsed = pins.length;
 
   return (
-    <div className="flex-1 flex flex-col pt-4 px-4 pb-24 min-h-screen overflow-y-auto animate-fade-in bg-ground custom-scrollbar" style={{ backgroundImage: 'radial-gradient(circle, #00000005 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
+    <div className="flex flex-col pt-4 px-4 animate-fade-in bg-ground" style={{ backgroundImage: 'radial-gradient(circle, #00000005 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
       
       <header className="mb-6 pt-2 flex items-start justify-between">
         <div>

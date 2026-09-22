@@ -54,7 +54,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats }) => {
   const overallAccuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
 
   return (
-    <div className="flex-1 flex flex-col pt-4 px-4 pb-24 min-h-screen overflow-y-auto animate-fade-in bg-ground custom-scrollbar" style={{ backgroundImage: 'radial-gradient(circle, #1B3A6B08 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
+    <div className="flex flex-col pt-4 px-4 animate-fade-in bg-ground" style={{ backgroundImage: 'radial-gradient(circle, #1B3A6B08 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
       
       <header className="mb-6 pt-2 flex items-start justify-between">
         <div>
@@ -88,7 +88,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats }) => {
           <Brain className="w-12 h-12 text-gray-500 dark:text-gray-400 opacity-30 mb-4" />
           <h3 className="text-[17px] font-black text-gray-900 dark:text-gray-100 mb-1">Tree is Empty</h3>
           <p className="text-[13px] font-bold text-gray-500 dark:text-gray-400">Take an exam or quick practice to start leveling up your scholar tree!</p>
-          <button onClick={() => router.push('/')} className="mt-6 px-6 py-3.5 bg-primary text-white font-black text-sm rounded-[16px] shadow-sm active:translate-y-1 active:shadow-none transition-all">Start Training</button>
+          <button onClick={() => router.push('/')} className="mt-6 px-6 py-3.5 bg-primary text-white font-black text-sm rounded-[16px] shadow-sm active:scale-[0.98] active:opacity-80 transition-all">Start Training</button>
         </div>
       ) : (
         <div className="space-y-4">

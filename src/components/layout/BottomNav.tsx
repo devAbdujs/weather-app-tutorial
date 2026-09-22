@@ -28,7 +28,7 @@ export const BottomNav = () => {
     <div
       className="
         fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto pb-safe
-        bg-card/95 dark:bg-surface/95
+        bg-card/95 dark:bg-card/95
         backdrop-blur-xl
         border-t border-black/5 dark:border-white/8
         shadow-[0_-1px_0_rgba(0,0,0,0.04),0_-8px_24px_rgba(0,0,0,0.04)]

@@ -309,7 +309,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         
         {/* Progress Bar */}
         <div className="px-5">
-          <div className="h-2 w-full bg-black/5 dark:bg-white dark:bg-card/5 rounded-full overflow-hidden">
+          <div className="h-2 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
              <div 
                className="h-full bg-[#229ED9] transition-all duration-300 ease-out rounded-full" 
                style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
@@ -318,9 +318,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         </div>
       </header>
 
-      <main className="flex-1 px-5 py-6 space-y-6 overflow-y-auto relative">
+      <main className="flex-1 px-5 py-6 space-y-6 relative">
         <div className="bg-card border border-black/5 dark:border-white/10 rounded-[24px] p-6 shadow-sm relative mb-2">
-          <button onClick={toggleBookmark} className={`absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full transition-all active:scale-[0.98] active:opacity-80 ${isSaved ? 'bg-primary/10 text-gray-900 dark:text-gray-100' : 'bg-black/5 dark:bg-white dark:bg-card/5 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100'}`}><Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} /></button>
+          <button onClick={toggleBookmark} className={`absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full transition-all active:scale-[0.98] active:opacity-80 ${isSaved ? 'bg-primary/10 text-gray-900 dark:text-gray-100' : 'bg-black/5 dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100'}`}><Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} /></button>
           
           <div className="pr-8 text-lg leading-relaxed font-bold text-gray-900 dark:text-gray-100 relative whitespace-pre-wrap">
             <MathText content={currentQ.question} />
@@ -329,7 +329,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           {currentQ.image_url && (
             <button onClick={() => { haptic.selection(); setZoomImage(currentQ.image_url || null); }} className="w-full mt-4 rounded-[16px] border border-black/5 dark:border-white/10 overflow-hidden bg-white dark:bg-card relative group active:scale-[0.98] transition-transform block focus-ring">
               <img src={currentQ.image_url} alt="Question diagram" className="w-full h-auto max-h-64 object-contain" />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 dark:hover:bg-white dark:bg-card/5 dark:bg-white dark:bg-card/5 transition-colors flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-center">
                 <Maximize2 className="w-6 h-6 text-black/50 opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />
               </div>
             </button>
@@ -349,7 +349,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
             const isCorrect = isRevealed && normalizedAns ? letter === normalizedAns : false;
             const isWrongSelected = isRevealed && isSelected && normalizedAns ? letter !== normalizedAns : false;
 
-            let cls = 'bg-card border-black/5 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-black/20 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white dark:bg-card/5 dark:bg-white dark:bg-card/5';
+            let cls = 'bg-card border-black/5 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-black/20 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5';
             
             if (isSelected) cls = 'bg-primary/10 border-primary/50 text-gray-900 dark:text-gray-100 font-bold scale-[0.99] shadow-sm';
             
@@ -373,7 +373,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                 className={`w-full flex items-center justify-between gap-4 p-4 rounded-[20px] border-2 transition-all duration-200 text-left ${cls} ${(!isReviewMode && (isSimulator || !isAnswered)) ? 'active:scale-[0.98] active:opacity-80' : ''}`}
               >
                 <div className="flex items-start gap-4 flex-1 min-w-0">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm font-black ${isRevealed && isCorrect ? 'bg-emerald-500 text-white' : isRevealed && isWrongSelected ? 'bg-rose-500 text-white' : isSelected ? 'bg-primary text-white' : 'bg-black/5 dark:bg-white dark:bg-card/5'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm font-black ${isRevealed && isCorrect ? 'bg-emerald-500 text-white' : isRevealed && isWrongSelected ? 'bg-rose-500 text-white' : isSelected ? 'bg-primary text-white' : 'bg-black/5 dark:bg-white/5'}`}>
                     {letter}
                   </div>
                   <span className="text-sm leading-relaxed flex-1 font-medium whitespace-pre-wrap self-center"><MathText content={opt} /></span>
@@ -444,7 +444,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           className={`px-5 h-14 rounded-[20px] text-sm font-bold flex items-center gap-2 transition-all active:scale-[0.98] active:opacity-80 ${
             canUseAI 
               ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-900 dark:text-amber-100 hover:bg-amber-200' 
-              : 'bg-black/5 dark:bg-white dark:bg-card/5 text-gray-500 dark:text-gray-400 opacity-70'
+              : 'bg-black/5 dark:bg-white/5 text-gray-500 dark:text-gray-400 opacity-70'
           }`}
         >
           {canUseAI ? (
@@ -472,7 +472,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           <div className="w-full max-w-sm bg-card rounded-[32px] p-6 shadow-2xl animate-scale-bounce" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center pb-4 mb-4 border-b border-black/5 dark:border-white/10">
               <h3 className="font-bold tracking-tight text-xl text-gray-900 dark:text-gray-100">Question Grid</h3>
-              <button onClick={() => setShowGrid(false)} className="w-10 h-10 flex justify-center items-center rounded-full bg-black/5 dark:bg-white dark:bg-card/5 hover:bg-black/10 dark:hover:bg-white dark:bg-card/10 dark:bg-white dark:bg-card/10 text-gray-900 dark:text-gray-100 active:scale-[0.98] active:opacity-80 transition-all"><X className="w-5 h-5"/></button>
+              <button onClick={() => setShowGrid(false)} className="w-10 h-10 flex justify-center items-center rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 dark:bg-white/10 text-gray-900 dark:text-gray-100 active:scale-[0.98] active:opacity-80 transition-all"><X className="w-5 h-5"/></button>
             </div>
             <div className="grid grid-cols-5 gap-3 max-h-[300px] overflow-y-auto no-scrollbar pb-2 pt-2">
               {questions.map((_, i) => {
@@ -481,7 +481,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                 const isFlg = flagged.has(i);
                 
                 return (
-                  <button key={i} onClick={() => { setCurrentIndex(i); setShowGrid(false); }} className={`relative h-12 rounded-[16px] border-2 text-sm font-bold tabular-nums transition-all active:scale-[0.98] active:opacity-80 ${currentIndex === i ? 'bg-primary border-primary text-card shadow-sm -translate-y-1' : isFlg ? 'bg-rose-50 dark:bg-rose-900/30 border-rose-200 dark:border-rose-900/50 text-rose-600 shadow-sm' : selectedAnswers[i] ? 'bg-black/5 dark:bg-white dark:bg-card/5 border-transparent text-gray-900 dark:text-gray-100' : 'bg-card border-black/5 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-primary/50'}`}>
+                  <button key={i} onClick={() => { setCurrentIndex(i); setShowGrid(false); }} className={`relative h-12 rounded-[16px] border-2 text-sm font-bold tabular-nums transition-all active:scale-[0.98] active:opacity-80 ${currentIndex === i ? 'bg-primary border-primary text-card shadow-sm -translate-y-1' : isFlg ? 'bg-rose-50 dark:bg-rose-900/30 border-rose-200 dark:border-rose-900/50 text-rose-600 shadow-sm' : selectedAnswers[i] ? 'bg-black/5 dark:bg-white/5 border-transparent text-gray-900 dark:text-gray-100' : 'bg-card border-black/5 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-primary/50'}`}>
                     {i + 1}
                     {isBkmrk && <div className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-primary rounded-full border-2 border-card" />}
                   </button>

@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 const AITutorDrawer = dynamic(() => import('@/components/ai/AITutorDrawer').then(m => m.AITutorDrawer), { ssr: false });
-const MarkdownRenderer = dynamic(() => import('./MarkdownRenderer'), { ssr: false, loading: () => <div className="animate-pulse h-32 bg-black/5 dark:bg-white dark:bg-card/5 rounded-xl" /> });
+const MarkdownRenderer = dynamic(() => import('./MarkdownRenderer'), { ssr: false, loading: () => <div className="animate-pulse h-32 bg-black/5 dark:bg-white/5 rounded-xl" /> });
 
 interface StudyNotesViewProps {
   subject: string;
@@ -44,24 +44,23 @@ const SUBJECT_BG_COLOR: Record<string, string> = {
   'Aptitude':            'bg-yellow-50',
 };
 
-const ReadingProgress = ({ scrollRef }: { scrollRef: React.RefObject<HTMLDivElement> }) => {
+const ReadingProgress = () => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (scrollRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-        const totalHeight = scrollHeight - clientHeight;
-        setProgress(totalHeight > 0 ? (scrollTop / totalHeight) * 100 : 0);
-      }
+    const handleScroll = (e: any) => {
+      const elem = e.target;
+      const { scrollTop, scrollHeight, clientHeight } = elem;
+      const totalHeight = scrollHeight - clientHeight;
+      setProgress(totalHeight > 0 ? (scrollTop / totalHeight) * 100 : 0);
     };
-    const elem = scrollRef.current;
-    if (elem) { elem.addEventListener('scroll', handleScroll); handleScroll(); }
+    const elem = document.getElementById('main-scroll-area');
+    if (elem) { elem.addEventListener('scroll', handleScroll); }
     return () => { if (elem) elem.removeEventListener('scroll', handleScroll); };
-  }, [scrollRef]);
+  }, []);
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/5 dark:bg-white dark:bg-card/5">
+    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/5 dark:bg-white/5">
       <div
         className="h-full bg-gradient-to-r from-violet-500 to-blue-500 transition-all duration-150 ease-out rounded-full"
         style={{ width: `${progress}%` }}
@@ -213,13 +212,13 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               </div>
             </div>
           </div>
-          <ReadingProgress scrollRef={scrollRef} />
+          <ReadingProgress />
         </header>
 
         {/* Content */}
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto px-5 pt-6 pb-28 custom-scrollbar scroll-smooth"
+          className="flex flex-col px-5 pt-6 animate-fade-in"
         >
           <div id="note-content" className="w-full">
             <MarkdownRenderer 
@@ -268,7 +267,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
   // ─── CHAPTER LIST VIEW ──────────────────────────────────────────────────────
   return (
-    <div className="flex-1 flex flex-col pb-24 overflow-y-auto animate-fade-in bg-ground no-scrollbar">
+    <div className="flex flex-col pt-4 px-4 animate-fade-in bg-ground">
 
       <div className={`${accentBg} px-5 pt-6 pb-5 border-b border-black/8`}>
         <div className="flex items-start gap-4">

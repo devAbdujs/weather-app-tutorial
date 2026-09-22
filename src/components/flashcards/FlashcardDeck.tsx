@@ -275,15 +275,15 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
             {/* Action Buttons */}
             <div className="w-full mt-2 h-14 relative">
               {!isFlipped ? (
-                <button onClick={handleFlip} className="w-full absolute inset-0  h-14 rounded-[16px] bg-primary text-card font-black uppercase tracking-widest text-sm transition-all animate-fade-in shadow-sm active:translate-y-1 active:shadow-none">
+                <button onClick={handleFlip} className="w-full absolute inset-0  h-14 rounded-[16px] bg-primary text-card font-black uppercase tracking-widest text-sm transition-all animate-fade-in shadow-sm active:scale-[0.98] active:opacity-80">
                   Tap to Reveal Answer
                 </button>
               ) : (
                 <div className="flex gap-4 w-full absolute inset-0 animate-fade-in">
-                  <button onClick={() => nextCard('hard')} className="flex-1  h-14 rounded-[16px] bg-card text-gray-900 dark:text-gray-100 font-black uppercase tracking-widest text-xs border border-black/10 dark:border-white/20 shadow-sm active:translate-y-1">
+                  <button onClick={() => nextCard('hard')} className="flex-1  h-14 rounded-[16px] bg-card text-gray-900 dark:text-gray-100 font-black uppercase tracking-widest text-xs border border-black/10 dark:border-white/20 shadow-sm active:scale-[0.98] active:opacity-80">
                     Forgot
                   </button>
-                  <button onClick={() => nextCard('easy')} className="flex-1  h-14 rounded-[16px] bg-accent-emerald text-gray-900 dark:text-gray-100 font-black uppercase tracking-widest text-xs border border-primary/20 shadow-sm active:translate-y-1 active:shadow-none">
+                  <button onClick={() => nextCard('easy')} className="flex-1  h-14 rounded-[16px] bg-accent-emerald text-gray-900 dark:text-gray-100 font-black uppercase tracking-widest text-xs border border-primary/20 shadow-sm active:scale-[0.98] active:opacity-80">
                     Knew It
                   </button>
                 </div>

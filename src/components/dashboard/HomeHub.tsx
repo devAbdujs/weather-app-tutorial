@@ -208,7 +208,7 @@ export const HomeHub: React.FC = () => {
             onClick={() => { haptic.impact('medium'); setSetupModalType('notes'); }}
             className="group bg-card dark:bg-card p-5 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.96] transition-all text-left"
           >
-            <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-[12px] flex items-center justify-center mb-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 dark:hover:bg-blue-900/50 dark:group-hover:bg-blue-900/50 transition-colors">
+            <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-[12px] flex items-center justify-center mb-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
               <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <h3 className="text-[14px] font-black text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
@@ -219,7 +219,7 @@ export const HomeHub: React.FC = () => {
             onClick={() => { haptic.impact('medium'); router.push('/notebook/All'); }}
             className="group bg-card dark:bg-card p-5 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.96] transition-all text-left"
           >
-            <div className="w-10 h-10 bg-violet-50 dark:bg-violet-900/30 rounded-[12px] flex items-center justify-center mb-3 group-hover:bg-violet-100 dark:group-hover:bg-violet-900/50 dark:hover:bg-violet-900/50 dark:group-hover:bg-violet-900/50 transition-colors">
+            <div className="w-10 h-10 bg-violet-50 dark:bg-violet-900/30 rounded-[12px] flex items-center justify-center mb-3 group-hover:bg-violet-100 dark:group-hover:bg-violet-900/50 transition-colors">
               <BookMarked className="w-5 h-5 text-violet-600 dark:text-violet-400" />
             </div>
             <h3 className="text-[14px] font-black text-gray-900 dark:text-gray-100 leading-tight">My Notebook</h3>

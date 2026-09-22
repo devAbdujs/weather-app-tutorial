@@ -98,14 +98,14 @@ export const PracticeHub = () => {
     <div className="flex flex-col pt-safe pb-8 animate-fade-in">
 
       {/* ── PAGE HEADER ── */}
-      <div className="sticky top-0 z-10 bg-ground/90 dark:bg-ground/95 backdrop-blur-xl border-b border-black/5 dark:border-white/8 px-5 pt-safe pt-5 pb-4 mb-5">
+      <div className="px-5 pt-3 pb-2 mb-4">
         <h1 className="text-[28px] font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none">Practice</h1>
         <p className="text-[13px] font-bold text-gray-500 dark:text-gray-400 mt-1">{examTypeLabel()}</p>
       </div>
 
       {devMode && (
         <div className="px-5 mb-6">
-          <div className="flex p-1 bg-black/5 dark:bg-white dark:bg-card/5 rounded-[16px]">
+          <div className="flex p-1 bg-black/5 dark:bg-white/5 rounded-[16px]">
             {['entrance', 'freshman', 'exit'].map(tab => (
               <button
                 key={tab}
@@ -180,7 +180,7 @@ export const PracticeHub = () => {
                 <React.Fragment key={d.id}>
                   <button
                     onClick={() => { haptic.selection(); navigate('exit', { subject: d.id }); }}
-                    className="w-full group bg-card p-4 active:bg-black/5 dark:bg-white dark:bg-card/5 transition-colors flex items-center gap-4"
+                    className="w-full group bg-card p-4 active:bg-black/5 dark:bg-white/5 transition-colors flex items-center gap-4"
                   >
                     <div className={`w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0 ${d.color}`}>
                       <d.Icon className="w-4 h-4" strokeWidth={2.5} />
@@ -189,7 +189,7 @@ export const PracticeHub = () => {
                     <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 transition-colors shrink-0" />
                   </button>
                   {index < EXIT_DEPARTMENTS.length - 1 && (
-                    <div className="h-[1px] bg-black/5 dark:bg-white dark:bg-card/5 ml-16" />
+                    <div className="h-[1px] bg-black/5 dark:bg-white/5 ml-16" />
                   )}
                 </React.Fragment>
               ))}

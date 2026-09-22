@@ -1,8 +1,16 @@
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { BottomNav } from './BottomNav';
 import { TopHeader } from './TopHeader';
 
 export const DashboardShell = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname() || '';
+  const isFocusMode =
+    pathname.startsWith('/exam/') ||
+    pathname.startsWith('/notebook/') ||
+    pathname.startsWith('/notes/') ||
+    pathname.startsWith('/practice/sessions');
+
   return (
     <div className="flex h-[100dvh] w-full bg-[#EFEFF3] dark:bg-black justify-center overflow-hidden">
       {/* Mobile emulator wrapper for desktop, fills screen on mobile */}
@@ -12,8 +20,8 @@ export const DashboardShell = ({ children }: { children: React.ReactNode }) => {
         <TopHeader />
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
-          <div className="w-full min-h-full flex flex-col relative pb-24">
+        <div className="flex-1 overflow-y-auto custom-scrollbar" id="main-scroll-area">
+          <div className={`w-full min-h-full flex flex-col relative ${isFocusMode ? '' : 'pb-24'}`}>
             {children}
           </div>
         </div>

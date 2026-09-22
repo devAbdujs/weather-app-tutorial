@@ -73,7 +73,7 @@ export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) 
           onCancel={() => setIsChangingExam(false)}
         />
       )}
-      <div className="flex-1 flex flex-col pt-6 px-4 pb-24 overflow-y-auto animate-fade-in bg-ground custom-scrollbar">
+      <div className="flex flex-col pt-6 px-4 animate-fade-in bg-ground">
         
         {/* Header Profile Section */}
       <div className="flex flex-col items-center mb-8 relative">

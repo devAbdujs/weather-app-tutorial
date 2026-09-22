@@ -62,7 +62,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin: _onLogin }) =
           <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 tracking-widest uppercase">
             {greeting}
           </span>
-          <div className="bg-ground dark:bg-surface-2 px-2.5 py-1 rounded-full border border-black/5 dark:border-white/8 flex items-center gap-1.5">
+          <div className="bg-ground dark:bg-panel px-2.5 py-1 rounded-full border border-black/5 dark:border-white/8 flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-accent" />
             <span className="text-[10px] font-bold text-gray-900 dark:text-gray-100 tracking-wider uppercase">
               {dateStr}
