@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -138,7 +139,8 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
-      setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, content: `⚠️ Failed to connect to Mr. Helper: ${msg}` } : m));
+      toast.error('AI Tutor is unavailable right now. Please try again in a moment.');
+      setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, content: `⚠️ Connection lost. ${msg}` } : m));
     } finally {
       setIsLoading(false);
     }

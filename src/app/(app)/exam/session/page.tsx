@@ -1,4 +1,5 @@
 import React from 'react';
+import { redirect } from 'next/navigation';
 import { ExamSessionLoader } from '@/components/exam/ExamSessionLoader';
 import { createClient } from '@/utils/supabase/server';
 import { Question } from '@/types';
@@ -48,6 +49,15 @@ export default async function ExamSessionPage({ searchParams }: PageProps) {
 
   const { data, error } = await query.range(sessionOffset, sessionOffset + sessionSize - 1);
   const initialQuestions = (data || []) as Question[];
+
+  if (initialQuestions.length === 0) {
+    const redirectUrl = new URLSearchParams({
+      error: 'no_questions',
+      subject: subject || 'All',
+      year: year || 'any'
+    });
+    redirect(`/?${redirectUrl.toString()}`);
+  }
 
   return (
     <ExamSessionLoader 

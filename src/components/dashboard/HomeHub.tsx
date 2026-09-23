@@ -5,7 +5,8 @@ import { useTelegram } from '@/hooks/useTelegram';
 import { WelcomeOnboarding } from './WelcomeOnboarding';
 import { updateDailyStreak } from '@/app/actions/user';
 import { useAppStore } from '@/store/useAppStore';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -29,7 +30,20 @@ const TIP_DATE_KEY  = 'temari_tip_date';
 
 export const HomeHub: React.FC = () => {
   const { haptic, setBackButton } = useTelegram();
+
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams?.get('error') === 'no_questions') {
+      const subject = searchParams.get('subject') || 'this subject';
+      const year = searchParams.get('year');
+      toast.error(`We are still working on adding past papers for ${subject}${year && year !== 'any' ? ' (' + year + ')' : ''}. Try another combination!`);
+      // Clean up the URL
+      router.replace('/', { scroll: false });
+    }
+  }, [searchParams, router]);
+
   const userProfile   = useAppStore(s => s.userProfile);
   const profileLoaded = useAppStore(s => s.profileLoaded);
   const setUserProfile = useAppStore(s => s.setUserProfile);

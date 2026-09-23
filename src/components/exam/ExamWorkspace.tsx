@@ -517,13 +517,23 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
       {/* Full-screen Image Lightbox Overlay */}
       {zoomImage && (
         <div 
-          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 animate-fade-in"
           onClick={() => { haptic.selection(); setZoomImage(null); }}
         >
-          <button className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center bg-card border border-primary/20 rounded-full text-gray-900 dark:text-gray-100 transition-all active:scale-[0.98] active:opacity-80 shadow-sm">
+          <button className="absolute top-8 right-6 w-12 h-12 flex items-center justify-center bg-white/10 text-white rounded-full transition-all active:scale-[0.98] shadow-lg z-10 backdrop-blur-md border border-white/20">
             <X className="w-6 h-6" />
           </button>
-          <Image width={800} height={400} src={zoomImage} className="w-full max-h-[90vh] object-contain rounded-xl" alt="Zoomed diagram" />
+          
+          <div className="relative w-full flex-1 max-h-[70vh] flex items-center justify-center mb-24 mt-8">
+            <Image width={1200} height={800} src={zoomImage} className="w-full max-h-full object-contain rounded-xl" alt="Zoomed diagram" />
+          </div>
+
+          {/* Floating Context Panel */}
+          <div className="absolute bottom-8 left-4 right-4 bg-black/60 backdrop-blur-2xl border border-white/20 p-5 rounded-[24px] shadow-2xl max-h-[25vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <p className="text-white text-[15px] font-medium leading-relaxed">
+              {questions[currentIndex]?.question_text}
+            </p>
+          </div>
         </div>
       )}
     </div>

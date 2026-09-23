@@ -43,6 +43,7 @@ import { Suspense } from 'react';
 import Loading from './loading';
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Toaster } from 'sonner';
 
 // Inline script — runs before paint to prevent FOUC.
 // Reads localStorage 'theme' or falls back to system preference.
@@ -75,6 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={`${geistSans.variable} font-sans bg-ground text-gray-900 dark:text-gray-100 min-h-screen antialiased overscroll-none`}>
+        <Toaster position="top-center" toastOptions={{ className: 'font-sans font-bold shadow-2xl rounded-2xl border-none' }} />
         <PWARegistry />
         <Suspense fallback={<Loading />}>
           {children}
