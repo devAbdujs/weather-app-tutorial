@@ -232,3 +232,72 @@ export async function getQuestions(limit = 100) {
   if (error) throw error;
   return data || [];
 }
+
+export async function getPendingPayments(page = 1, limit = 50) {
+  const admin = await verifyAdmin();
+  if (!admin) throw new Error('Unauthorized');
+
+  const offset = (page - 1) * limit;
+  const supabase = await createAdminClient();
+  
+  // Join with profiles to get user info
+  const { data, error, count } = await supabase
+    .from('payment_receipts')
+    .select(`
+      id,
+      telegram_id,
+      transaction_id,
+      receipt_url,
+      status,
+      created_at,
+      profiles (
+        full_name,
+        username
+      )
+    `, { count: 'exact' })
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) throw error;
+  
+  return {
+    payments: data || [],
+    total: count || 0,
+    page,
+    totalPages: count ? Math.ceil(count / limit) : 0
+  };
+}
+
+export async function updatePaymentStatus(paymentId: string, telegramId: string, status: 'approved' | 'rejected') {
+  const admin = await verifyAdmin();
+  if (!admin) throw new Error('Unauthorized');
+  
+  if (admin.role === 'readonly') throw new Error('Unauthorized: Readonly admins cannot modify payments.');
+
+  const supabase = await createAdminClient();
+  
+  // 1. Update the receipt status
+  const { error: updateError } = await supabase
+    .from('payment_receipts')
+    .update({ status })
+    .eq('id', paymentId);
+    
+  if (updateError) throw updateError;
+  
+  // 2. If approved, upgrade the user to premium
+  if (status === 'approved') {
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({ subscription_status: 'premium' })
+      .eq('telegram_id', telegramId);
+      
+    if (profileError) {
+      // Revert if profile update fails to avoid inconsistent state
+      await supabase.from('payment_receipts').update({ status: 'pending' }).eq('id', paymentId);
+      throw profileError;
+    }
+  }
+  
+  return { success: true };
+}
