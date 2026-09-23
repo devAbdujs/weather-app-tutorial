@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import { toast } from "sonner";
 'use client';
 
+import { toast } from "sonner";
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, Flag, Grid, Sparkles, CheckCircle2, XCircle, Bookmark, Award, X, Lock, Lightbulb, Clock, Maximize2 } from 'lucide-react';
 import { Question } from '@/types';
