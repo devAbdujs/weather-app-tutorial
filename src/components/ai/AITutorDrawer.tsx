@@ -1,5 +1,5 @@
-import { toast } from 'sonner';
 'use client';
+import { toast } from 'sonner';
 
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Lightbulb, Globe, Loader2, Send, User, Sparkles, GraduationCap } from 'lucide-react';
