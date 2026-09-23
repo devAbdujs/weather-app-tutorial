@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import React, { useMemo, useState } from 'react';
 import { LogOut, Award, ChevronRight, Zap, GraduationCap, Target, BarChart2 } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
