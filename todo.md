@@ -76,3 +76,6 @@ This roadmap has been reorganized based on business impact, engineering severity
     *   Create a Direct Link Mini App via `/newapp` in BotFather to get a clean, shareable link (e.g., `t.me/temari_bot/app`).
     *   Configure the **Menu Button** via Bot Settings so the app is always pinned at the bottom of the chat.
     *   Enable the **Main Mini App** via Bot Settings so users can launch the app directly from the bot's profile page.
+*   **[ ] PDF Short Note Uploader & Parser:**
+    *   Build a UI to upload PDF short notes directly.
+    *   Parse the PDF content and render it beautifully using the app's `MarkdownRenderer` and "Real Paper" UI.
