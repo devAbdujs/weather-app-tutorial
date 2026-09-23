@@ -1,9 +1,11 @@
 import React from 'react';
 import { getUsers } from '@/app/actions/admin';
-import { Users, Flame } from 'lucide-react';
+import { Users, Flame, ChevronLeft, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 
-export default async function AdminUsersPage() {
-  const users = await getUsers();
+export default async function AdminUsersPage({ searchParams }: { searchParams: { page?: string } }) {
+  const currentPage = parseInt(searchParams.page || '1', 10);
+  const { users, total, totalPages } = await getUsers(currentPage, 50);
 
   return (
     <div>
@@ -14,11 +16,11 @@ export default async function AdminUsersPage() {
         </div>
         <div className="bg-accent-blue/10 text-accent-blue px-4 py-2 rounded-xl font-bold flex items-center gap-2">
           <Users className="w-5 h-5" />
-          <span>{users.length} Total</span>
+          <span>{total} Total</span>
         </div>
       </header>
 
-      <div className="bg-card border-2 border-primary/10 rounded-3xl shadow-sm overflow-hidden">
+      <div className="bg-card border-2 border-primary/10 rounded-3xl shadow-sm overflow-hidden flex flex-col">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -74,6 +76,35 @@ export default async function AdminUsersPage() {
             </tbody>
           </table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between p-4 bg-ground/50 border-t-2 border-primary/10">
+            <span className="text-sm font-bold text-gray-500 dark:text-gray-400">
+              Page {currentPage} of {totalPages}
+            </span>
+            <div className="flex gap-2">
+              {currentPage > 1 ? (
+                <Link href={`/admin/users?page=${currentPage - 1}`} className="p-2 bg-card rounded-lg border border-primary/10 hover:bg-primary/5 transition-colors">
+                  <ChevronLeft className="w-5 h-5 text-gray-900 dark:text-gray-100" />
+                </Link>
+              ) : (
+                <div className="p-2 bg-card/50 rounded-lg border border-primary/5 opacity-50 cursor-not-allowed">
+                  <ChevronLeft className="w-5 h-5 text-gray-500" />
+                </div>
+              )}
+              
+              {currentPage < totalPages ? (
+                <Link href={`/admin/users?page=${currentPage + 1}`} className="p-2 bg-card rounded-lg border border-primary/10 hover:bg-primary/5 transition-colors">
+                  <ChevronRight className="w-5 h-5 text-gray-900 dark:text-gray-100" />
+                </Link>
+              ) : (
+                <div className="p-2 bg-card/50 rounded-lg border border-primary/5 opacity-50 cursor-not-allowed">
+                  <ChevronRight className="w-5 h-5 text-gray-500" />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

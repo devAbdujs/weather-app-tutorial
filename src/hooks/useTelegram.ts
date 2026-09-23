@@ -1,7 +1,12 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
-import WebApp from '@twa-dev/sdk';
+import type WebAppType from '@twa-dev/sdk';
+
+let WebApp: typeof WebAppType;
+if (typeof window !== 'undefined') {
+  WebApp = require('@twa-dev/sdk').default;
+}
 
 export interface TelegramUser {
   id: number;

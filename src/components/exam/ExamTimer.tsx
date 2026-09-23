@@ -9,8 +9,7 @@ interface ExamTimerProps {
 
 export const ExamTimer: React.FC<ExamTimerProps> = ({ initialSeconds, isPaused, onTimeUp }) => {
   const [secondsLeft, setSecondsLeft] = useState(initialSeconds);
-
-  // Reset timer if initialSeconds changes (e.g., retake exam)
+  
   useEffect(() => {
     setSecondsLeft(initialSeconds);
   }, [initialSeconds]);
@@ -18,19 +17,22 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({ initialSeconds, isPaused, 
   useEffect(() => {
     if (isPaused) return;
 
+    // Anchor exactly when the interval starts
+    const endTime = Date.now() + secondsLeft * 1000;
+    
     const interval = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          onTimeUp();
-          return 0;
-        }
-        return prev - 1;
-      });
+      const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+      setSecondsLeft(remaining);
+      
+      if (remaining <= 0) {
+        clearInterval(interval);
+        onTimeUp();
+      }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isPaused, onTimeUp]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPaused, onTimeUp]); // Intentional: Do NOT include secondsLeft or it recreates endTime every second
 
   return (
     <div className={`px-3 py-1.5 rounded-[12px] text-sm font-black tabular-nums border-2 transition-all ${

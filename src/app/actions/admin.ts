@@ -173,25 +173,8 @@ export async function getAdmins() {
   if (error) throw error;
   return data || [];
 }
-
-export async function createAdminAccount(username: string, passcode: string, role: string) {
-  const admin = await verifyAdmin();
-  if (admin?.role !== 'superadmin') throw new Error('Unauthorized: Only Superadmins can create accounts.');
-
-  const supabase = await createAdminClient();
-  const { error } = await supabase
-    .from('admin_users')
-    .insert({ username, passcode, role });
-
-  if (error) {
-    if (error.code === '23505') return { success: false, error: 'Username already exists.' };
-    return { success: false, error: error.message };
-  }
-
-  return { success: true };
-}
-
 export async function getAdminStats() {
+
   const admin = await verifyAdmin();
   if (!admin) throw new Error('Unauthorized');
 
@@ -212,18 +195,27 @@ export async function getAdminStats() {
   };
 }
 
-export async function getUsers() {
+export async function getUsers(page = 1, limit = 50) {
   const admin = await verifyAdmin();
   if (!admin) throw new Error('Unauthorized');
 
   const supabase = await createAdminClient();
-  const { data, error } = await supabase
+  const offset = (page - 1) * limit;
+
+  const { data, error, count } = await supabase
     .from('profiles')
-    .select('*')
-    .order('created_at', { ascending: false });
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (error) throw error;
-  return data || [];
+  
+  return {
+    users: data || [],
+    total: count || 0,
+    page,
+    totalPages: count ? Math.ceil(count / limit) : 0
+  };
 }
 
 export async function getQuestions(limit = 100) {
