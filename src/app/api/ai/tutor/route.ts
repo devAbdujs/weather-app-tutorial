@@ -73,6 +73,8 @@ function buildPrompt(data: z.infer<typeof RequestSchema>): { system: string; def
   };
 }
 
+import { createClient } from '@supabase/supabase-js';
+
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession();
@@ -95,10 +97,38 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = result.data;
+    const isFollowUpChat = payload.chatHistory && payload.chatHistory.length > 0;
+    
+    // 1. FAST PATH: Check the Cache (Only for standard single-turn prompts like hint, eli5, explain)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
+
+    if (payload.questionId && !isFollowUpChat) {
+      try {
+        const { data: cached } = await supabaseAdmin
+          .from('ai_responses_cache')
+          .select('response')
+          .eq('question_id', payload.questionId)
+          .eq('prompt_type', payload.promptType)
+          .maybeSingle();
+
+        if (cached?.response) {
+          // Cache Hit! Return instantly.
+          return new Response(cached.response, { 
+            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+          });
+        }
+      } catch (cacheErr) {
+        // Silently ignore cache read errors (e.g., table doesn't exist yet)
+        console.error('[AI Cache Read Error]', cacheErr);
+      }
+    }
+
     const { system, defaultUserPrompt } = buildPrompt(payload);
 
-    const finalMessages = payload.chatHistory && payload.chatHistory.length > 0 
-      ? payload.chatHistory 
+    const finalMessages = isFollowUpChat 
+      ? payload.chatHistory! 
       : [{ role: 'user' as const, content: defaultUserPrompt }];
 
     let attempt = 0;
@@ -119,6 +149,16 @@ export async function POST(req: NextRequest) {
           system,
           messages: finalMessages,
           temperature: 0.5,
+          onFinish: async ({ text }) => {
+            // 2. CACHE POPULATION: Save the generated response for the next student
+            if (payload.questionId && !isFollowUpChat) {
+              await supabaseAdmin.from('ai_responses_cache').insert({
+                question_id: payload.questionId,
+                prompt_type: payload.promptType,
+                response: text
+              }).catch(e => console.error('[AI Cache Write Error]', e));
+            }
+          }
         });
 
         return stream.toTextStreamResponse();
