@@ -1,21 +1,53 @@
-'use client';
-
-import React, { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React from 'react';
 import { ExamSessionLoader } from '@/components/exam/ExamSessionLoader';
+import { createClient } from '@/utils/supabase/server';
+import { Question } from '@/types';
 
-function ExamSessionPageContent() {
-  const searchParams = useSearchParams();
+interface PageProps {
+  searchParams: {
+    examType?: string;
+    sessionSize?: string;
+    sessionOffset?: string;
+    subject?: string;
+    year?: string;
+    mode?: string;
+    period?: string;
+  };
+}
+
+export default async function ExamSessionPage({ searchParams }: PageProps) {
+  const examType = searchParams.examType || 'entrance';
+  const sessionSize = parseInt(searchParams.sessionSize || '50', 10);
+  const sessionOffset = parseInt(searchParams.sessionOffset || '0', 10);
+
+  const subject = searchParams.subject || 'All';
+  const year = searchParams.year || undefined;
+  const mode = searchParams.mode || 'exam';
+  const period = searchParams.period || undefined; // 'midterm' | 'final'
+
+  // Fetch data on the Server to eliminate client-side waterfall
+  const supabase = await createClient();
   
-  // Parse all the new filters from the URL
-  const examType = searchParams.get('examType') || 'entrance';
-  const sessionSize = parseInt(searchParams.get('sessionSize') || '50', 10);
-  const sessionOffset = parseInt(searchParams.get('sessionOffset') || '0', 10);
+  // Only select the columns needed for the exam to reduce payload size
+  let query = supabase
+    .from('questions')
+    .select('id, exam_type, subject, year_ec, question_text, options, correct_answer, explanation, image_url, exam_period')
+    .eq('exam_type', examType);
 
-  const subject = searchParams.get('subject') || 'All';
-  const year = searchParams.get('year') || undefined;
-  const mode = searchParams.get('mode') || 'exam';
-  const period = searchParams.get('period') || undefined; // 'midterm' | 'final'
+  if (subject && subject !== 'All') {
+    query = query.eq('subject', subject);
+  }
+  
+  if (year) {
+    query = query.eq('year_ec', parseInt(year, 10));
+  }
+
+  if (period) {
+    query = query.eq('exam_period', period);
+  }
+
+  const { data, error } = await query.range(sessionOffset, sessionOffset + sessionSize - 1);
+  const initialQuestions = (data || []) as Question[];
 
   return (
     <ExamSessionLoader 
@@ -26,14 +58,8 @@ function ExamSessionPageContent() {
       year={year}
       mode={mode as 'practice' | 'exam'}
       period={period as 'midterm' | 'final' | undefined}
+      initialQuestions={initialQuestions}
+      serverError={error?.message || null}
     />
-  );
-}
-
-export default function ExamSessionPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-ground flex items-center justify-center"><div className="w-8 h-8 rounded-full border-4 border-primary/20 border-t-primary animate-spin" /></div>}>
-      <ExamSessionPageContent />
-    </Suspense>
   );
 }

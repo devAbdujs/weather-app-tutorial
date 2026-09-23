@@ -16,73 +16,44 @@ interface ExamSessionLoaderProps {
   year?: string;
   mode?: 'practice' | 'exam';
   period?: 'midterm' | 'final';
+  initialQuestions: Question[];
+  serverError: string | null;
 }
 
 export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({ 
-  examType, sessionSize, sessionOffset, subject, year, mode = 'exam', period
+  examType, sessionSize, sessionOffset, subject, year, mode = 'exam', period, initialQuestions, serverError
 }) => {
   const router = useRouter();
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  
+  // Initialize state directly from the server-fetched questions
+  const [questions, setQuestions] = useState<Question[]>(initialQuestions);
+  // Only show loading if we somehow have no questions and no error (e.g. initial client render fallback)
+  const [loading, setLoading] = useState(initialQuestions.length === 0 && !serverError);
+  const [error, setError] = useState<string | null>(serverError);
 
   useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const dbExamType = examType || 'entrance';
-        
-        // Generate a unique cache key for this exact session
-        // Added v2 prefix to invalidate older cached lists that might contain deleted/bad questions
-        const cacheKey = `v2_exam_${dbExamType}_${subject}_${year || 'all'}_${period || 'all'}_${sessionOffset}_${sessionSize}`;
-        
-        // 1. Try to load from IndexedDB cache first
+    // If the server successfully fetched questions, we have 0ms TTI.
+    // We just silently sync them to the local IndexedDB cache in the background.
+    const syncCache = async () => {
+      const dbExamType = examType || 'entrance';
+      const cacheKey = `v2_exam_${dbExamType}_${subject}_${year || 'all'}_${period || 'all'}_${sessionOffset}_${sessionSize}`;
+      
+      if (initialQuestions.length > 0) {
+        await setCachedQuestions(cacheKey, initialQuestions);
+        setLoading(false);
+      } else if (!serverError) {
+        // Fallback: If server returned nothing but no error, check local cache 
+        // (just in case they are offline and the service worker served the HTML shell)
         const cached = await getCachedQuestions(cacheKey);
         if (cached && cached.length > 0) {
           setQuestions(cached);
-          setLoading(false);
-          return; // Skip network fetch
         }
-
-        // 2. Fetch from Supabase
-        const supabase = createClient();
-        
-        let query = supabase
-          .from('questions')
-          .select('*')
-          .eq('exam_type', dbExamType);
-
-        if (subject && subject !== 'All') {
-          query = query.eq('subject', subject);
-        }
-        
-        if (year) {
-          query = query.eq('year_ec', parseInt(year, 10));
-        }
-
-        if (period) {
-          query = query.eq('exam_period', period);
-        }
-
-        const { data, error } = await query.range(sessionOffset, sessionOffset + sessionSize - 1);
-
-        if (error) throw error;
-        
-        // 3. Save the results to the IndexedDB cache for next time
-        if (data && data.length > 0) {
-          await setCachedQuestions(cacheKey, data as Question[]);
-        }
-        
-        setQuestions(data as Question[]);
-      } catch (err: any) {
-        console.error("Failed to load questions:", err);
-        setError(err.message);
-      } finally {
         setLoading(false);
       }
     };
 
-    fetchQuestions();
-  }, [examType, sessionSize, sessionOffset, subject, year]);
+    syncCache();
+  }, [examType, sessionSize, sessionOffset, subject, year, period, initialQuestions, serverError]);
 
   if (loading) {
     return <SkeletonScreen />;
