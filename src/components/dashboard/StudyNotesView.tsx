@@ -220,7 +220,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
           ref={scrollRef}
           className="flex flex-col px-5 pt-6 animate-fade-in"
         >
-          <div id="note-content" className="w-full">
+          <div id="note-content" className="w-full ruled-paper rounded-3xl border border-black/5 dark:border-white/10 shadow-sm overflow-hidden pt-6 pb-12 mb-4">
             <MarkdownRenderer 
               content={selectedNote.content || ''} 
               accentBg={accentBg} 
