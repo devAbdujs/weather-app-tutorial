@@ -36,11 +36,6 @@ This roadmap has been reorganized based on business impact, engineering severity
     *   Create an `ai_responses_cache` table. Hash the `questionId + promptType`. If a student asks for a hint that was already generated, return it instantly (50ms) instead of calling Gemini (3000ms).
 *   **[ ] The Manual Paywall (Monetization):** 
     *   The "Premium" button in Profile is currently a dead end. Build the UI to display Telebirr/CBE accounts and a form to upload a receipt screenshot to an Admin approval queue.
-*   **[ ] Advanced AI & RAG (Curriculum Grounding):** 
-    *   Enable `pgvector` in Supabase.
-    *   Stop blindly truncating textbook notes (`substring(0, 8000)`).
-    *   Ingest PDF chunks into the vector DB and retrieve only the relevant paragraphs so the AI Tutor bases its answers strictly on the Ethiopian curriculum.
-
 ---
 
 ## 💎 Priority 3: Native App Feel & UX Polish
@@ -72,10 +67,15 @@ This roadmap has been reorganized based on business impact, engineering severity
     *   Automated CRM: Ping users on Telegram via n8n if their daily streak is at risk.
     *   Content Ingestion: Admins drop a PDF in a Telegram channel $\rightarrow$ n8n parses via Gemini $\rightarrow$ auto-inserts into Supabase.
 
-*   **[ ] Telegram BotFather Configuration (Marketing & Access):** 
+*   **[x] Telegram BotFather Configuration (Marketing & Access):** 
     *   Create a Direct Link Mini App via `/newapp` in BotFather to get a clean, shareable link (e.g., `t.me/temari_bot/app`).
     *   Configure the **Menu Button** via Bot Settings so the app is always pinned at the bottom of the chat.
     *   Enable the **Main Mini App** via Bot Settings so users can launch the app directly from the bot's profile page.
 *   **[ ] PDF Short Note Uploader & Parser:**
     *   Build a UI to upload PDF short notes directly.
     *   Parse the PDF content and render it beautifully using the app's `MarkdownRenderer` and "Real Paper" UI.
+
+*   **[ ] Advanced AI & RAG (Curriculum Grounding):** 
+    *   Enable `pgvector` in Supabase.
+    *   Stop blindly truncating textbook notes (`substring(0, 8000)`).
+    *   Ingest PDF chunks into the vector DB and retrieve only the relevant paragraphs so the AI Tutor bases its answers strictly on the Ethiopian curriculum.
