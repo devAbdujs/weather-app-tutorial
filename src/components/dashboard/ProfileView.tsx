@@ -114,7 +114,10 @@ export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) 
             </div>
           </div>
           {!isPremium && (
-            <button className="px-5 py-2.5 bg-primary text-white rounded-[12px] text-[13px] font-black shadow-md active:scale-[0.98] active:opacity-80 transition-all">
+            <button 
+              onClick={() => router.push('/upgrade')} 
+              className="px-5 py-2.5 bg-primary text-white rounded-[12px] text-[13px] font-black shadow-md active:scale-[0.98] active:opacity-80 transition-all"
+            >
               Upgrade
             </button>
           )}
