@@ -37,31 +37,15 @@ export const ClientAuthDetector: React.FC = () => {
         // We're definitively inside the Telegram app — authenticate immediately
         authenticateWithTelegram(tg.initData);
         return;
-      } 
-      
-      // Check for OIDC OAuth Redirect callback parameters in URL
+      }
+
+      // If there are stale OAuth query params in the URL (leftover from a failed
+      // or incomplete OIDC flow), clean them up so the user sees the Landing Page
+      // rather than getting stuck. Full OIDC support is tracked in Phase 3 (PWA).
       const searchParams = new URLSearchParams(window.location.search);
       if (searchParams.get('code') && searchParams.get('state')) {
-        // We're in an OAuth callback - show spinner while processing
-        setIsAuthenticating(true);
-        fetch('/api/auth/oidc', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            code: searchParams.get('code'),
-            code_verifier: sessionStorage.getItem('tg_oidc_verifier'),
-            redirect_uri: (process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top') + '/auth/callback'
-          })
-        }).then(res => {
-          if (res.ok) {
-            sessionStorage.removeItem('tg_oidc_state');
-            sessionStorage.removeItem('tg_oidc_verifier');
-            window.location.replace('/');
-          } else {
-            setIsAuthenticating(false);
-          }
-        }).catch(() => setIsAuthenticating(false));
-        return;
+        // Strip the stale params and let the user log in normally
+        window.history.replaceState({}, '', window.location.pathname);
       }
 
       if (attempts < 10) {

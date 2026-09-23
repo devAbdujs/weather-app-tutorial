@@ -1,10 +1,10 @@
 import React from 'react';
 import { getAdminStats } from '@/app/actions/admin';
-import { Users, FileText, BrainCircuit } from 'lucide-react';
+import { Users, FileText, BrainCircuit, Zap } from 'lucide-react';
 
 export default async function AdminDashboard() {
   // Fetch stats on the server
-  let stats = { totalUsers: 0, totalNotes: 0, totalQuestions: 0 };
+  let stats = { totalUsers: 0, totalNotes: 0, totalQuestions: 0, totalPremium: 0 };
   let error = null;
   
   try {
@@ -26,7 +26,7 @@ export default async function AdminDashboard() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <StatCard 
           title="Total Users" 
           value={stats.totalUsers.toLocaleString()} 
@@ -44,6 +44,12 @@ export default async function AdminDashboard() {
           value={stats.totalQuestions.toLocaleString()} 
           icon={<BrainCircuit className="w-8 h-8 text-accent-gold" />} 
           color="bg-accent-gold/10"
+        />
+        <StatCard 
+          title="Premium Users" 
+          value={stats.totalPremium.toLocaleString()} 
+          icon={<Zap className="w-8 h-8 text-violet-500" />} 
+          color="bg-violet-500/10"
         />
       </div>
 

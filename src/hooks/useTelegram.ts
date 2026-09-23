@@ -1,33 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
-
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp?: {
-        ready: () => void;
-        expand: () => void;
-        colorScheme?: 'light' | 'dark';
-        initData?: string;
-        initDataUnsafe?: {
-          user?: TelegramUser;
-        };
-        HapticFeedback?: {
-          selectionChanged: () => void;
-          impactOccurred: (style: string) => void;
-          notificationOccurred: (type: string) => void;
-        };
-        BackButton?: {
-          show: () => void;
-          hide: () => void;
-          onClick: (callback: () => void) => void;
-          offClick: (callback: () => void) => void;
-        };
-      };
-    };
-  }
-}
+import WebApp from '@twa-dev/sdk';
 
 export interface TelegramUser {
   id: number;
@@ -46,16 +20,16 @@ export function useTelegram() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      if (window.Telegram?.WebApp && window.Telegram.WebApp.initData) {
+      // @twa-dev/sdk's WebApp.initData is populated only inside the Telegram Mini App
+      if (WebApp.initData) {
         // 1. We are inside the Telegram Mini App
-        const tg = window.Telegram.WebApp;
         setIsTelegram(true);
-        try { tg.ready(); tg.expand(); } catch (e) {}
+        try { WebApp.ready(); WebApp.expand(); } catch (e) {}
 
-        if (tg.initDataUnsafe?.user) {
-          setUser(tg.initDataUnsafe.user);
+        if (WebApp.initDataUnsafe?.user) {
+          setUser(WebApp.initDataUnsafe.user as TelegramUser);
         }
-        if (tg.colorScheme) setColorScheme(tg.colorScheme);
+        if (WebApp.colorScheme) setColorScheme(WebApp.colorScheme);
         setIsLoadingAuth(false);
       } else {
         // 2. We are on a Web Browser
@@ -70,22 +44,16 @@ export function useTelegram() {
     }
   }, []);
 
-  // Haptic Feedback Engine - wrapped in useMemo to prevent timer recreation
+  // Haptic Feedback Engine - wrapped in useMemo to prevent recreation
   const haptic = useMemo(() => ({
     selection: () => {
-      if (typeof window !== 'undefined' && window.Telegram?.WebApp?.HapticFeedback) {
-        window.Telegram.WebApp.HapticFeedback.selectionChanged();
-      }
+      try { WebApp.HapticFeedback.selectionChanged(); } catch (e) {}
     },
     impact: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft' = 'light') => {
-      if (typeof window !== 'undefined' && window.Telegram?.WebApp?.HapticFeedback) {
-        window.Telegram.WebApp.HapticFeedback.impactOccurred(style);
-      }
+      try { WebApp.HapticFeedback.impactOccurred(style); } catch (e) {}
     },
     notification: (type: 'error' | 'success' | 'warning') => {
-      if (typeof window !== 'undefined' && window.Telegram?.WebApp?.HapticFeedback) {
-        window.Telegram.WebApp.HapticFeedback.notificationOccurred(type);
-      }
+      try { WebApp.HapticFeedback.notificationOccurred(type); } catch (e) {}
     },
   }), []);
 
@@ -93,8 +61,8 @@ export function useTelegram() {
   const backButtonHandlerRef = useRef<(() => void) | null>(null);
 
   const setBackButton = useCallback((visible: boolean, onClick?: () => void) => {
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp?.BackButton) {
-      const bb = window.Telegram.WebApp.BackButton;
+    try {
+      const bb = WebApp.BackButton;
       // Remove previous handler before adding a new one to prevent stacking
       if (backButtonHandlerRef.current) {
         bb.offClick(backButtonHandlerRef.current);
@@ -109,7 +77,7 @@ export function useTelegram() {
       } else {
         bb.hide();
       }
-    }
+    } catch (e) {}
   }, []);
 
   return {
@@ -117,6 +85,9 @@ export function useTelegram() {
     user,
     colorScheme,
     haptic,
-    setBackButton
+    setBackButton,
+    // Expose the SDK directly for Phase 5 advanced features
+    // (requestFullscreen, addToHomeScreen, setHeaderColor, etc.)
+    twa: WebApp,
   };
 }
