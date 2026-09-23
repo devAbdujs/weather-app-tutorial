@@ -18,6 +18,11 @@ export function useTheme() {
       const isDark = t === 'dark' || (t === 'system' && prefersDark);
       document.documentElement.classList.toggle('dark', isDark);
       setResolvedTheme(isDark ? 'dark' : 'light');
+      
+      try {
+        const WebApp = require('@twa-dev/sdk').default;
+        WebApp.setHeaderColor?.(isDark ? '#1a1f2e' : '#f8fafc');
+      } catch (e) {}
     };
 
     applyTheme(stored);
@@ -40,6 +45,12 @@ export function useTheme() {
     const isDark = t === 'dark' || (t === 'system' && prefersDark);
     document.documentElement.classList.toggle('dark', isDark);
     setResolvedTheme(isDark ? 'dark' : 'light');
+    
+    // Sync with Telegram Native Header
+    try {
+      const WebApp = require('@twa-dev/sdk').default;
+      WebApp.setHeaderColor?.(isDark ? '#1a1f2e' : '#f8fafc'); // Match bg-ground colors
+    } catch (e) {}
   };
 
   const toggle = () => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');

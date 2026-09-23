@@ -85,14 +85,44 @@ export function useTelegram() {
     } catch (e) {}
   }, []);
 
+  // API 8.0+ Native Immersion Controls
+  const setFullscreen = useCallback((fullscreen: boolean) => {
+    try {
+      if (fullscreen) WebApp.requestFullscreen?.();
+      else WebApp.exitFullscreen?.();
+    } catch (e) {}
+  }, []);
+
+  const setVerticalSwipes = useCallback((enable: boolean) => {
+    try {
+      if (enable) WebApp.enableVerticalSwipes?.();
+      else WebApp.disableVerticalSwipes?.();
+    } catch (e) {}
+  }, []);
+
+  const setClosingConfirmation = useCallback((enable: boolean) => {
+    try {
+      if (enable) WebApp.enableClosingConfirmation?.();
+      else WebApp.disableClosingConfirmation?.();
+    } catch (e) {}
+  }, []);
+
+  const setHeaderColor = useCallback((color: string) => {
+    try {
+      WebApp.setHeaderColor?.(color);
+    } catch (e) {}
+  }, []);
+
   return {
     isTelegram,
     user,
     colorScheme,
     haptic,
     setBackButton,
-    // Expose the SDK directly for Phase 5 advanced features
-    // (requestFullscreen, addToHomeScreen, setHeaderColor, etc.)
+    setFullscreen,
+    setVerticalSwipes,
+    setClosingConfirmation,
+    setHeaderColor,
     twa: WebApp,
   };
 }

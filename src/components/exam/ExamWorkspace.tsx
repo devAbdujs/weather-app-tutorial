@@ -38,7 +38,7 @@ interface ExamWorkspaceProps {
 }
 
 export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, isSimulator = false, timeLimitMinutes = 60, onExit, subject = 'unknown' }) => {
-  const { user, haptic } = useTelegram();
+  const { user, haptic, setFullscreen, setVerticalSwipes, setClosingConfirmation } = useTelegram();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, 'A' | 'B' | 'C' | 'D'>>({});
   const [flagged, setFlagged] = useState<Set<number>>(new Set());
@@ -49,6 +49,18 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
   const [isReviewMode, setIsReviewMode] = useState(false);
   const startTimeRef = React.useRef(Date.now());
   const mainRef = React.useRef<HTMLDivElement>(null);
+
+  // Native Immersion: Protect the exam session
+  useEffect(() => {
+    setFullscreen(true);
+    setVerticalSwipes(false);
+    setClosingConfirmation(true);
+    return () => {
+      setFullscreen(false);
+      setVerticalSwipes(true);
+      setClosingConfirmation(false);
+    };
+  }, [setFullscreen, setVerticalSwipes, setClosingConfirmation]);
 
   // Auto-scroll to top when question changes
   useEffect(() => {
