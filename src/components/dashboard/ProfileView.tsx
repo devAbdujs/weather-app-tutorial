@@ -82,7 +82,7 @@ export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) 
           <div className="w-full h-full absolute inset-0 bg-black/10 dark:bg-white/10 rounded-[28px] transform -rotate-6 transition-transform overflow-hidden" />
           {profile.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img 
+            <Image width={96} height={96} 
               src={profile.avatar_url} 
               alt={profile.full_name || 'Avatar'} 
               className="w-full h-full object-cover rounded-[28px] relative z-10 transform -rotate-3"

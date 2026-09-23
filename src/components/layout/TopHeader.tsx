@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { ChevronLeft, Sun, Moon } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
@@ -75,7 +76,7 @@ export const TopHeader = () => {
         ) : (
           <div className="w-8 h-8 rounded-[10px] overflow-hidden shadow-sm border border-black/5 dark:border-white/10 shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/assets/temari logo.png"
               alt="Temari"
               className="w-full h-full object-cover"

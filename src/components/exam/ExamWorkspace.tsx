@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, Flag, Grid, Sparkles, CheckCircle2, XCircle, Bookmark, Award, X, Lock, Lightbulb, Clock, Maximize2 } from 'lucide-react';
 import { Question } from '@/types';
+import Image from 'next/image';
 import { MathText } from '@/components/MathText';
 import { AIResponse } from '@/components/AIResponse';
 import dynamic from 'next/dynamic';
@@ -328,7 +329,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
           {currentQ.image_url && (
             <button onClick={() => { haptic.selection(); setZoomImage(currentQ.image_url || null); }} className="w-full mt-4 rounded-[16px] border border-black/5 dark:border-white/10 overflow-hidden bg-white dark:bg-card relative group active:scale-[0.98] transition-transform block focus-ring">
-              <img src={currentQ.image_url} alt="Question diagram" className="w-full h-auto max-h-64 object-contain" />
+              <Image width={800} height={400} src={currentQ.image_url} alt="Question diagram" className="w-full h-auto max-h-64 object-contain" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-center">
                 <Maximize2 className="w-6 h-6 text-black/50 opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />
               </div>
@@ -510,7 +511,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           <button className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center bg-card border border-primary/20 rounded-full text-gray-900 dark:text-gray-100 transition-all active:scale-[0.98] active:opacity-80 shadow-sm">
             <X className="w-6 h-6" />
           </button>
-          <img src={zoomImage} className="w-full max-h-[90vh] object-contain rounded-xl" alt="Zoomed diagram" />
+          <Image width={800} height={400} src={zoomImage} className="w-full max-h-[90vh] object-contain rounded-xl" alt="Zoomed diagram" />
         </div>
       )}
     </div>

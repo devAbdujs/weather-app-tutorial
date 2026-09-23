@@ -74,7 +74,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin: _onLogin }) =
         <div className="flex flex-col items-center mb-10">
           <div className="w-20 h-20 rounded-2xl overflow-hidden mb-5 shadow-sm border border-black/5 dark:border-white/10">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image width={80} height={80}
               src="/assets/temari logo.png"
               alt="Temari"
               className="w-full h-full object-cover"
