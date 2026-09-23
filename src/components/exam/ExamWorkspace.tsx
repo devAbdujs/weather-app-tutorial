@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { toast } from "sonner";
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -202,16 +203,29 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           if (norm && selectedAnswers[idx] === norm) correctCount++;
         });
 
-        await fetch('/api/exam/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        try {
+          const res = await fetch('/api/exam/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              subject,
+              attempted: questions.length,
+              correct: correctCount,
+              timeSpentSeconds: elapsed
+            })
+          });
+          if (!res.ok) throw new Error('Network response was not ok');
+        } catch (submitErr) {
+          console.warn('Offline or server error, saving submission locally:', submitErr);
+          const { saveOfflineSubmission } = await import('@/utils/offlineSync');
+          await saveOfflineSubmission({
             subject,
             attempted: questions.length,
             correct: correctCount,
             timeSpentSeconds: elapsed
-          })
-        });
+          });
+          toast.info("You're offline! Your exam score was saved locally and will sync when you reconnect.");
+        }
 
       } catch (err) {
         console.error("Error saving exam stats:", err);
