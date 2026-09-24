@@ -101,7 +101,7 @@ export const LandingPage = () => {
       </nav>
 
       {/* 2. Hero Section with Floating Pills */}
-      <header className="relative px-6 pt-32 pb-16 flex flex-col items-center text-center max-w-3xl mx-auto w-full mt-8">
+      <header className="relative px-6 pt-24 sm:pt-32 pb-12 sm:pb-16 flex flex-col items-center text-center max-w-3xl mx-auto w-full mt-4 sm:mt-8">
         
         {/* Floating Background Elements (Hidden on small mobile) */}
         <div className="hidden sm:flex absolute top-10 left-0 animate-bounce" style={{ animationDuration: '3s' }}>
@@ -119,7 +119,7 @@ export const LandingPage = () => {
           Ethiopian exam prep, powered by AI
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.1] mb-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
+        <h1 className="text-[40px] sm:text-6xl font-black tracking-tight leading-tight sm:leading-[1.1] mb-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
           Master your national exams. <br className="hidden sm:block" />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">Without the stress.</span>
         </h1>
@@ -158,7 +158,7 @@ export const LandingPage = () => {
 
       {/* 4. Mockup Section */}
       <section className="px-4 pb-24 w-full max-w-5xl mx-auto flex justify-center animate-fade-up relative z-10" style={{ animationDelay: '0.5s' }}>
-        <div className="w-full max-w-[360px] sm:max-w-[800px] sm:aspect-video aspect-[9/19] rounded-[32px] sm:rounded-[40px] border-[6px] border-gray-900 shadow-2xl overflow-hidden bg-card relative">
+        <div className="w-full max-w-[340px] sm:max-w-[800px] h-[500px] sm:h-auto sm:aspect-video rounded-[32px] sm:rounded-[40px] border-[6px] border-gray-900 shadow-2xl overflow-hidden bg-card relative">
            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-blue-900/40 p-6 flex flex-col">
               {/* Fake UI Header */}
               <div className="w-full flex justify-between items-center mb-6">
@@ -179,7 +179,7 @@ export const LandingPage = () => {
            </div>
            
            {/* Floating AI Chat Mockup */}
-           <div className="absolute bottom-6 right-6 left-6 sm:left-auto sm:w-[320px] bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-4 shadow-2xl">
+           <div className="absolute bottom-4 right-4 left-4 sm:bottom-6 sm:right-6 sm:left-auto sm:w-[320px] bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-4 shadow-2xl">
               <div className="flex items-start gap-3">
                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 mt-1"><Bot className="w-4 h-4 text-white"/></div>
                  <p className="text-gray-900 dark:text-white font-bold text-sm leading-relaxed">
@@ -191,7 +191,7 @@ export const LandingPage = () => {
       </section>
 
       {/* 5. Features Grid */}
-      <section className="px-6 py-24 bg-card border-t border-black/5 dark:border-white/10">
+      <section className="px-6 py-16 sm:py-24 bg-card border-t border-black/5 dark:border-white/10">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-4">Everything you need to score high</h2>
@@ -199,7 +199,7 @@ export const LandingPage = () => {
           </div>
           
           <div className="grid sm:grid-cols-3 gap-6">
-            <div className="flex flex-col gap-4 p-8 rounded-[32px] bg-ground border border-black/5 dark:border-white/5">
+            <div className="flex flex-col gap-4 p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] bg-ground border border-black/5 dark:border-white/5">
               <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center">
                 <Target className="w-7 h-7 text-blue-500" />
               </div>
@@ -209,7 +209,7 @@ export const LandingPage = () => {
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 p-8 rounded-[32px] bg-ground border border-black/5 dark:border-white/5">
+            <div className="flex flex-col gap-4 p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] bg-ground border border-black/5 dark:border-white/5">
               <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center">
                 <Bot className="w-7 h-7 text-purple-500" />
               </div>
@@ -219,7 +219,7 @@ export const LandingPage = () => {
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 p-8 rounded-[32px] bg-ground border border-black/5 dark:border-white/5">
+            <div className="flex flex-col gap-4 p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] bg-ground border border-black/5 dark:border-white/5">
               <div className="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center">
                 <BookOpen className="w-7 h-7 text-amber-500" />
               </div>
@@ -233,12 +233,12 @@ export const LandingPage = () => {
       </section>
 
       {/* 6. Partnered / Trust Section */}
-      <section className="px-6 py-20 border-t border-black/5 dark:border-white/10 bg-ground">
+      <section className="px-6 py-16 sm:py-20 border-t border-black/5 dark:border-white/10 bg-ground">
         <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
            <h3 className="text-sm font-black text-gray-400 dark:text-gray-500 tracking-widest uppercase mb-10">
              Aligned with National Standards
            </h3>
-           <div className="flex flex-wrap justify-center gap-12 sm:gap-20 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+           <div className="flex flex-wrap justify-center gap-8 sm:gap-20 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
               
               <div className="flex items-center gap-3">
                  <ShieldCheck className="w-10 h-10 text-emerald-600" />
@@ -268,7 +268,7 @@ export const LandingPage = () => {
       </section>
 
       {/* 7. Bottom CTA */}
-      <section className="px-6 py-24 flex flex-col items-center text-center bg-card border-t border-black/5 dark:border-white/10">
+      <section className="px-6 py-16 sm:py-24 flex flex-col items-center text-center bg-card border-t border-black/5 dark:border-white/10">
         <h2 className="text-3xl font-black mb-2 tracking-tight">Ready to ace your exams?</h2>
         <p className="text-gray-500 font-medium mb-8">Join thousands of students learning smarter today.</p>
         <button
@@ -281,13 +281,13 @@ export const LandingPage = () => {
       </section>
 
       {/* 8. Footer */}
-      <footer className="w-full bg-ground border-t border-black/5 dark:border-white/5 py-12 px-6">
+      <footer className="w-full bg-ground border-t border-black/5 dark:border-white/5 py-8 sm:py-12 px-6">
          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2">
                <div className="w-6 h-6 rounded bg-primary flex items-center justify-center"><span className="text-white font-black text-[10px]">Te</span></div>
                <span className="font-bold text-sm text-gray-900 dark:text-white">Temari App</span>
             </div>
-            <div className="flex items-center gap-6 text-sm font-bold text-gray-500 hover:text-gray-900 dark:hover:text-gray-300">
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm font-bold text-gray-500 hover:text-gray-900 dark:hover:text-gray-300">
                <a href="#" className="transition-colors">Terms</a>
                <a href="#" className="transition-colors">Privacy</a>
                <a href="#" className="transition-colors">Contact</a>
