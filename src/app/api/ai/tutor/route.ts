@@ -26,12 +26,13 @@ const RequestSchema = z.object({
   })).optional(),
 });
 
-function buildPrompt(data: z.infer<typeof RequestSchema>): { system: string; defaultUserPrompt: string } {
+function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string): { system: string; defaultUserPrompt: string } {
   const { mode, noteText, questionText, options, correctAnswer, explanation, subject, studentAnswer } = data;
 
   const system = [
     `You are Mr. Helper, an elite AI tutor for Ethiopian students.`,
     subject ? `(Subject: ${subject}).` : '',
+    profileContext,
     ''
   ];
 
@@ -100,9 +101,28 @@ export async function POST(req: NextRequest) {
     const isFollowUpChat = payload.chatHistory && payload.chatHistory.length > 0;
     
     // 1. FAST PATH: Check the Cache (Only for standard single-turn prompts like hint, eli5, explain)
+
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
+
+    let profileContext = '';
+    try {
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('target_exam, stream')
+        .eq('telegram_id', session.telegram_id)
+        .maybeSingle();
+
+      if (profile) {
+        if (profile.target_exam === 'entrance') profileContext = `Student Profile: Grade 12 (${profile.stream} track)`;
+        else if (profile.target_exam === 'freshman') profileContext = `Student Profile: University Freshman (${profile.stream} track)`;
+        else if (profile.target_exam === 'exit') profileContext = `Student Profile: University Exit Exam (${profile.stream} department)`;
+      }
+    } catch (e) {
+      console.error('[AI Profile Error]', e);
+    }
+
 
     if (payload.questionId && !isFollowUpChat) {
       try {
@@ -125,7 +145,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const { system, defaultUserPrompt } = buildPrompt(payload);
+    const { system, defaultUserPrompt } = buildPrompt(payload, profileContext);
 
     const finalMessages = isFollowUpChat 
       ? payload.chatHistory! 
@@ -156,7 +176,7 @@ export async function POST(req: NextRequest) {
                 question_id: payload.questionId,
                 prompt_type: payload.promptType,
                 response: text
-              }).catch(e => console.error('[AI Cache Write Error]', e));
+              });
             }
           }
         });
