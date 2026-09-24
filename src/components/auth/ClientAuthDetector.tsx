@@ -4,8 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { LandingPage } from '@/components/marketing/LandingPage';
 
 export const ClientAuthDetector: React.FC = () => {
-  // Default to showing the LandingPage immediately.
-  // We only switch to the spinner if we detect an active Telegram context.
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   useEffect(() => {
@@ -23,7 +21,7 @@ export const ClientAuthDetector: React.FC = () => {
         if (res.ok) {
           window.location.replace('/dashboard'); 
         } else {
-          setIsAuthenticating(false); // Failed — show LandingPage
+          setIsAuthenticating(false);
         }
       } catch {
         setIsAuthenticating(false);
@@ -34,26 +32,19 @@ export const ClientAuthDetector: React.FC = () => {
       const tg = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp : null;
 
       if (tg && tg.initData) {
-        // We're definitively inside the Telegram app — authenticate immediately
         authenticateWithTelegram(tg.initData);
         return;
       }
 
-      // If there are stale OAuth query params in the URL (leftover from a failed
-      // or incomplete OIDC flow), clean them up so the user sees the Landing Page
-      // rather than getting stuck. Full OIDC support is tracked in Phase 3 (PWA).
       const searchParams = new URLSearchParams(window.location.search);
       if (searchParams.get('code') && searchParams.get('state')) {
-        // Strip the stale params and let the user log in normally
         window.history.replaceState({}, '', window.location.pathname);
       }
 
       if (attempts < 10) {
         attempts++;
-        setTimeout(checkTelegram, 50); // Poll for Telegram context
-        // During polling we DON'T show the spinner — LandingPage stays visible
+        setTimeout(checkTelegram, 50);
       }
-      // After 10 attempts with no Telegram context found, we just stay on LandingPage
     };
 
     checkTelegram();
@@ -73,18 +64,7 @@ export const ClientAuthDetector: React.FC = () => {
     );
   }
 
-  // Render the marketing Landing Page for unauthenticated Web users
   return (
     <LandingPage />
-      {false && (
-      const res = await fetch('/api/auth/session', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ webData }) 
-      });
-      if (res.ok) {
-        window.location.replace('/dashboard'); 
-      }
-    }} />
   );
 };

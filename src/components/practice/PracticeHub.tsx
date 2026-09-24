@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useAppStore } from '@/store/useAppStore';
 import { 
@@ -92,6 +92,8 @@ const EXIT_DEPARTMENTS = [
 export const PracticeHub = () => {
   const { haptic, setBackButton } = useTelegram();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const mode = searchParams.get('mode') || 'exam';
   const profileTarget = useAppStore(s => s.userProfile?.target_exam);
   const profileStream = useAppStore(s => s.userProfile?.stream || 'Natural Science');
   const devMode = useAppStore(s => s.devMode);
@@ -114,8 +116,13 @@ export const PracticeHub = () => {
   }, [setBackButton]);
 
   const navigate = (examType: string, params: Record<string, string>) => {
-    const p = new URLSearchParams({ examType, ...params });
-    router.push(`/practice/sessions?${p.toString()}`);
+    if (mode === 'notes') {
+      const p = new URLSearchParams({ examType });
+      router.push(`/notes/${encodeURIComponent(params.subject)}?${p.toString()}`);
+    } else {
+      const p = new URLSearchParams({ examType, ...params });
+      router.push(`/practice/sessions?${p.toString()}`);
+    }
   };
 
   const examTypeLabel = () => {
@@ -130,8 +137,12 @@ export const PracticeHub = () => {
 
       {/* ── PAGE HEADER ── */}
       <div className="px-5 pt-3 pb-2 mb-4">
-        <h1 className="text-[28px] font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none">Practice</h1>
-        <p className="text-[13px] font-bold text-gray-500 dark:text-gray-400 mt-1">{examTypeLabel()}</p>
+        <h1 className="text-[28px] font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none">
+          {mode === 'notes' ? 'Short Notes' : 'Practice'}
+        </h1>
+        <p className="text-[13px] font-bold text-gray-500 dark:text-gray-400 mt-1">
+          {mode === 'notes' ? 'Choose a subject to study' : examTypeLabel()}
+        </p>
       </div>
 
       {devMode && (
