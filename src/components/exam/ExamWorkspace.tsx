@@ -355,7 +355,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
           {currentQ.image_url && (
             <button onClick={() => { haptic.selection(); setZoomImage(currentQ.image_url || null); }} className="w-full mt-4 rounded-[16px] border border-black/5 dark:border-white/10 overflow-hidden bg-white dark:bg-card relative group active:scale-[0.98] transition-transform block focus-ring">
-              <Image width={800} height={400} src={currentQ.image_url} alt="Question diagram" className="w-full h-auto max-h-64 object-contain" />
+              <Image priority={currentIndex === 0} width={800} height={400} src={getImageUrl(currentQ.image_url)} alt="Question diagram" className="w-full h-auto max-h-64 object-contain" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-center">
                 <Maximize2 className="w-6 h-6 text-black/50 opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />
               </div>

@@ -5,7 +5,7 @@ import './globals.css';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
-  variable: '--font-geist-sans',
+  variable: '--font-geist-sans', display: 'swap',
   weight: '100 900',
 });
 
