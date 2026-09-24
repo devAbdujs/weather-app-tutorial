@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { syncOfflineSubmissions } from '@/utils/offlineSync';
 import { toast } from 'sonner';
+import { X, Download } from 'lucide-react';
 
 export function PWARegistry() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -10,7 +11,6 @@ export function PWARegistry() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // 1. Register the Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker
@@ -20,33 +20,48 @@ export function PWARegistry() {
       });
     }
 
-    // 2. Initial offline sync check on load
     syncOfflineSubmissions();
-
-    // 3. Listen for network returning online
     window.addEventListener('online', syncOfflineSubmissions);
     
-    // 4. Intercept the native PWA install prompt
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
       
-      // Delay prompt by 8 seconds so it doesn't interrupt the dashboard immediately
       setTimeout(() => {
-        toast('Install Temari App', {
-          description: 'Get faster access and offline notes on your home screen!',
-          action: {
-            label: 'Install',
-            onClick: () => {
-              (e as any).prompt();
-              (e as any).userChoice.then((choiceResult: any) => {
-                if (choiceResult.outcome === 'accepted') {
-                  console.log('User accepted the A2HS prompt');
-                }
-              });
-            }
-          },
-          duration: 10000,
+        toast.custom((t) => (
+          <div className="bg-card dark:bg-card border border-black/5 dark:border-white/10 shadow-2xl p-4 rounded-[20px] flex flex-col gap-3 w-full max-w-[356px] pointer-events-auto">
+             <div className="flex justify-between items-start">
+                <div>
+                   <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">Install Temari App</h3>
+                   <p className="text-[13px] text-gray-500 dark:text-gray-400 font-medium mt-1 leading-relaxed">
+                     Get faster access, full screen mode, and offline notes directly on your home screen.
+                   </p>
+                </div>
+                <button 
+                  onClick={() => toast.dismiss(t)} 
+                  className="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-full transition-all active:scale-95"
+                >
+                  <X className="w-4 h-4"/>
+                </button>
+             </div>
+             <button 
+                onClick={() => { 
+                  toast.dismiss(t);
+                  (e as any).prompt();
+                  (e as any).userChoice.then((choiceResult: any) => {
+                    if (choiceResult.outcome === 'accepted') {
+                      console.log('User accepted the A2HS prompt');
+                    }
+                  });
+                }} 
+                className="bg-primary text-white font-bold h-11 rounded-xl w-full flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-sm shadow-primary/20 hover:bg-primary/90 mt-1"
+             >
+                <Download className="w-4 h-4" />
+                Install Now
+             </button>
+          </div>
+        ), { 
+          duration: Infinity // Will never auto-close
         });
       }, 8000);
     };
