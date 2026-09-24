@@ -21,7 +21,7 @@ const SUBJECT_EMOJI: Record<string, string> = {
   'Mathematics': '📐', 'Physics': '⚛️', 'Chemistry': '🧪', 'Biology': '🧬',
   'Economics': '📈', 'History': '📜', 'Geography': '🌍', 'English': '📝',
   'Logic': '🧠', 'Civics': '⚖️', 'Psychology': '💡', 'Computer Science': '💻',
-  'Software Engineering': '🖥️', 'Emerging Technology': '🚀', 'Aptitude': '🎯',
+  'Software Engineering': '🖥️', 'Emerging Technology': '🚀', 'Aptitude': '🎯', 'Scholastic Aptitude (SAT)': '🎯', 'GAT (Graduate Admission Test)': '🎯',
 };
 
 
@@ -42,6 +42,8 @@ const SUBJECT_BG_COLOR: Record<string, string> = {
   'Software Engineering':'bg-blue-50 dark:bg-blue-900/30',
   'Emerging Technology': 'bg-fuchsia-50',
   'Aptitude':            'bg-yellow-50',
+  'Scholastic Aptitude (SAT)': 'bg-yellow-50',
+  'GAT (Graduate Admission Test)': 'bg-yellow-50',
 };
 
 const ReadingProgress = () => {

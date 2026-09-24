@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, CheckCircle2 } from 'lucide-react';
+import { ChevronRight, ChevronLeft, CheckCircle2, Search } from 'lucide-react';
 import { updateProfilePreferences } from '@/app/actions/user';
 import { useTelegram } from '@/hooks/useTelegram';
 
@@ -40,7 +40,7 @@ const EXIT_DISCIPLINES = [
   { id: 'Economics',                           label: 'Economics' },
   { id: 'Law',                                 label: 'Law' },
   { id: 'Sociology',                           label: 'Sociology' },
-  { id: 'Agriculture',                         label: 'Agriculture' },
+  { id: 'GAT (Graduate Admission Test)',       label: 'GAT (Graduate Admission Test)' },
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -51,6 +51,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
   const [target, setTarget] = useState<string>('');
   const [stream, setStream] = useState<string>(''); // used for G12 stream and Exit discipline
   const [isSaving, setIsSaving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const select = (val: string, setter: (v: string) => void) => {
     haptic.selection();
@@ -60,9 +61,8 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
   const goNext = () => {
     haptic.impact('light');
     if (step === 1) {
-      if (target === 'entrance') { setStep(2); return; } // G12 → pick stream
-      if (target === 'exit')     { setStep(3); return; } // Exit → pick discipline
-      handleSave(''); // Freshman → no stream needed
+      if (target === 'entrance' || target === 'freshman') { setStep(2); return; }
+      if (target === 'exit')     { setStep(3); return; }
     } else {
       handleSave(stream); // step 2 (G12 stream) or step 3 (Exit discipline)
     }
@@ -162,12 +162,12 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
           </>
         )}
 
-        {/* ── Step 2: G12 Stream only ── */}
+        {/* ── Step 2: Stream ── */}
         {step === 2 && (
           <>
             <div>
               <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Your Stream</h1>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">You can switch subjects freely each session within your stream.</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">Select your academic track to personalize your materials.</p>
             </div>
             <PillList options={G12_STREAMS} value={stream} onChange={setStream} />
           </>
@@ -178,9 +178,34 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
           <>
             <div>
               <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Your Discipline</h1>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">Select your field of study for the Exit Exam.</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">Search and select your field of study.</p>
             </div>
-            <PillList options={EXIT_DISCIPLINES} value={stream} onChange={setStream} />
+            <div className="flex flex-col gap-4 mt-2 h-full min-h-[300px]">
+              <div className="relative">
+                <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input 
+                  type="text" 
+                  placeholder="Search departments..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-card border-2 border-black/10 dark:border-white/20 rounded-2xl text-sm font-bold focus:border-accent-blue focus:ring-0 outline-none transition-all dark:bg-black/20"
+                />
+              </div>
+              <div className="flex-1 overflow-y-auto rounded-2xl border-2 border-black/10 dark:border-white/20 p-2 space-y-1 bg-card/50">
+                {EXIT_DISCIPLINES.filter(d => d.label.toLowerCase().includes(searchQuery.toLowerCase())).map(d => (
+                  <button
+                    key={d.id}
+                    onClick={() => select(d.id, setStream)}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all ${stream === d.id ? 'bg-accent-blue/10 text-accent-blue' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300'}`}
+                  >
+                    {d.label}
+                  </button>
+                ))}
+                {EXIT_DISCIPLINES.filter(d => d.label.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                   <p className="text-center text-sm font-bold text-gray-400 mt-4">No departments found.</p>
+                )}
+              </div>
+            </div>
           </>
         )}
 
@@ -194,7 +219,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
               : 'bg-ground border-black/10 dark:border-white/20 text-gray-500 dark:text-gray-400 cursor-not-allowed'
           }`}
         >
-          {isSaving ? 'Saving...' : step === 1 && target === 'freshman' ? 'Get Started' : step >= 2 ? 'Finish Setup' : 'Continue'}
+          {isSaving ? 'Saving...' : step >= 2 ? 'Finish Setup' : 'Continue'}
           {!isSaving && <ChevronRight className="w-5 h-5" />}
         </button>
 

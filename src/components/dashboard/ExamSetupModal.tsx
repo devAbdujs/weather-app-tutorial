@@ -12,7 +12,9 @@ const G12_SUBJECTS: Record<string, { id: string; label: string }[]> = {
     { id: 'Biology',     label: 'Biology' },
     { id: 'Mathematics', label: 'Mathematics' },
     { id: 'English',     label: 'English' },
-    { id: 'Aptitude',    label: 'Aptitude / GAT' },
+    { id: 'Scholastic Aptitude (SAT)', label: 'Scholastic Aptitude (SAT)' },
+    { id: 'Civics & Citizenship', label: 'Civics & Citizenship' },
+    { id: 'Agriculture', label: 'Agriculture' },
   ],
   'Social Science': [
     { id: 'Geography',   label: 'Geography' },
@@ -20,26 +22,41 @@ const G12_SUBJECTS: Record<string, { id: string; label: string }[]> = {
     { id: 'Economics',   label: 'Economics' },
     { id: 'Mathematics', label: 'Mathematics' },
     { id: 'English',     label: 'English' },
-    { id: 'Aptitude',    label: 'Aptitude / GAT' },
+    { id: 'Scholastic Aptitude (SAT)', label: 'Scholastic Aptitude (SAT)' },
+    { id: 'Civics & Citizenship', label: 'Civics & Citizenship' },
+    { id: 'Agriculture', label: 'Agriculture' },
   ],
 };
 
-const FRESHMAN_COURSES = [
-  { id: 'Logic',       label: 'Logic & Critical Thinking' },
-  { id: 'English',     label: 'Communicative English' },
-  { id: 'Psychology',  label: 'General Psychology' },
-  { id: 'Mathematics for Natural Sciences', label: 'Mathematics' },
-  { id: 'Geography',   label: 'Geography of Ethiopia' },
-  { id: 'Economics',   label: 'Economics' },
-  { id: 'Civics',      label: 'Moral & Civics' },
-  { id: 'History',     label: 'History of Ethiopia' },
-  { id: 'Physics',     label: 'General Physics' },
-  { id: 'Emerging Technology', label: 'Emerging Technology' },
-  { id: 'Global Trends', label: 'Global Trends' },
-  { id: 'Inclusiveness', label: 'Inclusiveness' },
-  { id: 'Entrepreneurship', label: 'Entrepreneurship' },
-  { id: 'Anthropology', label: 'Social Anthropology' },
-];
+const FRESHMAN_COURSES: Record<string, { id: string; label: string }[]> = {
+  'Natural Science': [
+    { id: 'Logic',       label: 'Logic & Critical Thinking' },
+    { id: 'English',     label: 'Communicative English' },
+    { id: 'Psychology',  label: 'General Psychology' },
+    { id: 'Mathematics for Natural Sciences', label: 'Mathematics for Natural Sciences' },
+    { id: 'Applied Math I', label: 'Applied Math I' },
+    { id: 'Civics',      label: 'Moral & Civics' },
+    { id: 'Physics',     label: 'General Physics' },
+    { id: 'Emerging Technology', label: 'Emerging Technology' },
+    { id: 'Global Trends', label: 'Global Trends' },
+    { id: 'Inclusiveness', label: 'Inclusiveness' },
+    { id: 'Entrepreneurship', label: 'Entrepreneurship' },
+  ],
+  'Social Science': [
+    { id: 'Logic',       label: 'Logic & Critical Thinking' },
+    { id: 'English',     label: 'Communicative English' },
+    { id: 'Psychology',  label: 'General Psychology' },
+    { id: 'Geography',   label: 'Geography of Ethiopia' },
+    { id: 'Economics',   label: 'Economics' },
+    { id: 'Civics',      label: 'Moral & Civics' },
+    { id: 'History',     label: 'History of Ethiopia' },
+    { id: 'Emerging Technology', label: 'Emerging Technology' },
+    { id: 'Global Trends', label: 'Global Trends' },
+    { id: 'Inclusiveness', label: 'Inclusiveness' },
+    { id: 'Entrepreneurship', label: 'Entrepreneurship' },
+    { id: 'Anthropology', label: 'Social Anthropology' },
+  ]
+};
 
 export const ExamSetupModal: React.FC = () => {
   const { haptic } = useTelegram();
@@ -56,6 +73,7 @@ export const ExamSetupModal: React.FC = () => {
   const profileStream = userProfile?.stream || '';
 
   const g12Subjects = G12_SUBJECTS[profileStream] || [];
+  const freshmanSubjects = FRESHMAN_COURSES[profileStream] || FRESHMAN_COURSES['Natural Science'] || [];
   const isFreshman  = targetExam === 'freshman';
   const isExit      = targetExam === 'exit';
   const isG12       = targetExam === 'entrance';
@@ -64,7 +82,7 @@ export const ExamSetupModal: React.FC = () => {
     if (setupModalType === 'flashcards') return 'Biology';
     if (setupModalType === 'notes')      return 'All';
     if (isG12)      return g12Subjects[0]?.id || 'Physics';
-    if (isFreshman) return FRESHMAN_COURSES[0].id;
+    if (isFreshman) return freshmanSubjects[0]?.id || 'English';
     if (isExit)     return profileStream;
     return 'Physics';
   };
@@ -162,7 +180,7 @@ export const ExamSetupModal: React.FC = () => {
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Course</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {FRESHMAN_COURSES.map((s) => (
+                    {freshmanSubjects.map((s) => (
                       <button key={s.id} type="button" onClick={() => { haptic.selection(); setSubject(s.id); }}
                         className={`px-3 py-2.5 rounded-[12px] border-2 text-sm font-bold transition-all text-left ${subject === s.id ? 'bg-primary text-card border-primary' : 'bg-card text-gray-600 dark:text-gray-400 border-black/10 dark:border-white/20 hover:border-black/20 dark:hover:border-white/30'}`}
                       >{s.label}</button>
@@ -223,7 +241,7 @@ export const ExamSetupModal: React.FC = () => {
                 <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Choose Subject</label>
                 <div className="grid grid-cols-2 gap-2">
                   {(isFreshman
-                    ? [{ id: 'All', label: '📚 All Mixed' }, ...FRESHMAN_COURSES]
+                    ? [{ id: 'All', label: '📚 All Mixed' }, ...freshmanSubjects]
                     : isExit
                     ? [{ id: profileStream, label: `📚 ${profileStream}` }]
                     : [
@@ -271,7 +289,7 @@ export const ExamSetupModal: React.FC = () => {
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Course Notes</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {FRESHMAN_COURSES.map((s) => (
+                    {freshmanSubjects.map((s) => (
                       <button key={s.id} type="button" onClick={() => { haptic.selection(); setSubject(s.id); }}
                         className={`px-3 py-2.5 rounded-[12px] border-2 text-sm font-bold transition-all text-left ${subject === s.id ? 'bg-primary text-card border-primary' : 'bg-card text-gray-600 dark:text-gray-400 border-black/10 dark:border-white/20'}`}
                       >{s.label}</button>
