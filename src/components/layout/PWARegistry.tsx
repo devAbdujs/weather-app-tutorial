@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { syncOfflineSubmissions } from '@/utils/offlineSync';
 import { toast } from 'sonner';
 import { X, Download } from 'lucide-react';
 
 export function PWARegistry() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const hasPrompted = useRef(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -26,6 +27,10 @@ export function PWARegistry() {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
+      
+      // Prevent multiple timeouts if the event fires multiple times on navigation
+      if (hasPrompted.current) return;
+      hasPrompted.current = true;
       
       setTimeout(() => {
         toast.custom((t) => (
@@ -61,7 +66,8 @@ export function PWARegistry() {
              </button>
           </div>
         ), { 
-          duration: Infinity // Will never auto-close
+          id: 'pwa-install-prompt', // Forces sonner to reuse this toast instead of stacking
+          duration: Infinity 
         });
       }, 8000);
     };
