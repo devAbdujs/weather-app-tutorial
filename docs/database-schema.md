@@ -207,3 +207,12 @@ otp_codes       (standalone — issued by Telegram bot)
 admin_users     (standalone — separate auth system)
 flashcards      (standalone — seeded from CSV data)
 ```
+
+---
+
+## Security & Row Level Security (RLS)
+
+As of September 2026, the entire database is locked down with PostgreSQL Row Level Security (RLS). 
+
+- **Read Operations (`SELECT`):** Only non-sensitive public tables like `questions`, `study_notes`, and `flashcards` have an RLS policy explicitly allowing `anon` select.
+- **Write Operations (`INSERT`/`UPDATE`/`DELETE`):** Absolutely no tables allow direct writes from the `anon` or `authenticated` roles. All mutations must occur securely on the backend (Next.js Server Actions or API routes) using the Supabase Service Role key, which safely bypasses RLS after validating the `es_session` cookie.
