@@ -48,7 +48,7 @@ export default async function ExamSessionPage({ searchParams }: PageProps) {
   }
 
   const { data, error } = await query.range(sessionOffset, sessionOffset + sessionSize - 1);
-  const initialQuestions = (data || []) as Question[];
+  const initialQuestions = (data || []) as unknown as Question[];
 
   if (initialQuestions.length === 0) {
     const redirectUrl = new URLSearchParams({

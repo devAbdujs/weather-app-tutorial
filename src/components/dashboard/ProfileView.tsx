@@ -12,7 +12,7 @@ import { WelcomeOnboarding } from './WelcomeOnboarding';
 export const ProfileView = ({ profile, stats }: { profile: any, stats: any[] }) => {
   const router = useRouter();
   const { haptic, isTelegram } = useTelegram();
-  const updateProfile = useAppStore(s => s.updateProfile);
+  const updateProfile = useAppStore(s => s.setUserProfile);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isChangingExam, setIsChangingExam] = useState(false);
   const [devClicks, setDevClicks] = useState(0);

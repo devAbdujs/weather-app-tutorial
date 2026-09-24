@@ -109,7 +109,7 @@ export function useTelegram() {
 
   const setHeaderColor = useCallback((color: string) => {
     try {
-      WebApp.setHeaderColor?.(color);
+      WebApp.setHeaderColor?.(color as any);
     } catch (e) {}
   }, []);
 

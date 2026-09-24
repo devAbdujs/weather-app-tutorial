@@ -545,7 +545,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           {/* Floating Context Panel */}
           <div className="absolute bottom-8 left-4 right-4 bg-black/60 backdrop-blur-2xl border border-white/20 p-5 rounded-[24px] shadow-2xl max-h-[25vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <p className="text-white text-[15px] font-medium leading-relaxed">
-              {questions[currentIndex]?.question_text}
+              {questions[currentIndex]?.question}
             </p>
           </div>
         </div>

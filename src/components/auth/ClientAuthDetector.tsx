@@ -31,7 +31,7 @@ export const ClientAuthDetector: React.FC = () => {
     };
 
     const checkTelegram = () => {
-      const tg = typeof window !== 'undefined' ? window.Telegram?.WebApp : null;
+      const tg = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp : null;
 
       if (tg && tg.initData) {
         // We're definitively inside the Telegram app — authenticate immediately
@@ -75,7 +75,8 @@ export const ClientAuthDetector: React.FC = () => {
 
   // Render the marketing Landing Page for unauthenticated Web users
   return (
-    <LandingPage onLogin={async (webData) => {
+    <LandingPage />
+      {false && (
       const res = await fetch('/api/auth/session', { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' },
