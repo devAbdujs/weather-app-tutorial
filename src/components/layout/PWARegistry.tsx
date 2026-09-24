@@ -28,48 +28,50 @@ export function PWARegistry() {
       e.preventDefault();
       setDeferredPrompt(e);
       
-      // Prevent multiple timeouts if the event fires multiple times on navigation
       if (hasPrompted.current) return;
       hasPrompted.current = true;
       
+      // Changed to 5 seconds per user request
       setTimeout(() => {
         toast.custom((t) => (
-          <div className="bg-card dark:bg-card border border-black/5 dark:border-white/10 shadow-2xl p-4 rounded-[20px] flex flex-col gap-3 w-full max-w-[356px] pointer-events-auto">
-             <div className="flex justify-between items-start">
-                <div>
-                   <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">Install Temari App</h3>
-                   <p className="text-[13px] text-gray-500 dark:text-gray-400 font-medium mt-1 leading-relaxed">
-                     Get faster access, full screen mode, and offline notes directly on your home screen.
-                   </p>
+          <div className="bg-card dark:bg-card border border-black/5 dark:border-white/10 shadow-xl p-2.5 rounded-[16px] flex items-center justify-between w-[320px] pointer-events-auto">
+             <div className="flex items-center gap-3 pl-1">
+                <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                  <Download className="w-4 h-4 text-primary" />
                 </div>
+                <div className="flex flex-col">
+                   <span className="font-bold text-sm text-gray-900 dark:text-gray-100">Install Temari</span>
+                   <span className="text-[11px] text-gray-500 font-medium">Faster & Offline</span>
+                </div>
+             </div>
+             <div className="flex items-center gap-1.5 pr-1">
+                <button 
+                  onClick={() => { 
+                    toast.dismiss(t);
+                    (e as any).prompt();
+                    (e as any).userChoice.then((choiceResult: any) => {
+                      if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the A2HS prompt');
+                      }
+                    });
+                  }} 
+                  className="bg-primary text-white text-xs font-bold px-4 py-2 rounded-xl active:scale-95 transition-all shadow-sm shadow-primary/20"
+                >
+                  Install
+                </button>
                 <button 
                   onClick={() => toast.dismiss(t)} 
-                  className="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-full transition-all active:scale-95"
+                  className="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-full transition-all active:scale-95"
                 >
                   <X className="w-4 h-4"/>
                 </button>
              </div>
-             <button 
-                onClick={() => { 
-                  toast.dismiss(t);
-                  (e as any).prompt();
-                  (e as any).userChoice.then((choiceResult: any) => {
-                    if (choiceResult.outcome === 'accepted') {
-                      console.log('User accepted the A2HS prompt');
-                    }
-                  });
-                }} 
-                className="bg-primary text-white font-bold h-11 rounded-xl w-full flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-sm shadow-primary/20 hover:bg-primary/90 mt-1"
-             >
-                <Download className="w-4 h-4" />
-                Install Now
-             </button>
           </div>
         ), { 
-          id: 'pwa-install-prompt', // Forces sonner to reuse this toast instead of stacking
+          id: 'pwa-install-prompt',
           duration: Infinity 
         });
-      }, 8000);
+      }, 5000);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
