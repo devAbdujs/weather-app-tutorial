@@ -40,7 +40,7 @@ export const HomeHub: React.FC = () => {
       const year = searchParams.get('year');
       toast.error(`We are still working on adding past papers for ${subject}${year && year !== 'any' ? ' (' + year + ')' : ''}. Try another combination!`);
       // Clean up the URL
-      router.replace('/', { scroll: false });
+      router.replace('/dashboard', { scroll: false });
     }
   }, [searchParams, router]);
 

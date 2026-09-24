@@ -16,7 +16,7 @@ export default function NotFound() {
           The page you are looking for doesn't exist or has been moved.
         </p>
         <Link
-          href="/"
+          href="/dashboard"
           className="w-full h-14 bg-primary text-white rounded-[16px] font-bold shadow-md active:scale-[0.98] active:opacity-80 transition-transform flex items-center justify-center gap-2"
         >
           <Home className="w-4 h-4" />

@@ -18,7 +18,7 @@ export const BottomNav = () => {
   if (isFocusMode) return null;
 
   const navItems = [
-    { name: 'Home',     href: '/',         icon: Home      },
+    { name: 'Home',     href: '/dashboard',         icon: Home      },
     { name: 'Practice', href: '/practice', icon: BookOpen  },
     { name: 'Progress', href: '/mastery',  icon: BarChart2 },
     { name: 'Profile',  href: '/profile',  icon: User      },

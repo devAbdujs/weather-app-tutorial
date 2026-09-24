@@ -38,7 +38,6 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-import { PWARegistry } from '@/components/layout/PWARegistry';
 import { Suspense } from 'react';
 import Loading from './loading';
 import { Analytics } from "@vercel/analytics/next";
@@ -77,7 +76,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${geistSans.variable} font-sans bg-ground text-gray-900 dark:text-gray-100 min-h-screen antialiased overscroll-none`}>
         <Toaster position="top-center" toastOptions={{ className: 'font-sans font-bold shadow-2xl rounded-2xl border-none' }} />
-        <PWARegistry />
         <Suspense fallback={<Loading />}>
           {children}
         </Suspense>
