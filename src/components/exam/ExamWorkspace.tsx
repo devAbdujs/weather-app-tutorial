@@ -2,7 +2,7 @@
 'use client';
 
 import { toast } from "sonner";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, Flag, Grid, Sparkles, CheckCircle2, XCircle, Bookmark, Award, X, Lock, Lightbulb, Clock, Maximize2 } from 'lucide-react';
 import { Question } from '@/types';
 import Image from 'next/image';
@@ -186,7 +186,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     }
   };
 
-  const handleFinish = async () => {
+  const handleFinish = useCallback(async () => {
     setIsFinished(true);
     const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
     setTimeSpentSeconds(elapsed);
@@ -231,7 +231,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         console.error("Error saving exam stats:", err);
       }
     }
-  };
+  }, [hasRecordedCompletion, user?.id, questions, selectedAnswers, subject]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });

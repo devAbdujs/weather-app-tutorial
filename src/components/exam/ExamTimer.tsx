@@ -31,8 +31,7 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({ initialSeconds, isPaused, 
     }, 1000);
 
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPaused, onTimeUp]); // Intentional: Do NOT include secondsLeft or it recreates endTime every second
+  }, [isPaused, onTimeUp]); // onTimeUp is stable because it's wrapped in useCallback in ExamWorkspace
 
   return (
     <div className={`px-3 py-1.5 rounded-[12px] text-sm font-black tabular-nums border-2 transition-all ${
