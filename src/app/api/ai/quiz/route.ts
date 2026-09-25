@@ -41,9 +41,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'noteText is required' }, { status: 400 });
     }
 
-    // Auth context
+    // SUBSCRIPTION GATE: Only premium users can generate AI quizzes from notes
     const supabase = await createClient();
-    await supabase.auth.getUser();
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('subscription_status')
+      .eq('telegram_id', session.telegram_id)
+      .maybeSingle();
+
+    if (!profile || profile.subscription_status !== 'premium') {
+      return NextResponse.json(
+        { error: 'upgrade_required', message: 'AI Quiz generation is a premium feature. Upgrade to access it.' },
+        { status: 403 }
+      );
+    }
 
     const systemPrompt = `You are an elite, highly rigorous university examiner in Ethiopia.
 Your task is to generate exactly 3 conceptual multiple-choice questions based on the provided textbook chapter.

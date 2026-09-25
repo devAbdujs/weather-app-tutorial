@@ -99,26 +99,31 @@ export async function POST(req: NextRequest) {
 
     const payload = result.data;
     const isFollowUpChat = payload.chatHistory && payload.chatHistory.length > 0;
-    
-    // 1. FAST PATH: Check the Cache (Only for standard single-turn prompts like hint, eli5, explain)
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
 
+    // 1. SUBSCRIPTION GATE: Fetch profile — check premium status AND build context in one query
     let profileContext = '';
     try {
       const { data: profile } = await supabaseAdmin
         .from('profiles')
-        .select('target_exam, stream')
+        .select('target_exam, stream, subscription_status')
         .eq('telegram_id', session.telegram_id)
         .maybeSingle();
 
-      if (profile) {
-        if (profile.target_exam === 'entrance') profileContext = `Student Profile: Grade 12 (${profile.stream} track)`;
-        else if (profile.target_exam === 'freshman') profileContext = `Student Profile: University Freshman (${profile.stream} track)`;
-        else if (profile.target_exam === 'exit') profileContext = `Student Profile: University Exit Exam (${profile.stream} department)`;
+      // Block free users from accessing the AI Tutor
+      if (!profile || profile.subscription_status !== 'premium') {
+        return new Response(
+          JSON.stringify({ error: 'upgrade_required', message: 'AI Tutor is a premium feature. Upgrade to access it.' }),
+          { status: 403 }
+        );
       }
+
+      if (profile.target_exam === 'entrance') profileContext = `Student Profile: Grade 12 (${profile.stream} track)`;
+      else if (profile.target_exam === 'freshman') profileContext = `Student Profile: University Freshman (${profile.stream} track)`;
+      else if (profile.target_exam === 'exit') profileContext = `Student Profile: University Exit Exam (${profile.stream} department)`;
     } catch (e) {
       console.error('[AI Profile Error]', e);
     }

@@ -110,6 +110,15 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
       });
 
       if (!res.ok) {
+        // Special handling for free users hitting the paywall
+        if (res.status === 403) {
+          setMessages(prev => prev.map(m => m.id === assistantMsgId ? { 
+            ...m, 
+            content: '🔒 **AI Tutor is a Premium Feature**\n\nUpgrade your account to unlock unlimited access to Mr. Helper, AI-generated quizzes, and Amharic explanations.\n\n👉 Go to your **Profile → Upgrade** to unlock premium for just **199 ETB/term**.'
+          } : m));
+          setIsLoading(false);
+          return;
+        }
         let errMessage = 'Failed to get AI response';
         try {
           const errData = await res.json();
