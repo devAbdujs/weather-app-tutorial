@@ -67,3 +67,11 @@ export interface SavedMistake {
   question_id: string;
   created_at: string;
 }
+
+declare global {
+  interface Window {
+    Telegram?: {
+      WebApp?: any;
+    };
+  }
+}

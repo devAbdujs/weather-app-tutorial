@@ -13,6 +13,7 @@ export const BottomNav = () => {
     pathname.startsWith('/exam/') ||
     pathname.startsWith('/notebook/') ||
     pathname.startsWith('/notes/') ||
+    pathname.startsWith('/flashcards/') ||
     pathname.startsWith('/practice/sessions');
 
   if (isFocusMode) return null;

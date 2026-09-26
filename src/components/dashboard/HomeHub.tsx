@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from 'react';
-import { BookOpen, Flame, FileText, BookMarked, ArrowRight, Target, Sparkles, RefreshCw } from 'lucide-react';
+import { BookOpen, Flame, FileText, BookMarked, ArrowRight, Target, Sparkles, RefreshCw, Zap } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { WelcomeOnboarding } from './WelcomeOnboarding';
 import { updateDailyStreak } from '@/app/actions/user';
@@ -217,27 +217,38 @@ export const HomeHub: React.FC = () => {
         )}
 
         {/* ── QUICK ACTIONS ── */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-2.5">
           <button
             onClick={() => { haptic.impact('medium'); router.push('/practice?mode=notes'); }}
-            className="group bg-card dark:bg-card p-5 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.96] transition-all text-left"
+            className="group bg-card dark:bg-card p-4 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.96] transition-all text-left"
           >
-            <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-[12px] flex items-center justify-center mb-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
-              <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="w-9 h-9 bg-blue-50 dark:bg-blue-900/30 rounded-[12px] flex items-center justify-center mb-2.5 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
+              <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="text-[14px] font-black text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
-            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 mt-0.5">AI summaries</p>
+            <h3 className="text-[13px] font-black text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
+            <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 mt-0.5 truncate">Summaries</p>
+          </button>
+
+          <button
+            onClick={() => { haptic.impact('medium'); router.push('/practice?mode=flashcards'); }}
+            className="group bg-card dark:bg-card p-4 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.96] transition-all text-left"
+          >
+            <div className="w-9 h-9 bg-amber-50 dark:bg-amber-900/30 rounded-[12px] flex items-center justify-center mb-2.5 group-hover:bg-amber-100 dark:group-hover:bg-amber-900/50 transition-colors">
+              <Zap className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            </div>
+            <h3 className="text-[13px] font-black text-gray-900 dark:text-gray-100 leading-tight">Flashcards</h3>
+            <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 mt-0.5 truncate">Swipe cards</p>
           </button>
 
           <button
             onClick={() => { haptic.impact('medium'); router.push('/notebook/All'); }}
-            className="group bg-card dark:bg-card p-5 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.96] transition-all text-left"
+            className="group bg-card dark:bg-card p-4 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.96] transition-all text-left"
           >
-            <div className="w-10 h-10 bg-violet-50 dark:bg-violet-900/30 rounded-[12px] flex items-center justify-center mb-3 group-hover:bg-violet-100 dark:group-hover:bg-violet-900/50 transition-colors">
-              <BookMarked className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+            <div className="w-9 h-9 bg-violet-50 dark:bg-violet-900/30 rounded-[12px] flex items-center justify-center mb-2.5 group-hover:bg-violet-100 dark:group-hover:bg-violet-900/50 transition-colors">
+              <BookMarked className="w-4 h-4 text-violet-600 dark:text-violet-400" />
             </div>
-            <h3 className="text-[14px] font-black text-gray-900 dark:text-gray-100 leading-tight">My Notebook</h3>
-            <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 mt-0.5">Saved questions</p>
+            <h3 className="text-[13px] font-black text-gray-900 dark:text-gray-100 leading-tight">Notebook</h3>
+            <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 mt-0.5 truncate">Saved Qs</p>
           </button>
         </div>
 

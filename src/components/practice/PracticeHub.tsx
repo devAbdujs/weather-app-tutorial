@@ -119,6 +119,8 @@ export const PracticeHub = () => {
     if (mode === 'notes') {
       const p = new URLSearchParams({ examType });
       router.push(`/notes/${encodeURIComponent(params.subject)}?${p.toString()}`);
+    } else if (mode === 'flashcards') {
+      router.push(`/flashcards/${encodeURIComponent(params.subject)}`);
     } else {
       const p = new URLSearchParams({ examType, ...params });
       router.push(`/practice/sessions?${p.toString()}`);
@@ -132,16 +134,19 @@ export const PracticeHub = () => {
     return 'Practice';
   };
 
+  const pageTitle = mode === 'notes' ? 'Short Notes' : mode === 'flashcards' ? 'Flashcards' : 'Practice';
+  const pageSubtitle = mode === 'notes' ? 'Choose a subject to study' : mode === 'flashcards' ? 'Swipeable concept review' : examTypeLabel();
+
   return (
     <div className="flex flex-col pt-safe pb-8 animate-fade-in">
 
       {/* ── PAGE HEADER ── */}
       <div className="px-5 pt-3 pb-2 mb-4">
         <h1 className="text-[28px] font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none">
-          {mode === 'notes' ? 'Short Notes' : 'Practice'}
+          {pageTitle}
         </h1>
         <p className="text-[13px] font-bold text-gray-500 dark:text-gray-400 mt-1">
-          {mode === 'notes' ? 'Choose a subject to study' : examTypeLabel()}
+          {pageSubtitle}
         </p>
       </div>
 
