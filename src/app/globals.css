@@ -13,9 +13,10 @@
   --border-strong: hsla(222, 47%, 11%, 0.12);
 
   /* Brand: Bespoke Deep Indigo — single accent, used sparingly */
-  --primary:       hsl(224, 64%, 33%);
-  --primary-rgb:   30, 58, 138;
-  --accent:        hsl(43, 92%, 52%);
+  --primary:            hsl(224, 64%, 33%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --primary-rgb:        30, 58, 138;
+  --accent:             hsl(43, 92%, 52%);
 
   /* Text hierarchy — avoids pure #000/#fff halation */
   --text-primary:  hsl(222, 47%, 11%);
@@ -38,9 +39,10 @@
   --border-strong: hsla(0, 0%, 100%, 0.14);
 
   /* Dark mode primary: desaturated — colors feel more intense on dark bg */
-  --primary:       hsl(213, 60%, 58%);
-  --primary-rgb:   54, 117, 212;
-  --accent:        hsl(43, 65%, 54%);   /* Desaturated gold for dark bg */
+  --primary:            hsl(213, 60%, 58%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --primary-rgb:        54, 117, 212;
+  --accent:             hsl(43, 65%, 54%);   /* Desaturated gold for dark bg */
 
   --text-primary:  hsl(213, 31%, 95%);
   --text-secondary:hsl(215, 14%, 63%);

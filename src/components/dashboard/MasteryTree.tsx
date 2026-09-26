@@ -458,7 +458,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                     haptic.impact('medium');
                     router.push('/practice');
                   }}
-                  className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold shrink-0 hover:bg-primary/95 active:scale-[0.98] transition-all shadow-sm flex items-center gap-1"
+                  className="px-3.5 py-2 rounded-xl bg-primary text-white text-xs font-bold shrink-0 hover:bg-primary/95 active:scale-[0.98] transition-all shadow-sm flex items-center gap-1"
                 >
                   <span>Practice</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -512,16 +512,16 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
           </h2>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1 bg-card border border-black/[0.06] dark:border-white/[0.08] p-0.5 rounded-xl shadow-bespoke-sm">
+          <div className="flex items-center gap-1 bg-ground border border-black/[0.06] dark:border-white/[0.08] p-1 rounded-xl">
             <button
               onClick={() => {
                 haptic.selection();
                 setFilterMode('all');
               }}
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                 filterMode === 'all'
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-foreground'
+                  ? 'bg-card text-gray-900 dark:text-gray-100 shadow-bespoke-sm border border-black/[0.06] dark:border-white/[0.08]'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-gray-100'
               }`}
             >
               All
@@ -531,10 +531,10 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                 haptic.selection();
                 setFilterMode('needs_practice');
               }}
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                 filterMode === 'needs_practice'
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-foreground'
+                  ? 'bg-card text-gray-900 dark:text-gray-100 shadow-bespoke-sm border border-black/[0.06] dark:border-white/[0.08]'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-gray-100'
               }`}
             >
               Needs Work
@@ -544,10 +544,10 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                 haptic.selection();
                 setFilterMode('strong');
               }}
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                 filterMode === 'strong'
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-foreground'
+                  ? 'bg-card text-gray-900 dark:text-gray-100 shadow-bespoke-sm border border-black/[0.06] dark:border-white/[0.08]'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-gray-100'
               }`}
             >
               Strong
@@ -665,7 +665,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
               haptic.impact('medium');
               router.push('/practice');
             }}
-            className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-bespoke-sm active:scale-95 transition-all"
+            className="px-6 py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-bespoke-sm active:scale-95 transition-all"
           >
             Start Practicing
           </button>

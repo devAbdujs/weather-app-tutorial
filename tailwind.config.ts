@@ -17,6 +17,7 @@ const config: Config = {
 
         /* ── Brand — one accent, used sparingly ── */
         primary: "var(--primary)",
+        "primary-foreground": "var(--primary-foreground, #ffffff)",
         accent:  "hsl(43, 78%, 50%)",  /* Warm gold — slightly desaturated */
 
         /* ── Semantic accent palette — desaturated, bespoke ── */
