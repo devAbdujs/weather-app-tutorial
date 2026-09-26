@@ -20,10 +20,10 @@ export default async function ManagersPage() {
         {/* Admin List */}
         <div className="md:col-span-2 space-y-4">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Active Accounts</h2>
-          <div className="bg-card border-2 border-primary/10 rounded-3xl shadow-sm overflow-hidden">
+          <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl shadow-bespoke-sm overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-ground/50 border-b-2 border-primary/10">
+                <tr className="bg-ground/50 border-b border-black/[0.06] dark:border-white/[0.08]">
                   <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Username</th>
                   <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Role</th>
                   <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Created</th>
@@ -31,15 +31,15 @@ export default async function ManagersPage() {
               </thead>
               <tbody>
                 {admins.map((a: any) => (
-                  <tr key={a.id} className="border-b border-primary/5 hover:bg-ground/50 transition-colors">
+                  <tr key={a.id} className="border-b border-black/[0.04] dark:border-white/[0.04] hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors">
                     <td className="p-4 font-bold text-gray-900 dark:text-gray-100">@{a.username}</td>
                     <td className="p-4">
-                      <span className={`px-2 py-1 rounded-lg text-xs font-bold border ${
-                        a.role === 'superadmin' ? 'bg-accent-rose/10 text-accent-rose border-accent-rose/20' : 
-                        a.role === 'editor' ? 'bg-accent-emerald/10 text-accent-emerald border-accent-emerald/20' : 
-                        'bg-tertiary/10 text-gray-500 dark:text-gray-400 border-tertiary/20'
+                      <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border uppercase tracking-wider ${
+                        a.role === 'superadmin' ? 'bg-accent/15 text-accent border-accent/30' : 
+                        a.role === 'editor' ? 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] border-[hsl(145,42%,38%)]/20' : 
+                        'bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-400 border-black/[0.06] dark:border-white/[0.08]'
                       }`}>
-                        {a.role.toUpperCase()}
+                        {a.role}
                       </span>
                     </td>
                     <td className="p-4 text-sm font-medium text-gray-600 dark:text-gray-400">

@@ -55,13 +55,13 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
 
   if (serverError) {
     return (
-      <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-          <span className="text-3xl">⚠️</span>
+      <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+        <div className="w-16 h-16 bg-error/10 border border-error/20 rounded-full flex items-center justify-center mb-4">
+          <span className="text-2xl">⚠️</span>
         </div>
         <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Error Loading Session</h2>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">{serverError}</p>
-        <button onClick={() => router.back()} className="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-sm active:scale-[0.98] active:opacity-80 transition-all">
+        <button onClick={() => router.back()} className="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke">
           Go Back
         </button>
       </div>
@@ -71,11 +71,11 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
   // If server returned no questions and we are done syncing (meaning cache was also empty)
   if (activeQuestions.length === 0 && !isSyncing) {
     return (
-      <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6 text-center animate-fade-in">
         <span className="text-4xl mb-4">📭</span>
         <h2 className="text-xl font-black text-gray-900 dark:text-gray-100">Session Empty</h2>
-        <p className="text-sm font-bold text-gray-500 dark:text-gray-400 mt-2">No questions available for this session slice.</p>
-        <button onClick={() => router.back()} className="mt-8 px-8 h-12 bg-primary text-card rounded-[14px] font-bold shadow-md active:scale-[0.98] active:opacity-80 transition-all">
+        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">No questions available for this session slice.</p>
+        <button onClick={() => router.back()} className="mt-8 px-8 h-12 bg-primary text-white rounded-[14px] font-bold shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke">
           Go Back
         </button>
       </div>

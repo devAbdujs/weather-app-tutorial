@@ -47,17 +47,19 @@ export default function AdminUploadNotes() {
 
   return (
     <div>
-      <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 mb-6 tracking-tight">Upload Short Note</h1>
-      <p className="text-gray-500 dark:text-gray-400 mb-8 font-medium">Paste raw markdown generated from NotebookLM to insert directly into the database.</p>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">Upload Short Note</h1>
+        <p className="text-sm text-muted font-medium mt-1">Paste raw markdown generated from NotebookLM to insert directly into the database.</p>
+      </div>
       
-      <div className="bg-card border-2 border-primary/10 rounded-3xl p-8 shadow-sm max-w-4xl">
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-6">
+      <div className="bg-card border border-border/80 rounded-2xl p-6 sm:p-8 shadow-bespoke-sm max-w-4xl">
+        <div className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold mb-2 text-gray-600 dark:text-gray-400">Exam Type</label>
+              <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Exam Type</label>
               <select 
                 value={examType} onChange={(e) => setExamType(e.target.value)}
-                className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold focus:border-primary focus:outline-none transition-colors"
+                className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-medium text-foreground text-sm focus:border-primary/60 focus:ring-2 focus:ring-primary/15 transition-all outline-none cursor-pointer"
               >
                 <option value="freshman">University Freshman</option>
                 <option value="entrance">Grade 12 EUEE</option>
@@ -65,42 +67,42 @@ export default function AdminUploadNotes() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-bold mb-2 text-gray-600 dark:text-gray-400">Course / Department</label>
+              <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Course / Department</label>
               <input 
                 type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
                 placeholder="e.g. Applied Mathematics I"
-                className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold focus:border-primary focus:outline-none transition-colors"
+                className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-medium text-foreground text-sm focus:border-primary/60 focus:ring-2 focus:ring-primary/15 transition-all outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-2 text-gray-600 dark:text-gray-400">Chapter Title</label>
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Chapter Title</label>
             <input 
               type="text" value={title} onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Chapter 1: Limits and Continuity"
-              className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground font-bold focus:border-primary focus:outline-none transition-colors"
+              className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-medium text-foreground text-sm focus:border-primary/60 focus:ring-2 focus:ring-primary/15 transition-all outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-2 text-gray-600 dark:text-gray-400">NotebookLM Markdown</label>
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">NotebookLM Markdown</label>
             <textarea 
               value={content} onChange={(e) => setContent(e.target.value)}
               placeholder="Paste raw markdown here..."
-              className="w-full p-4 border-2 border-primary/20 rounded-xl bg-ground h-96 font-mono text-sm focus:border-primary focus:outline-none transition-colors"
+              className="w-full p-4 border border-border rounded-xl bg-ground h-96 font-mono text-xs sm:text-sm text-foreground focus:border-primary/60 focus:ring-2 focus:ring-primary/15 transition-all outline-none leading-relaxed"
             />
           </div>
 
           <button 
             onClick={handleUpload} disabled={loading}
-            className="w-full py-5 bg-primary text-white font-black rounded-xl border-b-4 border-black/20 dark:border-white/30 active:border-b-0 active:translate-y-1 transition-all disabled:opacity-50"
+            className="w-full py-3 bg-primary text-primary-foreground font-semibold text-sm rounded-xl hover:bg-primary/95 shadow-bespoke-sm active:scale-[0.99] transition-all duration-200 ease-bespoke disabled:opacity-50"
           >
-            {loading ? 'UPLOADING...' : 'SAVE TO DATABASE'}
+            {loading ? 'Uploading...' : 'Save to Database'}
           </button>
 
           {status && (
-            <div className={`p-4 font-bold rounded-xl text-center ${status.includes('✅') ? 'bg-accent-emerald/10 text-accent-emerald' : 'bg-error/10 text-error'}`}>
+            <div className={`p-3 text-xs font-semibold rounded-xl text-center border ${status.includes('✅') ? 'bg-success/10 text-success border-success/20' : 'bg-error/10 text-error border-error/20'}`}>
               {status}
             </div>
           )}

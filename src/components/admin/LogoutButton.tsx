@@ -11,9 +11,9 @@ export function LogoutButton() {
         await logoutAdmin();
         window.location.href = '/admin';
       }}
-      className="flex items-center gap-3 px-4 py-3 w-full rounded-xl hover:bg-error/20 text-error transition-colors font-bold text-sm"
+      className="flex items-center gap-3 px-4 py-2.5 w-full rounded-xl hover:bg-error/10 text-error transition-all duration-150 ease-bespoke font-medium text-sm"
     >
-      <LogOut className="w-5 h-5" />
+      <LogOut className="w-4 h-4" />
       Sign Out
     </button>
   );

@@ -273,7 +273,7 @@ export const LandingPage = () => {
         <p className="text-gray-500 font-medium mb-8">Join thousands of students learning smarter today.</p>
         <button
           onClick={handleTelegramOIDCLogin}
-          className="w-full max-w-[320px] h-14 bg-[#229ED9] rounded-2xl flex items-center justify-center gap-2.5 shadow-xl shadow-[#229ED9]/20 hover:bg-[#1E8CC0] active:scale-[0.98] transition-all"
+          className="w-full max-w-[320px] py-4 bg-[#229ED9] text-white rounded-2xl flex items-center justify-center gap-2.5 shadow-bespoke-md hover:shadow-bespoke-lg hover:bg-[#1E8CC0] active:scale-[0.98] transition-all duration-200 ease-bespoke"
         >
           <Send className="w-5 h-5 text-white" />
           <span className="text-[15px] font-bold text-white tracking-wide">Start Learning — Free</span>

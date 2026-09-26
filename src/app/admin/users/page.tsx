@@ -14,17 +14,17 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
           <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">User Management</h1>
           <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">View and manage all registered students.</p>
         </div>
-        <div className="bg-accent-blue/10 text-accent-blue px-4 py-2 rounded-xl font-bold flex items-center gap-2">
+        <div className="bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-xl font-bold flex items-center gap-2">
           <Users className="w-5 h-5" />
-          <span>{total} Total</span>
+          <span className="tabular-nums">{total} Total</span>
         </div>
       </header>
 
-      <div className="bg-card border-2 border-primary/10 rounded-3xl shadow-sm overflow-hidden flex flex-col">
+      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl shadow-bespoke-sm overflow-hidden flex flex-col">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-ground/50 border-b-2 border-primary/10">
+              <tr className="bg-ground/50 border-b border-black/[0.06] dark:border-white/[0.08]">
                 <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Student</th>
                 <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Target Exam</th>
                 <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Streak</th>
@@ -33,15 +33,15 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
             </thead>
             <tbody>
               {users.map((user: any) => (
-                <tr key={user.id} className="border-b border-primary/5 hover:bg-ground/50 transition-colors">
+                <tr key={user.id} className="border-b border-black/[0.04] dark:border-white/[0.04] hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-gray-900 dark:text-gray-100 font-bold">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
                         {user.full_name?.charAt(0).toUpperCase() || '?'}
                       </div>
                       <div>
                         <p className="font-bold text-gray-900 dark:text-gray-100">{user.full_name || 'Unknown'}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">@{user.username || user.telegram_id}</p>
+                        <p className="text-xs text-gray-400 font-mono">@{user.username || user.telegram_id}</p>
                       </div>
                     </div>
                   </td>
@@ -51,12 +51,12 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
                         {user.target_exam}
                       </span>
                     ) : (
-                      <span className="text-gray-500 dark:text-gray-400 text-sm">Not set</span>
+                      <span className="text-gray-400 text-xs">Not set</span>
                     )}
                   </td>
                   <td className="p-4">
-                    <div className="flex items-center gap-1.5 font-bold text-accent-gold">
-                      <Flame className="w-4 h-4 fill-accent-gold" />
+                    <div className="flex items-center gap-1.5 font-bold text-accent tabular-nums">
+                      <Flame className="w-4 h-4 fill-accent" />
                       {user.daily_streak || 0}
                     </div>
                   </td>
@@ -78,23 +78,23 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
         </div>
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between p-4 bg-ground/50 border-t-2 border-primary/10">
-            <span className="text-sm font-bold text-gray-500 dark:text-gray-400">
+          <div className="flex items-center justify-between p-4 bg-ground/50 border-t border-black/[0.06] dark:border-white/[0.08]">
+            <span className="text-sm font-bold text-gray-500 dark:text-gray-400 tabular-nums">
               Page {currentPage} of {totalPages}
             </span>
             <div className="flex gap-2">
               {currentPage > 1 ? (
-                <Link href={`/admin/users?page=${currentPage - 1}`} className="p-2 bg-card rounded-lg border border-primary/10 hover:bg-primary/5 transition-colors">
+                <Link href={`/admin/users?page=${currentPage - 1}`} className="p-2 bg-card rounded-lg border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/5 dark:hover:bg-white/5 transition-colors shadow-bespoke-sm">
                   <ChevronLeft className="w-5 h-5 text-gray-900 dark:text-gray-100" />
                 </Link>
               ) : (
-                <div className="p-2 bg-card/50 rounded-lg border border-primary/5 opacity-50 cursor-not-allowed">
-                  <ChevronLeft className="w-5 h-5 text-gray-500" />
+                <div className="p-2 bg-card/50 rounded-lg border border-black/[0.06] dark:border-white/[0.08] opacity-50 cursor-not-allowed">
+                  <ChevronLeft className="w-5 h-5 text-gray-400" />
                 </div>
               )}
               
               {currentPage < totalPages ? (
-                <Link href={`/admin/users?page=${currentPage + 1}`} className="p-2 bg-card rounded-lg border border-primary/10 hover:bg-primary/5 transition-colors">
+                <Link href={`/admin/users?page=${currentPage + 1}`} className="p-2 bg-card rounded-lg border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/5 dark:hover:bg-white/5 transition-colors shadow-bespoke-sm">
                   <ChevronRight className="w-5 h-5 text-gray-900 dark:text-gray-100" />
                 </Link>
               ) : (

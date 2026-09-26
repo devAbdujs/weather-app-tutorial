@@ -100,7 +100,7 @@ export default async function AdminDashboard() {
 
           <div className="p-4 rounded-2xl bg-ground/50 border border-primary/10">
             <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-              <Sparkles className="w-4 h-4 text-accent-blue" />
+              <Sparkles className="w-4 h-4 text-primary" />
               <span>Weekly Inquiries</span>
             </div>
             <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
@@ -113,13 +113,13 @@ export default async function AdminDashboard() {
 
           <div className="p-4 rounded-2xl bg-ground/50 border border-primary/10">
             <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-              <Database className="w-4 h-4 text-accent-emerald" />
+              <Database className="w-4 h-4 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]" />
               <span>Cache Savings</span>
             </div>
             <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
               {aiStats?.cache.totalCached.toLocaleString() ?? '0'}
             </p>
-            <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
+            <p className="text-[11px] font-semibold text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] mt-1">
               ~{((aiStats?.cache.estimatedTokensSaved ?? 0) / 1000).toFixed(1)}k tokens served free
             </p>
           </div>

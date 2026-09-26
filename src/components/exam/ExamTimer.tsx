@@ -34,14 +34,14 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({ initialSeconds, isPaused, 
   }, [isPaused, onTimeUp]); // onTimeUp is stable because it's wrapped in useCallback in ExamWorkspace
 
   return (
-    <div className={`px-3 py-1.5 rounded-[12px] text-sm font-black tabular-nums border-2 transition-all ${
+    <div className={`px-3 py-1 rounded-[12px] text-xs font-black tabular-nums border transition-all duration-200 ease-bespoke ${
       secondsLeft < 60
-        ? 'bg-red-600 border-red-700 text-white shadow-md animate-pulse'
+        ? 'bg-error border-error text-white shadow-bespoke-sm'
         : secondsLeft < 300
-        ? 'bg-error/20 border-error text-error shadow-sm'
-        : 'bg-card border-primary text-gray-900 dark:text-gray-100 shadow-sm'
+        ? 'bg-[hsl(36,58%,42%)]/10 border-[hsl(36,58%,42%)]/30 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] shadow-bespoke-sm'
+        : 'bg-card border-black/[0.06] dark:border-white/[0.08] text-gray-900 dark:text-gray-100 shadow-bespoke-sm'
     }`}>
-      <Clock className="w-4 h-4 inline mr-1.5 -mt-0.5" />
+      <Clock className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
       {Math.floor(secondsLeft / 60)}:{(secondsLeft % 60).toString().padStart(2, '0')}
     </div>
   );

@@ -32,7 +32,7 @@ export function PaymentActions({ paymentId, telegramId }: Props) {
       <button 
         onClick={() => handleAction('approved')}
         disabled={loading !== false}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 hover:bg-green-500/20 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] border border-[hsl(145,42%,38%)]/20 hover:bg-[hsl(145,42%,38%)]/20 rounded-lg text-xs font-bold transition-all duration-150 active:scale-95 disabled:opacity-50 shadow-bespoke-sm"
       >
         {loading === 'approved' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
         Approve
@@ -40,7 +40,7 @@ export function PaymentActions({ paymentId, telegramId }: Props) {
       <button 
         onClick={() => handleAction('rejected')}
         disabled={loading !== false}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-error/10 text-error border border-error/20 hover:bg-error/20 rounded-lg text-xs font-bold transition-all duration-150 active:scale-95 disabled:opacity-50 shadow-bespoke-sm"
       >
         {loading === 'rejected' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <X className="w-3.5 h-3.5" />}
         Reject

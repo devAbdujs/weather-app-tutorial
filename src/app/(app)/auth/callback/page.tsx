@@ -57,14 +57,14 @@ function CallbackContent() {
   if (error) {
     return (
       <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6">
-        <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
-          <span className="text-red-500 text-2xl">⚠️</span>
+        <div className="w-14 h-14 rounded-2xl bg-error/10 text-error flex items-center justify-center mb-4 border border-error/20">
+          <span className="text-2xl">⚠️</span>
         </div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Authentication Failed</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">{error}</p>
+        <h2 className="text-xl font-bold text-foreground mb-1.5 tracking-tight">Authentication Failed</h2>
+        <p className="text-sm text-muted text-center max-w-sm mb-6 font-medium">{error}</p>
         <button 
           onClick={() => window.location.replace('/')}
-          className="px-6 py-3 bg-[#229ED9] text-white font-bold rounded-xl shadow-sm"
+          className="px-6 py-2.5 bg-primary text-primary-foreground font-semibold text-sm rounded-xl shadow-bespoke-sm hover:bg-primary/95 active:scale-[0.99] transition-all duration-200 ease-bespoke"
         >
           Return Home
         </button>
@@ -73,13 +73,13 @@ function CallbackContent() {
   }
 
   return (
-    <div className="min-h-screen bg-ground flex flex-col items-center justify-center animate-fade-in">
-      <div className="w-16 h-16 rounded-[20px] bg-[#229ED9] flex items-center justify-center shadow-xl mb-6 shadow-[#229ED9]/20">
-         <span className="text-white font-black text-3xl tracking-tighter">Te</span>
+    <div className="min-h-screen bg-ground flex flex-col items-center justify-center animate-fade-in p-6">
+      <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-bespoke-md mb-6">
+         <span className="text-primary-foreground font-black text-2xl tracking-tighter">Te</span>
       </div>
       <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 rounded-full border-[3px] border-black/5 dark:border-white/10 border-t-[#229ED9] animate-spin" />
-        <p className="text-[10px] font-black text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">Verifying Secure Login</p>
+        <div className="w-6 h-6 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+        <p className="text-xs font-semibold text-muted tracking-wider uppercase">Verifying Secure Login</p>
       </div>
     </div>
   );
