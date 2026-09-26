@@ -33,7 +33,7 @@ export default async function AdminQuestionsPage() {
               {questions.map((q: any) => (
                 <tr key={q.id} className="border-b border-primary/5 hover:bg-ground/50 transition-colors">
                   <td className="p-4">
-                    <p className="font-bold text-gray-900 dark:text-gray-100 line-clamp-2">{q.question_text}</p>
+                    <p className="font-bold text-gray-900 dark:text-gray-100 line-clamp-2">{q.question}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-1 text-ellipsis overflow-hidden">ID: {q.id}</p>
                   </td>
                   <td className="p-4 font-bold text-gray-600 dark:text-gray-400 text-sm">
@@ -45,7 +45,7 @@ export default async function AdminQuestionsPage() {
                     </span>
                   </td>
                   <td className="p-4 text-right font-black text-gray-900 dark:text-gray-100">
-                    {q.year}
+                    {q.year_ec || '—'}
                   </td>
                 </tr>
               ))}

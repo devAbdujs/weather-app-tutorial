@@ -57,7 +57,7 @@ Rules:
     const google = createGoogleGenerativeAI({ apiKey: key });
 
     const { text } = await generateText({
-      model: google('gemini-1.5-flash-8b'),
+      model: google('gemini-3.6-flash'),
       prompt,
     });
 

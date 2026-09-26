@@ -38,23 +38,42 @@ export async function POST(req: NextRequest) {
 
     // 3. Signature valid -> Upsert into Supabase
     const supabase = await createClient();
-    
-    const hashId = crypto.createHash('md5').update(data.id.toString()).digest('hex');
-    const telegramUuid = `${hashId.substring(0,8)}-${hashId.substring(8,12)}-4${hashId.substring(13,16)}-a${hashId.substring(17,20)}-${hashId.substring(20,32)}`;
 
-    const { error } = await supabase
+    const { data: profile, error } = await supabase
       .from('profiles')
       .upsert({ 
-        id: telegramUuid,
         telegram_id: data.id.toString(),
         full_name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
         username: data.username || null,
         avatar_url: data.photo_url || null,
-      }, { onConflict: 'id' });
+      }, { onConflict: 'telegram_id' })
+      .select('telegram_id, target_exam, stream')
+      .single();
 
     if (error) throw error;
 
-    return NextResponse.json({ success: true });
+    // 4. Create Encrypted HTTP-Only Session Cookie
+    const { encryptSession } = await import('@/lib/session');
+    const sessionToken = await encryptSession({
+      telegram_id: data.id.toString(),
+      profile_id: profile.telegram_id,
+      first_name: data.first_name || 'Scholar',
+      target_exam: profile.target_exam,
+      stream: profile.stream,
+    });
+
+    const response = NextResponse.json({ success: true, hasTargetExam: !!profile.target_exam });
+    response.cookies.set({
+      name: 'es_session',
+      value: sessionToken,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+
+    return response;
 
   } catch (error: unknown) {
     console.error("Telegram Web Auth Error:", error);

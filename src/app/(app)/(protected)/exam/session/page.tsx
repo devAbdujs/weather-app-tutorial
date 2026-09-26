@@ -32,7 +32,7 @@ export default async function ExamSessionPage({ searchParams }: PageProps) {
   // Only select the columns needed for the exam to reduce payload size
   let query = supabase
     .from('questions')
-    .select('id, exam_type, subject, year_ec, question, option_a, option_b, option_c, option_d, answer, explanation, image_url, exam_period')
+    .select('id, exam_type, subject, year_ec, question, option_a, option_b, option_c, option_d, answer, explanation, image_url')
     .eq('exam_type', examType);
 
   if (subject && subject !== 'All') {
@@ -41,10 +41,6 @@ export default async function ExamSessionPage({ searchParams }: PageProps) {
   
   if (year) {
     query = query.eq('year_ec', parseInt(year, 10));
-  }
-
-  if (period) {
-    query = query.eq('exam_period', period);
   }
 
   const { data, error } = await query.range(sessionOffset, sessionOffset + sessionSize - 1);

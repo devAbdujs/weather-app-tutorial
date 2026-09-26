@@ -38,11 +38,10 @@ export async function POST(req: NextRequest) {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .upsert({
-        id: telegramUuid,
         telegram_id: String(telegramUser.id),
         full_name: `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim(),
-      }, { onConflict: 'id' })
-      .select('id, target_exam, stream')
+      }, { onConflict: 'telegram_id' })
+      .select('telegram_id, target_exam, stream')
       .single();
 
     if (profileError) throw profileError;
@@ -50,8 +49,10 @@ export async function POST(req: NextRequest) {
     // Create encrypted session cookie
     const sessionToken = await encryptSession({
       telegram_id: String(telegramUser.id),
-      profile_id: profile.id,
+      profile_id: profile.telegram_id,
       first_name: telegramUser.first_name,
+      target_exam: profile.target_exam,
+      stream: profile.stream,
     });
 
     const response = NextResponse.json({ success: true, hasTargetExam: !!profile.target_exam });

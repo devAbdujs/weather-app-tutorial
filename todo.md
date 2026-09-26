@@ -1,57 +1,62 @@
 # Temari App - Master Execution Roadmap (Prioritized)
 
-*Last Updated: Sept 2026*  
-*Status: 7 critical vulnerabilities (M1-M7) fixed. Haptic feedback integrated. PWA Offline features added. RLS Secured.*
-
-This roadmap has been reorganized based on business impact, engineering severity, and Core Web Vitals.
+*Last Updated: Sept 2026 (End of Day Session)*  
+*Status: AI Gating implemented. Timer bug fixed. Next up: Connecting Next.js payment uploads to n8n and building the Telegram approval loop.*
 
 ---
 
-## ✅ Completed (Recent Sprints)
-*   **[x] Render Blocking & Client Waterfalls:** Move data fetching to Server Components to eliminate TTFB waterfall.
-*   **[x] Image Optimization:** Replaced raw HTML `<img>` tags with Next.js `<Image>` with priority tags.
-*   **[x] Rate Limiting & RLS Security:** Row Level Security (RLS) enabled on all 11 Supabase tables to prevent spoofing.
-*   **[x] Telegram Native Immersion (Bot API 8.0):** Call `requestFullscreen()` and implement `disableVerticalSwipes()`.
-*   **[x] Exam UX Context Loss:** Added floating semi-transparent panel with question text inside lightboxes.
-*   **[x] Robust PWA & Background Sync:** Implemented `PWARegistry` with 5-second delayed sonner toast and offline sync.
-*   **[x] Telegram BotFather Configuration (Marketing & Access):** Created Direct Link Mini App and configured Menu Button.
-*   **[x] Operational Automation (Setup):** Deployed n8n on local Ubuntu server via Cloudflare tunnels for background tasks.
+## ✅ Completed Today
+*   **[x] Critical Bug Fixes:** Fixed column name mismatch in exams, wrapped ExamTimer in useCallback, added strict server-side AI paywall.
+*   **[x] Operational Automation:** Deployed n8n via Cloudflare tunnels.
+*   **[x] n8n PDF Short Note Ingestor:** Fully working pipeline to Supabase.
+*   **[x] n8n AI Payment Vision:** Gemini Vision pipeline built to extract TxID and amount from receipts.
+*   **[x] Admin Approval Buttons:** n8n sends dynamic "Approve/Reject" inline keyboard to admin on Telegram.
 
 ---
 
-## 🔥 Priority 1: Critical Stability (Do Immediately)
-*   **[ ] Database Indexing & Payload Bloat:** 
-    *   Add composite B-Tree indexes in Supabase (`CREATE INDEX idx_questions_subject_exam ON questions (subject, exam_type);`) to prevent full table scans.
-*   **[ ] Admin Dashboard Scaling Crash:** 
-    *   `getUsers()` in `admin.ts` fetches the entire profiles table. Add Supabase `.range()` pagination before the userbase grows.
-*   **[ ] The Mobile Timer Bug:** 
-    *   Fix `ExamTimer.tsx`. iOS throttles `setInterval` when the screen turns off. Use absolute timestamp calculation.
+## 🔥 Priority 1: The End-to-End Payment Loop (Tomorrow Morning)
+
+*   **[ ] 1. The Next.js to n8n Bridge (Option B)**
+    *   Add a `POST` Webhook node in n8n Payment Approver workflow.
+    *   Update Next.js `api/payments/submit/route.ts` to trigger the n8n Webhook with the Supabase public image URL after a student uploads a receipt on the website.
+*   **[ ] 2. The Telegram Callback Workflow (Approval Action)**
+    *   Create a new n8n workflow listening for Telegram "Callback Queries" (when Admin clicks Approve).
+    *   Parse the `student_telegram_id` from the callback string.
+    *   Update Supabase `profiles` table: `subscription_status = 'premium'`.
+    *   Update Supabase `payments` table: `status = 'approved'`.
+*   **[ ] 3. The Celebration Notification**
+    *   n8n sends a Telegram message to the student: *"🎉 Payment verified! You are now Premium."*
+    *   n8n edits the Admin's message to remove the inline buttons.
 
 ---
 
-## 💰 Priority 2: Revenue & AI Core (Next Sprint)
-*   **[ ] AI Response Caching (Cost & Speed):** 
-    *   Hash the `questionId + promptType` in `ai_responses_cache` to return instant hints instead of calling Gemini.
-*   **[ ] The Manual Paywall (Monetization):** 
-    *   Build UI for Telebirr/CBE accounts and a form to upload a receipt screenshot to an Admin approval queue.
+## 🔥 Priority 2: Subdomain Architecture (`*.temari.top`)
+
+*   **[ ] Dynamic Routing Setup**
+    *   Create `src/middleware.ts` to read hostname subdomain and rewrite routes dynamically.
+    *   Add wildcard DNS record on Hahu Cloud/Cloudflare.
+    *   Build dedicated landing pages for each exam type (data-driven).
 
 ---
 
-## 💎 Priority 3: Native App Feel & UX Polish
-*   **[ ] "Real Paper" Short Notes UI:** 
-    *   Implement CSS-driven ruled paper background (warm cream, 28px lines, red margin) in `StudyNotesView.tsx`.
-    *   Standardize AI note generation into a psychological blueprint.
-*   **[ ] Graceful Error States:** 
-    *   Disable options in the `ExamSetupModal` dynamically if a combination yields 0 questions (pre-flight check).
+## 💎 Priority 3: UX Polish
+
+*   **[ ] Graceful Error States in ExamSetupModal**
+    *   Wire existing `getSessionCounts()` into `ExamSetupModal.tsx` to disable empty combinations.
+*   **[ ] Fix `daily_streak` flash of 0**
+    *   Load streak from server before rendering in protected layout.
+*   **[ ] Fix Rate Limiter (Vercel multi-instance)**
+    *   Replace in-memory rate limiter with Upstash Redis.
 
 ---
 
-## 🚀 Priority 4: Operational Automation (n8n & AI)
-*   **[ ] n8n PDF Exam Ingestor:** 
-    *   Build n8n workflow: Admins drop a PDF in a Telegram channel $\rightarrow$ n8n parses via Gemini $\rightarrow$ auto-inserts into Supabase.
-*   **[ ] n8n CRM Automation:** 
-    *   Ping users on Telegram via n8n if their daily streak is at risk.
-*   **[ ] PDF Short Note Uploader & Parser:**
-    *   Build a UI to upload PDF short notes directly and render it beautifully using the app's `MarkdownRenderer`.
-*   **[ ] Advanced AI & RAG (Curriculum Grounding):** 
-    *   Enable `pgvector` in Supabase and ingest chunks to ground the AI strictly on the Ethiopian curriculum.
+## 🚀 Priority 4: Growth & Intelligent CRM
+
+*   **[ ] Intelligent Telegram Bot**
+    *   Upgrade `/api/bot/webhook/route.ts` to enforce channel joins and serve personalized content.
+*   **[ ] Automated Streak Retention (n8n cron)**
+    *   Daily n8n workflow: message users at risk of losing their daily streak.
+*   **[ ] Telegram Lead Generation**
+    *   Inbound funnel: post free short note previews (watermarked) into university groups.
+*   **[ ] Advanced AI & RAG (Curriculum Grounding)**
+    *   Enable `pgvector` in Supabase to ground AI strictly on Ethiopian exam content.

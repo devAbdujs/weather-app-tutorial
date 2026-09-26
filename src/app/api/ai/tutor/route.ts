@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
     if (payload.questionId && !isFollowUpChat) {
       try {
         const { data: cached } = await supabaseAdmin
-          .from('ai_responses_cache')
+          .from('ai_cache')
           .select('response')
           .eq('question_id', payload.questionId)
           .eq('prompt_type', payload.promptType)
@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
           });
         }
       } catch (cacheErr) {
-        // Silently ignore cache read errors (e.g., table doesn't exist yet)
+        // Silently ignore cache read errors
         console.error('[AI Cache Read Error]', cacheErr);
       }
     }
@@ -177,7 +177,7 @@ export async function POST(req: NextRequest) {
           onFinish: async ({ text }) => {
             // 2. CACHE POPULATION: Save the generated response for the next student
             if (payload.questionId && !isFollowUpChat) {
-              await supabaseAdmin.from('ai_responses_cache').insert({
+              await supabaseAdmin.from('ai_cache').insert({
                 question_id: payload.questionId,
                 prompt_type: payload.promptType,
                 response: text

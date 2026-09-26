@@ -225,8 +225,7 @@ export async function getQuestions(limit = 100) {
   const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from('questions')
-    .select('id, exam_type, subject, year_ec, question_text, created_at')
-    .order('created_at', { ascending: false })
+    .select('id, exam_type, subject, year_ec, question')
     .limit(limit);
 
   if (error) throw error;
