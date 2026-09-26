@@ -19,14 +19,16 @@ interface NotebookViewProps {
 }
 
 const COLORS = [
-  { bg: 'bg-yellow-200', border: 'border-yellow-300', text: 'text-yellow-900', tag: 'bg-yellow-300' },
-  { bg: 'bg-green-200', border: 'border-green-300', text: 'text-green-900', tag: 'bg-green-300' },
-  { bg: 'bg-blue-200', border: 'border-blue-300', text: 'text-blue-900', tag: 'bg-blue-300' },
-  { bg: 'bg-pink-200', border: 'border-pink-300', text: 'text-pink-900', tag: 'bg-pink-300' },
-  { bg: 'bg-purple-200', border: 'border-purple-300', text: 'text-purple-900', tag: 'bg-purple-300' },
+  /* Desaturated warm tones — bespoke sticky paper, not kindergarten colors */
+  { bg: 'bg-[hsl(48,70%,90%)]', border: 'border-[hsl(43,55%,78%)]', text: 'text-[hsl(36,40%,28%)]', tag: 'bg-[hsl(43,60%,83%)]' },
+  { bg: 'bg-[hsl(158,28%,89%)]', border: 'border-[hsl(158,25%,74%)]', text: 'text-[hsl(158,35%,22%)]', tag: 'bg-[hsl(158,28%,80%)]' },
+  { bg: 'bg-[hsl(210,35%,91%)]', border: 'border-[hsl(210,28%,76%)]', text: 'text-[hsl(215,40%,25%)]', tag: 'bg-[hsl(210,35%,82%)]' },
+  { bg: 'bg-[hsl(350,30%,91%)]', border: 'border-[hsl(350,25%,75%)]', text: 'text-[hsl(350,40%,26%)]', tag: 'bg-[hsl(350,28%,82%)]' },
+  { bg: 'bg-[hsl(276,22%,91%)]', border: 'border-[hsl(276,20%,76%)]', text: 'text-[hsl(276,35%,26%)]', tag: 'bg-[hsl(276,22%,82%)]' },
 ];
 
-const ROTATIONS = ['-rotate-2', '-rotate-1', 'rotate-1', 'rotate-2', '-rotate-3', 'rotate-3'];
+/* Subtle rotations — not overly dramatic */
+const ROTATIONS = ['-rotate-1', 'rotate-0', 'rotate-1', '-rotate-2', 'rotate-2', 'rotate-0'];
 
 export const NotebookView: React.FC<NotebookViewProps> = ({ subject, initialPins }) => {
   const { haptic, setBackButton } = useTelegram();
@@ -86,9 +88,9 @@ export const NotebookView: React.FC<NotebookViewProps> = ({ subject, initialPins
         </div>
         
         {/* Sticky Note Counter (Marketing Teaser) */}
-        <div className="bg-card border border-primary/20 shadow-sm rounded-[12px] px-3 py-1.5 flex flex-col items-center justify-center rotate-2">
-          <span className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider leading-none">Sticky Notes</span>
-          <span className={`text-lg font-black leading-none mt-0.5 ${pinsUsed >= MAX_FREE_PINS ? 'text-red-500' : 'text-gray-900 dark:text-gray-100'}`}>
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] shadow-bespoke-sm rounded-[12px] px-3 py-1.5 flex flex-col items-center justify-center rotate-1">
+          <span className="text-[10px] font-black text-[--text-tertiary] uppercase tracking-wider leading-none">Notes</span>
+          <span className={`text-lg font-black leading-none mt-0.5 ${pinsUsed >= MAX_FREE_PINS ? 'text-error' : 'text-[--text-primary]'}`}>
             {pinsUsed}/{MAX_FREE_PINS}
           </span>
         </div>

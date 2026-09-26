@@ -186,23 +186,24 @@ export const HomeHub: React.FC = () => {
         {/* ── 3. HERO LAUNCHPAD ── */}
         <button
           onClick={() => { haptic.impact('heavy'); router.push('/practice'); }}
-          className="w-full group bg-gradient-to-br from-primary to-blue-700 p-5 rounded-[24px] shadow-md shadow-primary/20 active:scale-[0.98] transition-all text-left relative overflow-hidden"
+          className="w-full group bg-gradient-to-br from-primary via-[hsl(224,55%,38%)] to-[hsl(215,55%,28%)] p-5 rounded-[24px] shadow-bespoke-md active:scale-[0.98] transition-all duration-200 ease-bespoke text-left relative overflow-hidden"
         >
-          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-500" />
+          <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/[0.07] rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500" />
+          <div className="absolute -left-4 -bottom-4 w-20 h-20 bg-white/[0.04] rounded-full blur-xl" />
           <div className="relative z-10">
-            <p className="text-blue-100 text-[10px] font-bold uppercase tracking-widest mb-1">
+            <p className="text-white/65 text-[10px] font-bold uppercase tracking-widest mb-1">
               31,000+ Past Exam Questions
             </p>
             <h2 className="text-xl font-black text-white tracking-tight mb-4">
-              Practice & Exam Simulator
+              Practice &amp; Exam Simulator
             </h2>
           </div>
           <div className="flex items-center justify-between relative z-10">
-            <div className="bg-white text-primary px-4 py-2 rounded-xl font-black text-xs shadow-sm flex items-center gap-1.5 group-hover:scale-105 transition-transform">
+            <div className="bg-white text-primary px-4 py-2 rounded-[14px] font-black text-xs shadow-sm flex items-center gap-1.5 group-hover:scale-[1.03] transition-transform duration-200 ease-bespoke">
               Start Practicing
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
-            <div className="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center group-hover:bg-white/25 transition-colors backdrop-blur-sm">
+            <div className="w-10 h-10 bg-white/[0.12] rounded-[14px] flex items-center justify-center group-hover:bg-white/[0.18] transition-colors duration-200">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
           </div>
@@ -229,52 +230,52 @@ export const HomeHub: React.FC = () => {
         <div className="grid grid-cols-3 gap-3">
           <button
             onClick={() => { haptic.impact('medium'); router.push('/practice?mode=notes'); }}
-            className="group bg-card p-3.5 rounded-[22px] border border-black/5 dark:border-white/[0.08] hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all text-left"
+            className="group bg-card p-3.5 rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-primary/20 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
           >
-            <div className="w-10 h-10 bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 rounded-xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 bg-[hsl(213,55%,42%)]/10 text-[hsl(213,55%,42%)] dark:text-[hsl(213,50%,68%)] border border-[hsl(213,55%,42%)]/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
               <FileText className="w-4.5 h-4.5" />
             </div>
             <h3 className="text-xs font-black text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
-            <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-0.5 truncate">Summaries</p>
+            <p className="text-[10px] font-medium text-gray-400 dark:text-gray-500 mt-0.5 truncate">Summaries</p>
           </button>
 
           <button
             onClick={() => { haptic.impact('medium'); router.push('/practice?mode=flashcards'); }}
-            className="group bg-card p-3.5 rounded-[22px] border border-black/5 dark:border-white/[0.08] hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all text-left"
+            className="group bg-card p-3.5 rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-primary/20 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
           >
-            <div className="w-10 h-10 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] border border-[hsl(36,58%,42%)]/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
               <Zap className="w-4.5 h-4.5" />
             </div>
             <h3 className="text-xs font-black text-gray-900 dark:text-gray-100 leading-tight">Flashcards</h3>
-            <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-0.5 truncate">Speed Review</p>
+            <p className="text-[10px] font-medium text-gray-400 dark:text-gray-500 mt-0.5 truncate">Speed Review</p>
           </button>
 
           <button
             onClick={() => { haptic.impact('medium'); router.push('/notebook/All'); }}
-            className="group bg-card p-3.5 rounded-[22px] border border-black/5 dark:border-white/[0.08] hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all text-left"
+            className="group bg-card p-3.5 rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-primary/20 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
           >
-            <div className="w-10 h-10 bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20 rounded-xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 bg-[hsl(268,40%,48%)]/10 text-[hsl(268,40%,48%)] dark:text-[hsl(268,36%,70%)] border border-[hsl(268,40%,48%)]/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
               <BookMarked className="w-4.5 h-4.5" />
             </div>
             <h3 className="text-xs font-black text-gray-900 dark:text-gray-100 leading-tight">Notebook</h3>
-            <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-0.5 truncate">Saved Qs</p>
+            <p className="text-[10px] font-medium text-gray-400 dark:text-gray-500 mt-0.5 truncate">Saved Qs</p>
           </button>
         </div>
 
         {/* ── 6. TEMARI AI DAILY SPARK ── */}
-        <div className="bg-card border border-black/5 dark:border-white/[0.08] rounded-[24px] p-4 shadow-sm">
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4 shadow-bespoke-sm">
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-xl flex items-center justify-center">
+              <div className="w-8 h-8 bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] border border-[hsl(36,58%,42%)]/20 rounded-[12px] flex items-center justify-center">
                 <Sparkles className="w-4 h-4" />
               </div>
-              <span className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+              <span className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">
                 Temari AI Daily Tip
               </span>
             </div>
             <button
               onClick={() => { haptic.selection(); fetchTip(true); }}
-              className="w-7 h-7 flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/10 active:scale-90 transition-all text-slate-400"
+              className="w-7 h-7 flex items-center justify-center rounded-[10px] hover:bg-black/5 dark:hover:bg-white/10 active:scale-90 transition-all text-gray-400"
               title="Get a new tip"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${tipLoading ? 'animate-spin' : ''}`} />
@@ -287,7 +288,7 @@ export const HomeHub: React.FC = () => {
               <div className="h-3 bg-black/5 dark:bg-white/5 rounded-full animate-pulse w-3/4" />
             </div>
           ) : tip ? (
-            <p className="text-xs font-medium text-slate-600 dark:text-slate-300 leading-relaxed animate-fade-in pl-1">
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 leading-relaxed animate-fade-in pl-1">
               {tip}
             </p>
           ) : null}

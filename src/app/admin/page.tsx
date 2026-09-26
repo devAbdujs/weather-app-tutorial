@@ -37,37 +37,37 @@ export default async function AdminDashboard() {
         <StatCard 
           title="Total Users" 
           value={stats.totalUsers.toLocaleString()} 
-          icon={<Users className="w-8 h-8 text-accent-blue" />} 
-          color="bg-accent-blue/10"
+          icon={<Users className="w-7 h-7 text-primary" />} 
+          color="bg-primary/10"
         />
         <StatCard 
           title="Study Notes" 
           value={stats.totalNotes.toLocaleString()} 
-          icon={<FileText className="w-8 h-8 text-accent-emerald" />} 
-          color="bg-accent-emerald/10"
+          icon={<FileText className="w-7 h-7 text-[hsl(145,42%,38%)]" />} 
+          color="bg-[hsl(145,42%,38%)]/10"
         />
         <StatCard 
           title="Exam Questions" 
           value={stats.totalQuestions.toLocaleString()} 
-          icon={<BrainCircuit className="w-8 h-8 text-accent-gold" />} 
-          color="bg-accent-gold/10"
+          icon={<BrainCircuit className="w-7 h-7 text-[hsl(36,58%,42%)]" />} 
+          color="bg-[hsl(36,58%,42%)]/10"
         />
         <StatCard 
           title="Premium Users" 
           value={stats.totalPremium.toLocaleString()} 
-          icon={<Zap className="w-8 h-8 text-violet-500" />} 
-          color="bg-violet-500/10"
+          icon={<Zap className="w-7 h-7 text-[hsl(268,40%,48%)]" />} 
+          color="bg-[hsl(268,40%,48%)]/10"
         />
       </div>
 
       {/* Gemini AI Engine Spotlight */}
-      <div className="bg-card border-2 border-primary/10 rounded-3xl p-6 md:p-8 shadow-sm mb-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-primary/10">
+      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-bespoke-sm mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-black/[0.06] dark:border-white/[0.08]">
           <div>
             <div className="flex items-center gap-2">
-              <Bot className="w-5 h-5 text-accent-gold" />
+              <Bot className="w-5 h-5 text-accent" />
               <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
-                Gemini & AI Operations Engine
+                Gemini &amp; AI Operations Engine
               </h2>
             </div>
             <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">
@@ -76,7 +76,7 @@ export default async function AdminDashboard() {
           </div>
           <Link
             href="/admin/ai"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-sm shadow-primary/20 shrink-0"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-bespoke-sm shrink-0"
           >
             <span>Open AI Telemetry</span>
             <ArrowRight className="w-4 h-4" />
@@ -84,16 +84,16 @@ export default async function AdminDashboard() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-4 rounded-2xl bg-ground/50 border border-primary/10">
+          <div className="p-4 rounded-2xl bg-ground/50 border border-black/[0.06] dark:border-white/[0.08]">
             <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-              <Key className="w-4 h-4 text-accent-gold" />
+              <Key className="w-4 h-4 text-accent" />
               <span>Key Pool Health</span>
             </div>
-            <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
+            <p className="text-2xl font-black text-gray-900 dark:text-gray-100 tabular-nums">
               {aiStats?.keyDetails.activeKeys ?? 0} / {aiStats?.keyDetails.totalKeys ?? 0}
             </p>
-            <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <p className="text-[11px] font-semibold text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] mt-1 flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-[hsl(145,42%,38%)] animate-pulse" />
               All configured keys active
             </p>
           </div>

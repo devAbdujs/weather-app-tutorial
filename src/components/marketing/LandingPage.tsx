@@ -104,14 +104,14 @@ export const LandingPage = () => {
       <header className="relative px-6 pt-24 sm:pt-32 pb-12 sm:pb-16 flex flex-col items-center text-center max-w-3xl mx-auto w-full mt-4 sm:mt-8">
         
         {/* Floating Background Elements (Hidden on small mobile) */}
-        <div className="hidden sm:flex absolute top-10 left-0 animate-bounce" style={{ animationDuration: '3s' }}>
-           <div className="bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 px-4 py-1.5 rounded-full text-xs font-black tracking-wide border border-amber-200 dark:border-amber-500/20 shadow-sm shadow-amber-500/10">📐 Physics</div>
+        <div className="hidden sm:flex absolute top-10 left-0 animate-fade-in stagger-1">
+           <div className="bg-[hsl(36,50%,92%)] dark:bg-[hsl(36,30%,20%)] text-[hsl(36,58%,38%)] dark:text-[hsl(36,45%,65%)] px-4 py-1.5 rounded-full text-xs font-black tracking-wide border border-[hsl(36,35%,80%)] dark:border-[hsl(36,30%,30%)]">📐 Physics</div>
         </div>
-        <div className="hidden sm:flex absolute top-40 -right-4 animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
-           <div className="bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-4 py-1.5 rounded-full text-xs font-black tracking-wide border border-emerald-200 dark:border-emerald-500/20 shadow-sm shadow-emerald-500/10">🧬 Biology</div>
+        <div className="hidden sm:flex absolute top-40 -right-4 animate-fade-in stagger-2">
+           <div className="bg-[hsl(145,28%,92%)] dark:bg-[hsl(145,20%,18%)] text-[hsl(145,42%,35%)] dark:text-[hsl(145,35%,62%)] px-4 py-1.5 rounded-full text-xs font-black tracking-wide border border-[hsl(145,25%,78%)] dark:border-[hsl(145,20%,28%)]">🧬 Biology</div>
         </div>
-        <div className="hidden sm:flex absolute bottom-10 -left-10 animate-bounce" style={{ animationDuration: '3.5s', animationDelay: '0.5s' }}>
-           <div className="bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 px-4 py-1.5 rounded-full text-xs font-black tracking-wide border border-purple-200 dark:border-purple-500/20 shadow-sm shadow-purple-500/10">🧪 Chemistry</div>
+        <div className="hidden sm:flex absolute bottom-10 -left-10 animate-fade-in stagger-3">
+           <div className="bg-[hsl(268,22%,92%)] dark:bg-[hsl(268,18%,18%)] text-[hsl(268,42%,44%)] dark:text-[hsl(268,36%,68%)] px-4 py-1.5 rounded-full text-xs font-black tracking-wide border border-[hsl(268,20%,78%)] dark:border-[hsl(268,18%,28%)]">🧪 Chemistry</div>
         </div>
 
         <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#229ED9]/10 text-[#229ED9] text-xs font-bold mb-6 animate-fade-up">
@@ -121,7 +121,7 @@ export const LandingPage = () => {
 
         <h1 className="text-[40px] sm:text-6xl font-black tracking-tight leading-tight sm:leading-[1.1] mb-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
           Master your national exams. <br className="hidden sm:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">Without the stress.</span>
+          <span className="text-primary">Without the stress.</span>
         </h1>
         
         <p className="text-gray-500 dark:text-gray-400 font-medium text-lg mb-10 max-w-lg mx-auto leading-relaxed animate-fade-up" style={{ animationDelay: '0.2s' }}>
@@ -130,14 +130,14 @@ export const LandingPage = () => {
 
         <button
           onClick={handleTelegramOIDCLogin}
-          className="w-full max-w-[300px] h-14 bg-[#229ED9] rounded-2xl flex items-center justify-center gap-2.5 shadow-xl shadow-[#229ED9]/30 hover:bg-[#1E8CC0] active:scale-[0.98] transition-all animate-fade-up z-10"
+          className="w-full max-w-[300px] h-14 bg-[#229ED9] rounded-2xl flex items-center justify-center gap-2.5 shadow-bespoke-md hover:bg-[#1E8CC0] active:scale-[0.98] transition-all duration-200 ease-bespoke animate-fade-up z-10"
           style={{ animationDelay: '0.3s' }}
         >
           <Send className="w-5 h-5 text-white" />
           <span className="text-[15px] font-bold text-white tracking-wide">Start Learning — Free</span>
         </button>
 
-        {error && <p className="text-sm text-red-500 font-medium mt-4">{error}</p>}
+        {error && <p className="text-sm text-error font-medium mt-4">{error}</p>}
 
         {/* 3. Social Proof */}
         <div className="mt-8 flex flex-col items-center gap-3 animate-fade-up" style={{ animationDelay: '0.4s' }}>

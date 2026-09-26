@@ -331,14 +331,14 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
               else next.add(currentIndex);
               return next;
             });
-          }} className={`w-10 h-10 flex items-center justify-center rounded-[14px] border transition-all active:scale-[0.98] ${flagged.has(currentIndex) ? 'bg-rose-500/10 border-rose-500/30 text-rose-500 shadow-sm' : 'bg-card border-black/[0.06] dark:border-white/[0.08] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}><Flag className="w-4 h-4" fill={flagged.has(currentIndex) ? 'currentColor' : 'none'} /></button>
+          }} className={`w-10 h-10 flex items-center justify-center rounded-[14px] border transition-all active:scale-[0.98] ${flagged.has(currentIndex) ? 'bg-error/10 border-error/30 text-error' : 'bg-card border-black/[0.06] dark:border-white/[0.08] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}><Flag className="w-4 h-4" fill={flagged.has(currentIndex) ? 'currentColor' : 'none'} /></button>
         </div>
         
         {/* Progress Bar */}
         <div className="px-5">
-          <div className="h-1.5 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+          <div className="h-[2px] w-full bg-black/[0.05] dark:bg-white/[0.06] rounded-full overflow-hidden">
              <div 
-               className="h-full bg-primary transition-all duration-300 ease-out rounded-full" 
+               className="h-full bg-primary transition-all duration-300 ease-bespoke rounded-full" 
                style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
              />
           </div>
@@ -378,15 +378,15 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
             let cls = 'bg-card border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:border-black/20 dark:hover:border-white/20 hover:bg-black/[0.02] dark:hover:bg-white/[0.02]';
             
-            if (isSelected) cls = 'bg-primary/10 border-primary/40 text-gray-900 dark:text-gray-100 font-bold shadow-sm';
+            if (isSelected) cls = 'bg-primary/10 border-primary/40 text-gray-900 dark:text-gray-100 font-bold shadow-bespoke-sm';
             
             if (isRevealed) {
               if (isCorrect) {
-                cls = 'bg-emerald-500/10 border-emerald-500/30 text-emerald-950 dark:text-emerald-200 shadow-sm font-bold';
+                cls = 'bg-[hsl(145,42%,38%)]/10 border-[hsl(145,42%,38%)]/30 text-[hsl(145,38%,20%)] dark:text-[hsl(145,30%,78%)] shadow-bespoke-sm font-bold';
               } else if (isWrongSelected) {
-                cls = 'bg-rose-500/10 border-rose-500/30 text-rose-950 dark:text-rose-200 shadow-sm font-bold';
+                cls = 'bg-[hsl(350,48%,48%)]/10 border-[hsl(350,48%,48%)]/30 text-[hsl(350,42%,25%)] dark:text-[hsl(350,35%,78%)] shadow-bespoke-sm font-bold';
               } else if (isSelected && !normalizedAns) {
-                cls = 'bg-primary/10 border-primary/40 text-gray-900 dark:text-gray-100 shadow-sm font-bold';
+                cls = 'bg-primary/10 border-primary/40 text-gray-900 dark:text-gray-100 shadow-bespoke-sm font-bold';
               } else {
                 cls = 'bg-card/40 border-black/[0.04] dark:border-white/[0.04] text-gray-400 dark:text-gray-500 opacity-50';
               }
@@ -397,16 +397,16 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                 key={letter}
                 onClick={() => (!isReviewMode && (isSimulator || !isAnswered)) && handleSelectOption(letter as any)}
                 disabled={isReviewMode || (!isSimulator && isAnswered)}
-                className={`w-full flex items-center justify-between gap-3.5 p-3.5 rounded-[22px] border transition-all duration-200 text-left ${cls} ${(!isReviewMode && (isSimulator || !isAnswered)) ? 'active:scale-[0.98] active:opacity-85' : ''}`}
+                className={`w-full flex items-center justify-between gap-3.5 p-3.5 rounded-[22px] border transition-all duration-200 ease-bespoke text-left ${cls} ${(!isReviewMode && (isSimulator || !isAnswered)) ? 'active:scale-[0.98] active:opacity-85' : ''}`}
               >
                 <div className="flex items-start gap-3.5 flex-1 min-w-0">
-                  <div className={`w-8 h-8 rounded-[12px] flex items-center justify-center shrink-0 text-sm font-black transition-colors ${
+                  <div className={`w-8 h-8 rounded-[12px] flex items-center justify-center shrink-0 text-sm font-black transition-colors duration-200 ${
                     isRevealed && isCorrect 
-                      ? 'bg-emerald-500 text-white shadow-sm' 
+                      ? 'bg-[hsl(145,42%,38%)] text-white' 
                       : isRevealed && isWrongSelected 
-                      ? 'bg-rose-500 text-white shadow-sm' 
+                      ? 'bg-error text-white' 
                       : isSelected 
-                      ? 'bg-primary text-white shadow-sm' 
+                      ? 'bg-primary text-white shadow-bespoke-sm' 
                       : 'bg-black/5 dark:bg-white/[0.06] text-gray-700 dark:text-gray-300'
                   }`}>
                     {letter}
@@ -415,11 +415,11 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                 </div>
 
                 {isRevealed && isCorrect && (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 self-center" />
+                  <CheckCircle2 className="w-5 h-5 text-[hsl(145,42%,38%)] shrink-0 self-center" />
                 )}
 
                 {isRevealed && isWrongSelected && (
-                  <XCircle className="w-5 h-5 text-rose-500 shrink-0 self-center" />
+                  <XCircle className="w-5 h-5 text-error shrink-0 self-center" />
                 )}
               </button>
             );
@@ -432,7 +432,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
               <div className="flex items-start gap-3 mb-3">
                 {currentQ?.answer?.trim() ? (
                   <>
-                    <div className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 rounded-xl p-1.5 shrink-0 mt-0.5">
+                    <div className="bg-[hsl(145,42%,38%)]/15 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] rounded-xl p-1.5 shrink-0 mt-0.5">
                       <CheckCircle2 className="w-4 h-4" />
                     </div>
                     <div>

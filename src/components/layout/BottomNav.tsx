@@ -34,7 +34,7 @@ export const BottomNav = () => {
         fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto pb-safe
         bg-card/90 dark:bg-card/95
         backdrop-blur-xl
-        border-t border-black/5 dark:border-white/[0.08]
+        border-t border-black/[0.06] dark:border-white/[0.08]
         transition-colors duration-200
       "
     >
@@ -58,8 +58,8 @@ export const BottomNav = () => {
                   className={`
                     relative flex items-center justify-center w-11 h-7 rounded-xl transition-all duration-200 ease-bespoke
                     ${isActive
-                      ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400'
-                      : 'bg-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}
+                      ? 'bg-primary/10 dark:bg-primary/20 text-primary'
+                      : 'bg-transparent text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}
                   `}
                 >
                   <Icon
@@ -67,15 +67,15 @@ export const BottomNav = () => {
                     strokeWidth={isActive ? 2.5 : 1.9}
                   />
                   {isActive && (
-                    <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-primary dark:bg-blue-400" />
+                    <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-primary" />
                   )}
                 </div>
                 <span
                   className={`
                     text-[10px] tracking-tight transition-colors duration-200
                     ${isActive
-                      ? 'font-black text-primary dark:text-blue-400'
-                      : 'font-semibold text-slate-400 dark:text-slate-500'}
+                      ? 'font-black text-primary'
+                      : 'font-semibold text-gray-400 dark:text-gray-500'}
                   `}
                 >
                   {item.name}

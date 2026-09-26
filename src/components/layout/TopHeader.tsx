@@ -98,9 +98,9 @@ export const TopHeader = () => {
               flex items-center gap-1.5 px-3.5 py-1.5 
               bg-[#229ED9] hover:bg-[#1C88BA] 
               text-white
-              rounded-[12px] transition-all 
-              font-bold text-[12px] tracking-tight shadow-sm shadow-[#229ED9]/25
-              border border-white/20 active:scale-[0.98]
+              rounded-[12px] transition-all duration-200 ease-bespoke
+              font-bold text-[12px] tracking-tight shadow-bespoke-sm
+              border border-white/15 active:scale-[0.98]
             "
           >
             <TelegramIcon className="w-3.5 h-3.5 shrink-0" />

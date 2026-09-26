@@ -176,7 +176,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           <div className="flex items-center gap-3">
             <div className="relative p-2 rounded-[12px] bg-primary/10 text-primary border border-primary/20 shadow-sm">
               <User className="w-5 h-5" />
-              <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-card" />
+              <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-[hsl(145,42%,42%)] rounded-full border-2 border-card" />
             </div>
             <div>
               <h3 className="font-bold text-gray-900 dark:text-gray-100 text-[16px] flex items-center gap-1.5 tracking-tight">
@@ -216,7 +216,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
             disabled={isLoading}
             className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-[12px] font-bold border transition-all whitespace-nowrap bg-ground border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:border-black/20 dark:hover:border-white/20 active:scale-[0.98] shadow-sm"
           >
-            <Globe className="w-3.5 h-3.5 text-blue-500" />
+            <Globe className="w-3.5 h-3.5 text-[hsl(199,55%,42%)]" />
             በአማርኛ አስረዳኝ
           </button>
         </div>
@@ -236,9 +236,9 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
                   <User className="w-3.5 h-3.5" />
                 </div>
               )}
-              <div className={`p-3.5 rounded-[18px] max-w-[85%] font-sans shadow-sm ${
+              <div className={`p-3.5 rounded-[18px] max-w-[85%] font-sans shadow-bespoke-sm ${
                 msg.role === 'user' 
-                  ? 'bg-primary text-white rounded-br-[4px] font-medium whitespace-pre-line shadow-primary/20' 
+                  ? 'bg-primary text-white rounded-br-[4px] font-medium whitespace-pre-line' 
                   : 'bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-bl-[4px] text-gray-900 dark:text-gray-100'
               }`}>
                 {msg.role === 'assistant' ? (
@@ -276,7 +276,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="w-12 h-12 rounded-[16px] flex items-center justify-center bg-primary hover:bg-primary/90 disabled:bg-black/5 dark:disabled:bg-white/5 disabled:text-gray-400 text-white transition-all shrink-0 shadow-sm shadow-primary/25 disabled:shadow-none active:scale-[0.98]"
+            className="w-12 h-12 rounded-[16px] flex items-center justify-center bg-primary hover:bg-primary/90 disabled:bg-black/5 dark:disabled:bg-white/5 disabled:text-gray-400 text-white transition-all duration-200 ease-bespoke shrink-0 shadow-bespoke-sm disabled:shadow-none active:scale-[0.98]"
           >
             <Send className="w-4 h-4 ml-0.5" />
           </button>

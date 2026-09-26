@@ -41,9 +41,9 @@ const ReadingProgress = () => {
   }, []);
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/5 dark:bg-white/5">
+    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black/[0.04] dark:bg-white/[0.04]">
       <div
-        className="h-full bg-gradient-to-r from-violet-500 to-blue-500 transition-all duration-150 ease-out rounded-full"
+        className="h-full bg-primary transition-all duration-200 ease-out rounded-full"
         style={{ width: `${progress}%` }}
       />
     </div>
@@ -237,7 +237,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
           </button>
           <button
             onClick={handleBackFromNote}
-            className="flex-1 h-13 bg-primary text-white rounded-[18px] font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-sm shadow-primary/25"
+            className="flex-1 h-13 bg-primary text-white rounded-[18px] font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 ease-bespoke active:scale-[0.98] shadow-bespoke-sm"
           >
             <List className="w-4 h-4" />
             Chapters

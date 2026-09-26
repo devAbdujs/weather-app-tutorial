@@ -109,7 +109,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
     <div className="space-y-8 animate-fade-in">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-6 right-6 z-50 bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 font-bold animate-bounce">
+        <div className="fixed top-6 right-6 z-50 bg-[hsl(145,42%,38%)] text-white px-5 py-3 rounded-2xl shadow-bespoke-md flex items-center gap-2 font-bold animate-fade-in">
           <CheckCircle2 className="w-5 h-5" />
           <span>{toastMessage}</span>
         </div>
@@ -119,11 +119,11 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-1">
-            <Bot className="w-4 h-4 text-accent-gold" />
-            <span>AI Operations & Engine</span>
+            <Bot className="w-4 h-4 text-accent" />
+            <span>AI Operations &amp; Engine</span>
           </div>
           <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
-            Gemini & AI Usage Telemetry
+            Gemini &amp; AI Usage Telemetry
           </h1>
           <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">
             Real-time tracking of Gemini model calls, key rotation pool, student quotas, and cache savings.
@@ -131,11 +131,11 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="px-3.5 py-1.5 rounded-xl bg-accent-gold/15 text-accent-gold border border-accent-gold/30 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+          <span className="px-3.5 py-1.5 rounded-xl bg-accent/15 text-accent border border-accent/30 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-bespoke-sm">
             <Sparkles className="w-3.5 h-3.5" />
             Gemini 3.6 Flash
           </span>
-          <span className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+          <span className="px-3.5 py-1.5 rounded-xl bg-[hsl(145,42%,38%)]/15 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] border border-[hsl(145,42%,38%)]/30 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-bespoke-sm">
             <Zap className="w-3.5 h-3.5" />
             {stats.keyDetails.activeKeys}/{stats.keyDetails.totalKeys} Keys Active
           </span>
@@ -144,15 +144,15 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
 
       {/* Top Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-card border-2 border-primary/10 rounded-3xl p-6 shadow-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-accent-blue/10 text-accent-blue flex items-center justify-center shrink-0">
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 shadow-bespoke-sm flex items-center gap-5">
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <Bot className="w-7 h-7" />
           </div>
           <div>
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
               Weekly AI Inquiries
             </p>
-            <p className="text-3xl font-black text-gray-900 dark:text-gray-100 leading-none">
+            <p className="text-3xl font-black text-gray-900 dark:text-gray-100 leading-none tabular-nums">
               {stats.usage.totalWeeklyInquiries.toLocaleString()}
             </p>
             <p className="text-[11px] font-semibold text-gray-400 mt-1">
@@ -161,49 +161,49 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
           </div>
         </div>
 
-        <div className="bg-card border-2 border-primary/10 rounded-3xl p-6 shadow-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-accent-emerald/10 text-accent-emerald flex items-center justify-center shrink-0">
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 shadow-bespoke-sm flex items-center gap-5">
+          <div className="w-14 h-14 rounded-2xl bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] flex items-center justify-center shrink-0">
             <Database className="w-7 h-7" />
           </div>
           <div>
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
               Cached Answers
             </p>
-            <p className="text-3xl font-black text-gray-900 dark:text-gray-100 leading-none">
+            <p className="text-3xl font-black text-gray-900 dark:text-gray-100 leading-none tabular-nums">
               {stats.cache.totalCached.toLocaleString()}
             </p>
-            <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
+            <p className="text-[11px] font-semibold text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] mt-1">
               ~{(stats.cache.estimatedTokensSaved / 1000).toFixed(1)}k tokens saved (0 Cost)
             </p>
           </div>
         </div>
 
-        <div className="bg-card border-2 border-primary/10 rounded-3xl p-6 shadow-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 shadow-bespoke-sm flex items-center gap-5">
+          <div className="w-14 h-14 rounded-2xl bg-[hsl(268,40%,48%)]/10 text-[hsl(268,40%,48%)] flex items-center justify-center shrink-0">
             <Camera className="w-7 h-7" />
           </div>
           <div>
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
               Receipts Scanned
             </p>
-            <p className="text-3xl font-black text-gray-900 dark:text-gray-100 leading-none">
+            <p className="text-3xl font-black text-gray-900 dark:text-gray-100 leading-none tabular-nums">
               {stats.vision.totalScanned.toLocaleString()}
             </p>
-            <p className="text-[11px] font-semibold text-rose-500 mt-1">
+            <p className="text-[11px] font-semibold text-error mt-1">
               {stats.vision.flaggedCount} flagged suspicious
             </p>
           </div>
         </div>
 
-        <div className="bg-card border-2 border-primary/10 rounded-3xl p-6 shadow-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-accent-gold/10 text-accent-gold flex items-center justify-center shrink-0">
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 shadow-bespoke-sm flex items-center gap-5">
+          <div className="w-14 h-14 rounded-2xl bg-accent/15 text-accent flex items-center justify-center shrink-0">
             <Key className="w-7 h-7" />
           </div>
           <div>
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
               Pool Throughput
             </p>
-            <p className="text-3xl font-black text-gray-900 dark:text-gray-100 leading-none">
+            <p className="text-3xl font-black text-gray-900 dark:text-gray-100 leading-none tabular-nums">
               {rpmCapacity} <span className="text-lg font-bold text-gray-400">RPM</span>
             </p>
             <p className="text-[11px] font-semibold text-gray-400 mt-1">
@@ -214,11 +214,11 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
       </div>
 
       {/* Gemini Key Pool Telemetry */}
-      <div className="bg-card border-2 border-primary/10 rounded-3xl p-6 md:p-8 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-primary/10">
+      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-bespoke-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-black/[0.06] dark:border-white/[0.08]">
           <div>
             <div className="flex items-center gap-2">
-              <Key className="w-5 h-5 text-accent-gold" />
+              <Key className="w-5 h-5 text-accent" />
               <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
                 Gemini Key Rotation Pool ({stats.keyDetails.totalKeys} Keys Configured)
               </h2>
@@ -228,13 +228,13 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[hsl(145,42%,38%)] animate-pulse" />
               {stats.keyDetails.activeKeys} Ready
             </div>
             {stats.keyDetails.coolingDownKeys > 0 && (
-              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-500">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping" />
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)]">
+                <span className="w-2.5 h-2.5 rounded-full bg-[hsl(36,58%,42%)] animate-ping" />
                 {stats.keyDetails.coolingDownKeys} Cooling Down
               </div>
             )}
@@ -247,8 +247,8 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
               key={k.index} 
               className={`p-4 rounded-2xl border transition-all ${
                 k.status === 'ready' 
-                  ? 'border-emerald-500/20 bg-emerald-500/5 hover:border-emerald-500/40' 
-                  : 'border-amber-500/30 bg-amber-500/5'
+                  ? 'border-[hsl(145,42%,38%)]/20 bg-[hsl(145,42%,38%)]/5 hover:border-[hsl(145,42%,38%)]/40' 
+                  : 'border-[hsl(36,58%,42%)]/30 bg-[hsl(36,58%,42%)]/5'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
@@ -256,11 +256,11 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                   Key #{k.index}
                 </span>
                 {k.status === 'ready' ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] bg-[hsl(145,42%,38%)]/10 px-2 py-0.5 rounded-md">
                     <CheckCircle2 className="w-3 h-3" /> Ready
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] bg-[hsl(36,58%,42%)]/10 px-2 py-0.5 rounded-md">
                     <Clock className="w-3 h-3" /> Cooldown ({k.cooldownRemainingSeconds}s)
                   </span>
                 )}
@@ -274,12 +274,12 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
       </div>
 
       {/* Student Quota & Weekly Usage Table */}
-      <div className="bg-card border-2 border-primary/10 rounded-3xl shadow-sm overflow-hidden flex flex-col">
-        <div className="p-6 border-b border-primary/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl shadow-bespoke-sm overflow-hidden flex flex-col">
+        <div className="p-6 border-b border-black/[0.06] dark:border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-2">
-              <Flame className="w-5 h-5 text-accent-rose" />
-              Student AI Inquiries & Weekly Quota ({filteredUsers.length})
+              <Flame className="w-5 h-5 text-accent" />
+              Student AI Inquiries &amp; Weekly Quota ({filteredUsers.length})
             </h2>
             <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1">
               Free students are capped at 5/week; Premium students get 150/week.
@@ -293,7 +293,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
               placeholder="Search student name or @user..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full bg-ground border border-primary/15 rounded-xl pl-9 pr-3.5 py-2 text-xs font-bold text-gray-900 dark:text-gray-100 focus:outline-none focus:border-primary"
+              className="w-full bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-xl pl-9 pr-3.5 py-2 text-xs font-bold text-gray-900 dark:text-gray-100 focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all"
             />
           </div>
         </div>
@@ -301,7 +301,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-ground/50 border-b border-primary/10">
+              <tr className="bg-ground/50 border-b border-black/[0.06] dark:border-white/[0.08]">
                 <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Student</th>
                 <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Plan</th>
                 <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Weekly Inquiries</th>
@@ -323,11 +323,11 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                   const percent = Math.min(100, Math.round((user.ai_weekly_usage / maxQuota) * 100));
 
                   return (
-                    <tr key={user.telegram_id} className="border-b border-primary/5 hover:bg-ground/50 transition-colors">
+                    <tr key={user.telegram_id} className="border-b border-black/[0.04] dark:border-white/[0.04] hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${
-                            isPrem ? 'bg-violet-500/10 text-violet-600' : 'bg-accent-blue/10 text-accent-blue'
+                            isPrem ? 'bg-accent/15 text-accent' : 'bg-primary/10 text-primary'
                           }`}>
                             {user.full_name?.charAt(0).toUpperCase() || '?'}
                           </div>
@@ -335,7 +335,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                             <p className="font-bold text-sm text-gray-900 dark:text-gray-100">
                               {user.full_name || 'Unknown Student'}
                             </p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-gray-400 font-mono">
                               @{user.username || user.telegram_id}
                             </p>
                           </div>
@@ -345,37 +345,35 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                       <td className="p-4">
                         <span className={`px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider inline-flex items-center gap-1 ${
                           isPrem 
-                            ? 'bg-violet-500/10 text-violet-600 border border-violet-500/20' 
-                            : 'bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-400 border border-black/5'
+                            ? 'bg-accent/15 text-accent border border-accent/20' 
+                            : 'bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-400'
                         }`}>
-                          {isPrem && <Award className="w-3 h-3 text-violet-500" />}
+                          {isPrem && <Award className="w-3 h-3 text-accent" />}
                           {user.subscription_status}
                         </span>
                       </td>
 
-                      <td className="p-4">
-                        <p className="text-sm font-black text-gray-900 dark:text-gray-100">
-                          {user.ai_weekly_usage} <span className="text-gray-400 text-xs font-normal">/ {maxQuota}</span>
-                        </p>
+                      <td className="p-4 font-mono font-bold text-sm text-gray-900 dark:text-gray-100 tabular-nums">
+                        {user.ai_weekly_usage} <span className="text-gray-400 text-xs font-normal">/ {maxQuota}</span>
                       </td>
 
                       <td className="p-4 w-44">
                         <div className="w-full bg-black/5 dark:bg-white/10 h-2 rounded-full overflow-hidden">
                           <div 
-                            className={`h-full transition-all duration-300 rounded-full ${
-                              percent > 85 ? 'bg-rose-500' : percent > 50 ? 'bg-amber-500' : 'bg-primary'
+                            className={`h-full transition-all duration-300 ease-bespoke rounded-full ${
+                              percent > 85 ? 'bg-error' : percent > 50 ? 'bg-[hsl(36,58%,42%)]' : 'bg-primary'
                             }`}
                             style={{ width: `${percent}%` }}
                           />
                         </div>
-                        <p className="text-[10px] font-bold text-gray-400 mt-1 text-right">{percent}% used</p>
+                        <p className="text-[10px] font-bold text-gray-400 mt-1 text-right font-mono tabular-nums">{percent}% used</p>
                       </td>
 
                       <td className="p-4 text-right">
                         <button
                           onClick={() => handleReset(user.telegram_id, user.full_name || 'Student')}
                           disabled={resettingId === user.telegram_id || user.ai_weekly_usage === 0}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-primary/15 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all shadow-sm"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-black/[0.06] dark:border-white/[0.08] text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all duration-150 shadow-bespoke-sm"
                         >
                           <RotateCcw className={`w-3.5 h-3.5 ${resettingId === user.telegram_id ? 'animate-spin' : ''}`} />
                           <span>Reset</span>
@@ -393,10 +391,10 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
       {/* Two Column Grid: Recent Vision Scans & Cache Samples */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gemini Vision Scans */}
-        <div className="bg-card border-2 border-primary/10 rounded-3xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-primary/10">
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 shadow-bespoke-sm">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-black/[0.06] dark:border-white/[0.08]">
             <h3 className="font-black text-base text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Camera className="w-4 h-4 text-purple-500" />
+              <Camera className="w-4 h-4 text-[hsl(268,40%,48%)]" />
               Recent Gemini Vision Verifications
             </h3>
             <span className="text-xs font-bold text-gray-400">Latest {stats.vision.recentScans.length}</span>
@@ -407,14 +405,14 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
               <p className="text-xs text-gray-400 py-6 text-center">No receipts processed with Gemini Vision yet.</p>
             ) : (
               stats.vision.recentScans.slice(0, 5).map(s => (
-                <div key={s.id} className="p-3.5 rounded-2xl bg-ground/60 border border-primary/10 flex items-center justify-between gap-3">
+                <div key={s.id} className="p-3.5 rounded-2xl bg-ground/60 border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-black text-gray-900 dark:text-gray-100">
                         {s.gemini_amount || 'Unrecognized amount'}
                       </span>
                       {s.gemini_flagged && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-error/10 text-error border border-error/20">
                           Suspicious
                         </span>
                       )}
@@ -424,7 +422,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                     </p>
                   </div>
                   <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                    s.status === 'approved' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-600'
+                    s.status === 'approved' ? 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)]' : 'bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)]'
                   }`}>
                     {s.status}
                   </span>
@@ -435,10 +433,10 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
         </div>
 
         {/* AI Cache Entries */}
-        <div className="bg-card border-2 border-primary/10 rounded-3xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-primary/10">
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 shadow-bespoke-sm">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-black/[0.06] dark:border-white/[0.08]">
             <h3 className="font-black text-base text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Database className="w-4 h-4 text-emerald-500" />
+              <Database className="w-4 h-4 text-[hsl(145,42%,38%)]" />
               Cached Question Explanations
             </h3>
             <span className="text-xs font-bold text-gray-400">Total: {stats.cache.totalCached}</span>
@@ -449,7 +447,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
               <p className="text-xs text-gray-400 py-6 text-center">No AI explanations cached yet.</p>
             ) : (
               stats.cache.recentEntries.slice(0, 5).map((c, idx) => (
-                <div key={idx} className="p-3.5 rounded-2xl bg-ground/60 border border-primary/10 flex items-center justify-between gap-3">
+                <div key={idx} className="p-3.5 rounded-2xl bg-ground/60 border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">
                       Q: {c.question_id}
@@ -458,7 +456,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                       Type: <span className="font-mono text-primary font-bold">{c.prompt_type}</span> · Cached: {new Date(c.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 shrink-0">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] shrink-0">
                     0 Tokens
                   </span>
                 </div>

@@ -291,17 +291,16 @@ export default function UpgradePage() {
   // ─────────────────────────────────────────────────────────────
   if (phase === 'approved') {
     return (
-      <div className="min-h-screen bg-ground pb-24 flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in-95 duration-500">
-        {/* Glow Ring */}
+      <div className="min-h-screen bg-ground pb-24 flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+        {/* Dignified Celebration Icon */}
         <div className="relative mb-6">
-          <div className="w-24 h-24 bg-gradient-to-tr from-amber-400 via-emerald-400 to-primary rounded-full flex items-center justify-center shadow-xl shadow-emerald-500/20 animate-bounce">
-            <Award className="w-12 h-12 text-white" />
+          <div className="w-20 h-20 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center shadow-bespoke-md">
+            <Award className="w-10 h-10 text-primary" />
           </div>
-          <div className="absolute -inset-2 bg-emerald-400/20 rounded-full blur-xl animate-pulse" />
         </div>
 
         {/* Heartwarming Congratulations */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-black uppercase tracking-wider mb-3">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[hsl(145,42%,38%)]/10 border border-[hsl(145,42%,38%)]/20 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] text-xs font-black uppercase tracking-wider mb-3">
           <Sparkles className="w-3.5 h-3.5" />
           Premium Activated
         </div>
@@ -318,9 +317,9 @@ export default function UpgradePage() {
         </p>
 
         {/* Feature Highlights Card */}
-        <div className="w-full max-w-sm bg-card border border-emerald-500/20 rounded-2xl p-4 mb-8 text-left space-y-3 shadow-sm">
+        <div className="w-full max-w-sm bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-2xl p-4 mb-8 text-left space-y-3 shadow-bespoke-sm">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] flex items-center justify-center">
               <Zap className="w-4 h-4" />
             </div>
             <div>
@@ -330,7 +329,7 @@ export default function UpgradePage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
@@ -340,7 +339,7 @@ export default function UpgradePage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] flex items-center justify-center">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
@@ -357,7 +356,7 @@ export default function UpgradePage() {
               haptic.impact('heavy');
               router.push('/practice');
             }}
-            className="w-full h-14 rounded-2xl bg-gradient-to-r from-emerald-600 to-primary text-white font-black shadow-lg shadow-primary/25 active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
+            className="w-full h-14 rounded-2xl bg-primary text-white font-black shadow-bespoke-md active:scale-[0.98] transition-all duration-200 ease-bespoke flex items-center justify-center gap-2"
           >
             Start Practicing Now 🚀
             <ArrowRight className="w-5 h-5" />
@@ -365,7 +364,7 @@ export default function UpgradePage() {
 
           <button 
             onClick={() => router.push('/')}
-            className="w-full h-12 rounded-2xl bg-card border border-black/10 dark:border-white/10 text-gray-700 dark:text-gray-300 font-bold active:scale-[0.98] transition-transform text-sm"
+            className="w-full h-12 rounded-2xl bg-card border border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 font-bold active:scale-[0.98] transition-all duration-200 ease-bespoke text-sm"
           >
             Go to Home Hub
           </button>
@@ -379,16 +378,16 @@ export default function UpgradePage() {
   // ─────────────────────────────────────────────────────────────
   if (phase === 'verifying') {
     return (
-      <div className="min-h-screen bg-ground pb-24 flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-300">
+      <div className="min-h-screen bg-ground pb-24 flex flex-col items-center justify-center p-6 text-center animate-fade-in">
         <TopHeader />
 
         <div className="max-w-sm w-full mx-auto pt-6 flex flex-col items-center">
           {/* Animated Verification Pulse */}
           <div className="relative mb-6">
-            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
               <Clock className="w-10 h-10 text-primary" />
             </div>
-            <div className="absolute -top-1 -right-1 w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-bold border-2 border-ground animate-bounce">
+            <div className="absolute -top-1 -right-1 w-6 h-6 bg-[hsl(145,42%,38%)] text-white rounded-full flex items-center justify-center text-xs font-bold border-2 border-ground shadow-bespoke-sm">
               <Sparkles className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -399,38 +398,38 @@ export default function UpgradePage() {
           </h1>
 
           <p className="text-gray-600 dark:text-gray-400 font-medium text-sm mb-6 max-w-xs">
-            Our AI & verification admin are reviewing your receipt. Most approvals complete in under 5 minutes!
+            Our AI &amp; verification admin are reviewing your receipt. Most approvals complete in under 5 minutes!
           </p>
 
           {/* Large Countdown Badge */}
-          <div className="bg-card border-2 border-primary/20 rounded-3xl p-6 mb-6 shadow-sm w-full relative overflow-hidden">
+          <div className="bg-card border border-primary/20 rounded-3xl p-6 mb-6 shadow-bespoke-sm w-full relative overflow-hidden">
             <div className="text-xs font-black uppercase tracking-widest text-primary mb-1">
               Estimated Approval In
             </div>
 
-            <div className="text-5xl font-black font-mono tracking-tight text-gray-900 dark:text-gray-100 mb-2">
+            <div className="text-5xl font-black font-mono tracking-tight text-gray-900 dark:text-gray-100 mb-2 tabular-nums">
               {formatTimer(secondsLeft)}
             </div>
 
             {/* Live Progress Bar */}
-            <div className="w-full bg-gray-200 dark:bg-white/10 h-2 rounded-full overflow-hidden mb-3">
+            <div className="w-full bg-black/5 dark:bg-white/10 h-2 rounded-full overflow-hidden mb-3">
               <div 
-                className="bg-primary h-full transition-all duration-1000 ease-linear rounded-full"
+                className="bg-primary h-full transition-all duration-1000 ease-bespoke rounded-full"
                 style={{ width: `${Math.max(5, ((300 - secondsLeft) / 300) * 100)}%` }}
               />
             </div>
 
             {/* Real-time Status Badge */}
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-1.5 rounded-full border border-emerald-500/20">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            <div className="inline-flex items-center gap-2 text-xs font-bold text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] bg-[hsl(145,42%,38%)]/10 px-3 py-1.5 rounded-full border border-[hsl(145,42%,38%)]/20">
+              <span className="w-2 h-2 rounded-full bg-[hsl(145,42%,38%)] animate-pulse" />
               Listening for approval live...
             </div>
           </div>
 
           {/* 3 Step Interactive Progress */}
-          <div className="w-full bg-card border border-black/5 dark:border-white/10 rounded-2xl p-4 mb-6 text-left space-y-3">
+          <div className="w-full bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-2xl p-4 mb-6 text-left space-y-3 shadow-bespoke-sm">
             <div className="flex items-center gap-3">
-              <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-black">
+              <div className="w-6 h-6 rounded-full bg-[hsl(145,42%,38%)] text-white flex items-center justify-center text-xs font-black">
                 <Check className="w-3.5 h-3.5" />
               </div>
               <div>
@@ -440,22 +439,22 @@ export default function UpgradePage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-black animate-spin">
+              <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-black">
                 ⏳
               </div>
               <div>
-                <p className="text-xs font-bold text-primary">2. AI & Bank Verification</p>
+                <p className="text-xs font-bold text-primary">2. AI &amp; Bank Verification</p>
                 <p className="text-[11px] text-gray-500">Extracting transaction reference</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3 opacity-50">
-              <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-white/10 text-gray-500 flex items-center justify-center text-xs font-black">
+              <div className="w-6 h-6 rounded-full bg-black/5 dark:bg-white/10 text-gray-500 flex items-center justify-center text-xs font-black">
                 🔓
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-700 dark:text-gray-300">3. Instant Premium Upgrade</p>
-                <p className="text-[11px] text-gray-500">Auto-unlocks all exams & AI tutor</p>
+                <p className="text-[11px] text-gray-500">Auto-unlocks all exams &amp; AI tutor</p>
               </div>
             </div>
           </div>
@@ -466,7 +465,7 @@ export default function UpgradePage() {
 
           <button 
             onClick={() => router.push('/practice')}
-            className="w-full h-12 rounded-2xl bg-card border border-black/10 dark:border-white/10 text-gray-800 dark:text-gray-200 font-bold active:scale-[0.98] transition-transform text-sm"
+            className="w-full h-12 rounded-2xl bg-card border border-black/[0.06] dark:border-white/[0.08] text-gray-800 dark:text-gray-200 font-bold active:scale-[0.98] transition-all duration-200 ease-bespoke text-sm"
           >
             Practice Free Questions While Waiting
           </button>
@@ -480,9 +479,9 @@ export default function UpgradePage() {
   // ─────────────────────────────────────────────────────────────
   if (phase === 'rejected') {
     return (
-      <div className="min-h-screen bg-ground pb-24 flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-20 h-20 bg-red-100 dark:bg-red-950/30 rounded-full flex items-center justify-center mb-6">
-          <AlertCircle className="w-10 h-10 text-red-600 dark:text-red-400" />
+      <div className="min-h-screen bg-ground pb-24 flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+        <div className="w-20 h-20 bg-error/10 border border-error/20 rounded-full flex items-center justify-center mb-6">
+          <AlertCircle className="w-10 h-10 text-error" />
         </div>
         <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight mb-2">
           Receipt Not Verified
@@ -495,7 +494,7 @@ export default function UpgradePage() {
             setPhase('form');
             handleRemoveFile();
           }}
-          className="w-full max-w-xs h-14 rounded-2xl bg-primary text-white font-black shadow-lg active:scale-[0.98] transition-transform"
+          className="w-full max-w-xs h-14 rounded-2xl bg-primary text-white font-black shadow-bespoke-md active:scale-[0.98] transition-all duration-200 ease-bespoke"
         >
           Try Uploading Again
         </button>
@@ -519,17 +518,17 @@ export default function UpgradePage() {
         </p>
 
         {/* Pricing Card */}
-        <div className="bg-gradient-to-br from-primary to-blue-600 p-6 rounded-[24px] shadow-xl shadow-primary/20 text-white mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
-          <h2 className="text-lg font-bold text-white/90 mb-1">Premium Pass</h2>
+        <div className="bg-gradient-to-br from-primary via-[hsl(224,55%,38%)] to-[hsl(215,55%,28%)] p-6 rounded-[24px] shadow-bespoke-md text-white mb-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.06] rounded-full blur-2xl -mr-10 -mt-10" />
+          <h2 className="text-lg font-bold text-white/85 mb-1">Premium Pass</h2>
           <div className="flex items-baseline gap-2 mb-4">
             <span className="text-4xl font-black">199 ETB</span>
-            <span className="text-white/80 font-medium">/ term</span>
+            <span className="text-white/75 font-medium">/ term</span>
           </div>
-          <ul className="space-y-2 text-sm font-medium text-white/90">
-            <li className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-emerald-300" /> Infinite AI Tutor Explanations</li>
-            <li className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-emerald-300" /> 31,000+ Past Questions with Answers</li>
-            <li className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-emerald-300" /> Topic Mastery & Exam Analytics</li>
+          <ul className="space-y-2 text-sm font-medium text-white/85">
+            <li className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-white/70" /> Infinite AI Tutor Explanations</li>
+            <li className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-white/70" /> 31,000+ Past Questions with Answers</li>
+            <li className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-white/70" /> Topic Mastery &amp; Exam Analytics</li>
           </ul>
         </div>
 
@@ -560,7 +559,7 @@ export default function UpgradePage() {
               onClick={() => handleCopy('1000217910448', 'cbe')} 
               className="text-primary font-bold text-xs bg-primary/10 hover:bg-primary/20 px-3 py-2 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5"
             >
-              {copiedBank === 'cbe' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedBank === 'cbe' ? <Check className="w-3.5 h-3.5 text-[hsl(145,42%,38%)]" /> : <Copy className="w-3.5 h-3.5" />}
               {copiedBank === 'cbe' ? 'Copied' : 'Copy'}
             </button>
           </div>
@@ -580,7 +579,7 @@ export default function UpgradePage() {
               onClick={() => handleCopy('0942202051', 'telebirr')} 
               className="text-primary font-bold text-xs bg-primary/10 hover:bg-primary/20 px-3 py-2 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5"
             >
-              {copiedBank === 'telebirr' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedBank === 'telebirr' ? <Check className="w-3.5 h-3.5 text-[hsl(145,42%,38%)]" /> : <Copy className="w-3.5 h-3.5" />}
               {copiedBank === 'telebirr' ? 'Copied' : 'Copy'}
             </button>
           </div>
@@ -601,7 +600,7 @@ export default function UpgradePage() {
           </div>
 
           {error && (
-            <div className="p-3 mb-4 bg-red-50 text-red-600 dark:bg-red-950/20 dark:text-red-400 rounded-xl text-sm font-bold flex items-center gap-2">
+            <div className="p-3 mb-4 bg-error/10 border border-error/20 text-error rounded-xl text-sm font-bold flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               {error}
             </div>
@@ -634,7 +633,7 @@ export default function UpgradePage() {
                 </p>
               </div>
             ) : (
-              <div className="w-full bg-ground border border-emerald-500/30 rounded-2xl p-3.5 flex items-center gap-3.5 animate-in fade-in duration-200">
+              <div className="w-full bg-ground border border-[hsl(145,42%,38%)]/30 rounded-2xl p-3.5 flex items-center gap-3.5 animate-in fade-in duration-200">
                 {previewUrl ? (
                   <img 
                     src={previewUrl} 
@@ -648,7 +647,7 @@ export default function UpgradePage() {
                 )}
                 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 text-xs font-bold mb-0.5">
+                  <div className="flex items-center gap-1.5 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] text-xs font-bold mb-0.5">
                     <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                     <span>Receipt attached</span>
                   </div>
@@ -672,7 +671,7 @@ export default function UpgradePage() {
                     type="button"
                     onClick={handleRemoveFile}
                     aria-label="Remove photo"
-                    className="p-1.5 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors active:scale-95"
+                    className="p-1.5 rounded-xl text-gray-400 hover:text-error hover:bg-error/10 transition-colors active:scale-95"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -684,7 +683,7 @@ export default function UpgradePage() {
           <button 
             type="submit" 
             disabled={isSubmitting || !file}
-            className="w-full h-14 rounded-2xl bg-primary text-white font-black shadow-lg shadow-primary/25 active:scale-[0.98] transition-all disabled:opacity-50 disabled:shadow-none disabled:active:scale-100 flex items-center justify-center gap-2"
+            className="w-full h-14 rounded-2xl bg-primary text-white font-black shadow-bespoke-md active:scale-[0.98] transition-all duration-200 ease-bespoke disabled:opacity-50 disabled:shadow-none disabled:active:scale-100 flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <div className="flex items-center gap-2">
@@ -697,7 +696,7 @@ export default function UpgradePage() {
           </button>
 
           <p className="text-center text-[11px] text-gray-400 font-medium mt-3 flex items-center justify-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            <ShieldCheck className="w-3.5 h-3.5 text-[hsl(145,42%,38%)]" />
             Auto-approved in ~5 minutes • Instant access unlocked
           </p>
         </form>

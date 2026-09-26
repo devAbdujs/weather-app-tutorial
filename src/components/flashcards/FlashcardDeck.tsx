@@ -159,33 +159,32 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
 
   return (
     <div className="min-h-screen bg-ground text-gray-900 dark:text-gray-100 pb-24 max-w-md mx-auto flex flex-col justify-between font-sans overflow-hidden">
-      <header className="bg-ground/90 backdrop-blur-md border-b-2 border-black/5 dark:border-white/10 flex flex-col z-10 relative animate-fade-up">
-        
+      <header className="bg-ground/90 backdrop-blur-md border-b border-black/[0.06] dark:border-white/[0.08] flex flex-col z-10 relative animate-fade-up">
         {/* Top Header */}
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
             {onExit && (
-              <button onClick={() => { haptic.impact('light'); onExit(); }} className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-card border border-black/5 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 transition-colors focus-ring active:scale-[0.98] active:opacity-80">
-                <ChevronLeft className="w-6 h-6" />
+              <button onClick={() => { haptic.impact('light'); onExit(); }} className="w-10 h-10 flex items-center justify-center rounded-[12px] bg-card border border-black/[0.06] dark:border-white/[0.08] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors active:scale-95 shadow-bespoke-sm">
+                <ChevronLeft className="w-5 h-5" />
               </button>
             )}
-            <div className="w-10 h-10 rounded-[12px] bg-primary/10 border border-black/5 dark:border-white/10 flex items-center justify-center shadow-sm">
-              <Zap className="w-5 h-5 text-gray-900 dark:text-gray-100" />
+            <div className="w-10 h-10 rounded-[12px] bg-primary/10 border border-primary/20 flex items-center justify-center shadow-bespoke-sm">
+              <Zap className="w-5 h-5 text-primary" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100 tracking-tight">Flashcards</h1>
             </div>
           </div>
           
-          <button onClick={() => { haptic.impact('light'); loadDeck(); }} className="w-10 h-10 rounded-[12px] bg-card border border-black/5 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 transition-colors focus-ring active:scale-[0.98] active:opacity-80 flex justify-center items-center shadow-sm">
+          <button onClick={() => { haptic.impact('light'); loadDeck(); }} className="w-10 h-10 rounded-[12px] bg-card border border-black/[0.06] dark:border-white/[0.08] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors active:scale-95 flex justify-center items-center shadow-bespoke-sm">
             <Shuffle className="w-4 h-4" />
           </button>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full h-1.5 bg-black/5 dark:bg-white/5">
+        <div className="w-full h-[2px] bg-black/[0.04] dark:bg-white/[0.04]">
           <div 
-            className="h-full bg-primary transition-all duration-300 ease-out"
+            className="h-full bg-primary transition-all duration-300 ease-bespoke"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -195,15 +194,15 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
         {loading ? (
           <div className="w-full max-w-sm h-[420px] rounded-[32px] bg-black/5 dark:bg-white/5 animate-pulse" />
         ) : isCompleted ? (
-          <div className="w-full max-w-sm bg-card border border-primary/20 rounded-[32px] p-8 text-center space-y-6 shadow-lg animate-scale-bounce">
-            <div className="w-20 h-20 rounded-[20px] bg-accent-emerald border border-primary/20 mx-auto flex items-center justify-center shadow-sm">
-              <CheckCircle2 className="w-10 h-10 text-gray-900 dark:text-gray-100" />
+          <div className="w-full max-w-sm bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[32px] p-8 text-center space-y-6 shadow-bespoke-md animate-fade-in">
+            <div className="w-20 h-20 rounded-[20px] bg-[hsl(145,42%,38%)]/10 border border-[hsl(145,42%,38%)]/20 mx-auto flex items-center justify-center shadow-bespoke-sm">
+              <CheckCircle2 className="w-10 h-10 text-[hsl(145,42%,38%)]" />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Deck Completed!</h2>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mt-2">Excellent spaced repetition session.</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">Excellent spaced repetition session.</p>
             </div>
-            <button onClick={() => { haptic.impact('medium'); loadDeck(); }} className="w-full  py-4 bg-primary text-card font-bold text-sm rounded-[16px] transition-all">
+            <button onClick={() => { haptic.impact('medium'); loadDeck(); }} className="w-full py-4 bg-primary text-white font-bold text-sm rounded-[16px] shadow-bespoke-md active:scale-[0.98] transition-all duration-200 ease-bespoke">
               Study Next Batch
             </button>
           </div>
@@ -212,7 +211,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
         ) : (
           <div className="w-full max-w-sm space-y-6 relative flex flex-col items-center">
             
-            <div className="w-full flex justify-between font-bold text-xs text-gray-500 dark:text-gray-400 tracking-widest uppercase px-1">
+            <div className="w-full flex justify-between font-bold text-xs text-gray-500 dark:text-gray-400 tracking-widest uppercase px-1 tabular-nums">
               <span>{currentCard.subject}</span>
               <span>{currentIndex + 1} / {cards.length}</span>
             </div>
@@ -220,8 +219,8 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
             {/* Background Hint Indicators */}
             {isFlipped && (
               <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 flex justify-between px-2 w-full pointer-events-none z-0">
-                <div className={`text-accent-rose font-black text-2xl transition-opacity ${dragOffset < -50 ? 'opacity-100' : 'opacity-0'}`}>FORGOT</div>
-                <div className={`text-accent-emerald font-black text-2xl transition-opacity ${dragOffset > 50 ? 'opacity-100' : 'opacity-0'}`}>KNOW IT</div>
+                <div className={`text-error font-black text-2xl transition-opacity ${dragOffset < -50 ? 'opacity-100' : 'opacity-0'}`}>FORGOT</div>
+                <div className={`text-[hsl(145,42%,38%)] font-black text-2xl transition-opacity ${dragOffset > 50 ? 'opacity-100' : 'opacity-0'}`}>KNOW IT</div>
               </div>
             )}
 
@@ -243,16 +242,16 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
               <div className={`relative w-full h-full duration-[500ms] transform-style-3d ease-snap ${isFlipped ? 'rotate-y-180' : ''}`}>
                 
                 {/* Front Side */}
-                <div className="absolute inset-0 w-full h-full bg-card border border-primary/20 rounded-[32px] p-8 flex flex-col justify-center items-center backface-hidden shadow-md">
-                  <span className="absolute top-6 left-6 text-[10px] uppercase tracking-widest font-black text-gray-600 dark:text-gray-400 flex items-center gap-1.5"><HelpCircle className="w-4 h-4"/> Concept</span>
+                <div className="absolute inset-0 w-full h-full bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[32px] p-8 flex flex-col justify-center items-center backface-hidden shadow-bespoke-md">
+                  <span className="absolute top-6 left-6 text-[10px] uppercase tracking-widest font-black text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><HelpCircle className="w-4 h-4"/> Concept</span>
                   <div className="text-xl font-bold text-gray-900 dark:text-gray-100 text-center leading-relaxed max-h-64 overflow-y-auto no-scrollbar w-full">
                     <MathText content={currentCard.front} />
                   </div>
                 </div>
 
                 {/* Back Side */}
-                <div className="absolute inset-0 w-full h-full bg-card border-2 border-accent-amber rounded-[32px] p-8 flex flex-col justify-center items-center rotate-y-180 backface-hidden shadow-md">
-                  <span className="absolute top-6 left-6 text-[10px] uppercase tracking-widest font-black text-accent-amber flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4"/> Answer</span>
+                <div className="absolute inset-0 w-full h-full bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[32px] p-8 flex flex-col justify-center items-center rotate-y-180 backface-hidden shadow-bespoke-md">
+                  <span className="absolute top-6 left-6 text-[10px] uppercase tracking-widest font-black text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4"/> Answer</span>
                   <div className="text-base font-medium text-gray-900 dark:text-gray-100 text-center leading-relaxed max-h-64 overflow-y-auto no-scrollbar w-full">
                     <MathText content={currentCard.back} />
                   </div>
@@ -264,7 +263,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
                       haptic.impact('light');
                       setShowAI(true); 
                     }}
-                    className="absolute bottom-6 right-6 bg-primary/10 hover:bg-primary/20 border-2 border-transparent hover:border-accent-blue/30 text-accent-blue font-bold text-xs px-3 py-1.5 rounded-full flex items-center gap-1 transition-colors active:scale-[0.98] active:opacity-80 pointer-events-auto"
+                    className="absolute bottom-6 right-6 bg-primary/10 hover:bg-primary/20 border border-primary/20 text-primary font-bold text-xs px-3 py-1.5 rounded-full flex items-center gap-1 transition-colors active:scale-95 pointer-events-auto"
                   >
                      <Sparkles className="w-3.5 h-3.5"/> Ask AI
                   </button>
@@ -275,15 +274,15 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
             {/* Action Buttons */}
             <div className="w-full mt-2 h-14 relative">
               {!isFlipped ? (
-                <button onClick={handleFlip} className="w-full absolute inset-0  h-14 rounded-[16px] bg-primary text-card font-black uppercase tracking-widest text-sm transition-all animate-fade-in shadow-sm active:scale-[0.98] active:opacity-80">
+                <button onClick={handleFlip} className="w-full absolute inset-0 h-14 rounded-[16px] bg-primary text-white font-black uppercase tracking-widest text-sm transition-all duration-200 ease-bespoke animate-fade-in shadow-bespoke-sm active:scale-[0.98]">
                   Tap to Reveal Answer
                 </button>
               ) : (
                 <div className="flex gap-4 w-full absolute inset-0 animate-fade-in">
-                  <button onClick={() => nextCard('hard')} className="flex-1  h-14 rounded-[16px] bg-card text-gray-900 dark:text-gray-100 font-black uppercase tracking-widest text-xs border border-black/10 dark:border-white/20 shadow-sm active:scale-[0.98] active:opacity-80">
+                  <button onClick={() => nextCard('hard')} className="flex-1 h-14 rounded-[16px] bg-card text-error font-black uppercase tracking-widest text-xs border border-error/20 shadow-bespoke-sm active:scale-[0.98] transition-all">
                     Forgot
                   </button>
-                  <button onClick={() => nextCard('easy')} className="flex-1  h-14 rounded-[16px] bg-accent-emerald text-gray-900 dark:text-gray-100 font-black uppercase tracking-widest text-xs border border-primary/20 shadow-sm active:scale-[0.98] active:opacity-80">
+                  <button onClick={() => nextCard('easy')} className="flex-1 h-14 rounded-[16px] bg-[hsl(145,42%,38%)] text-white font-black uppercase tracking-widest text-xs shadow-bespoke-sm active:scale-[0.98] transition-all">
                     Knew It
                   </button>
                 </div>

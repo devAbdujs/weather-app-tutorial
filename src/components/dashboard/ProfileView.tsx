@@ -95,17 +95,17 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
     return Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
   }, [profile.ai_quota_reset_at]);
 
-  // Dynamic progress bar gradient based on percentage used
+  // Dynamic progress bar color based on percentage used — desaturated, not neon
   const getProgressColor = () => {
-    if (usagePercent < 60) return 'from-emerald-500 to-teal-400';
-    if (usagePercent < 85) return 'from-amber-500 to-orange-400';
-    return 'from-rose-500 to-red-500';
+    if (usagePercent < 60) return 'bg-[hsl(145,42%,38%)]';       /* Muted green */
+    if (usagePercent < 85) return 'bg-[hsl(36,58%,42%)]';         /* Warm amber */
+    return 'bg-error';                                              /* Muted rose-red */
   };
 
   const getTextColor = () => {
-    if (usagePercent < 60) return 'text-emerald-500 dark:text-emerald-400';
-    if (usagePercent < 85) return 'text-amber-500 dark:text-amber-400';
-    return 'text-rose-500 dark:text-rose-400';
+    if (usagePercent < 60) return 'text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]';
+    if (usagePercent < 85) return 'text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)]';
+    return 'text-error';
   };
 
   // Initials for avatar fallback
@@ -167,7 +167,7 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
               onClick={handleAvatarClick} 
               className="relative w-18 h-18 shrink-0 cursor-pointer active:scale-95 transition-transform"
             >
-              <div className="w-full h-full rounded-[20px] bg-gradient-to-tr from-primary to-blue-500 p-0.5 shadow-sm shadow-primary/20">
+              <div className="w-full h-full rounded-[20px] bg-primary/20 dark:bg-primary/30 p-0.5 shadow-bespoke-sm">
                 <div className="w-full h-full bg-ground rounded-[18px] overflow-hidden flex items-center justify-center">
                   {profile.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -185,11 +185,11 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
 
               {/* Status Badge floating on bottom right */}
               {isPremium ? (
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-white flex items-center justify-center shadow-md border-2 border-card">
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-accent border-2 border-card flex items-center justify-center shadow-bespoke-sm">
                   <Zap className="w-3.5 h-3.5 fill-white text-white" />
                 </div>
               ) : (
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-black/5 dark:bg-white/10 text-gray-500 dark:text-gray-400 flex items-center justify-center shadow-sm border-2 border-card">
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-black/5 dark:bg-white/10 text-gray-500 dark:text-gray-400 flex items-center justify-center border-2 border-card">
                   <GraduationCap className="w-3.5 h-3.5" />
                 </div>
               )}
@@ -278,10 +278,10 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
               </span>
             </div>
 
-            {/* Dynamic Progress Bar */}
+            {/* Dynamic Progress Bar — solid, desaturated */}
             <div className="w-full bg-ground border border-black/[0.06] dark:border-white/[0.08] h-2.5 rounded-full overflow-hidden p-0.5">
               <div 
-                className={`h-full rounded-full bg-gradient-to-r ${getProgressColor()} transition-all duration-700 ease-out`}
+                className={`h-full rounded-full ${getProgressColor()} transition-all duration-700 ease-bespoke`}
                 style={{ width: `${Math.max(4, usagePercent)}%` }}
               />
             </div>
@@ -311,8 +311,8 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
               </button>
             </div>
           ) : (
-            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-[16px] p-3 flex items-center gap-2.5 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
-              <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-500" />
+            <div className="bg-[hsl(145,42%,38%)]/10 border border-[hsl(145,42%,38%)]/25 rounded-[16px] p-3 flex items-center gap-2.5 text-[hsl(145,42%,35%)] dark:text-[hsl(145,35%,62%)] text-xs font-bold">
+              <ShieldCheck className="w-4 h-4 shrink-0" />
               <span>Premium Activated • 150 Inquiries / Week on Gemini Flash</span>
             </div>
           )}
@@ -332,10 +332,10 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
           <div className="grid grid-cols-3 gap-2">
             {/* Streak */}
             <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 text-center flex flex-col items-center justify-center">
-              <div className="w-7 h-7 rounded-[10px] bg-amber-500/10 text-amber-500 flex items-center justify-center mb-1">
-                <Flame className="w-4 h-4 fill-amber-500 text-amber-500" />
+              <div className="w-7 h-7 rounded-[10px] bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] flex items-center justify-center mb-1">
+                <Flame className="w-4 h-4 fill-current text-inherit" />
               </div>
-              <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono leading-none mb-1">
+              <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono leading-none mb-1 tabular-nums">
                 {profile.daily_streak || 0}
               </span>
               <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -345,10 +345,10 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
 
             {/* Drills Solved */}
             <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 text-center flex flex-col items-center justify-center">
-              <div className="w-7 h-7 rounded-[10px] bg-blue-500/10 text-blue-500 flex items-center justify-center mb-1">
+              <div className="w-7 h-7 rounded-[10px] bg-primary/10 text-primary flex items-center justify-center mb-1">
                 <Target className="w-4 h-4" />
               </div>
-              <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono leading-none mb-1">
+              <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono leading-none mb-1 tabular-nums">
                 {totalQuestions}
               </span>
               <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -358,10 +358,10 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
 
             {/* Accuracy */}
             <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 text-center flex flex-col items-center justify-center">
-              <div className="w-7 h-7 rounded-[10px] bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-1">
+              <div className="w-7 h-7 rounded-[10px] bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] flex items-center justify-center mb-1">
                 <TrendingUp className="w-4 h-4" />
               </div>
-              <span className="text-xl font-black text-emerald-600 dark:text-emerald-400 font-mono leading-none mb-1">
+              <span className="text-xl font-black text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] font-mono leading-none mb-1 tabular-nums">
                 {overallAccuracy}%
               </span>
               <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -407,10 +407,10 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
                         </div>
                         <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
                           acc >= 75 
-                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
+                            ? 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]' 
                             : acc >= 50 
-                            ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400' 
-                            : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                            ? 'bg-primary/10 text-primary' 
+                            : 'bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)]'
                         }`}>
                           {acc}%
                         </span>
@@ -419,8 +419,8 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
                       {/* Visual mastery bar */}
                       <div className="w-full bg-black/5 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
                         <div 
-                          className={`h-full rounded-full transition-all duration-500 ${
-                            acc >= 75 ? 'bg-emerald-500' : acc >= 50 ? 'bg-primary' : 'bg-amber-500'
+                          className={`h-full rounded-full transition-all duration-500 ease-bespoke ${
+                            acc >= 75 ? 'bg-[hsl(145,42%,38%)]' : acc >= 50 ? 'bg-primary' : 'bg-[hsl(36,58%,42%)]'
                           }`}
                           style={{ width: `${acc}%` }}
                         />
@@ -482,8 +482,8 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
             <div className="flex items-center gap-3">
               <div className={`w-8.5 h-8.5 rounded-[12px] flex items-center justify-center ${
                 isPremium 
-                  ? 'bg-emerald-500/10 text-emerald-500' 
-                  : 'bg-amber-500/10 text-amber-500'
+                  ? 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]' 
+                  : 'bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)]'
               }`}>
                 <Zap className="w-4 h-4" />
               </div>
@@ -507,7 +507,7 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
             className="w-full p-3 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[16px] transition-colors active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8.5 h-8.5 rounded-[12px] bg-blue-500/10 text-blue-500 flex items-center justify-center">
+              <div className="w-8.5 h-8.5 rounded-[12px] bg-[hsl(199,65%,40%)]/10 text-[hsl(199,65%,40%)] dark:text-[hsl(199,55%,62%)] flex items-center justify-center">
                 <MessageCircle className="w-4 h-4" />
               </div>
               <div>

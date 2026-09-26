@@ -18,19 +18,19 @@ export const SkeletonScreen = ({ message = "Loading..." }: { message?: string })
 
       {/* Loading Message */}
       <div className="flex flex-col items-center justify-center pt-8 pb-4">
-        <div className="w-8 h-8 border-4 border-black/10 dark:border-white/20 border-t-accent-blue rounded-full animate-spin mb-4" />
-        <p className="text-gray-900 dark:text-gray-100 font-bold animate-pulse">{message}</p>
+        <div className="w-8 h-8 border-3 border-black/10 dark:border-white/20 border-t-primary rounded-full animate-spin mb-4" />
+        <p className="text-gray-500 dark:text-gray-400 font-medium text-sm">{message}</p>
       </div>
 
       {/* Main Stats Card Skeleton */}
-      <div className="w-full h-36 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/5 dark:border-white/10 animate-pulse mt-4" />
+      <div className="w-full h-36 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] animate-pulse mt-4" />
 
       {/* Grid Skeleton */}
       <div className="grid grid-cols-2 gap-4 mt-6">
-        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/5 dark:border-white/10 animate-pulse" />
-        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/5 dark:border-white/10 animate-pulse" />
-        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/5 dark:border-white/10 animate-pulse" />
-        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/5 dark:border-white/10 animate-pulse" />
+        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] animate-pulse" />
+        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] animate-pulse" />
+        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] animate-pulse" />
+        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] animate-pulse" />
       </div>
 
     </div>

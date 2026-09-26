@@ -54,7 +54,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats }) => {
   const overallAccuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
 
   return (
-    <div className="flex flex-col pt-4 px-4 animate-fade-in bg-ground" style={{ backgroundImage: 'radial-gradient(circle, #1B3A6B08 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
+    <div className="flex flex-col pt-4 px-4 pb-8 animate-fade-in bg-ground">
       
       <header className="mb-6 pt-2 flex items-start justify-between">
         <div>
@@ -68,14 +68,14 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats }) => {
 
       {/* Global Stats Overview */}
       <div className="grid grid-cols-2 gap-3 mb-8">
-        <div className="bg-card border border-black/5 dark:border-white/10 shadow-sm rounded-[20px] p-5 flex flex-col justify-between">
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] shadow-bespoke-sm rounded-[20px] p-5 flex flex-col justify-between">
           <span className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Target className="w-3.5 h-3.5"/> Accuracy</span>
-          <span className="text-4xl font-black text-gray-900 dark:text-gray-100 tracking-tighter">{overallAccuracy}%</span>
+          <span className="text-4xl font-black text-gray-900 dark:text-gray-100 tracking-tighter tabular-nums">{overallAccuracy}%</span>
         </div>
-        <div className="bg-primary shadow-sm rounded-[20px] p-5 flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute -right-4 -bottom-4 opacity-10"><Trophy className="w-24 h-24 text-white" /></div>
-          <span className="text-[10px] font-black text-white/70 uppercase tracking-wider mb-2 relative z-10 flex items-center gap-1.5"><Flame className="w-3.5 h-3.5 text-accent-gold"/> Defeated</span>
-          <span className="text-4xl font-black text-white relative z-10 tracking-tighter">{totalCorrect}</span>
+        <div className="bg-primary rounded-[20px] p-5 flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute -right-4 -bottom-4 opacity-[0.08]"><Trophy className="w-24 h-24 text-white" /></div>
+          <span className="text-[10px] font-black text-white/60 uppercase tracking-wider mb-2 relative z-10 flex items-center gap-1.5"><Flame className="w-3.5 h-3.5 text-white/60"/> Defeated</span>
+          <span className="text-4xl font-black text-white relative z-10 tracking-tighter tabular-nums">{totalCorrect}</span>
         </div>
       </div>
 
@@ -97,7 +97,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats }) => {
             const accuracy = stat.questions_attempted > 0 ? Math.round((stat.questions_correct / stat.questions_attempted) * 100) : 0;
             
             return (
-              <div key={stat.subject} className="bg-card border border-black/5 dark:border-white/10 shadow-sm rounded-[20px] p-5 relative overflow-hidden group">
+              <div key={stat.subject} className="bg-card border border-black/[0.06] dark:border-white/[0.08] shadow-bespoke-sm rounded-[20px] p-5 relative overflow-hidden group">
                 <div className="flex justify-between items-start mb-4 relative z-10">
                   <div>
                     <h3 className="text-[15px] font-black text-gray-900 dark:text-gray-100 leading-tight line-clamp-1">{stat.subject}</h3>

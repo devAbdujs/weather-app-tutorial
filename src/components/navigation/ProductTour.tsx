@@ -8,26 +8,26 @@ const TOUR_STEPS = [
   {
     title: 'Welcome to Temari App',
     description: 'The AI-powered Exam Preparation and Study Partner for Ethiopian Students.',
-    icon: <Sparkles className="w-6 h-6 text-accent-blue" />,
-    color: 'bg-accent-blue/10 text-accent-blue'
+    icon: <Sparkles className="w-6 h-6 text-primary" />,
+    color: 'bg-primary/10 text-primary'
   },
   {
     title: '33,000+ Past Papers',
     description: 'Practice with real national exam questions, complete with instant feedback and tracking.',
-    icon: <LibraryBig className="w-6 h-6 text-accent-emerald" />,
-    color: 'bg-accent-emerald/10 text-accent-emerald'
+    icon: <LibraryBig className="w-6 h-6 text-[hsl(145,42%,38%)]" />,
+    color: 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)]'
   },
   {
     title: 'Your Personal AI Tutor',
     description: 'Stuck on a problem? Our AI breaks it down step-by-step so you actually understand it.',
-    icon: <Brain className="w-6 h-6 text-accent-amber" />,
-    color: 'bg-accent-amber/10 text-accent-amber'
+    icon: <Brain className="w-6 h-6 text-[hsl(36,58%,42%)]" />,
+    color: 'bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)]'
   },
   {
     title: 'Smart Flashcards',
     description: 'Review key concepts fast with our Tinder-style swipeable flashcards and spaced repetition.',
-    icon: <BookOpen className="w-6 h-6 text-gray-900 dark:text-gray-100" />,
-    color: 'bg-primary/10 text-gray-900 dark:text-gray-100'
+    icon: <BookOpen className="w-6 h-6 text-[hsl(268,40%,48%)]" />,
+    color: 'bg-[hsl(268,40%,48%)]/10 text-[hsl(268,40%,48%)]'
   }
 ];
 
@@ -70,7 +70,7 @@ export const ProductTour: React.FC = () => {
       {/* Bottom Sheet for Mobile, Centered Modal for Desktop */}
       <div className="fixed inset-0 z-[9999] flex flex-col justify-end md:justify-center items-center pointer-events-none sm:p-6">
         <div 
-          className="w-full max-w-[400px] bg-card md:rounded-[32px] rounded-t-[32px] md:shadow-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] pointer-events-auto relative overflow-hidden transition-transform duration-500 ease-spring transform translate-y-0 animate-sheet-up"
+          className="w-full max-w-[400px] bg-card md:rounded-[32px] rounded-t-[32px] border border-black/[0.06] dark:border-white/[0.08] shadow-bespoke-lg pointer-events-auto relative overflow-hidden transition-transform duration-500 ease-spring transform translate-y-0 animate-sheet-up"
         >
           {/* Subtle drag handle indicator for mobile feel */}
           <div className="w-full flex justify-center pt-3 pb-1 md:hidden">
@@ -79,9 +79,9 @@ export const ProductTour: React.FC = () => {
 
           <button 
             onClick={handleComplete}
-            className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 flex items-center justify-center rounded-full bg-ground text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 transition-colors active:scale-[0.98] active:opacity-80 z-10"
+            className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 flex items-center justify-center rounded-full bg-ground border border-black/[0.06] dark:border-white/[0.08] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors active:scale-95 z-10"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
 
           <div className="relative z-10 px-6 pb-8 pt-4 md:pt-8 md:px-8 space-y-6">
@@ -107,7 +107,7 @@ export const ProductTour: React.FC = () => {
                 {TOUR_STEPS.map((_, i) => (
                   <div 
                     key={i}
-                    className={`h-2 rounded-full transition-all duration-300 ease-out ${
+                    className={`h-1.5 rounded-full transition-all duration-300 ease-bespoke ${
                       i === step ? 'w-6 bg-primary' : 'w-2 bg-black/10 dark:bg-white/10'
                     }`}
                   />
@@ -116,7 +116,7 @@ export const ProductTour: React.FC = () => {
 
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-3.5 bg-primary text-white rounded-[16px] font-bold text-[15px] shadow-md transition-all active:scale-[0.98] active:opacity-80"
+                className="flex items-center gap-2 px-6 py-3.5 bg-primary text-white rounded-[16px] font-bold text-[15px] shadow-bespoke-md hover:bg-primary/90 transition-all duration-200 ease-bespoke active:scale-[0.98]"
               >
                 {step === TOUR_STEPS.length - 1 ? (
                   <>Start Practicing <Check className="w-5 h-5" /></>

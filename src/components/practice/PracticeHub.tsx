@@ -14,17 +14,29 @@ import {
 } from 'lucide-react';
 
 export const getSubjectTheme = (name: string) => {
-  if (/math|applied|sigma/i.test(name)) return 'text-blue-600 dark:text-blue-400 bg-blue-500/10 border border-blue-500/20';
-  if (/physic|atom/i.test(name)) return 'text-violet-600 dark:text-violet-400 bg-violet-500/10 border border-violet-500/20';
-  if (/chem|flask/i.test(name)) return 'text-teal-600 dark:text-teal-400 bg-teal-500/10 border border-teal-500/20';
-  if (/bio|dna/i.test(name)) return 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20';
-  if (/eng|logic|psych|brain/i.test(name)) return 'text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border border-indigo-500/20';
-  if (/econ|financ|coin|manage|entrepreneur/i.test(name)) return 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20';
-  if (/hist|civic|law|scale|landmark/i.test(name)) return 'text-stone-600 dark:text-stone-400 bg-stone-500/10 border border-stone-500/20';
-  if (/geog|global|world|network/i.test(name)) return 'text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 border border-cyan-500/20';
-  if (/tech|comput|soft|server|data|rocket/i.test(name)) return 'text-sky-600 dark:text-sky-400 bg-sky-500/10 border border-sky-500/20';
-  if (/med|nurse|health|steth|pill/i.test(name)) return 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20';
-  return 'text-primary dark:text-blue-400 bg-primary/10 border border-primary/20';
+  /* Desaturated, muted subject colors — consistent with bespoke design system */
+  /* Dark mode: same background opacity but softer text via opacity reduction */
+  if (/math|applied|sigma/i.test(name))
+    return 'text-[hsl(213,55%,42%)] dark:text-[hsl(213,50%,68%)] bg-[hsl(213,55%,42%)]/10 border border-[hsl(213,55%,42%)]/20';
+  if (/physic|atom/i.test(name))
+    return 'text-[hsl(268,45%,48%)] dark:text-[hsl(268,40%,70%)] bg-[hsl(268,45%,48%)]/10 border border-[hsl(268,45%,48%)]/20';
+  if (/chem|flask/i.test(name))
+    return 'text-[hsl(175,45%,38%)] dark:text-[hsl(175,38%,65%)] bg-[hsl(175,45%,38%)]/10 border border-[hsl(175,45%,38%)]/20';
+  if (/bio|dna/i.test(name))
+    return 'text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] bg-[hsl(145,42%,38%)]/10 border border-[hsl(145,42%,38%)]/20';
+  if (/eng|logic|psych|brain/i.test(name))
+    return 'text-[hsl(235,45%,48%)] dark:text-[hsl(235,40%,70%)] bg-[hsl(235,45%,48%)]/10 border border-[hsl(235,45%,48%)]/20';
+  if (/econ|financ|coin|manage|entrepreneur/i.test(name))
+    return 'text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] bg-[hsl(36,58%,42%)]/10 border border-[hsl(36,58%,42%)]/20';
+  if (/hist|civic|law|scale|landmark/i.test(name))
+    return 'text-[hsl(25,35%,42%)] dark:text-[hsl(25,28%,62%)] bg-[hsl(25,35%,42%)]/10 border border-[hsl(25,35%,42%)]/20';
+  if (/geog|global|world|network/i.test(name))
+    return 'text-[hsl(195,48%,40%)] dark:text-[hsl(195,42%,65%)] bg-[hsl(195,48%,40%)]/10 border border-[hsl(195,48%,40%)]/20';
+  if (/tech|comput|soft|server|data|rocket/i.test(name))
+    return 'text-[hsl(205,55%,42%)] dark:text-[hsl(205,48%,68%)] bg-[hsl(205,55%,42%)]/10 border border-[hsl(205,55%,42%)]/20';
+  if (/med|nurse|health|steth|pill/i.test(name))
+    return 'text-[hsl(348,48%,48%)] dark:text-[hsl(348,40%,68%)] bg-[hsl(348,48%,48%)]/10 border border-[hsl(348,48%,48%)]/20';
+  return 'text-primary dark:text-primary/80 bg-primary/10 border border-primary/20';
 };
 
 const FRESHMAN_COURSES: Record<string, any[]> = {

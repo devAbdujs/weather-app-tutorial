@@ -5,40 +5,50 @@
 /* ─── CSS Custom Properties (Bespoke UI Design Tokens) ───────── */
 :root {
   /* Light mode surfaces: soft anti-glare warm slate */
-  --background:    #F8FAFC;
-  --foreground:    #0F172A;
-  --surface:       #FFFFFF;
-  --surface-2:     #F1F5F9;
-  --border:        rgba(15, 23, 42, 0.06);
-  --border-strong: rgba(15, 23, 42, 0.12);
+  --background:    hsl(210, 40%, 98%);
+  --foreground:    hsl(222, 47%, 11%);
+  --surface:       hsl(0, 0%, 100%);
+  --surface-2:     hsl(210, 40%, 96%);
+  --border:        hsla(222, 47%, 11%, 0.06);
+  --border-strong: hsla(222, 47%, 11%, 0.12);
 
-  /* Brand: Bespoke Deep Indigo */
-  --primary:       #1E3A8A;
+  /* Brand: Bespoke Deep Indigo — single accent, used sparingly */
+  --primary:       hsl(224, 64%, 33%);
   --primary-rgb:   30, 58, 138;
-  --accent:        #F5C518;
+  --accent:        hsl(43, 92%, 52%);
 
-  /* Text */
-  --text-primary:  #0F172A;
-  --text-secondary:#475569;
-  --text-tertiary: #94A3B8;
+  /* Text hierarchy — avoids pure #000/#fff halation */
+  --text-primary:  hsl(222, 47%, 11%);
+  --text-secondary:hsl(215, 16%, 47%);
+  --text-tertiary: hsl(215, 20%, 65%);
+
+  /* Neutral shadow tokens — no colored shadows */
+  --shadow-sm:     0 1px 2px hsla(222, 20%, 15%, 0.06);
+  --shadow-md:     0 4px 12px hsla(222, 20%, 15%, 0.08);
 }
 
 .dark {
-  /* Anti-Halation Dark Mode: Rich midnight slate (never pure #000000) */
-  --background:    #0B0F17;
-  --foreground:    #F1F5F9; /* Tinted off-white prevents eye vibration */
-  --surface:       #131B26; /* Elevated card surface */
-  --surface-2:     #1C2636; /* Elevated controls surface */
-  --border:        rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.15);
+  /* Anti-Halation Dark Mode: Rich midnight slate — deeply desaturated */
+  /* Colors feel more intense on dark backgrounds — desaturate accordingly */
+  --background:    hsl(224, 26%, 7%);
+  --foreground:    hsl(213, 31%, 95%);  /* Off-white — prevents eye vibration */
+  --surface:       hsl(222, 26%, 12%);  /* Elevation via lightness, not shadows */
+  --surface-2:     hsl(222, 24%, 18%);  /* Further elevated controls */
+  --border:        hsla(0, 0%, 100%, 0.08);
+  --border-strong: hsla(0, 0%, 100%, 0.14);
 
-  --primary:       #3B82F6;
-  --primary-rgb:   59, 130, 246;
-  --accent:        #FBBF24;
+  /* Dark mode primary: desaturated — colors feel more intense on dark bg */
+  --primary:       hsl(213, 60%, 58%);
+  --primary-rgb:   54, 117, 212;
+  --accent:        hsl(43, 65%, 54%);   /* Desaturated gold for dark bg */
 
-  --text-primary:  #F1F5F9;
-  --text-secondary:#94A3B8;
-  --text-tertiary: #64748B;
+  --text-primary:  hsl(213, 31%, 95%);
+  --text-secondary:hsl(215, 14%, 63%);
+  --text-tertiary: hsl(215, 12%, 46%);
+
+  /* Dark mode: no shadows — use surface lightness for depth */
+  --shadow-sm:     none;
+  --shadow-md:     none;
 }
 
 /* ─── Base Reset ─────────────────────────────────────────────────── */
@@ -64,8 +74,8 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
-.dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
-.dark ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+.dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
+.dark ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 
 /* ─── Utilities ──────────────────────────────────────────────────── */
 @layer utilities {
@@ -85,8 +95,11 @@ body {
   .backface-hidden { backface-visibility: hidden; }
   .rotate-y-180 { transform: rotateY(180deg); }
 
-  .ease-spring { transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-  .ease-snap { transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  /* Custom easing — quadratic & quintic, natural not robotic */
+  .ease-spring    { transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  .ease-snap      { transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .ease-bespoke   { transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  .ease-out-quint { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 
   .focus-ring { outline: none; }
   .focus-ring:focus-visible {
@@ -96,12 +109,30 @@ body {
 
   .stagger-1 { animation-delay: 0.04s; }
   .stagger-2 { animation-delay: 0.08s; }
+  .stagger-3 { animation-delay: 0.12s; }
 
   .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
   .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+
+  /* Semantic text utilities */
+  .text-default  { color: var(--text-primary); }
+  .text-muted    { color: var(--text-secondary); }
+  .text-subtle   { color: var(--text-tertiary); }
 }
 
-/* ─── Exam Mode ──────────────────────────────────────────────────── */
+/* ─── Prefers Reduced Motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Exam Mode (Grayscale Focus) ────────────────────────────────── */
 .exam-mode-active {
   filter: grayscale(100%);
   background-color: #f0f0f0 !important;
@@ -115,8 +146,7 @@ body {
   filter: none;
 }
 
-
-/* Study Notes Reading Canvas */
+/* ─── Study Notes Reading Canvas ─────────────────────────────────── */
 .ruled-paper {
   position: relative;
   width: 100%;

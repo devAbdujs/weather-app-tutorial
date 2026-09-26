@@ -91,17 +91,17 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
         <button
           key={o.id}
           onClick={() => select(o.id, onChange)}
-          className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl border-2 text-left transition-all active:scale-[0.98] ${
+          className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl border text-left transition-all duration-200 ease-bespoke active:scale-[0.98] ${
             value === o.id
-              ? 'border-accent-blue bg-accent-blue/5'
-              : 'border-black/5 dark:border-white/10 bg-card hover:border-black/10 dark:hover:border-white/20 dark:border-white/20'
+              ? 'border-primary/40 bg-primary/10 shadow-bespoke-sm'
+              : 'border-black/[0.06] dark:border-white/[0.08] bg-card hover:border-black/20 dark:hover:border-white/20'
           }`}
         >
-          <span className={`font-bold text-sm ${value === o.id ? 'text-accent-blue' : 'text-gray-900 dark:text-gray-100'}`}>
+          <span className={`font-bold text-sm ${value === o.id ? 'text-primary' : 'text-gray-900 dark:text-gray-100'}`}>
             {o.label}
           </span>
-          <div className={`w-5 h-5 rounded-full flex items-center justify-center border-2 shrink-0 ${value === o.id ? 'border-accent-blue bg-accent-blue text-white' : 'border-black/10 dark:border-white/20'}`}>
-            {value === o.id && <CheckCircle2 className="w-3 h-3" />}
+          <div className={`w-5 h-5 rounded-full flex items-center justify-center border shrink-0 ${value === o.id ? 'border-primary bg-primary text-white' : 'border-black/20 dark:border-white/20'}`}>
+            {value === o.id && <CheckCircle2 className="w-3.5 h-3.5" />}
           </div>
         </button>
       ))}
@@ -139,7 +139,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
           {[1, target === 'entrance' ? 2 : null, target === 'exit' ? 3 : null]
             .filter(Boolean)
             .map((s, i) => (
-              <div key={i} className={`h-1.5 flex-1 rounded-full transition-all ${step >= (s as number) ? 'bg-accent-blue' : 'bg-black/10 dark:bg-white/10'}`} />
+              <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-200 ease-bespoke ${step >= (s as number) ? 'bg-primary' : 'bg-black/10 dark:bg-white/10'}`} />
             ))}
         </div>
 
@@ -188,15 +188,15 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                   placeholder="Search departments..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-card border-2 border-black/10 dark:border-white/20 rounded-2xl text-sm font-bold focus:border-accent-blue focus:ring-0 outline-none transition-all dark:bg-black/20"
+                  className="w-full pl-12 pr-4 py-3 bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-2xl text-sm font-bold focus:border-primary/40 focus:ring-2 focus:ring-primary/10 outline-none transition-all shadow-bespoke-sm"
                 />
               </div>
-              <div className="flex-1 overflow-y-auto rounded-2xl border-2 border-black/10 dark:border-white/20 p-2 space-y-1 bg-card/50">
+              <div className="flex-1 overflow-y-auto rounded-2xl border border-black/[0.06] dark:border-white/[0.08] p-2 space-y-1 bg-card">
                 {EXIT_DISCIPLINES.filter(d => d.label.toLowerCase().includes(searchQuery.toLowerCase())).map(d => (
                   <button
                     key={d.id}
                     onClick={() => select(d.id, setStream)}
-                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all ${stream === d.id ? 'bg-accent-blue/10 text-accent-blue' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300'}`}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all duration-150 ${stream === d.id ? 'bg-primary/10 text-primary' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300'}`}
                   >
                     {d.label}
                   </button>
@@ -213,10 +213,10 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
         <button
           onClick={goNext}
           disabled={!canProceed || isSaving}
-          className={`w-full py-4 rounded-[16px] border-2 font-bold text-base flex items-center justify-center gap-2 transition-all mt-auto ${
+          className={`w-full py-4 rounded-[16px] font-bold text-base flex items-center justify-center gap-2 transition-all duration-200 ease-bespoke mt-auto ${
             canProceed && !isSaving
-              ? 'bg-accent-blue border-primary text-white active:scale-[0.98] active:opacity-80 shadow-sm -translate-y-1'
-              : 'bg-ground border-black/10 dark:border-white/20 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+              ? 'bg-primary text-white shadow-bespoke-md active:scale-[0.98]'
+              : 'bg-ground border border-black/[0.06] dark:border-white/[0.08] text-gray-400 dark:text-gray-600 cursor-not-allowed'
           }`}
         >
           {isSaving ? 'Saving...' : step >= 2 ? 'Finish Setup' : 'Continue'}
