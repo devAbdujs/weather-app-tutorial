@@ -30,7 +30,7 @@ function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string
   const { mode, noteText, questionText, options, correctAnswer, explanation, subject, studentAnswer } = data;
 
   const system = [
-    `You are Mr. Helper, an elite AI tutor for Ethiopian students.`,
+    `You are Temari AI, an elite AI tutor for Ethiopian students.`,
     subject ? `(Subject: ${subject}).` : '',
     profileContext,
     ''

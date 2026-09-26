@@ -42,8 +42,8 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
         id: 'welcome',
         role: 'assistant',
         content: mode === 'exam' 
-          ? "👋 **Hello! I'm Mr. Helper, your AI Tutor.** \n\nLet's tackle this question together! You can ask me for a hint, an Amharic translation, or simply ask whatever is on your mind."
-          : "👋 **Hello! I'm Mr. Helper, your AI Tutor.** \n\nI have read this chapter. Ask me any custom question you have, and I will explain it to you!"
+          ? "👋 **Hello! I'm Temari AI, your study companion.** \n\nLet's tackle this question together! You can ask me for a hint, an Amharic translation, or simply ask whatever is on your mind."
+          : "👋 **Hello! I'm Temari AI, your study companion.** \n\nI have read this chapter. Ask me any custom question you have, and I will explain it to you!"
       }]);
     }
   }, [isOpen, mode, messages.length]);
@@ -114,7 +114,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
         if (res.status === 403) {
           setMessages(prev => prev.map(m => m.id === assistantMsgId ? { 
             ...m, 
-            content: '🔒 **AI Tutor is a Premium Feature**\n\nUpgrade your account to unlock unlimited access to Mr. Helper, AI-generated quizzes, and Amharic explanations.\n\n👉 Go to your **Profile → Upgrade** to unlock premium for just **199 ETB/term**.'
+            content: '🔒 **AI Tutor is a Premium Feature**\n\nUpgrade your account to unlock unlimited access to Temari AI, AI-generated quizzes, and Amharic explanations.\n\n👉 Go to your **Profile → Upgrade** to unlock premium for just **199 ETB/term**.'
           } : m));
           setIsLoading(false);
           return;
@@ -173,7 +173,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
             </div>
             <div>
               <h3 className="font-black text-slate-900 dark:text-slate-100 text-[17px] flex items-center gap-2 tracking-tight">
-                Mr. Helper
+                Temari AI
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
                 <GraduationCap className="w-3 h-3 text-indigo-500" /> Your study partner
@@ -262,7 +262,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask Mr. Helper..."
+            placeholder="Ask Temari AI..."
             disabled={isLoading}
             className="flex-1 bg-white dark:bg-card border border-black/10 dark:border-white/20 rounded-full px-6 py-4 text-[15px] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 transition-all shadow-sm"
           />
