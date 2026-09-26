@@ -2,42 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── CSS Custom Properties ─────────────────────────────────────── */
+/* ─── CSS Custom Properties (Bespoke UI Design Tokens) ───────── */
 :root {
-  /* Light mode surfaces */
-  --background:    #F2F2F7;
-  --foreground:    #1C1C1E;
+  /* Light mode surfaces: soft anti-glare warm slate */
+  --background:    #F8FAFC;
+  --foreground:    #0F172A;
   --surface:       #FFFFFF;
-  --surface-2:     #E5E5EA;
-  --border:        rgba(0, 0, 0, 0.06);
-  --border-strong: rgba(0, 0, 0, 0.12);
+  --surface-2:     #F1F5F9;
+  --border:        rgba(15, 23, 42, 0.06);
+  --border-strong: rgba(15, 23, 42, 0.12);
 
-  /* Brand */
-  --primary:       #1B3A6B;
-  --primary-rgb:   27, 58, 107;
+  /* Brand: Bespoke Deep Indigo */
+  --primary:       #1E3A8A;
+  --primary-rgb:   30, 58, 138;
   --accent:        #F5C518;
 
   /* Text */
-  --text-primary:  #1C1C1E;
-  --text-secondary:#6C6C70;
-  --text-tertiary: #AEAEB2;
+  --text-primary:  #0F172A;
+  --text-secondary:#475569;
+  --text-tertiary: #94A3B8;
 }
 
 .dark {
-  --background:    #000000;
-  --foreground:    #F2F2F7;
-  --surface:       #1C1C1E;
-  --surface-2:     #2C2C2E;
+  /* Anti-Halation Dark Mode: Rich midnight slate (never pure #000000) */
+  --background:    #0B0F17;
+  --foreground:    #F1F5F9; /* Tinted off-white prevents eye vibration */
+  --surface:       #131B26; /* Elevated card surface */
+  --surface-2:     #1C2636; /* Elevated controls surface */
   --border:        rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.15);
 
-  --primary:       #4A90D9;
-  --primary-rgb:   74, 144, 217;
-  --accent:        #F5C518;
+  --primary:       #3B82F6;
+  --primary-rgb:   59, 130, 246;
+  --accent:        #FBBF24;
 
-  --text-primary:  #F2F2F7;
-  --text-secondary:#AEAEB2;
-  --text-tertiary: #6C6C70;
+  --text-primary:  #F1F5F9;
+  --text-secondary:#94A3B8;
+  --text-tertiary: #64748B;
 }
 
 /* ─── Base Reset ─────────────────────────────────────────────────── */

@@ -50,9 +50,9 @@ export const TopHeader = () => {
     <header
       className="
         w-full h-14 shrink-0 z-40
-        bg-ground/90 dark:bg-ground/95
+        bg-ground/90
         backdrop-blur-xl
-        border-b border-black/5 dark:border-white/8
+        border-b border-black/[0.06] dark:border-white/[0.08]
         flex items-center px-4 gap-3
       "
     >
@@ -64,23 +64,24 @@ export const TopHeader = () => {
             aria-label="Go back"
             className="
               w-9 h-9 flex items-center justify-center
-              rounded-full
+              rounded-[12px]
+              bg-card border border-black/[0.06] dark:border-white/[0.08]
               text-gray-600 dark:text-gray-400
-              hover:bg-black/5 dark:hover:bg-white/5 dark:bg-white/5 dark:hover:bg-white/10
+              hover:text-gray-900 dark:hover:text-gray-100
               active:scale-90 transition-all
             "
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
         ) : (
-          <div className="w-8 h-8 rounded-[10px] overflow-hidden shadow-sm border border-black/5 dark:border-white/10 shrink-0">
+          <div className="w-8.5 h-8.5 rounded-[12px] overflow-hidden shadow-sm border border-black/[0.06] dark:border-white/[0.08] shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <Image
               src="/assets/temari logo.png"
               alt="Temari"
               className="w-full h-full object-cover"
-              width={32}
-              height={32}
+              width={34}
+              height={34}
             />
           </div>
         )}
@@ -94,18 +95,19 @@ export const TopHeader = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="
-              flex items-center gap-1.5 px-4 py-1.5 
+              flex items-center gap-1.5 px-3.5 py-1.5 
               bg-[#229ED9] hover:bg-[#1C88BA] 
-              text-white dark:text-white
-              rounded-full transition-colors 
-              font-bold text-[13px] tracking-tight shadow-md 
+              text-white
+              rounded-[12px] transition-all 
+              font-bold text-[12px] tracking-tight shadow-sm shadow-[#229ED9]/25
+              border border-white/20 active:scale-[0.98]
             "
           >
-            <TelegramIcon className="w-4 h-4 shrink-0" />
+            <TelegramIcon className="w-3.5 h-3.5 shrink-0" />
             Join Channel
           </a>
         ) : (
-          <h1 className="text-[17px] font-bold text-gray-900 dark:text-gray-100 tracking-tight truncate text-center">
+          <h1 className="text-[16px] font-bold text-gray-900 dark:text-gray-100 tracking-tight truncate text-center">
             {title}
           </h1>
         )}
@@ -118,15 +120,16 @@ export const TopHeader = () => {
           aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           className="
             w-9 h-9 flex items-center justify-center
-            rounded-full
+            rounded-[12px]
+            bg-card border border-black/[0.06] dark:border-white/[0.08]
             text-gray-600 dark:text-gray-400
-            hover:bg-black/5 dark:hover:bg-white/5 dark:bg-white/5 dark:hover:bg-white/10
+            hover:text-gray-900 dark:hover:text-gray-100
             active:scale-90 transition-all
           "
         >
           {resolvedTheme === 'dark'
-            ? <Sun className="w-4.5 h-4.5" />
-            : <Moon className="w-4.5 h-4.5" />
+            ? <Sun className="w-4 h-4" />
+            : <Moon className="w-4 h-4" />
           }
         </button>
 
@@ -135,12 +138,10 @@ export const TopHeader = () => {
           onClick={() => router.push('/profile')}
           aria-label="Go to profile"
           className="
-            w-8 h-8 rounded-full
-            bg-primary/10 dark:bg-primary/20
+            w-9 h-9 rounded-[12px]
+            bg-primary/10 border border-primary/20
             flex items-center justify-center
-            border border-primary/15 dark:border-primary/30
-            text-gray-900 dark:text-gray-100
-            font-black text-sm
+            text-primary font-black text-xs
             active:scale-[0.96] transition-transform
           "
         >

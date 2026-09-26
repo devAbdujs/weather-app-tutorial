@@ -169,21 +169,21 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm animate-fade-in transition-all duration-500">
-      <div className="w-full max-w-lg bg-[#F8F9FA] dark:bg-ground border-t border-black/5 dark:border-white/10 rounded-t-3xl p-5 max-h-[90vh] h-[90vh] flex flex-col shadow-2xl animate-drawer-up">
+    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm animate-fade-in transition-all duration-300">
+      <div className="w-full max-w-lg bg-card border-t border-black/[0.06] dark:border-white/[0.08] rounded-t-[28px] p-5 max-h-[90vh] h-[90vh] flex flex-col shadow-2xl animate-drawer-up">
         {/* Premium Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-black/5 dark:border-white/10 shrink-0">
+        <div className="flex items-center justify-between pb-3.5 border-b border-black/[0.06] dark:border-white/[0.08] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="relative p-2.5 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 text-indigo-600 border border-indigo-500/20 shadow-sm">
-              <User className="w-6 h-6" />
-              <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#F8F9FA]" />
+            <div className="relative p-2 rounded-[12px] bg-primary/10 text-primary border border-primary/20 shadow-sm">
+              <User className="w-5 h-5" />
+              <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-card" />
             </div>
             <div>
-              <h3 className="font-black text-slate-900 dark:text-slate-100 text-[17px] flex items-center gap-2 tracking-tight">
+              <h3 className="font-bold text-gray-900 dark:text-gray-100 text-[16px] flex items-center gap-1.5 tracking-tight">
                 Temari AI
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
-                <GraduationCap className="w-3 h-3 text-indigo-500" /> Your study partner
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1">
+                <GraduationCap className="w-3 h-3 text-primary" /> Study Companion
               </p>
             </div>
           </div>
@@ -192,66 +192,66 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
               haptic.selection();
               onClose();
             }}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100 transition-all"
+            className="w-8.5 h-8.5 flex items-center justify-center rounded-[10px] bg-ground border border-black/[0.06] dark:border-white/[0.08] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 active:scale-95 transition-all"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4.5 h-4.5" />
           </button>
         </div>
 
         {/* Floating Quick Action Chips */}
-        <div className="flex gap-2.5 py-4 overflow-x-auto no-scrollbar shrink-0 -mx-5 px-5">
+        <div className="flex gap-2 py-3 overflow-x-auto no-scrollbar shrink-0 -mx-5 px-5">
           <button
             onClick={() => sendMessage(studentAnswer ? 'explain' : 'hint')}
             disabled={isLoading}
-            className="flex items-center gap-2 text-[13px] px-4 py-2.5 rounded-full font-bold border transition-all whitespace-nowrap bg-white dark:bg-card border-black/5 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 active:scale-[0.98] active:opacity-80 shadow-sm"
+            className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-[12px] font-bold border transition-all whitespace-nowrap bg-ground border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:border-black/20 dark:hover:border-white/20 active:scale-[0.98] shadow-sm"
           >
-            <Lightbulb className="w-4 h-4 text-amber-500 fill-amber-500/20" />
+            <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
             {mode === 'exam' 
-              ? (studentAnswer ? 'Explain the Answer' : 'Give me a Hint') 
-              : 'Summarize This'}
+              ? (studentAnswer ? 'Explain Solution' : 'Guiding Hint') 
+              : 'Summarize Chapter'}
           </button>
 
           <button
             onClick={() => sendMessage('amharic')}
             disabled={isLoading}
-            className="flex items-center gap-2 text-[13px] px-4 py-2.5 rounded-full font-bold border transition-all whitespace-nowrap bg-white dark:bg-card border-black/5 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 active:scale-[0.98] active:opacity-80 shadow-sm"
+            className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-[12px] font-bold border transition-all whitespace-nowrap bg-ground border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:border-black/20 dark:hover:border-white/20 active:scale-[0.98] shadow-sm"
           >
-            <Globe className="w-4 h-4 text-blue-500" />
+            <Globe className="w-3.5 h-3.5 text-blue-500" />
             በአማርኛ አስረዳኝ
           </button>
         </div>
 
         {/* Chat Messages Area */}
-        <div className="flex-1 overflow-y-auto py-2 space-y-6 text-[15px] leading-relaxed text-slate-800 dark:text-slate-200 custom-scrollbar pr-2">
+        <div className="flex-1 overflow-y-auto py-2 space-y-4 text-sm leading-relaxed text-gray-800 dark:text-gray-200 custom-scrollbar pr-1">
           {messages.length === 1 && !isLoading && (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-60 animate-fade-up">
-              <User className="w-12 h-12 text-slate-300 dark:text-slate-600" />
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Don't know the answer?<br/>Just ask!</p>
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-2 opacity-50 animate-fade-up">
+              <User className="w-10 h-10 text-gray-400" />
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Ask any question or tap a suggestion above</p>
             </div>
           )}
           {messages.map((msg) => (
             <div key={msg.id} className={`flex w-full animate-fade-up ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               {msg.role === 'assistant' && (
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 mr-2.5 shrink-0 self-end mb-1 shadow-sm">
-                  <User className="w-4 h-4" />
+                <div className="w-7 h-7 rounded-[8px] bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mr-2 shrink-0 self-end mb-1">
+                  <User className="w-3.5 h-3.5" />
                 </div>
               )}
-              <div className={`p-4 rounded-2xl max-w-[85%] font-sans shadow-md ${
+              <div className={`p-3.5 rounded-[18px] max-w-[85%] font-sans shadow-sm ${
                 msg.role === 'user' 
-                  ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-br-sm font-medium whitespace-pre-line' 
-                  : 'bg-white dark:bg-card border border-slate-200/80 dark:border-white/10 rounded-bl-sm text-slate-900 dark:text-slate-100'
+                  ? 'bg-primary text-white rounded-br-[4px] font-medium whitespace-pre-line shadow-primary/20' 
+                  : 'bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-bl-[4px] text-gray-900 dark:text-gray-100'
               }`}>
                 {msg.role === 'assistant' ? (
                   msg.content ? (
-                    <div className="prose prose-sm max-w-none prose-p:leading-relaxed prose-p:text-slate-900 dark:prose-p:text-slate-100 dark:text-slate-100 prose-headings:text-slate-900 dark:prose-headings:text-slate-100 dark:text-slate-100 prose-strong:text-slate-900 dark:prose-strong:text-slate-100 dark:text-slate-100 prose-li:text-slate-900 dark:prose-li:text-slate-100 dark:text-slate-100 prose-a:text-blue-600 prose-pre:bg-slate-100 dark:prose-pre:bg-slate-800 prose-pre:text-slate-900 dark:prose-pre:text-slate-100 dark:text-slate-100 font-medium tracking-tight">
+                    <div className="prose prose-sm max-w-none prose-p:leading-relaxed prose-p:text-gray-900 dark:prose-p:text-gray-100 prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-li:text-gray-900 dark:prose-li:text-gray-100 prose-a:text-primary font-medium tracking-tight">
                       <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
                         {msg.content}
                       </ReactMarkdown>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2.5 text-slate-400 dark:text-slate-500 py-1">
-                      <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
-                      <span className="text-sm font-medium animate-pulse text-indigo-400">Thinking...</span>
+                    <div className="flex items-center gap-2 text-gray-400 py-1">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                      <span className="text-xs font-medium text-primary">Thinking...</span>
                     </div>
                   )
                 ) : (
@@ -264,21 +264,21 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
         </div>
         
         {/* Floating Input Box */}
-        <form onSubmit={handleFormSubmit} className="pt-4 border-t border-black/5 dark:border-white/10 shrink-0 mt-2 flex gap-3 relative">
+        <form onSubmit={handleFormSubmit} className="pt-3 border-t border-black/[0.06] dark:border-white/[0.08] shrink-0 flex gap-2 relative">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask Temari AI..."
             disabled={isLoading}
-            className="flex-1 bg-white dark:bg-card border border-black/10 dark:border-white/20 rounded-full px-6 py-4 text-[15px] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:text-slate-500 focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 transition-all shadow-sm"
+            className="flex-1 bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-600 hover:opacity-90 disabled:from-black/5 disabled:to-black/5 dark:disabled:from-white/10 dark:disabled:to-white/10 disabled:text-slate-400 dark:text-slate-500 text-white transition-all shrink-0 shadow-md disabled:shadow-none active:scale-[0.98] active:opacity-80"
+            className="w-12 h-12 rounded-[16px] flex items-center justify-center bg-primary hover:bg-primary/90 disabled:bg-black/5 dark:disabled:bg-white/5 disabled:text-gray-400 text-white transition-all shrink-0 shadow-sm shadow-primary/25 disabled:shadow-none active:scale-[0.98]"
           >
-            <Send className="w-5 h-5 ml-1" />
+            <Send className="w-4 h-4 ml-0.5" />
           </button>
         </form>
 

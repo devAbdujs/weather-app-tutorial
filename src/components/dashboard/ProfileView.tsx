@@ -148,27 +148,27 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
         />
       )}
 
-      <div className="flex flex-col pt-4 px-4 pb-28 animate-fade-in bg-ground max-w-lg mx-auto w-full space-y-5">
+      <div className="flex flex-col pt-3 px-4 pb-28 animate-fade-in bg-ground max-w-lg mx-auto w-full space-y-4">
         
         {/* ── 1. SLICK STUDENT HERO CARD ─────────────────────────────── */}
-        <div className="relative bg-card border border-black/5 dark:border-white/10 rounded-[28px] p-5 shadow-sm overflow-hidden">
+        <div className="relative bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm overflow-hidden">
           {/* Ambient subtle glow background */}
-          <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 dark:bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-44 h-44 bg-primary/5 dark:bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
           
           {devMode && (
-            <div className="absolute top-4 right-4 text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-50 dark:bg-amber-950/40 border border-amber-500/20 px-2.5 py-1 rounded-full">
+            <div className="absolute top-4 right-4 text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full">
               Dev Mode
             </div>
           )}
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3.5">
             {/* Avatar with Squircle & Interactive Dev Tap */}
             <div 
               onClick={handleAvatarClick} 
-              className="relative w-20 h-20 shrink-0 cursor-pointer active:scale-95 transition-transform"
+              className="relative w-18 h-18 shrink-0 cursor-pointer active:scale-95 transition-transform"
             >
-              <div className="w-full h-full rounded-[24px] bg-gradient-to-tr from-primary via-blue-500 to-indigo-500 p-0.5 shadow-md shadow-primary/20">
-                <div className="w-full h-full bg-ground rounded-[22px] overflow-hidden flex items-center justify-center">
+              <div className="w-full h-full rounded-[20px] bg-gradient-to-tr from-primary to-blue-500 p-0.5 shadow-sm shadow-primary/20">
+                <div className="w-full h-full bg-ground rounded-[18px] overflow-hidden flex items-center justify-center">
                   {profile.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img 
@@ -178,7 +178,7 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <span className="text-2xl font-black text-primary tracking-tight">{initials}</span>
+                    <span className="text-xl font-black text-primary tracking-tight">{initials}</span>
                   )}
                 </div>
               </div>
@@ -189,7 +189,7 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
                   <Zap className="w-3.5 h-3.5 fill-white text-white" />
                 </div>
               ) : (
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center shadow-sm border-2 border-card">
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-black/5 dark:bg-white/10 text-gray-500 dark:text-gray-400 flex items-center justify-center shadow-sm border-2 border-card">
                   <GraduationCap className="w-3.5 h-3.5" />
                 </div>
               )}
@@ -198,11 +198,11 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
             {/* Student Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
-                <h1 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight truncate">
+                <h1 className="text-lg font-black text-gray-900 dark:text-gray-100 tracking-tight truncate">
                   {profile.full_name || 'Scholar'}
                 </h1>
                 {isPremium && (
-                  <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-wider shrink-0">
+                  <span className="px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-wider shrink-0">
                     PRO
                   </span>
                 )}
@@ -212,7 +212,7 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
               <button 
                 type="button"
                 onClick={handleCopyId}
-                className="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 font-medium hover:text-primary transition-colors mb-2"
+                className="inline-flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-medium hover:text-primary transition-colors mb-2"
               >
                 <span>{profile.username ? `@${profile.username}` : `ID: ${profile.telegram_id}`}</span>
                 {copiedId ? (
@@ -223,24 +223,26 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
               </button>
 
               {/* Academic Goal Chip */}
-              <button 
-                onClick={handleRetakeOnboarding}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold transition-colors active:scale-95 text-left max-w-full truncate"
-              >
-                <Target className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">{getGoalDisplay()}</span>
-                <ChevronRight className="w-3 h-3 shrink-0 opacity-60" />
-              </button>
+              <div>
+                <button 
+                  onClick={handleRetakeOnboarding}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-[12px] bg-primary/10 hover:bg-primary/15 text-primary text-xs font-bold transition-all active:scale-[0.98] text-left max-w-full truncate"
+                >
+                  <Target className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">{getGoalDisplay()}</span>
+                  <ChevronRight className="w-3 h-3 shrink-0 opacity-60" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* ── 2. INDIVIDUAL AI QUOTA & USAGE DASHBOARD ────────────────── */}
-        <div className="bg-card border border-black/5 dark:border-white/10 rounded-[28px] p-5 shadow-sm relative overflow-hidden">
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm relative overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3.5">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-primary to-indigo-500 text-white flex items-center justify-center shadow-sm">
+              <div className="w-8.5 h-8.5 rounded-[12px] bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shadow-sm">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
@@ -254,30 +256,30 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
             </div>
 
             {/* Reset Countdown Pill */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-ground border border-black/5 dark:border-white/5 text-[11px] font-bold text-gray-500 dark:text-gray-400">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[10px] bg-ground border border-black/[0.06] dark:border-white/[0.08] text-[11px] font-bold text-gray-500 dark:text-gray-400">
               <Clock className="w-3 h-3 text-primary" />
               <span>Resets in {daysUntilReset}d</span>
             </div>
           </div>
 
           {/* Numbers & Progress Meter */}
-          <div className="space-y-2 mb-4">
+          <div className="space-y-2 mb-3.5">
             <div className="flex items-baseline justify-between">
               <div className="flex items-baseline gap-1.5">
-                <span className={`text-3xl font-black font-mono tracking-tight ${getTextColor()}`}>
+                <span className={`text-2xl font-black font-mono tracking-tight ${getTextColor()}`}>
                   {usageClamped}
                 </span>
-                <span className="text-sm font-bold text-gray-400 font-mono">
+                <span className="text-xs font-bold text-gray-400 font-mono">
                   / {weeklyCap} Qs
                 </span>
               </div>
-              <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+              <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400">
                 {remainingQuestions} inquiries remaining
               </span>
             </div>
 
             {/* Dynamic Progress Bar */}
-            <div className="w-full bg-ground border border-black/5 dark:border-white/5 h-3 rounded-full overflow-hidden p-0.5">
+            <div className="w-full bg-ground border border-black/[0.06] dark:border-white/[0.08] h-2.5 rounded-full overflow-hidden p-0.5">
               <div 
                 className={`h-full rounded-full bg-gradient-to-r ${getProgressColor()} transition-all duration-700 ease-out`}
                 style={{ width: `${Math.max(4, usagePercent)}%` }}
@@ -287,7 +289,7 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
 
           {/* Free Tier vs Premium Tier Hook */}
           {!isPremium ? (
-            <div className="bg-gradient-to-r from-primary/5 via-blue-500/5 to-primary/10 border border-primary/20 rounded-2xl p-3.5 flex items-center justify-between gap-3">
+            <div className="bg-primary/5 border border-primary/20 rounded-[16px] p-3 flex items-center justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-black text-gray-900 dark:text-gray-100 mb-0.5">
                   Free Student Plan (5 Qs/week)
@@ -302,51 +304,51 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
                   haptic.impact('medium');
                   router.push('/upgrade');
                 }}
-                className="px-3.5 py-2 rounded-xl bg-primary text-white text-xs font-black shadow-md shadow-primary/25 hover:bg-primary/90 active:scale-95 transition-all shrink-0 flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-[12px] bg-primary text-white text-xs font-bold shadow-sm shadow-primary/25 hover:bg-primary/90 active:scale-[0.98] transition-all shrink-0 flex items-center gap-1.5"
               >
                 <Zap className="w-3.5 h-3.5 fill-white" />
                 Upgrade
               </button>
             </div>
           ) : (
-            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-3 flex items-center gap-2.5 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
+            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-[16px] p-3 flex items-center gap-2.5 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
               <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-500" />
-              <span>Premium Activated • 150 Inquiries / Week on Gemini 3.6 Flash</span>
+              <span>Premium Activated • 150 Inquiries / Week on Gemini Flash</span>
             </div>
           )}
         </div>
 
         {/* ── 3. ACADEMIC PERFORMANCE OVERVIEW ───────────────────────── */}
-        <div className="bg-card border border-black/5 dark:border-white/10 rounded-[28px] p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm">
+          <div className="flex items-center justify-between mb-3.5">
             <h2 className="text-sm font-black text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <Award className="w-4 h-4 text-primary" /> Performance Overview
             </h2>
-            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
               Lifetime Stats
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-3 gap-2">
             {/* Streak */}
-            <div className="bg-ground border border-black/5 dark:border-white/5 rounded-2xl p-3.5 text-center flex flex-col items-center justify-center">
-              <div className="w-7 h-7 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-1.5">
+            <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 text-center flex flex-col items-center justify-center">
+              <div className="w-7 h-7 rounded-[10px] bg-amber-500/10 text-amber-500 flex items-center justify-center mb-1">
                 <Flame className="w-4 h-4 fill-amber-500 text-amber-500" />
               </div>
-              <span className="text-2xl font-black text-gray-900 dark:text-gray-100 font-mono leading-none mb-1">
+              <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono leading-none mb-1">
                 {profile.daily_streak || 0}
               </span>
               <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Day Streak
+                Streak
               </span>
             </div>
 
             {/* Drills Solved */}
-            <div className="bg-ground border border-black/5 dark:border-white/5 rounded-2xl p-3.5 text-center flex flex-col items-center justify-center">
-              <div className="w-7 h-7 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center mb-1.5">
+            <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 text-center flex flex-col items-center justify-center">
+              <div className="w-7 h-7 rounded-[10px] bg-blue-500/10 text-blue-500 flex items-center justify-center mb-1">
                 <Target className="w-4 h-4" />
               </div>
-              <span className="text-2xl font-black text-gray-900 dark:text-gray-100 font-mono leading-none mb-1">
+              <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono leading-none mb-1">
                 {totalQuestions}
               </span>
               <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -355,11 +357,11 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
             </div>
 
             {/* Accuracy */}
-            <div className="bg-ground border border-black/5 dark:border-white/5 rounded-2xl p-3.5 text-center flex flex-col items-center justify-center">
-              <div className="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-1.5">
+            <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 text-center flex flex-col items-center justify-center">
+              <div className="w-7 h-7 rounded-[10px] bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-1">
                 <TrendingUp className="w-4 h-4" />
               </div>
-              <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono leading-none mb-1">
+              <span className="text-xl font-black text-emerald-600 dark:text-emerald-400 font-mono leading-none mb-1">
                 {overallAccuracy}%
               </span>
               <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -370,18 +372,18 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
         </div>
 
         {/* ── 4. SUBJECT MASTERY BREAKDOWN ────────────────────────────── */}
-        <div className="bg-card border border-black/5 dark:border-white/10 rounded-[28px] p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm">
+          <div className="flex items-center justify-between mb-3.5">
             <h2 className="text-sm font-black text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <BarChart2 className="w-4 h-4 text-primary" /> Subject Mastery
             </h2>
-            <span className="text-[11px] font-bold text-gray-400">
+            <span className="text-[10px] font-bold text-gray-400">
               {stats.length} Subjects Tracked
             </span>
           </div>
 
           {stats.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {stats
                 .sort((a, b) => (b.questions_attempted || 0) - (a.questions_attempted || 0))
                 .map((s) => {
@@ -392,18 +394,18 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
                   return (
                     <div 
                       key={s.subject} 
-                      className="bg-ground/60 border border-black/5 dark:border-white/5 rounded-2xl p-3.5 space-y-2"
+                      className="bg-ground/60 border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 space-y-2"
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xs font-black text-gray-900 dark:text-gray-100">
+                          <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
                             {s.subject}
                           </p>
                           <p className="text-[10px] font-medium text-gray-400">
                             {s.questions_attempted} Qs attempted • {s.questions_correct} correct
                           </p>
                         </div>
-                        <span className={`text-[11px] font-black px-2 py-0.5 rounded-lg ${
+                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
                           acc >= 75 
                             ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
                             : acc >= 50 
@@ -428,18 +430,18 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
                 })}
             </div>
           ) : (
-            <div className="text-center py-6 px-4 bg-ground/50 rounded-2xl border border-dashed border-black/10 dark:border-white/10">
-              <BookOpen className="w-8 h-8 text-gray-400 mx-auto mb-2 opacity-60" />
+            <div className="text-center py-6 px-4 bg-ground/50 rounded-[16px] border border-dashed border-black/10 dark:border-white/10">
+              <BookOpen className="w-8 h-8 text-gray-400 mx-auto mb-2 opacity-50" />
               <p className="text-xs font-bold text-gray-800 dark:text-gray-200 mb-1">
                 No Exam Drills Completed Yet
               </p>
-              <p className="text-[11px] text-gray-400 mb-4 max-w-xs mx-auto">
+              <p className="text-[11px] text-gray-400 mb-3.5 max-w-xs mx-auto">
                 Practice past exams or take quick quizzes to unlock your subject analytics.
               </p>
               <button
                 type="button"
                 onClick={() => router.push('/practice')}
-                className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
+                className="px-4 py-2 rounded-[12px] bg-primary/10 text-primary text-xs font-bold hover:bg-primary/15 transition-all active:scale-[0.98]"
               >
                 Go to Practice Hub
               </button>
@@ -448,15 +450,15 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
         </div>
 
         {/* ── 5. SETTINGS & COMMUNITY ACTIONS ─────────────────────────── */}
-        <div className="bg-card border border-black/5 dark:border-white/10 rounded-[28px] p-2 shadow-sm divide-y divide-black/5 dark:divide-white/5">
+        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-1.5 shadow-sm divide-y divide-black/[0.04] dark:divide-white/[0.04]">
           {/* Retake Onboarding */}
           <button 
             type="button"
             onClick={handleRetakeOnboarding}
-            className="w-full p-3.5 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 rounded-2xl transition-colors active:scale-[0.99]"
+            className="w-full p-3 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[16px] transition-colors active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+              <div className="w-8.5 h-8.5 rounded-[12px] bg-primary/10 text-primary flex items-center justify-center">
                 <Target className="w-4 h-4" />
               </div>
               <div>
@@ -475,10 +477,10 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
           <button 
             type="button"
             onClick={() => router.push('/upgrade')}
-            className="w-full p-3.5 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 rounded-2xl transition-colors active:scale-[0.99]"
+            className="w-full p-3 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[16px] transition-colors active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+              <div className={`w-8.5 h-8.5 rounded-[12px] flex items-center justify-center ${
                 isPremium 
                   ? 'bg-emerald-500/10 text-emerald-500' 
                   : 'bg-amber-500/10 text-amber-500'
@@ -502,10 +504,10 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
             href="https://t.me/ethio_exam_bot" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="w-full p-3.5 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 rounded-2xl transition-colors active:scale-[0.99]"
+            className="w-full p-3 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[16px] transition-colors active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+              <div className="w-8.5 h-8.5 rounded-[12px] bg-blue-500/10 text-blue-500 flex items-center justify-center">
                 <MessageCircle className="w-4 h-4" />
               </div>
               <div>
@@ -526,7 +528,7 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
           <button 
             disabled={isLoggingOut} 
             onClick={handleLogout} 
-            className="w-full bg-card border border-red-500/15 rounded-2xl p-4 flex items-center justify-center gap-2 text-red-500 font-bold text-sm hover:bg-red-500/5 active:scale-[0.98] transition-all disabled:opacity-50"
+            className="w-full bg-card border border-red-500/15 rounded-[16px] p-3.5 flex items-center justify-center gap-2 text-red-500 font-bold text-sm hover:bg-red-500/5 active:scale-[0.98] transition-all disabled:opacity-50"
           >
             {isLoggingOut ? (
               <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />

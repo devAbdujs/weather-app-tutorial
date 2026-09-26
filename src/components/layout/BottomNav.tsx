@@ -4,9 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, BookOpen, BarChart2, User } from 'lucide-react';
+import { useTelegram } from '@/hooks/useTelegram';
 
 export const BottomNav = () => {
   const pathname = usePathname() || '';
+  const { haptic } = useTelegram();
 
   // Hide during deep focus screens
   const isFocusMode =
@@ -19,23 +21,24 @@ export const BottomNav = () => {
   if (isFocusMode) return null;
 
   const navItems = [
-    { name: 'Home',     href: '/dashboard',         icon: Home      },
-    { name: 'Practice', href: '/practice', icon: BookOpen  },
-    { name: 'Progress', href: '/mastery',  icon: BarChart2 },
-    { name: 'Profile',  href: '/profile',  icon: User      },
+    { name: 'Home',     href: '/dashboard', icon: Home      },
+    { name: 'Practice', href: '/practice',  icon: BookOpen  },
+    { name: 'Progress', href: '/mastery',   icon: BarChart2 },
+    { name: 'Profile',  href: '/profile',   icon: User      },
   ];
 
   return (
-    <div
+    <nav
+      aria-label="Bottom Navigation"
       className="
         fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto pb-safe
-        bg-card/95 dark:bg-card/95
+        bg-card/90 dark:bg-card/95
         backdrop-blur-xl
-        border-t border-black/5 dark:border-white/8
-        shadow-[0_-1px_0_rgba(0,0,0,0.04),0_-8px_24px_rgba(0,0,0,0.04)]
+        border-t border-black/5 dark:border-white/[0.08]
+        transition-colors duration-200
       "
     >
-      <div className="flex justify-around items-center h-16 px-2">
+      <div className="flex justify-around items-center h-16 px-3">
         {navItems.map((item) => {
           const isActive =
             item.href === '/'
@@ -44,31 +47,35 @@ export const BottomNav = () => {
           const Icon = item.icon;
 
           return (
-            <Link key={item.name} href={item.href} className="flex-1">
-              <div className="flex flex-col items-center justify-center gap-1 active:scale-90 transition-transform duration-150">
+            <Link 
+              key={item.name} 
+              href={item.href} 
+              onClick={() => haptic.selection()}
+              className="flex-1"
+            >
+              <div className="flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform duration-150">
                 <div
                   className={`
-                    relative flex items-center justify-center w-12 h-7 rounded-full transition-all duration-200
+                    relative flex items-center justify-center w-11 h-7 rounded-xl transition-all duration-200 ease-bespoke
                     ${isActive
-                      ? 'bg-primary dark:bg-primary'
-                      : 'bg-transparent'}
+                      ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400'
+                      : 'bg-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}
                   `}
                 >
                   <Icon
-                    className={`
-                      w-[18px] h-[18px] transition-colors duration-200
-                      ${isActive
-                        ? 'text-white'
-                        : 'text-gray-500 dark:text-gray-400'}
-                    `}
+                    className="w-[18px] h-[18px] transition-transform duration-200"
+                    strokeWidth={isActive ? 2.5 : 1.9}
                   />
+                  {isActive && (
+                    <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-primary dark:bg-blue-400" />
+                  )}
                 </div>
                 <span
                   className={`
-                    text-[10px] font-bold tracking-wide transition-colors duration-200
+                    text-[10px] tracking-tight transition-colors duration-200
                     ${isActive
-                      ? 'text-gray-900 dark:text-gray-100'
-                      : 'text-gray-500 dark:text-gray-400'}
+                      ? 'font-black text-primary dark:text-blue-400'
+                      : 'font-semibold text-slate-400 dark:text-slate-500'}
                   `}
                 >
                   {item.name}
@@ -78,6 +85,6 @@ export const BottomNav = () => {
           );
         })}
       </div>
-    </div>
+    </nav>
   );
 };

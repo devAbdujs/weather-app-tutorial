@@ -144,139 +144,150 @@ export const HomeHub: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col animate-fade-in">
+    <div className="flex flex-col animate-fade-in max-w-lg mx-auto w-full pb-8">
 
-      {/* ── GREETING HERO ── */}
-      <div className="px-5 pt-5 pb-4 flex justify-between items-center">
+      {/* ── 1. GREETING & STREAK HEADER ── */}
+      <div className="px-5 pt-4 pb-3 flex justify-between items-center">
         <div>
-          <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest" suppressHydrationWarning>
+          <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest" suppressHydrationWarning>
             {getGreeting()} 👋
           </p>
-          <h1 className="text-[28px] font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none mt-1">
+          <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none mt-1">
             {firstName}
           </h1>
         </div>
-        {/* Streak pill */}
-        <div className={`flex items-center gap-1.5 px-3 py-2 rounded-[14px] border ${
+
+        {/* Streak Pill */}
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-2xl border transition-colors ${
           streak > 0
-            ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-700/50'
-            : 'bg-card dark:bg-card border-black/5 dark:border-white/8'
+            ? 'bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400 shadow-sm'
+            : 'bg-card border-black/5 dark:border-white/[0.08] text-slate-400 dark:text-slate-500'
         }`}>
-          <Flame className={`w-4 h-4 ${streak > 0 ? 'text-amber-500 fill-amber-400' : 'text-gray-500 dark:text-gray-400'}`} />
-          <span className={`text-sm font-black ${streak > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-gray-500 dark:text-gray-400'}`}>{streak}</span>
-          <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">day{streak !== 1 ? 's' : ''}</span>
+          <Flame className={`w-4 h-4 ${streak > 0 ? 'fill-amber-500 text-amber-500' : 'text-slate-400'}`} />
+          <span className="text-sm font-black font-mono leading-none">{streak}</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider">day{streak !== 1 ? 's' : ''}</span>
         </div>
       </div>
 
-      {/* ── EXAM TYPE BADGE ── */}
-      <div className="mx-5 mb-5">
-        <div className="bg-primary/5 dark:bg-primary/15 border border-primary/10 dark:border-primary/25 rounded-[14px] px-4 py-2.5 flex items-center gap-2">
-          <Target className="w-3.5 h-3.5 text-gray-900/50 dark:text-gray-100/50 dark:text-gray-100/50 shrink-0" />
-          <span className="text-xs font-bold text-gray-900/60 dark:text-gray-100/60 dark:text-gray-100/60">{examLabel(userProfile?.target_exam || null)}</span>
-        </div>
+      {/* ── 2. ACADEMIC GOAL CHIP ── */}
+      <div className="px-5 mb-4">
+        <button
+          onClick={() => { haptic.selection(); router.push('/profile'); }}
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-primary/10 hover:bg-primary/15 dark:bg-primary/20 border border-primary/20 text-primary dark:text-blue-400 text-xs font-bold transition-all active:scale-[0.98]"
+        >
+          <Target className="w-3.5 h-3.5 shrink-0" />
+          <span>{examLabel(userProfile?.target_exam || null)}</span>
+          <ArrowRight className="w-3 h-3 opacity-60 ml-0.5" />
+        </button>
       </div>
 
       <div className="px-5 space-y-4">
 
-        {/* ── HERO CTA (Always present) ── */}
+        {/* ── 3. HERO LAUNCHPAD ── */}
         <button
           onClick={() => { haptic.impact('heavy'); router.push('/practice'); }}
-          className="w-full group bg-primary p-5 rounded-[24px] shadow-lg active:scale-[0.97] transition-all text-left relative overflow-hidden"
+          className="w-full group bg-gradient-to-br from-primary to-blue-700 p-5 rounded-[24px] shadow-md shadow-primary/20 active:scale-[0.98] transition-all text-left relative overflow-hidden"
         >
-          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-500" />
           <div className="relative z-10">
-            <p className="text-white/70 text-[10px] font-bold uppercase tracking-widest mb-1">31,000+ real past papers</p>
-            <h2 className="text-[22px] font-black text-white tracking-tight mb-4">Practice & Exams</h2>
+            <p className="text-blue-100 text-[10px] font-bold uppercase tracking-widest mb-1">
+              31,000+ Past Exam Questions
+            </p>
+            <h2 className="text-xl font-black text-white tracking-tight mb-4">
+              Practice & Exam Simulator
+            </h2>
           </div>
           <div className="flex items-center justify-between relative z-10">
-            <div className="bg-white text-primary px-4 py-2 rounded-full font-black text-[13px] shadow-sm flex items-center gap-1.5 group-hover:scale-105 transition-transform">
+            <div className="bg-white text-primary px-4 py-2 rounded-xl font-black text-xs shadow-sm flex items-center gap-1.5 group-hover:scale-105 transition-transform">
               Start Practicing
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </div>
-            <div className="w-10 h-10 bg-white/15 rounded-full flex items-center justify-center group-hover:bg-white/25 transition-colors backdrop-blur-sm">
+            <div className="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center group-hover:bg-white/25 transition-colors backdrop-blur-sm">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
           </div>
         </button>
 
-        {/* ── CONTINUE ROW ── */}
+        {/* ── 4. RESUME SESSION (IF ACTIVE) ── */}
         {lastSession && (
           <button
             onClick={handleContinue}
-            className="w-full group bg-card dark:bg-card p-4 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.97] transition-all text-left flex items-center justify-between"
+            className="w-full group bg-card p-4 rounded-[22px] border border-black/5 dark:border-white/[0.08] hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all text-left flex items-center justify-between"
           >
             <div>
-              <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-0.5">Resume</p>
-              <h3 className="font-black text-gray-900 dark:text-gray-100 text-[15px]">{lastSession.subject}</h3>
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-0.5">Resume Study</p>
+              <h3 className="font-black text-gray-900 dark:text-gray-100 text-sm leading-snug">{lastSession.subject}</h3>
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
             </div>
-            <div className="w-10 h-10 bg-primary/5 dark:bg-primary/15 rounded-[12px] flex items-center justify-center group-hover:bg-primary/10 transition-colors shrink-0">
-              <ArrowRight className="w-5 h-5 text-gray-900 dark:text-gray-100" />
+            <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+              <ArrowRight className="w-4 h-4" />
             </div>
           </button>
         )}
 
-        {/* ── QUICK ACTIONS ── */}
-        <div className="grid grid-cols-3 gap-2.5">
+        {/* ── 5. BENTO QUICK TOOLS ── */}
+        <div className="grid grid-cols-3 gap-3">
           <button
             onClick={() => { haptic.impact('medium'); router.push('/practice?mode=notes'); }}
-            className="group bg-card dark:bg-card p-4 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.96] transition-all text-left"
+            className="group bg-card p-3.5 rounded-[22px] border border-black/5 dark:border-white/[0.08] hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all text-left"
           >
-            <div className="w-9 h-9 bg-blue-50 dark:bg-blue-900/30 rounded-[12px] flex items-center justify-center mb-2.5 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
-              <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <div className="w-10 h-10 bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 rounded-xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
+              <FileText className="w-4.5 h-4.5" />
             </div>
-            <h3 className="text-[13px] font-black text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
-            <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 mt-0.5 truncate">Summaries</p>
+            <h3 className="text-xs font-black text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
+            <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-0.5 truncate">Summaries</p>
           </button>
 
           <button
             onClick={() => { haptic.impact('medium'); router.push('/practice?mode=flashcards'); }}
-            className="group bg-card dark:bg-card p-4 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.96] transition-all text-left"
+            className="group bg-card p-3.5 rounded-[22px] border border-black/5 dark:border-white/[0.08] hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all text-left"
           >
-            <div className="w-9 h-9 bg-amber-50 dark:bg-amber-900/30 rounded-[12px] flex items-center justify-center mb-2.5 group-hover:bg-amber-100 dark:group-hover:bg-amber-900/50 transition-colors">
-              <Zap className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            <div className="w-10 h-10 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
+              <Zap className="w-4.5 h-4.5" />
             </div>
-            <h3 className="text-[13px] font-black text-gray-900 dark:text-gray-100 leading-tight">Flashcards</h3>
-            <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 mt-0.5 truncate">Swipe cards</p>
+            <h3 className="text-xs font-black text-gray-900 dark:text-gray-100 leading-tight">Flashcards</h3>
+            <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-0.5 truncate">Speed Review</p>
           </button>
 
           <button
             onClick={() => { haptic.impact('medium'); router.push('/notebook/All'); }}
-            className="group bg-card dark:bg-card p-4 rounded-[20px] border border-black/5 dark:border-white/8 hover:border-primary/20 shadow-sm active:scale-[0.96] transition-all text-left"
+            className="group bg-card p-3.5 rounded-[22px] border border-black/5 dark:border-white/[0.08] hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all text-left"
           >
-            <div className="w-9 h-9 bg-violet-50 dark:bg-violet-900/30 rounded-[12px] flex items-center justify-center mb-2.5 group-hover:bg-violet-100 dark:group-hover:bg-violet-900/50 transition-colors">
-              <BookMarked className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+            <div className="w-10 h-10 bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20 rounded-xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
+              <BookMarked className="w-4.5 h-4.5" />
             </div>
-            <h3 className="text-[13px] font-black text-gray-900 dark:text-gray-100 leading-tight">Notebook</h3>
-            <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 mt-0.5 truncate">Saved Qs</p>
+            <h3 className="text-xs font-black text-gray-900 dark:text-gray-100 leading-tight">Notebook</h3>
+            <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-0.5 truncate">Saved Qs</p>
           </button>
         </div>
 
-        {/* ── AI DAILY TIP ── */}
-        <div className="bg-card dark:bg-card border border-black/5 dark:border-white/8 rounded-[20px] p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
+        {/* ── 6. TEMARI AI DAILY SPARK ── */}
+        <div className="bg-card border border-black/5 dark:border-white/[0.08] rounded-[24px] p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-amber-100 dark:bg-amber-900/40 rounded-full flex items-center justify-center">
-                <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              <div className="w-8 h-8 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded-xl flex items-center justify-center">
+                <Sparkles className="w-4 h-4" />
               </div>
-              <span className="text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">Daily Insight</span>
+              <span className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                Temari AI Daily Tip
+              </span>
             </div>
             <button
               onClick={() => { haptic.selection(); fetchTip(true); }}
-              className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/5 dark:bg-white/5 dark:hover:bg-white/10 active:scale-90 transition-all"
+              className="w-7 h-7 flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/10 active:scale-90 transition-all text-slate-400"
               title="Get a new tip"
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-gray-500 dark:text-gray-400 ${tipLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${tipLoading ? 'animate-spin' : ''}`} />
             </button>
           </div>
 
           {tipLoading ? (
-            <div className="space-y-2">
-              <div className="h-3.5 bg-black/5 dark:bg-white/8 rounded-full animate-pulse w-full" />
-              <div className="h-3.5 bg-black/5 dark:bg-white/8 rounded-full animate-pulse w-4/5" />
+            <div className="space-y-2 py-1">
+              <div className="h-3 bg-black/5 dark:bg-white/5 rounded-full animate-pulse w-full" />
+              <div className="h-3 bg-black/5 dark:bg-white/5 rounded-full animate-pulse w-3/4" />
             </div>
           ) : tip ? (
-            <p className="text-sm font-medium text-gray-900/80 dark:text-gray-100/80 dark:text-gray-100/80 leading-relaxed animate-fade-in">
+            <p className="text-xs font-medium text-slate-600 dark:text-slate-300 leading-relaxed animate-fade-in pl-1">
               {tip}
             </p>
           ) : null}
