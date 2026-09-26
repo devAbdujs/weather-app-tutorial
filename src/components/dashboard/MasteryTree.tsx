@@ -123,93 +123,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
   const stream = profile?.stream || 'Natural Science';
   const targetCurriculum = CURRICULUM_SUBJECTS[stream] || CURRICULUM_SUBJECTS['Natural Science'];
 
-  // Real Grade 12 score estimation out of 600 points
-  const estimatedScore = useMemo(() => {
-    if (totalAttempted === 0) return 0;
-    if (isG12) {
-      return Math.min(600, Math.round((overallAccuracy / 100) * 600));
-    }
-    return overallAccuracy;
-  }, [totalAttempted, isG12, overallAccuracy]);
 
-  // Cutoff benchmarks
-  const scoreBenchmark = useMemo(() => {
-    if (totalAttempted === 0) {
-      return {
-        status: 'Awaiting Practice',
-        pillClass: 'bg-ground text-slate-400 dark:text-slate-500 border border-black/5 dark:border-white/5',
-        barColor: 'bg-primary',
-        summary: 'Solve past questions or take a quick quiz to generate your estimated exam score.',
-        percent: 0,
-      };
-    }
-
-    if (isG12) {
-      const pct = Math.min(100, Math.round((estimatedScore / 600) * 100));
-      if (estimatedScore >= 460) {
-        return {
-          status: 'Top Campus Qualified',
-          pillClass: 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] border border-[hsl(145,42%,38%)]/20',
-          barColor: 'bg-[hsl(145,42%,38%)]',
-          summary: 'At this score, students typically qualify for AAU, ASTU, and top health & technology departments.',
-          percent: pct,
-        };
-      }
-      if (estimatedScore >= 360) {
-        return {
-          status: 'Above Pass Cutoff',
-          pillClass: 'bg-primary/10 text-primary border border-primary/20',
-          barColor: 'bg-primary',
-          summary: 'You are on track to clear the 350-point national entrance pass mark. Push higher for preferred campus selection.',
-          percent: pct,
-        };
-      }
-      if (estimatedScore >= 300) {
-        const gap = 350 - estimatedScore;
-        return {
-          status: 'Close to Cutoff',
-          pillClass: 'bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] border border-[hsl(36,58%,42%)]/20',
-          barColor: 'bg-[hsl(36,58%,42%)]',
-          summary: `You need ~${gap} more points to reach the 350-point national university cutoff. Focus on your weakest subject.`,
-          percent: pct,
-        };
-      }
-      return {
-        status: 'Below Cutoff',
-        pillClass: 'bg-error/10 text-error border border-error/20',
-        barColor: 'bg-error',
-        summary: 'Currently below the 350-point passing mark. Increasing your daily question volume will build retention fast.',
-        percent: pct,
-      };
-    }
-
-    // Freshman / Exit Exam (Passing mark: 50%, Distinction: 75%+)
-    if (overallAccuracy >= 75) {
-      return {
-        status: 'Distinction Standing',
-        pillClass: 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] border border-[hsl(145,42%,38%)]/20',
-        barColor: 'bg-[hsl(145,42%,38%)]',
-        summary: 'Well above the 50% graduation requirement with distinction-tier accuracy.',
-        percent: overallAccuracy,
-      };
-    }
-    if (overallAccuracy >= 50) {
-      return {
-        status: 'Passing Standing',
-        pillClass: 'bg-primary/10 text-primary border border-primary/20',
-        barColor: 'bg-primary',
-        summary: 'Meeting the 50% passing threshold. Practice timed questions to secure your safety margin.',
-        percent: overallAccuracy,
-      };
-    }
-    return {
-      status: 'Needs Reinforcement',
-      pillClass: 'bg-error/10 text-error border border-error/20',
-      barColor: 'bg-error',
-      summary: 'Currently below the 50% required passing grade. Review lecture summaries and re-drill missed topics.',
-      percent: overallAccuracy,
-    };
-  }, [totalAttempted, isG12, estimatedScore, overallAccuracy]);
 
   // Weakest subject priority
   const weakestSubject = useMemo(() => {
@@ -286,64 +200,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         ) : null}
       </header>
 
-      {/* ── 2. HERO ESTIMATED SCORECARD (BESPOKE CRAFTSMANSHIP) ───────── */}
-      <section 
-        aria-label="Estimated Exam Score"
-        className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-5 shadow-bespoke-md space-y-4 relative overflow-hidden"
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-1">
-              Estimated Exam Score
-            </span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-4xl font-black font-mono tracking-tight text-gray-900 dark:text-gray-100 tabular-nums">
-                {totalAttempted > 0 ? (isG12 ? estimatedScore : `${overallAccuracy}%`) : '—'}
-              </span>
-              <span className="text-sm font-bold text-slate-400 dark:text-slate-500 font-mono">
-                {isG12 ? '/ 600 pts' : '/ 100%'}
-              </span>
-            </div>
-          </div>
-
-          <span className={`text-xs font-bold px-3 py-1 rounded-full ${scoreBenchmark.pillClass}`}>
-            {scoreBenchmark.status}
-          </span>
-        </div>
-
-        {/* 3-Zone Benchmark Scale Bar */}
-        <div className="space-y-2">
-          <div className="w-full bg-ground border border-black/[0.06] dark:border-white/[0.08] h-3.5 rounded-full overflow-hidden p-0.5 relative">
-            {/* Cutoff Reference Line at 350 pts (58.3%) */}
-            {isG12 && (
-              <div 
-                className="absolute top-0 bottom-0 w-[2px] bg-slate-300 dark:bg-slate-600 z-10" 
-                style={{ left: '58.3%' }} 
-                title="350 Pass Mark"
-              />
-            )}
-            <div 
-              className={`h-full rounded-full transition-all duration-700 ease-bespoke ${scoreBenchmark.barColor}`}
-              style={{ width: `${Math.max(3, scoreBenchmark.percent)}%` }}
-            />
-          </div>
-
-          {/* Scale Labels */}
-          <div className="flex justify-between items-center text-[10px] font-semibold text-slate-500 dark:text-slate-400 px-0.5">
-            <span>0</span>
-            <span className="text-amber-600 dark:text-amber-400 font-bold">
-              {isG12 ? '350 Cutoff' : '50% Pass'}
-            </span>
-            <span>{isG12 ? '600' : '100%'}</span>
-          </div>
-        </div>
-
-        <p className="text-xs font-medium text-slate-600 dark:text-slate-300 leading-relaxed border-t border-black/[0.04] dark:border-white/[0.04] pt-3">
-          {scoreBenchmark.summary}
-        </p>
-      </section>
-
-      {/* ── 3. FOUR TELEMETRY STATS (2x2 BENTO) ──────────────────────── */}
+      {/* ── 2. FOUR TELEMETRY STATS (2x2 BENTO) ──────────────────────── */}
       <section 
         aria-label="Study Metrics"
         className="grid grid-cols-2 gap-3"
