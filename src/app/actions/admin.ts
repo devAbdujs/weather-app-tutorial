@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { sendStudentNotification } from '@/lib/paymentNotifier';
+import { getKeyDetails } from '@/lib/geminiKeyRotation';
 
 const ADMIN_COOKIE_NAME = 'temari_admin_session';
 
@@ -336,5 +337,100 @@ export async function updatePaymentStatus(paymentId: string, telegramId: string,
     console.warn('[Admin Update Payment] Storage image purge error:', storageErr);
   }
 
+  return { success: true };
+}
+
+export async function getAdminAIStats() {
+  const admin = await verifyAdmin();
+  if (!admin) throw new Error('Unauthorized');
+
+  const supabase = await createAdminClient();
+
+  // 1. Fetch user AI usage from profiles
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('telegram_id, full_name, username, subscription_status, ai_weekly_usage, ai_quota_reset_at, created_at')
+    .gt('ai_weekly_usage', 0)
+    .order('ai_weekly_usage', { ascending: false })
+    .limit(50);
+
+  // 2. Fetch total count of ai_cache
+  const { count: cacheCount } = await supabase
+    .from('ai_cache')
+    .select('*', { count: 'exact', head: true });
+
+  // 3. Fetch recent ai_cache entries
+  const { data: recentCache } = await supabase
+    .from('ai_cache')
+    .select('question_id, prompt_type, created_at')
+    .order('created_at', { ascending: false })
+    .limit(10);
+
+  // 4. Fetch Gemini Vision stats from payment_receipts
+  const { data: visionReceipts } = await supabase
+    .from('payment_receipts')
+    .select('id, gemini_amount, gemini_sender, gemini_flagged, status, created_at')
+    .not('gemini_amount', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  const { count: totalReceiptsScanned } = await supabase
+    .from('payment_receipts')
+    .select('*', { count: 'exact', head: true })
+    .not('gemini_amount', 'is', null);
+
+  const { count: flaggedReceiptsCount } = await supabase
+    .from('payment_receipts')
+    .select('*', { count: 'exact', head: true })
+    .eq('gemini_flagged', true);
+
+  // 5. Total all-time users with AI usage
+  const { count: activeAiUsersCount } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .gt('ai_weekly_usage', 0);
+
+  const userList = profiles || [];
+  const totalWeeklyInquiries = userList.reduce((acc, p) => acc + (p.ai_weekly_usage || 0), 0);
+  const freeTierInquiries = userList.filter(p => p.subscription_status !== 'premium').reduce((acc, p) => acc + (p.ai_weekly_usage || 0), 0);
+  const premiumTierInquiries = userList.filter(p => p.subscription_status === 'premium').reduce((acc, p) => acc + (p.ai_weekly_usage || 0), 0);
+
+  // 6. Gemini Key Pool telemetry from geminiKeyRotation
+  const keyDetails = getKeyDetails();
+
+  return {
+    keyDetails,
+    usage: {
+      totalWeeklyInquiries,
+      freeTierInquiries,
+      premiumTierInquiries,
+      activeAiUsersCount: activeAiUsersCount || 0,
+      topAiUsers: userList,
+    },
+    cache: {
+      totalCached: cacheCount || 0,
+      recentEntries: recentCache || [],
+      estimatedTokensSaved: (cacheCount || 0) * 850,
+    },
+    vision: {
+      totalScanned: totalReceiptsScanned || 0,
+      flaggedCount: flaggedReceiptsCount || 0,
+      recentScans: visionReceipts || [],
+    },
+  };
+}
+
+export async function resetUserAIQuota(telegramId: string) {
+  const admin = await verifyAdmin();
+  if (!admin) throw new Error('Unauthorized');
+  if (admin.role === 'readonly') throw new Error('Unauthorized: Readonly admins cannot modify user quotas.');
+
+  const supabase = await createAdminClient();
+  const { error } = await supabase
+    .from('profiles')
+    .update({ ai_weekly_usage: 0, updated_at: new Date().toISOString() })
+    .eq('telegram_id', telegramId);
+
+  if (error) throw error;
   return { success: true };
 }

@@ -64,3 +64,31 @@ export function getNextGeminiKey(): string | null {
 export function getKeyCount(): number {
   return GEMINI_KEYS.length;
 }
+
+export interface GeminiKeyStatus {
+  index: number;
+  maskedKey: string;
+  status: 'ready' | 'cooling_down';
+  cooldownRemainingSeconds: number;
+}
+
+export function getKeyDetails() {
+  const now = Date.now();
+  const keys: GeminiKeyStatus[] = GEMINI_KEYS.map((k, idx) => {
+    const expiry = keyCooldowns.get(idx) ?? 0;
+    const isCooling = now < expiry;
+    return {
+      index: idx + 1,
+      maskedKey: k.length > 10 ? `${k.substring(0, 6)}...${k.substring(k.length - 4)}` : 'Key configured',
+      status: isCooling ? 'cooling_down' : 'ready',
+      cooldownRemainingSeconds: isCooling ? Math.ceil((expiry - now) / 1000) : 0,
+    };
+  });
+
+  return {
+    totalKeys: GEMINI_KEYS.length,
+    activeKeys: keys.filter(k => k.status === 'ready').length,
+    coolingDownKeys: keys.filter(k => k.status === 'cooling_down').length,
+    keys,
+  };
+}

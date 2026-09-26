@@ -1,14 +1,21 @@
 import React from 'react';
-import { getAdminStats } from '@/app/actions/admin';
-import { Users, FileText, BrainCircuit, Zap } from 'lucide-react';
+import { getAdminStats, getAdminAIStats } from '@/app/actions/admin';
+import { Users, FileText, BrainCircuit, Zap, Bot, Key, Sparkles, Database, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function AdminDashboard() {
   // Fetch stats on the server
   let stats = { totalUsers: 0, totalNotes: 0, totalQuestions: 0, totalPremium: 0 };
+  let aiStats: Awaited<ReturnType<typeof getAdminAIStats>> | null = null;
   let error = null;
   
   try {
-    stats = await getAdminStats();
+    const [mainStats, aiData] = await Promise.all([
+      getAdminStats(),
+      getAdminAIStats().catch(() => null)
+    ]);
+    stats = mainStats;
+    aiStats = aiData;
   } catch (err: any) {
     error = err.message;
   }
@@ -53,14 +60,70 @@ export default async function AdminDashboard() {
         />
       </div>
 
-      <div className="bg-card border-2 border-primary/10 rounded-3xl p-8 text-center shadow-sm">
-        <div className="w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <BrainCircuit className="w-8 h-8 text-gray-500 dark:text-gray-400" />
+      {/* Gemini AI Engine Spotlight */}
+      <div className="bg-card border-2 border-primary/10 rounded-3xl p-6 md:p-8 shadow-sm mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-primary/10">
+          <div>
+            <div className="flex items-center gap-2">
+              <Bot className="w-5 h-5 text-accent-gold" />
+              <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
+                Gemini & AI Operations Engine
+              </h2>
+            </div>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">
+              Live telemetry for Gemini 3.6 Flash key rotation, student inquiry quotas, and cache savings.
+            </p>
+          </div>
+          <Link
+            href="/admin/ai"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-sm shadow-primary/20 shrink-0"
+          >
+            <span>Open AI Telemetry</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
-        <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 mb-2">More Features Coming Soon</h2>
-        <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-          User management, question editing, and detailed analytics will be added to this panel in the next update.
-        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="p-4 rounded-2xl bg-ground/50 border border-primary/10">
+            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+              <Key className="w-4 h-4 text-accent-gold" />
+              <span>Key Pool Health</span>
+            </div>
+            <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
+              {aiStats?.keyDetails.activeKeys ?? 0} / {aiStats?.keyDetails.totalKeys ?? 0}
+            </p>
+            <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              All configured keys active
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-ground/50 border border-primary/10">
+            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+              <Sparkles className="w-4 h-4 text-accent-blue" />
+              <span>Weekly Inquiries</span>
+            </div>
+            <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
+              {aiStats?.usage.totalWeeklyInquiries.toLocaleString() ?? '0'}
+            </p>
+            <p className="text-[11px] font-semibold text-gray-400 mt-1">
+              {aiStats?.usage.activeAiUsersCount ?? 0} students used AI this cycle
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-ground/50 border border-primary/10">
+            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+              <Database className="w-4 h-4 text-accent-emerald" />
+              <span>Cache Savings</span>
+            </div>
+            <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
+              {aiStats?.cache.totalCached.toLocaleString() ?? '0'}
+            </p>
+            <p className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
+              ~{((aiStats?.cache.estimatedTokensSaved ?? 0) / 1000).toFixed(1)}k tokens served free
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
