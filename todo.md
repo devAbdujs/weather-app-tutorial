@@ -6,27 +6,15 @@
 ---
 
 ## ✅ Completed Today
-*   **[x] Critical Bug Fixes:** Fixed column name mismatch in exams, wrapped ExamTimer in useCallback, added strict server-side AI paywall.
-*   **[x] Operational Automation:** Deployed n8n via Cloudflare tunnels.
-*   **[x] n8n PDF Short Note Ingestor:** Fully working pipeline to Supabase.
+*   **[x] Critical Bug Fixes:** Fixed column name mismatch in exams (`question` vs `question_text`), wrapped ExamTimer in useCallback, added strict server-side AI paywall.
+*   **[x] Operational Automation:** Deployed n8n via Cloudflare tunnels, active and running 24/7.
+*   **[x] n8n PDF Short Note Ingestor:** Fully working pipeline to Supabase, enhanced prompt to parse Telegram captions.
 *   **[x] n8n AI Payment Vision:** Gemini Vision pipeline built to extract TxID and amount from receipts.
-*   **[x] Admin Approval Buttons:** n8n sends dynamic "Approve/Reject" inline keyboard to admin on Telegram.
-
----
-
-## 🔥 Priority 1: The End-to-End Payment Loop (Tomorrow Morning)
-
-*   **[ ] 1. The Next.js to n8n Bridge (Option B)**
-    *   Add a `POST` Webhook node in n8n Payment Approver workflow.
-    *   Update Next.js `api/payments/submit/route.ts` to trigger the n8n Webhook with the Supabase public image URL after a student uploads a receipt on the website.
-*   **[ ] 2. The Telegram Callback Workflow (Approval Action)**
-    *   Create a new n8n workflow listening for Telegram "Callback Queries" (when Admin clicks Approve).
-    *   Parse the `student_telegram_id` from the callback string.
-    *   Update Supabase `profiles` table: `subscription_status = 'premium'`.
-    *   Update Supabase `payments` table: `status = 'approved'`.
-*   **[ ] 3. The Celebration Notification**
-    *   n8n sends a Telegram message to the student: *"🎉 Payment verified! You are now Premium."*
-    *   n8n edits the Admin's message to remove the inline buttons.
+*   **[x] The Next.js to n8n Bridge (Option B):** Connected receipt uploads to production n8n webhook (`annotated-claims-advocate-britannica.trycloudflare.com`).
+*   **[x] Complete Approval & Rejection Callback Loop:** Tapping "Approve" upgrades `profiles` to `premium`, marks `payment_receipts` as `approved`, sends celebration message to student, and confirms to admin. Tapping "Reject" marks as rejected and notifies student.
+*   **[x] Cloudflare Tunnel Auto-Healer Watchdog:** Automated watchdog running on laptop server via cron every 3 minutes with Telegram alerting on tunnel rotation.
+*   **[x] UX Hardening:** Eliminated `daily_streak: 0` hydration flash in protected layout; unlocked Tinder-style swipeable Flashcards at `/flashcards/[subject]` on Home & Practice hubs.
+*   **[x] Full Codebase Audit & TypeScript Cleanliness:** 0 TypeScript errors across 29 routes.
 
 ---
 
