@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Clock, Sparkles, List, ChevronRight, ChevronLeft, Layers, Highlighter, Undo2, Trash2, Copy, Check, RotateCcw, X } from 'lucide-react';
+import { Clock, Sparkles, List, ChevronRight, ChevronLeft, Layers, Highlighter, Undo2, Trash2, Copy, Check, RotateCcw, X, PenLine } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { StudyNote, NoteHighlight, HighlightColor } from '@/types';
 import { useRouter } from 'next/navigation';
@@ -79,8 +79,14 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
   const [showHighlightsDrawer, setShowHighlightsDrawer] = useState(false);
   const [toast, setToast] = useState<{ message: string; onUndo?: () => void } | null>(null);
 
+  // Pen Mode: continuous instant highlight on text drag/release
+  const [penModeActive, setPenModeActive] = useState(false);
+  const [activePenColor, setActivePenColor] = useState<HighlightColor>('yellow');
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isPointerDownRef = useRef(false);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const dept = subject && subject !== 'All' ? subject : 'General';
   const themeClass = getSubjectTheme(dept);
@@ -106,6 +112,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     setSelectionCoords(null);
     setSelectedHighlight(null);
     setShowHighlightsDrawer(false);
+    setPenModeActive(false);
     haptic.impact('light');
   }, [haptic]);
 
@@ -151,44 +158,9 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
       .catch(err => console.warn('Highlights load error:', err));
   }, [selectedNote, subject, getStorageKey]);
 
-  // Text selection listener on note content
-  useEffect(() => {
-    if (!selectedNote) return;
-
-    const handleSelectionChange = () => {
-      const selection = window.getSelection();
-      if (selection && selection.toString().trim().length >= 2) {
-        const text = selection.toString().trim();
-        try {
-          const range = selection.getRangeAt(0);
-          const rect = range.getBoundingClientRect();
-          const container = document.getElementById('note-content');
-          if (container && container.contains(selection.anchorNode)) {
-            setSelectedText(text);
-            setSelectionCoords({ top: rect.top - 54, left: rect.left + rect.width / 2 });
-            setSelectedHighlight(null);
-            return;
-          }
-        } catch {}
-      }
-
-      // Clear when clicked outside
-      setTimeout(() => {
-        if (!window.getSelection()?.toString().trim()) {
-          setSelectedText('');
-          setSelectionCoords(null);
-        }
-      }, 150);
-    };
-
-    document.addEventListener('selectionchange', handleSelectionChange);
-    return () => document.removeEventListener('selectionchange', handleSelectionChange);
-  }, [selectedNote]);
-
-  // Apply a highlight with chosen color
-  const applyHighlight = (color: HighlightColor) => {
-    if (!selectedText || !selectedNote) return;
-    const textToSave = selectedText;
+  // Direct highlight application
+  const applyHighlightDirect = useCallback((textToSave: string, color: HighlightColor) => {
+    if (!textToSave || !selectedNote) return;
     const noteTitle = selectedNote.title;
     const key = getStorageKey(noteTitle);
     haptic.impact('light');
@@ -203,11 +175,14 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
       created_at: new Date().toISOString(),
     };
 
-    const updated = [...highlights, newHighlight];
-    setHighlights(updated);
-    try { localStorage.setItem(key, JSON.stringify(updated)); } catch {}
+    setHighlights(prev => {
+      if (prev.some(h => h.text === textToSave && h.color === color)) return prev;
+      const updated = [...prev, newHighlight];
+      try { localStorage.setItem(key, JSON.stringify(updated)); } catch {}
+      return updated;
+    });
 
-    // Reset selection
+    // Clear selection
     setSelectedText('');
     setSelectionCoords(null);
     window.getSelection()?.removeAllRanges();
@@ -239,7 +214,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         }
       })
       .catch(e => console.warn('Failed to sync highlight to server:', e));
-  };
+  }, [selectedNote, subject, getStorageKey, haptic, showToast]);
 
   // Remove a highlight
   const removeHighlight = (id: string, recordUndo: boolean = true) => {
@@ -266,6 +241,105 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
     fetch(`/api/highlights?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
       .catch(e => console.warn('Failed to delete highlight from server:', e));
+  };
+
+  // Decoupled, buttery-smooth selection handling (zero re-renders while dragging)
+  useEffect(() => {
+    if (!selectedNote) return;
+
+    const processSelection = () => {
+      // Don't calculate or render if pointer is still actively down
+      if (isPointerDownRef.current) return;
+
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed) {
+        setSelectedText('');
+        setSelectionCoords(null);
+        return;
+      }
+
+      const text = selection.toString().trim();
+      if (text.length < 2) {
+        setSelectedText('');
+        setSelectionCoords(null);
+        return;
+      }
+
+      const container = document.getElementById('note-content');
+      if (!container) return;
+
+      try {
+        const range = selection.getRangeAt(0);
+        if (container.contains(range.commonAncestorContainer)) {
+          const rect = range.getBoundingClientRect();
+          // Smart vertical placement: flip below if near the top
+          const top = rect.top < 130 ? rect.bottom + 12 : rect.top - 58;
+          const left = rect.left + rect.width / 2;
+
+          // If Pen Mode is active, auto-apply the highlight immediately!
+          if (penModeActive) {
+            applyHighlightDirect(text, activePenColor);
+            return;
+          }
+
+          setSelectedText(text);
+          setSelectionCoords({ top, left });
+          setSelectedHighlight(null);
+        } else {
+          setSelectedText('');
+          setSelectionCoords(null);
+        }
+      } catch {
+        setSelectedText('');
+        setSelectionCoords(null);
+      }
+    };
+
+    const handlePointerDown = (e: PointerEvent) => {
+      isPointerDownRef.current = true;
+      const target = e.target as HTMLElement;
+      if (!target.closest('.highlighter-toolbar') && !target.closest('.highlighter-popover')) {
+        setSelectionCoords(null);
+        setSelectedHighlight(null);
+      }
+    };
+
+    const handlePointerUp = () => {
+      isPointerDownRef.current = false;
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = setTimeout(processSelection, 70);
+    };
+
+    const handleSelectionChange = () => {
+      // Never re-render during active touch/drag! Only update after pointer lifts or stays still
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = setTimeout(() => {
+        if (!isPointerDownRef.current) {
+          processSelection();
+        }
+      }, 150);
+    };
+
+    const container = document.getElementById('note-content');
+    if (container) {
+      container.addEventListener('pointerdown', handlePointerDown);
+      container.addEventListener('pointerup', handlePointerUp);
+    }
+    document.addEventListener('selectionchange', handleSelectionChange);
+
+    return () => {
+      if (container) {
+        container.removeEventListener('pointerdown', handlePointerDown);
+        container.removeEventListener('pointerup', handlePointerUp);
+      }
+      document.removeEventListener('selectionchange', handleSelectionChange);
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    };
+  }, [selectedNote, penModeActive, activePenColor, applyHighlightDirect]);
+
+  // Apply a highlight from floating toolbar
+  const applyHighlight = (color: HighlightColor) => {
+    applyHighlightDirect(selectedText, color);
   };
 
   // Update an existing highlight's color
@@ -358,12 +432,12 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
       <div className="min-h-screen bg-ground flex flex-col font-sans animate-fade-in relative pb-28">
 
         {/* Floating Selection Highlighter Bar */}
-        {selectionCoords && selectedText && (
+        {!penModeActive && selectionCoords && selectedText && (
           <div
-            className="fixed z-50 animate-scale-bounce"
+            className="fixed z-50 -translate-x-1/2 animate-scale-bounce pointer-events-auto"
             style={{
               top: Math.max(72, selectionCoords.top),
-              left: Math.max(12, Math.min(selectionCoords.left - 130, window.innerWidth - 270)),
+              left: `clamp(140px, ${selectionCoords.left}px, calc(100vw - 140px))`,
             }}
           >
             <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-border shadow-bespoke-lg">
@@ -394,10 +468,10 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         {/* Floating Edit Popover for Existing Highlight */}
         {selectedHighlight && highlightModalCoords && (
           <div
-            className="fixed z-50 animate-scale-bounce"
+            className="fixed z-50 -translate-x-1/2 animate-scale-bounce pointer-events-auto"
             style={{
               top: Math.max(72, highlightModalCoords.top),
-              left: Math.max(12, Math.min(highlightModalCoords.left - 130, window.innerWidth - 270)),
+              left: `clamp(140px, ${highlightModalCoords.left}px, calc(100vw - 140px))`,
             }}
           >
             <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-border shadow-bespoke-lg">
@@ -432,6 +506,52 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               </button>
             </div>
           </div>
+        )}
+
+        {/* Floating Active Pen Dock when Pen Mode is active */}
+        {penModeActive && (
+          <aside
+            aria-label="Active Highlighter Pen Toolbar"
+            className="fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-scale-bounce pointer-events-auto"
+          >
+            <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-card/95 backdrop-blur-xl border border-border shadow-bespoke-lg">
+              <div className="flex items-center gap-1.5 pl-1 pr-1 text-xs font-bold text-foreground">
+                <PenLine className="w-4 h-4 text-primary animate-pulse" />
+                <span className="hidden sm:inline">Pen Mode:</span>
+              </div>
+              <div className="flex items-center gap-1.5" role="radiogroup" aria-label="Pen highlighter color">
+                {HIGHLIGHT_PALETTE.map(col => (
+                  <button
+                    key={col.id}
+                    role="radio"
+                    aria-checked={activePenColor === col.id}
+                    aria-label={`Use ${col.name} highlighter`}
+                    onClick={() => {
+                      haptic.selection();
+                      setActivePenColor(col.id);
+                    }}
+                    className={`w-7 h-7 rounded-full ${col.dot} ${col.border} border-2 transition-all ${
+                      activePenColor === col.id
+                        ? 'ring-2 ring-primary ring-offset-2 scale-110'
+                        : 'opacity-70 hover:opacity-100 hover:scale-105 active:scale-95'
+                    }`}
+                    title={`Use ${col.name} highlighter`}
+                  />
+                ))}
+              </div>
+              <div className="w-[1px] h-4 bg-border/80 mx-1" />
+              <button
+                onClick={() => {
+                  haptic.impact('light');
+                  setPenModeActive(false);
+                }}
+                className="px-2 py-1 rounded-full text-xs font-semibold text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+                title="Exit Pen Mode"
+              >
+                Exit
+              </button>
+            </div>
+          </aside>
         )}
 
         {/* Floating Toast Notification with Undo */}
@@ -482,6 +602,25 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               </div>
             </div>
 
+            {/* Pen Mode Toggle Button */}
+            <button
+              onClick={() => {
+                haptic.selection();
+                setPenModeActive(prev => !prev);
+                setSelectionCoords(null);
+                setSelectedText('');
+              }}
+              className={`h-9 px-2.5 rounded-[12px] flex items-center gap-1.5 text-xs font-bold border transition-all duration-200 ease-bespoke ${
+                penModeActive
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                  : 'bg-card text-muted border-border hover:bg-black/5 dark:hover:bg-white/5'
+              }`}
+              title={penModeActive ? 'Pen Mode Active (Tap to disable)' : 'Enable Pen Mode (Instant highlight on select)'}
+            >
+              <PenLine className="w-4 h-4" />
+              <span className="hidden sm:inline">Pen</span>
+            </button>
+
             {/* Highlighter Panel Button */}
             <button
               onClick={() => setShowHighlightsDrawer(prev => !prev)}
@@ -504,7 +643,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
           ref={scrollRef}
           className="flex flex-col px-2.5 sm:px-4 pt-4 animate-fade-in"
         >
-          <div id="note-content" className="w-full ruled-paper rounded-[20px] sm:rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] shadow-sm overflow-hidden pt-4 pb-12 mb-4">
+          <div id="note-content" className="w-full ruled-paper rounded-[20px] sm:rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] shadow-sm overflow-hidden pt-4 pb-12 mb-4 note-reading-canvas select-text">
             <MarkdownRenderer 
               content={selectedNote.content || ''} 
               accentBg={accentBg} 

@@ -161,3 +161,23 @@ body {
   position: relative;
   z-index: 1;
 }
+
+/* ─── Smooth Note Text Selection & Highlighter Canvas ────────────── */
+.note-reading-canvas {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+  touch-action: pan-y;
+}
+
+.note-reading-canvas * {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
+}
+
+.note-reading-canvas ::selection {
+  background-color: hsla(213, 90%, 60%, 0.28);
+  color: inherit;
+}
