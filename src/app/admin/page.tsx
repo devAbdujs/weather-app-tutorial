@@ -43,20 +43,20 @@ export default async function AdminDashboard() {
         <StatCard 
           title="Study Notes" 
           value={stats.totalNotes.toLocaleString()} 
-          icon={<FileText className="w-7 h-7 text-[hsl(145,42%,38%)]" />} 
-          color="bg-[hsl(145,42%,38%)]/10"
+          icon={<FileText className="w-7 h-7 text-accent-emerald" />} 
+          color="bg-accent-emerald/10"
         />
         <StatCard 
           title="Exam Questions" 
           value={stats.totalQuestions.toLocaleString()} 
-          icon={<BrainCircuit className="w-7 h-7 text-[hsl(36,58%,42%)]" />} 
-          color="bg-[hsl(36,58%,42%)]/10"
+          icon={<BrainCircuit className="w-7 h-7 text-accent-gold" />} 
+          color="bg-accent-gold/10"
         />
         <StatCard 
           title="Premium Users" 
           value={stats.totalPremium.toLocaleString()} 
-          icon={<Zap className="w-7 h-7 text-[hsl(268,40%,48%)]" />} 
-          color="bg-[hsl(268,40%,48%)]/10"
+          icon={<Zap className="w-7 h-7 text-accent-purple" />} 
+          color="bg-accent-purple/10"
         />
       </div>
 
@@ -92,8 +92,8 @@ export default async function AdminDashboard() {
             <p className="text-2xl font-black text-gray-900 dark:text-gray-100 tabular-nums">
               {aiStats?.keyDetails.activeKeys ?? 0} / {aiStats?.keyDetails.totalKeys ?? 0}
             </p>
-            <p className="text-[11px] font-semibold text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] mt-1 flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-[hsl(145,42%,38%)] animate-pulse" />
+            <p className="text-[11px] font-semibold text-accent-emerald mt-1 flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
               All configured keys active
             </p>
           </div>
@@ -113,13 +113,13 @@ export default async function AdminDashboard() {
 
           <div className="p-4 rounded-2xl bg-ground/50 border border-primary/10">
             <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-              <Database className="w-4 h-4 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]" />
+              <Database className="w-4 h-4 text-accent-emerald" />
               <span>Cache Savings</span>
             </div>
             <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
               {aiStats?.cache.totalCached.toLocaleString() ?? '0'}
             </p>
-            <p className="text-[11px] font-semibold text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] mt-1">
+            <p className="text-[11px] font-semibold text-accent-emerald mt-1">
               ~{((aiStats?.cache.estimatedTokensSaved ?? 0) / 1000).toFixed(1)}k tokens served free
             </p>
           </div>

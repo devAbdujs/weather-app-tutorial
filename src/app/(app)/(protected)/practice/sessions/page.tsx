@@ -254,10 +254,10 @@ function SessionsContent() {
               <button
                 key={s.id}
                 onClick={() => { haptic.selection(); setSelectedSession(s); }}
-                className="w-full group bg-card p-4 rounded-2xl border border-black/5 dark:border-white/8 shadow-sm hover:border-primary/30 shadow-sm active:scale-[0.98] transition-all flex items-center gap-4"
+                className="w-full group bg-card p-4 rounded-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-bespoke-sm hover:border-primary/30 active:scale-[0.98] transition-all flex items-center gap-4"
               >
                 <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center font-black text-lg shrink-0 ${
-                  isFreshman && activeTab === 'midterm' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700' : 'bg-violet-50 dark:bg-violet-900/30 text-violet-700'
+                  isFreshman && activeTab === 'midterm' ? 'bg-accent-blue/10 text-accent-blue' : 'bg-accent-purple/10 text-accent-purple'
                 }`}>
                   {s.id}
                 </div>
@@ -284,11 +284,11 @@ function SessionsContent() {
           onClick={() => setSelectedSession(null)}
         >
           <div
-            className="bg-card w-full max-w-sm rounded-[32px] shadow-2xl animate-scale-bounce overflow-hidden"
+            className="bg-card w-full max-w-sm rounded-[32px] shadow-bespoke-lg animate-scale-bounce overflow-hidden border border-black/[0.06] dark:border-white/[0.08]"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="px-6 pt-6 pb-5 border-b border-black/5 dark:border-white/8">
+            <div className="px-6 pt-6 pb-5 border-b border-black/[0.06] dark:border-white/[0.08]">
               <p className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">{selectedSession.count} questions</p>
               <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">{selectedSession.label}</h3>
             </div>
@@ -298,31 +298,31 @@ function SessionsContent() {
               {/* Practice */}
               <button
                 onClick={() => handleStart(selectedSession, 'practice')}
-                className="w-full group text-left p-4 rounded-[20px] bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 active:scale-[0.97] transition-all flex items-center gap-4"
+                className="w-full group text-left p-4 rounded-[20px] bg-accent-emerald/10 border border-accent-emerald/20 hover:bg-accent-emerald/15 active:scale-[0.97] transition-all flex items-center gap-4"
               >
-                <div className="w-14 h-14 rounded-[18px] bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+                <div className="w-14 h-14 rounded-[18px] bg-accent-emerald text-white flex items-center justify-center shrink-0 shadow-bespoke-sm group-hover:scale-105 transition-transform">
                   <BookOpen className="w-6 h-6" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-black text-emerald-950 text-[17px] leading-tight">Practice Mode</h4>
-                  <p className="text-xs font-medium text-emerald-800/60 mt-0.5">Instant feedback · learn as you go</p>
+                  <h4 className="font-black text-gray-900 dark:text-gray-100 text-[17px] leading-tight">Practice Mode</h4>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">Instant feedback · learn as you go</p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:text-emerald-600 transition-colors shrink-0" />
+                <ArrowRight className="w-4 h-4 text-accent-emerald shrink-0" />
               </button>
 
               {/* Exam */}
               <button
                 onClick={() => handleStart(selectedSession, 'exam')}
-                className="w-full group text-left p-4 rounded-[20px] bg-primary/5 hover:bg-primary/10 active:scale-[0.97] transition-all flex items-center gap-4"
+                className="w-full group text-left p-4 rounded-[20px] bg-primary/5 hover:bg-primary/10 border border-primary/15 active:scale-[0.97] transition-all flex items-center gap-4"
               >
-                <div className="w-14 h-14 rounded-[18px] bg-primary text-white flex items-center justify-center shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+                <div className="w-14 h-14 rounded-[18px] bg-primary text-white flex items-center justify-center shrink-0 shadow-bespoke-sm group-hover:scale-105 transition-transform">
                   <Layers className="w-6 h-6" />
                 </div>
                 <div className="flex-1">
                   <h4 className="font-black text-gray-900 dark:text-gray-100 text-[17px] leading-tight">Exam Mode</h4>
                   <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">Timed · answers revealed at the end</p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 transition-colors shrink-0" />
+                <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors shrink-0" />
               </button>
             </div>
 

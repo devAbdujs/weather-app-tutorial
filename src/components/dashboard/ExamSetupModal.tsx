@@ -264,8 +264,8 @@ export const ExamSetupModal: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <div className="p-4 rounded-[20px] bg-[hsl(36,58%,42%)]/10 border border-[hsl(36,58%,42%)]/20 flex items-center gap-3">
-                <Zap className="w-5 h-5 text-[hsl(36,58%,42%)] shrink-0" />
+              <div className="p-4 rounded-[20px] bg-accent-gold/10 border border-accent-gold/20 flex items-center gap-3">
+                <Zap className="w-5 h-5 text-accent-gold shrink-0" />
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-relaxed">Swipe through rapid-fire question cards to master key concepts.</p>
               </div>
             </div>

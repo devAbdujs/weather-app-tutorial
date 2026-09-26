@@ -195,8 +195,8 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
           <div className="w-full max-w-sm h-[420px] rounded-[32px] bg-black/5 dark:bg-white/5 animate-pulse" />
         ) : isCompleted ? (
           <div className="w-full max-w-sm bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[32px] p-8 text-center space-y-6 shadow-bespoke-md animate-fade-in">
-            <div className="w-20 h-20 rounded-[20px] bg-[hsl(145,42%,38%)]/10 border border-[hsl(145,42%,38%)]/20 mx-auto flex items-center justify-center shadow-bespoke-sm">
-              <CheckCircle2 className="w-10 h-10 text-[hsl(145,42%,38%)]" />
+            <div className="w-20 h-20 rounded-[20px] bg-accent-emerald/10 border border-accent-emerald/20 mx-auto flex items-center justify-center shadow-bespoke-sm">
+              <CheckCircle2 className="w-10 h-10 text-accent-emerald" />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Deck Completed!</h2>
@@ -220,7 +220,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
             {isFlipped && (
               <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 flex justify-between px-2 w-full pointer-events-none z-0">
                 <div className={`text-error font-black text-2xl transition-opacity ${dragOffset < -50 ? 'opacity-100' : 'opacity-0'}`}>FORGOT</div>
-                <div className={`text-[hsl(145,42%,38%)] font-black text-2xl transition-opacity ${dragOffset > 50 ? 'opacity-100' : 'opacity-0'}`}>KNOW IT</div>
+                <div className={`text-accent-emerald font-black text-2xl transition-opacity ${dragOffset > 50 ? 'opacity-100' : 'opacity-0'}`}>KNOW IT</div>
               </div>
             )}
 
@@ -251,7 +251,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
 
                 {/* Back Side */}
                 <div className="absolute inset-0 w-full h-full bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[32px] p-8 flex flex-col justify-center items-center rotate-y-180 backface-hidden shadow-bespoke-md">
-                  <span className="absolute top-6 left-6 text-[10px] uppercase tracking-widest font-black text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4"/> Answer</span>
+                  <span className="absolute top-6 left-6 text-[10px] uppercase tracking-widest font-black text-accent-gold flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4"/> Answer</span>
                   <div className="text-base font-medium text-gray-900 dark:text-gray-100 text-center leading-relaxed max-h-64 overflow-y-auto no-scrollbar w-full">
                     <MathText content={currentCard.back} />
                   </div>
@@ -260,7 +260,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
                   <button 
                     onClick={(e) => { 
                       e.stopPropagation(); 
-                      haptic.impact('light');
+                      haptic.impact('light'); 
                       setShowAI(true); 
                     }}
                     className="absolute bottom-6 right-6 bg-primary/10 hover:bg-primary/20 border border-primary/20 text-primary font-bold text-xs px-3 py-1.5 rounded-full flex items-center gap-1 transition-colors active:scale-95 pointer-events-auto"
@@ -282,7 +282,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
                   <button onClick={() => nextCard('hard')} className="flex-1 h-14 rounded-[16px] bg-card text-error font-black uppercase tracking-widest text-xs border border-error/20 shadow-bespoke-sm active:scale-[0.98] transition-all">
                     Forgot
                   </button>
-                  <button onClick={() => nextCard('easy')} className="flex-1 h-14 rounded-[16px] bg-[hsl(145,42%,38%)] text-white font-black uppercase tracking-widest text-xs shadow-bespoke-sm active:scale-[0.98] transition-all">
+                  <button onClick={() => nextCard('easy')} className="flex-1 h-14 rounded-[16px] bg-accent-emerald text-white font-black uppercase tracking-widest text-xs shadow-bespoke-sm active:scale-[0.98] transition-all">
                     Knew It
                   </button>
                 </div>

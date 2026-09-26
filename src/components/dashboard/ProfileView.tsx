@@ -74,9 +74,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
   const usagePercent = Math.min(100, Math.round((usageClamped / weeklyCap) * 100));
 
   const getProgressColor = () => {
-    if (usagePercent < 65) return 'bg-[hsl(145,42%,38%)]';
-    if (usagePercent < 85) return 'bg-[hsl(36,58%,42%)]';
-    return 'bg-error';
+    if (usagePercent < 65) return 'bg-accent-emerald';
+    if (usagePercent < 85) return 'bg-accent-gold';
+    return 'bg-accent-rose';
   };
 
   // Days until weekly reset calculation
@@ -137,7 +137,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           className="relative bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-5 shadow-bespoke-md"
         >
           {devMode && (
-            <div className="absolute top-4 right-4 text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+            <div className="absolute top-4 right-4 text-[10px] font-black text-accent-gold uppercase tracking-widest bg-accent-gold/10 border border-accent-gold/20 px-2 py-0.5 rounded-full">
               Dev
             </div>
           )}
@@ -166,7 +166,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
               </div>
 
               {isPremium && (
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[hsl(36,58%,42%)] border-2 border-card flex items-center justify-center shadow-sm text-white">
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-accent-gold border-2 border-card flex items-center justify-center shadow-sm text-white">
                   <Zap className="w-3 h-3 fill-current" />
                 </div>
               )}
@@ -179,7 +179,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                   {profile.full_name || 'Scholar'}
                 </h1>
                 {isPremium ? (
-                  <span className="px-2 py-0.5 rounded-md bg-[hsl(36,58%,42%)]/10 border border-[hsl(36,58%,42%)]/20 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] text-[10px] font-black uppercase tracking-wider shrink-0">
+                  <span className="px-2 py-0.5 rounded-md bg-accent-gold/10 border border-accent-gold/20 text-accent-gold text-[10px] font-black uppercase tracking-wider shrink-0">
                     PRO
                   </span>
                 ) : (
@@ -217,7 +217,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         >
           <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[20px] p-3.5 text-center shadow-bespoke-sm">
             <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
-              <Flame className="w-3.5 h-3.5 text-amber-500" />
+              <Flame className="w-3.5 h-3.5 text-accent-gold" />
               <span>Streak</span>
             </div>
             <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono tabular-nums">
@@ -237,10 +237,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
 
           <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[20px] p-3.5 text-center shadow-bespoke-sm">
             <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
-              <TrendingUp className="w-3.5 h-3.5 text-[hsl(145,42%,38%)]" />
+              <TrendingUp className="w-3.5 h-3.5 text-accent-emerald" />
               <span>Accuracy</span>
             </div>
-            <span className="text-xl font-black text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] font-mono tabular-nums">
+            <span className="text-xl font-black text-accent-emerald font-mono tabular-nums">
               {overallAccuracy}%
             </span>
           </div>
@@ -349,7 +349,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             className="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-accent-gold/10 text-accent-gold flex items-center justify-center">
                 <Zap className="w-4 h-4" />
               </div>
               <span className="text-xs font-bold text-gray-900 dark:text-gray-100">
@@ -371,7 +371,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             className="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-[hsl(199,65%,40%)]/10 text-[hsl(199,65%,40%)] dark:text-[hsl(199,55%,62%)] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-accent-blue/10 text-accent-blue flex items-center justify-center">
                 <MessageCircle className="w-4 h-4" />
               </div>
               <span className="text-xs font-bold text-gray-900 dark:text-gray-100">

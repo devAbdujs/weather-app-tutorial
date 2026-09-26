@@ -192,7 +192,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         </div>
 
         {profile?.daily_streak ? (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] text-xs font-bold border border-[hsl(36,58%,42%)]/20 shadow-bespoke-sm">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-accent-gold/10 text-accent-gold text-xs font-bold border border-accent-gold/20 shadow-bespoke-sm">
             <Flame className="w-3.5 h-3.5 fill-current" />
             <span className="font-mono">{profile.daily_streak}</span>
             <span className="text-[10px] uppercase tracking-wider">days</span>
@@ -285,16 +285,16 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
           return (
             <section 
               aria-label="Priority Improvement Area"
-              className="bg-card border border-amber-500/25 dark:border-amber-500/35 rounded-[22px] p-4.5 shadow-bespoke-sm"
+              className="bg-card border border-accent-gold/25 rounded-[22px] p-4.5 shadow-bespoke-sm"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
+                  <div className="w-10 h-10 rounded-2xl bg-accent-gold/10 text-accent-gold flex items-center justify-center shrink-0 border border-accent-gold/20">
                     <AlertTriangle className="w-4.5 h-4.5" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-accent-gold">
                         Priority Focus Area
                       </span>
                       <span className="text-[10px] font-mono font-bold text-slate-400">
@@ -443,10 +443,10 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                 : 0;
 
               const status = accuracy >= 75 
-                ? { label: 'Strong', badge: 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]', bar: 'bg-[hsl(145,42%,38%)]' }
+                ? { label: 'Strong', badge: 'bg-accent-emerald/10 text-accent-emerald', bar: 'bg-accent-emerald' }
                 : accuracy >= 55 
                 ? { label: 'Fair', badge: 'bg-primary/10 text-primary', bar: 'bg-primary' }
-                : { label: 'Needs Work', badge: 'bg-amber-500/10 text-amber-600 dark:text-amber-400', bar: 'bg-amber-500' };
+                : { label: 'Needs Work', badge: 'bg-accent-rose/10 text-accent-rose', bar: 'bg-accent-rose' };
 
               return (
                 <div

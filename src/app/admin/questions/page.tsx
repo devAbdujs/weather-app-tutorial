@@ -12,7 +12,7 @@ export default async function AdminQuestionsPage() {
           <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Question Bank</h1>
           <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">Showing the latest 100 questions from the database.</p>
         </div>
-        <div className="bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] border border-[hsl(145,42%,38%)]/20 px-4 py-2 rounded-xl font-bold flex items-center gap-2">
+        <div className="bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 px-4 py-2 rounded-xl font-bold flex items-center gap-2">
           <BookOpen className="w-5 h-5" />
           <span className="tabular-nums">{questions.length} Questions</span>
         </div>

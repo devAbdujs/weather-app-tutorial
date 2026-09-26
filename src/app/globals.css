@@ -15,8 +15,20 @@
   /* Brand: Bespoke Deep Indigo — single accent, used sparingly */
   --primary:            hsl(224, 64%, 33%);
   --primary-foreground: hsl(0, 0%, 100%);
-  --primary-rgb:        30, 58, 138;
-  --accent:             hsl(43, 92%, 52%);
+  --primary-rgb:        30, 59, 138;
+  --accent:             hsl(36, 58%, 42%);
+
+  /* Semantic Accents — cohesive, anti-glare, desaturated palette */
+  --accent-gold:        hsl(36, 58%, 42%);     /* Warm Ethiopian gold: Streaks, badges, tips */
+  --accent-gold-rgb:    169, 120, 45;
+  --accent-emerald:     hsl(145, 42%, 38%);    /* Forest jade: Success, completed, high mastery */
+  --accent-emerald-rgb: 56, 138, 90;
+  --accent-rose:        hsl(350, 48%, 48%);    /* Muted crimson: Needs practice, warnings, errors */
+  --accent-rose-rgb:    181, 64, 83;
+  --accent-blue:        hsl(199, 65%, 44%);    /* Telegram & info blue */
+  --accent-blue-rgb:    39, 139, 185;
+  --accent-purple:      hsl(268, 45%, 48%);    /* Academic violet: Notes, psychology */
+  --accent-purple-rgb:  119, 67, 177;
 
   /* Text hierarchy — avoids pure #000/#fff halation */
   --text-primary:  hsl(222, 47%, 11%);
@@ -41,8 +53,20 @@
   /* Dark mode primary: desaturated — colors feel more intense on dark bg */
   --primary:            hsl(213, 60%, 58%);
   --primary-foreground: hsl(0, 0%, 100%);
-  --primary-rgb:        54, 117, 212;
-  --accent:             hsl(43, 65%, 54%);   /* Desaturated gold for dark bg */
+  --primary-rgb:        84, 141, 212;
+  --accent:             hsl(36, 50%, 65%);
+
+  /* Dark mode semantic accents: softened & anti-halation desaturated */
+  --accent-gold:        hsl(36, 50%, 65%);
+  --accent-gold-rgb:    210, 175, 121;
+  --accent-emerald:     hsl(145, 35%, 62%);
+  --accent-emerald-rgb: 124, 192, 152;
+  --accent-rose:        hsl(350, 40%, 68%);
+  --accent-rose-rgb:    206, 141, 152;
+  --accent-blue:        hsl(199, 55%, 62%);
+  --accent-blue-rgb:    105, 178, 211;
+  --accent-purple:      hsl(268, 40%, 70%);
+  --accent-purple-rgb:  176, 148, 209;
 
   --text-primary:  hsl(213, 31%, 95%);
   --text-secondary:hsl(215, 14%, 63%);

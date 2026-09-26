@@ -16,32 +16,27 @@ const config: Config = {
         card:    "var(--surface)",
 
         /* ── Brand — one accent, used sparingly ── */
-        primary: "var(--primary)",
+        primary: "rgb(var(--primary-rgb) / <alpha-value>)",
         "primary-foreground": "var(--primary-foreground, #ffffff)",
-        accent:  "hsl(43, 78%, 50%)",  /* Warm gold — slightly desaturated */
+        accent:  "rgb(var(--accent-gold-rgb) / <alpha-value>)",
 
-        /* ── Semantic accent palette — desaturated, bespoke ── */
-        /* These are used for subject color theming across the app */
-        "accent-amber":   "hsl(43, 78%, 50%)",   /* Warm gold */
-        "accent-emerald": "hsl(158, 45%, 42%)",  /* Muted teal-green — NOT neon */
-        "accent-rose":    "hsl(350, 55%, 55%)",  /* Dusty rose — NOT harsh red */
-        "accent-yellow":  "hsl(43, 78%, 50%)",
-        "accent-blue":    "hsl(199, 65%, 46%)",  /* Telegram blue — slightly muted */
-        "accent-gold":    "hsl(43, 78%, 50%)",
+        /* ── Semantic accent palette — automatic dark/light adaptive with full opacity support ── */
+        "accent-gold":    "rgb(var(--accent-gold-rgb) / <alpha-value>)",
+        "accent-amber":   "rgb(var(--accent-gold-rgb) / <alpha-value>)",
+        "accent-emerald": "rgb(var(--accent-emerald-rgb) / <alpha-value>)",
+        "accent-rose":    "rgb(var(--accent-rose-rgb) / <alpha-value>)",
+        "accent-blue":    "rgb(var(--accent-blue-rgb) / <alpha-value>)",
+        "accent-purple":  "rgb(var(--accent-purple-rgb) / <alpha-value>)",
 
         /* ── Utility ── */
-        error:          "hsl(0, 72%, 51%)",       /* Not pure #EF4444 — slightly muted */
-        "sticky-yellow": "hsl(48, 100%, 96%)",   /* Warm parchment for sticky notes */
+        error:            "rgb(var(--accent-rose-rgb) / <alpha-value>)",
+        "sticky-yellow":  "hsl(48, 100%, 96%)",   /* Warm parchment for sticky notes */
       },
       boxShadow: {
-        /* Neutral-only shadows — no colored shadows per design system */
+        /* Neutral-only shadows — no colored shadows per bespoke design system */
         "bespoke-sm": "0 1px 2px hsla(222, 20%, 15%, 0.06)",
         "bespoke-md": "0 4px 12px hsla(222, 20%, 15%, 0.08)",
         "bespoke-lg": "0 8px 24px hsla(222, 20%, 15%, 0.10)",
-        /* Kept for legacy compatibility — use bespoke-* for new work */
-        "brutal-sm": "2px 2px 0px hsl(224, 36%, 25%)",
-        "brutal-md": "4px 4px 0px hsl(224, 36%, 25%)",
-        "brutal-lg": "8px 8px 0px hsl(224, 36%, 25%)",
       },
       borderRadius: {
         /* 4px base grid system */

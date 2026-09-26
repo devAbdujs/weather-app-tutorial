@@ -50,7 +50,7 @@ export default async function ExamSessionPage({ searchParams }: PageProps) {
   if (initialQuestions.length === 0) {
     return (
       <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6 text-center animate-fade-in">
-        <div className="w-16 h-16 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-full flex items-center justify-center mb-4 border border-amber-500/20">
+        <div className="w-16 h-16 bg-accent-gold/10 text-accent-gold rounded-full flex items-center justify-center mb-4 border border-accent-gold/20">
           <BookOpen className="w-8 h-8" />
         </div>
         <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight mb-2">

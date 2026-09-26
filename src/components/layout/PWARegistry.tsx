@@ -101,7 +101,7 @@ export function PWARegistry() {
                         }
                       });
                     }} 
-                    className="bg-primary text-white text-xs font-bold px-4 py-2 rounded-xl active:scale-95 transition-all shadow-sm shadow-primary/20"
+                    className="bg-primary text-white text-xs font-bold px-4 py-2 rounded-xl active:scale-95 transition-all shadow-bespoke-sm"
                   >
                     Install
                   </button>

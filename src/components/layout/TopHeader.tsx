@@ -95,7 +95,7 @@ export const TopHeader = () => {
             rel="noopener noreferrer"
             className="
               flex items-center gap-1.5 px-3.5 py-1.5 
-              bg-[#229ED9] hover:bg-[#1C88BA] 
+              bg-accent-blue hover:bg-accent-blue/90 
               text-white
               rounded-[12px] transition-all duration-200 ease-bespoke
               font-bold text-[12px] tracking-tight shadow-bespoke-sm

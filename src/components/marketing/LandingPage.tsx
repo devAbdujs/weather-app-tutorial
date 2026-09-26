@@ -71,7 +71,7 @@ export const LandingPage = () => {
   if (isWebApp || isAuthenticating) {
     return (
       <div className="min-h-screen bg-ground flex flex-col items-center justify-center animate-fade-in">
-        <div className="w-16 h-16 rounded-[20px] bg-primary flex items-center justify-center shadow-xl mb-6 shadow-primary/20">
+        <div className="w-16 h-16 rounded-[20px] bg-primary flex items-center justify-center shadow-bespoke-md mb-6">
            <span className="text-white font-black text-3xl tracking-tighter">Te</span>
         </div>
         <div className="flex flex-col items-center gap-3">
@@ -105,16 +105,16 @@ export const LandingPage = () => {
         
         {/* Floating Background Elements (Hidden on small mobile) */}
         <div className="hidden sm:flex absolute top-10 left-0 animate-fade-in stagger-1">
-           <div className="bg-[hsl(36,50%,92%)] dark:bg-[hsl(36,30%,20%)] text-[hsl(36,58%,38%)] dark:text-[hsl(36,45%,65%)] px-4 py-1.5 rounded-full text-xs font-black tracking-wide border border-[hsl(36,35%,80%)] dark:border-[hsl(36,30%,30%)]">📐 Physics</div>
+           <div className="bg-accent-purple/10 text-accent-purple px-4 py-1.5 rounded-full text-xs font-black tracking-wide border border-accent-purple/20">📐 Physics</div>
         </div>
         <div className="hidden sm:flex absolute top-40 -right-4 animate-fade-in stagger-2">
-           <div className="bg-[hsl(145,28%,92%)] dark:bg-[hsl(145,20%,18%)] text-[hsl(145,42%,35%)] dark:text-[hsl(145,35%,62%)] px-4 py-1.5 rounded-full text-xs font-black tracking-wide border border-[hsl(145,25%,78%)] dark:border-[hsl(145,20%,28%)]">🧬 Biology</div>
+           <div className="bg-accent-emerald/10 text-accent-emerald px-4 py-1.5 rounded-full text-xs font-black tracking-wide border border-accent-emerald/20">🧬 Biology</div>
         </div>
         <div className="hidden sm:flex absolute bottom-10 -left-10 animate-fade-in stagger-3">
-           <div className="bg-[hsl(268,22%,92%)] dark:bg-[hsl(268,18%,18%)] text-[hsl(268,42%,44%)] dark:text-[hsl(268,36%,68%)] px-4 py-1.5 rounded-full text-xs font-black tracking-wide border border-[hsl(268,20%,78%)] dark:border-[hsl(268,18%,28%)]">🧪 Chemistry</div>
+           <div className="bg-accent-gold/10 text-accent-gold px-4 py-1.5 rounded-full text-xs font-black tracking-wide border border-accent-gold/20">🧪 Chemistry</div>
         </div>
 
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#229ED9]/10 text-[#229ED9] text-xs font-bold mb-6 animate-fade-up">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-blue/10 text-accent-blue text-xs font-bold mb-6 animate-fade-up">
           <Sparkles className="w-3.5 h-3.5" /> 
           Ethiopian exam prep, powered by AI
         </div>
@@ -130,7 +130,7 @@ export const LandingPage = () => {
 
         <button
           onClick={handleTelegramOIDCLogin}
-          className="w-full max-w-[300px] h-14 bg-[#229ED9] rounded-2xl flex items-center justify-center gap-2.5 shadow-bespoke-md hover:bg-[#1E8CC0] active:scale-[0.98] transition-all duration-200 ease-bespoke animate-fade-up z-10"
+          className="w-full max-w-[300px] h-14 bg-accent-blue hover:bg-accent-blue/90 rounded-2xl flex items-center justify-center gap-2.5 shadow-bespoke-md active:scale-[0.98] transition-all duration-200 ease-bespoke animate-fade-up z-10"
           style={{ animationDelay: '0.3s' }}
         >
           <Send className="w-5 h-5 text-white" />
@@ -142,13 +142,13 @@ export const LandingPage = () => {
         {/* 3. Social Proof */}
         <div className="mt-8 flex flex-col items-center gap-3 animate-fade-up" style={{ animationDelay: '0.4s' }}>
           <div className="flex -space-x-3">
-             <div className="w-8 h-8 rounded-full border-2 border-ground bg-blue-100 flex items-center justify-center text-blue-600"><UserCircle2 className="w-5 h-5"/></div>
-             <div className="w-8 h-8 rounded-full border-2 border-ground bg-emerald-100 flex items-center justify-center text-emerald-600"><UserCircle2 className="w-5 h-5"/></div>
-             <div className="w-8 h-8 rounded-full border-2 border-ground bg-amber-100 flex items-center justify-center text-amber-600"><UserCircle2 className="w-5 h-5"/></div>
-             <div className="w-8 h-8 rounded-full border-2 border-ground bg-purple-100 flex items-center justify-center text-purple-600"><UserCircle2 className="w-5 h-5"/></div>
+             <div className="w-8 h-8 rounded-full border-2 border-ground bg-accent-blue/10 flex items-center justify-center text-accent-blue"><UserCircle2 className="w-5 h-5"/></div>
+             <div className="w-8 h-8 rounded-full border-2 border-ground bg-accent-emerald/10 flex items-center justify-center text-accent-emerald"><UserCircle2 className="w-5 h-5"/></div>
+             <div className="w-8 h-8 rounded-full border-2 border-ground bg-accent-gold/10 flex items-center justify-center text-accent-gold"><UserCircle2 className="w-5 h-5"/></div>
+             <div className="w-8 h-8 rounded-full border-2 border-ground bg-accent-purple/10 flex items-center justify-center text-accent-purple"><UserCircle2 className="w-5 h-5"/></div>
           </div>
           <div className="text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-             <div className="flex gap-0.5 text-amber-400">
+             <div className="flex gap-0.5 text-accent-gold">
                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
              </div>
              Join 5,000+ Ethiopian students
@@ -200,8 +200,8 @@ export const LandingPage = () => {
           
           <div className="grid sm:grid-cols-3 gap-6">
             <div className="flex flex-col gap-4 p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] bg-ground border border-black/5 dark:border-white/5">
-              <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center">
-                <Target className="w-7 h-7 text-blue-500" />
+              <div className="w-14 h-14 rounded-2xl bg-accent-blue/10 flex items-center justify-center">
+                <Target className="w-7 h-7 text-accent-blue" />
               </div>
               <div>
                 <h3 className="font-bold text-xl mb-2 tracking-tight">Real Past Papers</h3>
@@ -210,8 +210,8 @@ export const LandingPage = () => {
             </div>
 
             <div className="flex flex-col gap-4 p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] bg-ground border border-black/5 dark:border-white/5">
-              <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center">
-                <Bot className="w-7 h-7 text-purple-500" />
+              <div className="w-14 h-14 rounded-2xl bg-accent-purple/10 flex items-center justify-center">
+                <Bot className="w-7 h-7 text-accent-purple" />
               </div>
               <div>
                 <h3 className="font-bold text-xl mb-2 tracking-tight">AI Tutor</h3>
@@ -220,8 +220,8 @@ export const LandingPage = () => {
             </div>
 
             <div className="flex flex-col gap-4 p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] bg-ground border border-black/5 dark:border-white/5">
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center">
-                <BookOpen className="w-7 h-7 text-amber-500" />
+              <div className="w-14 h-14 rounded-2xl bg-accent-gold/10 flex items-center justify-center">
+                <BookOpen className="w-7 h-7 text-accent-gold" />
               </div>
               <div>
                 <h3 className="font-bold text-xl mb-2 tracking-tight">Offline Short Notes</h3>
@@ -241,7 +241,7 @@ export const LandingPage = () => {
            <div className="flex flex-wrap justify-center gap-8 sm:gap-20 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
               
               <div className="flex items-center gap-3">
-                 <ShieldCheck className="w-10 h-10 text-emerald-600" />
+                 <ShieldCheck className="w-10 h-10 text-accent-emerald" />
                  <div className="text-left flex flex-col">
                     <span className="font-black text-lg leading-none text-gray-900 dark:text-white">MoE</span>
                     <span className="text-[10px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Curriculum Aligned</span>
@@ -249,7 +249,7 @@ export const LandingPage = () => {
               </div>
 
               <div className="flex items-center gap-3">
-                 <Building2 className="w-10 h-10 text-blue-600" />
+                 <Building2 className="w-10 h-10 text-accent-blue" />
                  <div className="text-left flex flex-col">
                     <span className="font-black text-lg leading-none text-gray-900 dark:text-white">EUEE</span>
                     <span className="text-[10px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Exam Standards</span>
@@ -257,7 +257,7 @@ export const LandingPage = () => {
               </div>
 
               <div className="flex items-center gap-3">
-                 <GraduationCap className="w-10 h-10 text-purple-600" />
+                 <GraduationCap className="w-10 h-10 text-accent-purple" />
                  <div className="text-left flex flex-col">
                     <span className="font-black text-lg leading-none text-gray-900 dark:text-white">Freshman</span>
                     <span className="text-[10px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">University Prep</span>
@@ -273,7 +273,7 @@ export const LandingPage = () => {
         <p className="text-gray-500 font-medium mb-8">Join thousands of students learning smarter today.</p>
         <button
           onClick={handleTelegramOIDCLogin}
-          className="w-full max-w-[320px] py-4 bg-[#229ED9] text-white rounded-2xl flex items-center justify-center gap-2.5 shadow-bespoke-md hover:shadow-bespoke-lg hover:bg-[#1E8CC0] active:scale-[0.98] transition-all duration-200 ease-bespoke"
+          className="w-full max-w-[320px] py-4 bg-accent-blue text-white rounded-2xl flex items-center justify-center gap-2.5 shadow-bespoke-md hover:shadow-bespoke-lg hover:bg-accent-blue/90 active:scale-[0.98] transition-all duration-200 ease-bespoke"
         >
           <Send className="w-5 h-5 text-white" />
           <span className="text-[15px] font-bold text-white tracking-wide">Start Learning — Free</span>

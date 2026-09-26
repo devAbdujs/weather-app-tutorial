@@ -565,7 +565,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                     toast.onUndo?.();
                     setToast(null);
                   }}
-                  className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-primary text-primary-foreground font-bold hover:bg-primary/95 transition-all active:scale-95"
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-primary text-white font-bold hover:bg-primary/95 transition-all active:scale-95"
                 >
                   <Undo2 className="w-3 h-3" />
                   <span>Undo</span>
@@ -612,7 +612,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               }}
               className={`h-9 px-2.5 rounded-[12px] flex items-center gap-1.5 text-xs font-bold border transition-all duration-200 ease-bespoke ${
                 penModeActive
-                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                  ? 'bg-primary text-white border-primary shadow-sm'
                   : 'bg-card text-muted border-border hover:bg-black/5 dark:hover:bg-white/5'
               }`}
               title={penModeActive ? 'Pen Mode Active (Tap to disable)' : 'Enable Pen Mode (Instant highlight on select)'}
@@ -626,7 +626,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               onClick={() => setShowHighlightsDrawer(prev => !prev)}
               className={`h-9 px-2.5 rounded-[12px] flex items-center gap-1.5 text-xs font-bold border transition-all duration-200 ease-bespoke ${
                 highlights.length > 0
-                  ? 'bg-amber-400/10 text-amber-700 dark:text-amber-300 border-amber-400/30 hover:bg-amber-400/20'
+                  ? 'bg-accent-gold/10 text-accent-gold border-accent-gold/30 hover:bg-accent-gold/20'
                   : 'bg-card text-muted border-border hover:bg-black/5 dark:hover:bg-white/5'
               }`}
               title="View highlights in this chapter"
@@ -739,7 +739,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             onClick={() => { haptic.impact('light'); setShowTutor(true); }}
             className="flex-1 h-13 rounded-[18px] font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] border border-black/[0.06] dark:border-white/[0.08] bg-card text-gray-900 dark:text-gray-100 hover:bg-black/5 dark:hover:bg-white/5 shadow-sm"
           >
-            <Sparkles className="w-4 h-4 text-amber-500" />
+            <Sparkles className="w-4 h-4 text-accent-gold" />
             Ask AI Tutor
           </button>
           <button

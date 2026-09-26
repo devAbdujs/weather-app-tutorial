@@ -15,7 +15,7 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
           <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Payments Queue</h1>
           <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">Review and approve manual payment receipts.</p>
         </div>
-        <div className="bg-[hsl(268,40%,48%)]/10 text-[hsl(268,40%,48%)] dark:text-[hsl(268,36%,70%)] px-4 py-2 rounded-xl font-bold flex items-center gap-2 border border-[hsl(268,40%,48%)]/20">
+        <div className="bg-accent-purple/10 text-accent-purple px-4 py-2 rounded-xl font-bold flex items-center gap-2 border border-accent-purple/20">
           <CreditCard className="w-5 h-5" />
           <span className="tabular-nums">{total} Pending</span>
         </div>
@@ -74,7 +74,7 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
                   <td colSpan={5} className="p-12 text-center text-gray-500 dark:text-gray-400 font-bold">
                     <div className="flex flex-col items-center justify-center">
                       <div className="w-16 h-16 bg-ground rounded-full flex items-center justify-center mb-4 border border-black/[0.06] dark:border-white/[0.08]">
-                        <CheckCircle2 className="w-8 h-8 text-[hsl(145,42%,38%)] opacity-70" />
+                        <CheckCircle2 className="w-8 h-8 text-accent-emerald opacity-70" />
                       </div>
                       <p className="text-lg text-gray-900 dark:text-gray-100">All caught up!</p>
                       <p className="text-sm font-medium mt-1">There are no pending payments to review.</p>

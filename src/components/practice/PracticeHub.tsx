@@ -14,29 +14,20 @@ import {
 } from 'lucide-react';
 
 export const getSubjectTheme = (name: string) => {
-  /* Desaturated, muted subject colors — consistent with bespoke design system */
-  /* Dark mode: same background opacity but softer text via opacity reduction */
+  /* Bespoke semantic subject palette — automatic light/dark adaptive */
   if (/math|applied|sigma/i.test(name))
-    return 'text-[hsl(213,55%,42%)] dark:text-[hsl(213,50%,68%)] bg-[hsl(213,55%,42%)]/10 border border-[hsl(213,55%,42%)]/20';
-  if (/physic|atom/i.test(name))
-    return 'text-[hsl(268,45%,48%)] dark:text-[hsl(268,40%,70%)] bg-[hsl(268,45%,48%)]/10 border border-[hsl(268,45%,48%)]/20';
-  if (/chem|flask/i.test(name))
-    return 'text-[hsl(175,45%,38%)] dark:text-[hsl(175,38%,65%)] bg-[hsl(175,45%,38%)]/10 border border-[hsl(175,45%,38%)]/20';
-  if (/bio|dna/i.test(name))
-    return 'text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] bg-[hsl(145,42%,38%)]/10 border border-[hsl(145,42%,38%)]/20';
-  if (/eng|logic|psych|brain/i.test(name))
-    return 'text-[hsl(235,45%,48%)] dark:text-[hsl(235,40%,70%)] bg-[hsl(235,45%,48%)]/10 border border-[hsl(235,45%,48%)]/20';
-  if (/econ|financ|coin|manage|entrepreneur/i.test(name))
-    return 'text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] bg-[hsl(36,58%,42%)]/10 border border-[hsl(36,58%,42%)]/20';
-  if (/hist|civic|law|scale|landmark/i.test(name))
-    return 'text-[hsl(25,35%,42%)] dark:text-[hsl(25,28%,62%)] bg-[hsl(25,35%,42%)]/10 border border-[hsl(25,35%,42%)]/20';
-  if (/geog|global|world|network/i.test(name))
-    return 'text-[hsl(195,48%,40%)] dark:text-[hsl(195,42%,65%)] bg-[hsl(195,48%,40%)]/10 border border-[hsl(195,48%,40%)]/20';
-  if (/tech|comput|soft|server|data|rocket/i.test(name))
-    return 'text-[hsl(205,55%,42%)] dark:text-[hsl(205,48%,68%)] bg-[hsl(205,55%,42%)]/10 border border-[hsl(205,55%,42%)]/20';
+    return 'text-primary bg-primary/10 border border-primary/20';
+  if (/physic|atom|logic|psych|brain/i.test(name))
+    return 'text-accent-purple bg-accent-purple/10 border border-accent-purple/20';
+  if (/chem|flask|bio|dna|agri/i.test(name))
+    return 'text-accent-emerald bg-accent-emerald/10 border border-accent-emerald/20';
+  if (/econ|financ|coin|manage|entrepreneur|hist|civic|law|scale|landmark/i.test(name))
+    return 'text-accent-gold bg-accent-gold/10 border border-accent-gold/20';
+  if (/geog|global|world|network|tech|comput|soft|server|data|rocket/i.test(name))
+    return 'text-accent-blue bg-accent-blue/10 border border-accent-blue/20';
   if (/med|nurse|health|steth|pill/i.test(name))
-    return 'text-[hsl(348,48%,48%)] dark:text-[hsl(348,40%,68%)] bg-[hsl(348,48%,48%)]/10 border border-[hsl(348,48%,48%)]/20';
-  return 'text-primary dark:text-primary/80 bg-primary/10 border border-primary/20';
+    return 'text-accent-rose bg-accent-rose/10 border border-accent-rose/20';
+  return 'text-primary bg-primary/10 border border-primary/20';
 };
 
 const FRESHMAN_COURSES: Record<string, any[]> = {

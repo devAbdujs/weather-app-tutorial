@@ -35,8 +35,8 @@ export default async function ManagersPage() {
                     <td className="p-4 font-bold text-gray-900 dark:text-gray-100">@{a.username}</td>
                     <td className="p-4">
                       <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border uppercase tracking-wider ${
-                        a.role === 'superadmin' ? 'bg-accent/15 text-accent border-accent/30' : 
-                        a.role === 'editor' ? 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] border-[hsl(145,42%,38%)]/20' : 
+                        a.role === 'superadmin' ? 'bg-accent-gold/15 text-accent-gold border-accent-gold/30' : 
+                        a.role === 'editor' ? 'bg-accent-emerald/10 text-accent-emerald border-accent-emerald/20' : 
                         'bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-400 border-black/[0.06] dark:border-white/[0.08]'
                       }`}>
                         {a.role}

@@ -13,7 +13,7 @@ export const DashboardShell = ({ children }: { children: React.ReactNode }) => {
     pathname.startsWith('/practice/sessions');
 
   return (
-    <div className="flex h-[100dvh] w-full bg-panel dark:bg-[hsl(224,26%,4%)] justify-center overflow-hidden">
+    <div className="flex h-[100dvh] w-full bg-panel justify-center overflow-hidden">
       {/* Mobile emulator wrapper for desktop, fills screen on mobile */}
       <main className="w-full h-full max-w-md bg-ground dark:bg-ground relative shadow-bespoke-lg flex flex-col overflow-hidden sm:border-x sm:border-black/[0.06] dark:border-white/[0.07]">
 

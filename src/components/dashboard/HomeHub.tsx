@@ -160,10 +160,10 @@ export const HomeHub: React.FC = () => {
         {/* Streak Pill */}
         <div className={`flex items-center gap-2 px-3 py-1.5 rounded-2xl border transition-colors ${
           streak > 0
-            ? 'bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400 shadow-sm'
+            ? 'bg-accent-gold/10 border-accent-gold/20 text-accent-gold shadow-sm'
             : 'bg-card border-black/5 dark:border-white/[0.08] text-slate-400 dark:text-slate-500'
         }`}>
-          <Flame className={`w-4 h-4 ${streak > 0 ? 'fill-amber-500 text-amber-500' : 'text-slate-400'}`} />
+          <Flame className={`w-4 h-4 ${streak > 0 ? 'fill-accent-gold text-accent-gold' : 'text-slate-400'}`} />
           <span className="text-sm font-black font-mono leading-none">{streak}</span>
           <span className="text-[10px] font-bold uppercase tracking-wider">day{streak !== 1 ? 's' : ''}</span>
         </div>
@@ -173,7 +173,7 @@ export const HomeHub: React.FC = () => {
       <div className="px-5 mb-4">
         <button
           onClick={() => { haptic.selection(); router.push('/profile'); }}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-primary/10 hover:bg-primary/15 dark:bg-primary/20 border border-primary/20 text-primary dark:text-blue-400 text-xs font-bold transition-all active:scale-[0.98]"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-primary/10 hover:bg-primary/15 border border-primary/20 text-primary text-xs font-bold transition-all active:scale-[0.98]"
         >
           <Target className="w-3.5 h-3.5 shrink-0" />
           <span>{examLabel(userProfile?.target_exam || null)}</span>
@@ -186,7 +186,7 @@ export const HomeHub: React.FC = () => {
         {/* ── 3. HERO LAUNCHPAD ── */}
         <button
           onClick={() => { haptic.impact('heavy'); router.push('/practice'); }}
-          className="w-full group bg-gradient-to-br from-primary via-[hsl(224,55%,38%)] to-[hsl(215,55%,28%)] p-5 rounded-[24px] shadow-bespoke-md active:scale-[0.98] transition-all duration-200 ease-bespoke text-left relative overflow-hidden"
+          className="w-full group bg-gradient-to-br from-primary to-primary-hover p-5 rounded-[24px] shadow-bespoke-md active:scale-[0.98] transition-all duration-200 ease-bespoke text-left relative overflow-hidden"
         >
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/[0.07] rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500" />
           <div className="absolute -left-4 -bottom-4 w-20 h-20 bg-white/[0.04] rounded-full blur-xl" />
@@ -220,7 +220,7 @@ export const HomeHub: React.FC = () => {
               <h3 className="font-black text-gray-900 dark:text-gray-100 text-sm leading-snug">{lastSession.subject}</h3>
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
             </div>
-            <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+            <div className="w-10 h-10 bg-primary/10 border border-primary/20 text-primary rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
               <ArrowRight className="w-4 h-4" />
             </div>
           </button>
@@ -232,7 +232,7 @@ export const HomeHub: React.FC = () => {
             onClick={() => { haptic.impact('medium'); router.push('/practice?mode=notes'); }}
             className="group bg-card p-4 rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-primary/20 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
           >
-            <div className="w-10 h-10 bg-[hsl(213,55%,42%)]/10 text-[hsl(213,55%,42%)] dark:text-[hsl(213,50%,68%)] border border-[hsl(213,55%,42%)]/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
+            <div className="w-10 h-10 bg-accent-blue/10 text-accent-blue border border-accent-blue/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
               <FileText className="w-4.5 h-4.5" />
             </div>
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
@@ -243,7 +243,7 @@ export const HomeHub: React.FC = () => {
             onClick={() => { haptic.impact('medium'); router.push('/practice?mode=flashcards'); }}
             className="group bg-card p-4 rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-primary/20 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
           >
-            <div className="w-10 h-10 bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] border border-[hsl(36,58%,42%)]/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
+            <div className="w-10 h-10 bg-accent-gold/10 text-accent-gold border border-accent-gold/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
               <Zap className="w-4.5 h-4.5" />
             </div>
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 leading-tight">Flashcards</h3>
@@ -255,7 +255,7 @@ export const HomeHub: React.FC = () => {
         <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4 shadow-bespoke-sm">
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] border border-[hsl(36,58%,42%)]/20 rounded-[12px] flex items-center justify-center">
+              <div className="w-8 h-8 bg-accent-gold/10 text-accent-gold border border-accent-gold/20 rounded-[12px] flex items-center justify-center">
                 <Sparkles className="w-4 h-4" />
               </div>
               <span className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">

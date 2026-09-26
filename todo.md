@@ -32,6 +32,22 @@
     *   Batch import Grade 12, Freshman, and Exit exam short notes via `/admin/upload-notes` or local CLI (`scripts/ingest_note_pdf.py`).
     *   Ensure all subjects (Biology, Physics, Chemistry, Math, Aptitude, Economics) have complete chapter notes with KaTeX math rendering.
 
+## 🎨 Completed: Unified Color Scheme & Bespoke Mobile Design Architecture
+*   **[x] Elimination of Arbitrary Inline HSL Brackets:**
+    *   Purged 150+ raw inline `hsl(...)` brackets across `MasteryTree`, `ProfileView`, `HomeHub`, `ExamWorkspace`, `upgrade`, `AdminAIView`, and `PaymentActions`.
+    *   Implemented full RGB CSS variable alpha channel support (`rgb(var(--...-rgb) / <alpha-value>)`) in `globals.css` and `tailwind.config.ts`.
+    *   Mapped all semantic colors to the 6-pillar palette: `primary`, `accent-gold` (streaks/warning/tips), `accent-emerald` (success/accuracy), `accent-blue` (telegram/info), `accent-purple` (subject/freshman), and `accent-rose` (urgent/errors).
+*   **[x] Purge Raw Hex Codes & Anti-Halation Calibrations:**
+    *   Purged hardcoded `#229ED9`, `#1C88BA`, `#1E8CC0` in `TopHeader`, `LandingPage`, etc., into semantic `accent-blue`.
+    *   Calibrated dark mode luminance values to prevent dark-mode vibration/halation on midnight slate (`hsl(224, 26%, 7%)`).
+*   **[x] Harmonize Neutral Typography & Contrast:**
+    *   Standardized text hierarchy on semantic tokens (`text-gray-900 dark:text-gray-100`, `text-gray-500 dark:text-gray-400`).
+*   **[x] Remove Lingering Colored Shadows & Legacy Brutalist Config:**
+    *   Purged `shadow-primary/*` from `ExamWorkspace`, `LandingPage`, `ClientAuthDetector`, and `PWARegistry` in favor of neutral `shadow-bespoke-sm/md/lg`.
+    *   Purged obsolete `brutal-sm/md/lg` from `tailwind.config.ts`.
+*   **[x] Native Mobile Card & Surface Depth:**
+    *   Enforced 3-tier depth model: `bg-ground` (canvas) → `bg-card` (elevated) → `bg-panel` (recessed segmented controls).
+
 ---
 
 ## 🔥 Priority 3: Subdomain Architecture (`*.temari.top`)

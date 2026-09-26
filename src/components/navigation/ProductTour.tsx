@@ -14,20 +14,20 @@ const TOUR_STEPS = [
   {
     title: '33,000+ Past Papers',
     description: 'Practice with real national exam questions, complete with instant feedback and tracking.',
-    icon: <LibraryBig className="w-6 h-6 text-[hsl(145,42%,38%)]" />,
-    color: 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)]'
+    icon: <LibraryBig className="w-6 h-6 text-accent-emerald" />,
+    color: 'bg-accent-emerald/10 text-accent-emerald'
   },
   {
     title: 'Your Personal AI Tutor',
     description: 'Stuck on a problem? Our AI breaks it down step-by-step so you actually understand it.',
-    icon: <Brain className="w-6 h-6 text-[hsl(36,58%,42%)]" />,
-    color: 'bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)]'
+    icon: <Brain className="w-6 h-6 text-accent-gold" />,
+    color: 'bg-accent-gold/10 text-accent-gold'
   },
   {
     title: 'Smart Flashcards',
     description: 'Review key concepts fast with our Tinder-style swipeable flashcards and spaced repetition.',
-    icon: <BookOpen className="w-6 h-6 text-[hsl(268,40%,48%)]" />,
-    color: 'bg-[hsl(268,40%,48%)]/10 text-[hsl(268,40%,48%)]'
+    icon: <BookOpen className="w-6 h-6 text-accent-purple" />,
+    color: 'bg-accent-purple/10 text-accent-purple'
   }
 ];
 

@@ -38,7 +38,7 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({ initialSeconds, isPaused, 
       secondsLeft < 60
         ? 'bg-error border-error text-white shadow-bespoke-sm'
         : secondsLeft < 300
-        ? 'bg-[hsl(36,58%,42%)]/10 border-[hsl(36,58%,42%)]/30 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] shadow-bespoke-sm'
+        ? 'bg-accent-gold/10 border-accent-gold/30 text-accent-gold shadow-bespoke-sm'
         : 'bg-card border-black/[0.06] dark:border-white/[0.08] text-gray-900 dark:text-gray-100 shadow-bespoke-sm'
     }`}>
       <Clock className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
