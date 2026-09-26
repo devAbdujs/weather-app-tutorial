@@ -169,6 +169,7 @@ Respond ONLY with the JSON object, no explanation, no markdown.`,
 
     return NextResponse.json({
       success: true,
+      receiptId,
       message: geminiSuspicious
         ? 'Your receipt was submitted but flagged for manual review. Our team will verify within 24 hours.'
         : 'Receipt submitted successfully! Our admin will verify and approve your account shortly.',
