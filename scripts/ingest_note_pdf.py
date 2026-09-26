@@ -58,59 +58,136 @@ def extract_pdf_text(pdf_path: str) -> str:
     
     return result.stdout.strip()
 
-def format_with_gemini(raw_text: str, exam_type: str, department: str, title: str) -> str:
-    """Uses Gemini 3.6 Flash to format raw educational text into clean Markdown with LaTeX math."""
-    keys = get_gemini_keys()
+def split_into_chunks(text: str, max_chunk_size: int = 14000) -> list:
+    """Splits raw text into logical paragraph chunks without breaking sentences."""
+    if len(text) <= max_chunk_size:
+        return [text]
     
-    prompt = f"""You are an elite educational content formatter for Ethiopian students.
-I am providing you with the extracted text from a textbook chapter/short note for:
+    chunks = []
+    current = []
+    current_len = 0
+    
+    paragraphs = text.split('\n\n')
+    for p in paragraphs:
+        if current_len + len(p) > max_chunk_size and current:
+            chunks.append('\n\n'.join(current).strip())
+            current = [p]
+            current_len = len(p)
+        else:
+            current.append(p)
+            current_len += len(p) + 2
+            
+    if current:
+        chunks.append('\n\n'.join(current).strip())
+    return chunks
+
+def call_gemini_with_rotation(prompt: str) -> str:
+    """Calls Gemini 3.6 Flash using key rotation pool with exponential backoff retry."""
+    import time
+    keys = get_gemini_keys()
+    payload = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"temperature": 0.2, "maxOutputTokens": 8192}
+    }).encode('utf-8')
+
+    max_rounds = 4
+    for round_num in range(max_rounds):
+        for key in keys:
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={key}"
+                req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+                with urllib.request.urlopen(req, timeout=180) as resp:
+                    data = json.loads(resp.read().decode('utf-8'))
+                    candidate = data.get('candidates', [{}])[0]
+                    parts = candidate.get('content', {}).get('parts', [])
+                    text = "".join(p.get('text', '') for p in parts)
+                    if text:
+                        text = re.sub(r'^```markdown\s*', '', text)
+                        text = re.sub(r'```$', '', text.strip())
+                        return text.strip()
+            except Exception as e:
+                time.sleep(1)
+                continue
+        if round_num < max_rounds - 1:
+            wait_time = (round_num + 1) * 3
+            print(f"   ⏳ Round {round_num + 1} met temporary Google 503 rate/busy limits, waiting {wait_time}s...")
+            time.sleep(wait_time)
+            
+    raise RuntimeError("All Gemini API keys failed after multiple retry rounds.")
+
+def format_with_gemini(raw_text: str, exam_type: str, department: str, title: str) -> str:
+    """Uses Gemini 3.6 Flash with smart chunking to format educational text into clean Markdown with LaTeX math."""
+    chunks = split_into_chunks(raw_text, max_chunk_size=14000)
+    print(f"   ℹ Splitting into {len(chunks)} chunk(s) to guarantee zero truncation...")
+    
+    formatted_parts = []
+    for idx, chunk in enumerate(chunks, 1):
+        print(f"   🧠 Formatting chunk {idx}/{len(chunks)} ({len(chunk)} chars)...")
+        prompt = f"""You are an elite educational content formatter for Ethiopian university students.
+I am providing you with Part {idx} of {len(chunks)} of extracted textbook material for:
 - Exam Type: {exam_type}
 - Course/Department: {department}
 - Chapter Title: {title}
 
 STRICT INSTRUCTIONS:
-1. DO NOT summarize or shorten the educational content. Keep 100% of definitions, concepts, examples, formulas, and explanations.
-2. Format the text into beautiful GitHub Markdown:
-   - Use proper headings (#, ##, ###)
-   - Use bullet points and numbered lists where appropriate
-   - Bold key terms and definitions
-   - Convert all mathematical and physical equations into LaTeX syntax ($...$ for inline, $$...$$ for block formulas).
-3. Do not include introductory conversational text (e.g. "Here is the formatted note:"). Start directly with the main chapter heading.
-4. Output ONLY the clean Markdown text.
+1. Format into clean, publication-grade GitHub Markdown.
+2. DO NOT summarize or omit educational content. Keep all definitions, theorems, formulas, examples, and explanations.
+3. Convert all mathematical and physical equations into LaTeX KaTeX syntax:
+   - Use $...$ for inline equations
+   - Use $$...$$ for block formulas
+4. Use proper hierarchical headings (##, ###), bullet points, and bold definitions.
+5. Do not include conversational introductory text (e.g. "Here is the markdown..."). Start directly with the content.
 
-Here is the raw text:
-{raw_text[:35000]}
+Raw Text Part {idx}/{len(chunks)}:
+{chunk}
 """
-
-    payload = json.dumps({
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.2}
-    }).encode('utf-8')
-
-    for key in keys:
-        try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={key}"
-            req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(req, timeout=120) as resp:
-                data = json.loads(resp.read().decode('utf-8'))
-                candidate = data.get('candidates', [{}])[0]
-                text = candidate.get('content', {}).get('parts', [{}])[0].get('text', '')
-                if text:
-                    # Strip any wrapping ```markdown blocks if present
-                    text = re.sub(r'^```markdown\s*', '', text)
-                    text = re.sub(r'```$', '', text.strip())
-                    return text.strip()
-        except Exception as e:
-            print(f"Key error ({key[:10]}...): {e}, trying next key...")
-            continue
-            
-    raise RuntimeError("All Gemini API keys failed or timed out.")
+        part_md = call_gemini_with_rotation(prompt)
+        formatted_parts.append(part_md)
+        
+    full_markdown = "\n\n---\n\n".join(formatted_parts)
+    return full_markdown.strip()
 
 def insert_into_supabase(exam_type: str, department: str, title: str, content: str):
-    """Inserts formatted note into Supabase 'study_notes' table."""
+    """Upserts formatted note into Supabase 'study_notes' table."""
+    import urllib.parse
+    check_url = f"{SUPABASE_URL}/rest/v1/study_notes?department=eq.{urllib.parse.quote(department)}&title=eq.{urllib.parse.quote(title)}&exam_type=eq.{exam_type}"
+    check_req = urllib.request.Request(
+        check_url,
+        headers={
+            "apikey": SUPABASE_KEY,
+            "Authorization": f"Bearer {SUPABASE_KEY}",
+        }
+    )
+    
+    existing_id = None
+    try:
+        with urllib.request.urlopen(check_req) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            if data and len(data) > 0:
+                existing_id = data[0]['id']
+    except Exception:
+        pass
+
+    if existing_id:
+        print(f"   🔄 Note already exists (ID: {existing_id}). Updating with complete content...")
+        url = f"{SUPABASE_URL}/rest/v1/study_notes?id=eq.{existing_id}"
+        payload = json.dumps({"content": content}).encode('utf-8')
+        req = urllib.request.Request(
+            url,
+            data=payload,
+            method='PATCH',
+            headers={
+                "apikey": SUPABASE_KEY,
+                "Authorization": f"Bearer {SUPABASE_KEY}",
+                "Content-Type": "application/json",
+                "Prefer": "return=representation"
+            }
+        )
+        with urllib.request.urlopen(req) as resp:
+            return existing_id
+
     note_id = str(uuid.uuid4())
     url = f"{SUPABASE_URL}/rest/v1/study_notes"
-    
     payload = json.dumps({
         "id": note_id,
         "exam_type": exam_type,

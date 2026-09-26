@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Clock, Sparkles, List, Pin, CheckCircle2, ChevronRight, Layers } from 'lucide-react';
+import { Clock, Sparkles, List, Pin, CheckCircle2, ChevronRight, ChevronLeft, Layers } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { StudyNote } from '@/types';
 import { useRouter } from 'next/navigation';
@@ -175,8 +175,15 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         )}
 
         {/* Sticky Header */}
-        <header className="sticky top-0 bg-card/95 backdrop-blur-xl z-40 border-b border-black/[0.06] dark:border-white/[0.08] px-4 pt-3 pb-0">
-          <div className="flex items-center gap-3 pb-3">
+        <header className="sticky top-0 bg-card/95 backdrop-blur-xl z-40 border-b border-black/[0.06] dark:border-white/[0.08] px-3 sm:px-4 pt-3 pb-0">
+          <div className="flex items-center gap-2.5 pb-3">
+            <button
+              onClick={handleBackFromNote}
+              aria-label="Back to chapters"
+              className="w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 border border-black/[0.06] dark:border-white/[0.08] bg-card hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all text-gray-700 dark:text-gray-300"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
             <span className={`w-9 h-9 rounded-[12px] flex items-center justify-center text-lg shrink-0 ${themeClass}`}>
               {emoji}
             </span>
@@ -200,9 +207,9 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         {/* Content */}
         <div
           ref={scrollRef}
-          className="flex flex-col px-5 pt-6 animate-fade-in"
+          className="flex flex-col px-2.5 sm:px-4 pt-4 animate-fade-in"
         >
-          <div id="note-content" className="w-full ruled-paper rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] shadow-sm overflow-hidden pt-6 pb-12 mb-4">
+          <div id="note-content" className="w-full ruled-paper rounded-[20px] sm:rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] shadow-sm overflow-hidden pt-4 pb-12 mb-4">
             <MarkdownRenderer 
               content={selectedNote.content || ''} 
               accentBg={accentBg} 
@@ -249,7 +256,24 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
   // ─── CHAPTER LIST VIEW ──────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col pt-4 px-4 animate-fade-in bg-ground">
+    <div className="flex flex-col pt-3 px-3 sm:px-4 animate-fade-in bg-ground min-h-screen pb-12">
+      {/* Top Back Navigation Bar */}
+      <div className="flex items-center justify-between pb-2">
+        <button
+          onClick={() => {
+            haptic.impact('light');
+            if (typeof window !== 'undefined' && window.history.length > 1) {
+              router.back();
+            } else {
+              router.push('/practice');
+            }
+          }}
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[14px] text-[13px] font-bold text-gray-700 dark:text-gray-300 border border-black/[0.06] dark:border-white/[0.08] bg-card hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all shadow-sm"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+      </div>
 
       <div className="bg-card px-5 pt-6 pb-5 rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] shadow-sm mb-3">
         <div className="flex items-start gap-4">
