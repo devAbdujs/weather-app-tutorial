@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
         const google = createGoogleGenerativeAI({ apiKey: geminiKey });
 
         const { text: geminiText } = await generateText({
-          model: google('gemini-2.0-flash'),
+          model: google('gemini-3.6-flash'),
           messages: [
             {
               role: 'user',

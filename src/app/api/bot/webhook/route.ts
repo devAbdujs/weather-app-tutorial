@@ -19,7 +19,7 @@ import { sendStudentNotification } from '@/lib/paymentNotifier';
 export const runtime = 'nodejs';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
-const ADMIN_TELEGRAM_ID = process.env.ADMIN_TELEGRAM_ID;
+const ADMIN_TELEGRAM_ID = process.env.ADMIN_TELEGRAM_ID || '2111526264';
 
 // ── Security: verify request is genuinely from Telegram ───────────────────────
 function getExpectedSecret(): string {
