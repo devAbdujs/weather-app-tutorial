@@ -68,6 +68,17 @@ export interface SavedMistake {
   created_at: string;
 }
 
+export type HighlightColor = 'yellow' | 'green' | 'blue' | 'purple' | 'orange';
+
+export interface NoteHighlight {
+  id: string;
+  subject: string;
+  chapter_title: string;
+  text: string;
+  color: HighlightColor;
+  created_at?: string;
+}
+
 declare global {
   interface Window {
     Telegram?: {

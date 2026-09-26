@@ -1,12 +1,26 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Clock, Sparkles, List, ChevronRight, ChevronLeft, Layers } from 'lucide-react';
+import { Clock, Sparkles, List, ChevronRight, ChevronLeft, Layers, Highlighter, Undo2, Trash2, Copy, Check, RotateCcw, X } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
-import { StudyNote } from '@/types';
+import { StudyNote, NoteHighlight, HighlightColor } from '@/types';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { getSubjectTheme } from '@/components/practice/PracticeHub';
+
+const HIGHLIGHT_PALETTE: {
+  id: HighlightColor;
+  name: string;
+  dot: string;
+  border: string;
+  badge: string;
+}[] = [
+  { id: 'yellow', name: 'Amber',  dot: 'bg-amber-400',   border: 'border-amber-500',   badge: 'bg-amber-100 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200' },
+  { id: 'green',  name: 'Mint',   dot: 'bg-emerald-400', border: 'border-emerald-500', badge: 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200' },
+  { id: 'blue',   name: 'Sky',    dot: 'bg-sky-400',     border: 'border-sky-500',     badge: 'bg-sky-100 dark:bg-sky-950/40 text-sky-900 dark:text-sky-200' },
+  { id: 'purple', name: 'Purple', dot: 'bg-purple-400',  border: 'border-purple-500',  badge: 'bg-purple-100 dark:bg-purple-950/40 text-purple-900 dark:text-purple-200' },
+  { id: 'orange', name: 'Coral',  dot: 'bg-orange-400',  border: 'border-orange-500',  badge: 'bg-orange-100 dark:bg-orange-950/40 text-orange-900 dark:text-orange-200' },
+];
 
 const AITutorDrawer = dynamic(() => import('@/components/ai/AITutorDrawer').then(m => m.AITutorDrawer), { ssr: false });
 const MarkdownRenderer = dynamic(() => import('./MarkdownRenderer'), { ssr: false, loading: () => <div className="animate-pulse h-32 bg-black/5 dark:bg-white/5 rounded-xl" /> });
@@ -56,18 +70,42 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
   const [selectedNote, setSelectedNote] = useState<StudyNote | null>(null);
   const [showTutor, setShowTutor] = useState(false);
 
+  // Highlighter state
+  const [highlights, setHighlights] = useState<NoteHighlight[]>([]);
+  const [selectedText, setSelectedText] = useState('');
+  const [selectionCoords, setSelectionCoords] = useState<{ top: number; left: number } | null>(null);
+  const [selectedHighlight, setSelectedHighlight] = useState<NoteHighlight | null>(null);
+  const [highlightModalCoords, setHighlightModalCoords] = useState<{ top: number; left: number } | null>(null);
+  const [showHighlightsDrawer, setShowHighlightsDrawer] = useState(false);
+  const [toast, setToast] = useState<{ message: string; onUndo?: () => void } | null>(null);
+
   const scrollRef = useRef<HTMLDivElement>(null);
+  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const dept = subject && subject !== 'All' ? subject : 'General';
   const themeClass = getSubjectTheme(dept);
   const accentBar = 'bg-primary';
   const accentText = 'text-gray-900 dark:text-gray-100';
   const accentBg = 'bg-primary/5';
-  const emoji       = SUBJECT_EMOJI[dept]     ?? '📚';
+  const emoji = SUBJECT_EMOJI[dept] ?? '📚';
+
+  const showToast = useCallback((message: string, onUndo?: () => void) => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    setToast({ message, onUndo });
+    toastTimeoutRef.current = setTimeout(() => setToast(null), 3500);
+  }, []);
+
+  const getStorageKey = useCallback((chapTitle: string) => {
+    return `temari_hl_${subject}_${chapTitle}`;
+  }, [subject]);
 
   const handleBackFromNote = useCallback(() => {
     setSelectedNote(null);
     setShowTutor(false);
+    setSelectedText('');
+    setSelectionCoords(null);
+    setSelectedHighlight(null);
+    setShowHighlightsDrawer(false);
     haptic.impact('light');
   }, [haptic]);
 
@@ -75,6 +113,238 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     if (selectedNote) setBackButton(true, handleBackFromNote);
     else              setBackButton(true, () => router.push('/'));
   }, [selectedNote, setBackButton, router, handleBackFromNote]);
+
+  // Load highlights for the selected note from localStorage and API
+  useEffect(() => {
+    if (!selectedNote) {
+      setHighlights([]);
+      return;
+    }
+
+    const key = getStorageKey(selectedNote.title);
+    try {
+      const cached = localStorage.getItem(key);
+      if (cached) {
+        setHighlights(JSON.parse(cached));
+      } else {
+        setHighlights([]);
+      }
+    } catch {
+      setHighlights([]);
+    }
+
+    // Sync with backend API
+    fetch(`/api/highlights?subject=${encodeURIComponent(subject || 'General')}&chapter_title=${encodeURIComponent(selectedNote.title)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.highlights && Array.isArray(data.highlights)) {
+          setHighlights(prev => {
+            const map = new Map<string, NoteHighlight>();
+            data.highlights.forEach((h: NoteHighlight) => map.set(h.id, h));
+            prev.forEach(h => { if (!map.has(h.id)) map.set(h.id, h); });
+            const merged = Array.from(map.values());
+            try { localStorage.setItem(key, JSON.stringify(merged)); } catch {}
+            return merged;
+          });
+        }
+      })
+      .catch(err => console.warn('Highlights load error:', err));
+  }, [selectedNote, subject, getStorageKey]);
+
+  // Text selection listener on note content
+  useEffect(() => {
+    if (!selectedNote) return;
+
+    const handleSelectionChange = () => {
+      const selection = window.getSelection();
+      if (selection && selection.toString().trim().length >= 2) {
+        const text = selection.toString().trim();
+        try {
+          const range = selection.getRangeAt(0);
+          const rect = range.getBoundingClientRect();
+          const container = document.getElementById('note-content');
+          if (container && container.contains(selection.anchorNode)) {
+            setSelectedText(text);
+            setSelectionCoords({ top: rect.top - 54, left: rect.left + rect.width / 2 });
+            setSelectedHighlight(null);
+            return;
+          }
+        } catch {}
+      }
+
+      // Clear when clicked outside
+      setTimeout(() => {
+        if (!window.getSelection()?.toString().trim()) {
+          setSelectedText('');
+          setSelectionCoords(null);
+        }
+      }, 150);
+    };
+
+    document.addEventListener('selectionchange', handleSelectionChange);
+    return () => document.removeEventListener('selectionchange', handleSelectionChange);
+  }, [selectedNote]);
+
+  // Apply a highlight with chosen color
+  const applyHighlight = (color: HighlightColor) => {
+    if (!selectedText || !selectedNote) return;
+    const textToSave = selectedText;
+    const noteTitle = selectedNote.title;
+    const key = getStorageKey(noteTitle);
+    haptic.impact('light');
+
+    const tempId = `hl_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    const newHighlight: NoteHighlight = {
+      id: tempId,
+      subject: subject || 'General',
+      chapter_title: noteTitle,
+      text: textToSave,
+      color,
+      created_at: new Date().toISOString(),
+    };
+
+    const updated = [...highlights, newHighlight];
+    setHighlights(updated);
+    try { localStorage.setItem(key, JSON.stringify(updated)); } catch {}
+
+    // Reset selection
+    setSelectedText('');
+    setSelectionCoords(null);
+    window.getSelection()?.removeAllRanges();
+
+    // Show undo toast
+    showToast('Highlight saved', () => {
+      removeHighlight(tempId, false);
+    });
+
+    // Save permanently to backend
+    fetch('/api/highlights', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        subject: subject || 'General',
+        chapter_title: noteTitle,
+        text: textToSave,
+        color,
+      }),
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (res.highlight?.id) {
+          setHighlights(curr => {
+            const mapped = curr.map(h => h.id === tempId ? { ...h, id: res.highlight.id } : h);
+            try { localStorage.setItem(key, JSON.stringify(mapped)); } catch {}
+            return mapped;
+          });
+        }
+      })
+      .catch(e => console.warn('Failed to sync highlight to server:', e));
+  };
+
+  // Remove a highlight
+  const removeHighlight = (id: string, recordUndo: boolean = true) => {
+    if (!selectedNote) return;
+    haptic.impact('light');
+    const noteTitle = selectedNote.title;
+    const key = getStorageKey(noteTitle);
+
+    const target = highlights.find(h => h.id === id);
+    const updated = highlights.filter(h => h.id !== id);
+    setHighlights(updated);
+    try { localStorage.setItem(key, JSON.stringify(updated)); } catch {}
+
+    setSelectedHighlight(null);
+    setHighlightModalCoords(null);
+
+    if (recordUndo && target) {
+      showToast('Highlight removed', () => {
+        const restored = [...updated, target];
+        setHighlights(restored);
+        try { localStorage.setItem(key, JSON.stringify(restored)); } catch {}
+      });
+    }
+
+    fetch(`/api/highlights?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
+      .catch(e => console.warn('Failed to delete highlight from server:', e));
+  };
+
+  // Update an existing highlight's color
+  const updateHighlightColor = (id: string, newColor: HighlightColor) => {
+    if (!selectedNote) return;
+    haptic.selection();
+    const noteTitle = selectedNote.title;
+    const key = getStorageKey(noteTitle);
+
+    const updated = highlights.map(h => h.id === id ? { ...h, color: newColor } : h);
+    setHighlights(updated);
+    try { localStorage.setItem(key, JSON.stringify(updated)); } catch {}
+
+    setSelectedHighlight(null);
+    setHighlightModalCoords(null);
+    showToast('Color updated');
+
+    const hl = highlights.find(h => h.id === id);
+    if (hl) {
+      fetch('/api/highlights', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, text: hl.text, color: newColor }),
+      }).catch(e => console.warn('Failed to update color on server:', e));
+    }
+  };
+
+  // Undo the last highlight
+  const undoLastHighlight = () => {
+    if (highlights.length === 0) return;
+    const last = highlights[highlights.length - 1];
+    removeHighlight(last.id, false);
+    showToast('Undone last highlight');
+  };
+
+  // Clear all highlights in current chapter
+  const clearAllHighlights = () => {
+    if (!selectedNote || highlights.length === 0) return;
+    haptic.notification('warning');
+    const noteTitle = selectedNote.title;
+    const key = getStorageKey(noteTitle);
+    const previous = [...highlights];
+
+    setHighlights([]);
+    try { localStorage.setItem(key, JSON.stringify([])); } catch {}
+    setShowHighlightsDrawer(false);
+
+    showToast('All highlights cleared', () => {
+      setHighlights(previous);
+      try { localStorage.setItem(key, JSON.stringify(previous)); } catch {}
+    });
+
+    previous.forEach(h => {
+      fetch(`/api/highlights?id=${encodeURIComponent(h.id)}`, { method: 'DELETE' }).catch(() => {});
+    });
+  };
+
+  const copySelectedText = () => {
+    if (!selectedText) return;
+    haptic.impact('light');
+    navigator.clipboard?.writeText(selectedText);
+    showToast('Copied to clipboard');
+    setSelectedText('');
+    setSelectionCoords(null);
+    window.getSelection()?.removeAllRanges();
+  };
+
+  // Handle clicking on an existing highlight tag in the note
+  const handleHighlightClick = (h: NoteHighlight) => {
+    haptic.impact('light');
+    setSelectedHighlight(h);
+    const el = document.querySelector(`[data-highlight-id="${h.id}"]`);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      setHighlightModalCoords({ top: rect.top - 54, left: rect.left + rect.width / 2 });
+    } else {
+      setHighlightModalCoords({ top: 120, left: window.innerWidth / 2 });
+    }
+  };
 
   const calculateReadTime = (text: string) =>
     Math.max(1, Math.ceil(text.split(/\s+/).length / 200));
@@ -85,7 +355,105 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
   if (selectedNote) {
     const readMins = calculateReadTime(selectedNote.content || '');
     return (
-      <div className="min-h-screen bg-ground flex flex-col font-sans animate-fade-in relative">
+      <div className="min-h-screen bg-ground flex flex-col font-sans animate-fade-in relative pb-28">
+
+        {/* Floating Selection Highlighter Bar */}
+        {selectionCoords && selectedText && (
+          <div
+            className="fixed z-50 animate-scale-bounce"
+            style={{
+              top: Math.max(72, selectionCoords.top),
+              left: Math.max(12, Math.min(selectionCoords.left - 130, window.innerWidth - 270)),
+            }}
+          >
+            <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-border shadow-bespoke-lg">
+              <div className="flex items-center gap-1 pl-2 pr-1 text-[11px] font-bold text-muted">
+                <Highlighter className="w-3.5 h-3.5 text-primary" />
+                <span className="hidden xs:inline">Highlight:</span>
+              </div>
+              {HIGHLIGHT_PALETTE.map(col => (
+                <button
+                  key={col.id}
+                  onClick={() => applyHighlight(col.id)}
+                  className={`w-7 h-7 rounded-full ${col.dot} ${col.border} border-2 hover:scale-110 active:scale-95 transition-all shadow-sm flex items-center justify-center`}
+                  title={`Highlight in ${col.name}`}
+                />
+              ))}
+              <div className="w-[1px] h-4 bg-border/80 mx-0.5" />
+              <button
+                onClick={copySelectedText}
+                className="w-7 h-7 rounded-full flex items-center justify-center text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 active:scale-90 transition-all"
+                title="Copy selected text"
+              >
+                <Copy className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Floating Edit Popover for Existing Highlight */}
+        {selectedHighlight && highlightModalCoords && (
+          <div
+            className="fixed z-50 animate-scale-bounce"
+            style={{
+              top: Math.max(72, highlightModalCoords.top),
+              left: Math.max(12, Math.min(highlightModalCoords.left - 130, window.innerWidth - 270)),
+            }}
+          >
+            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-border shadow-bespoke-lg">
+              <span className="text-[11px] font-semibold text-muted pl-2">Color:</span>
+              <div className="flex items-center gap-1">
+                {HIGHLIGHT_PALETTE.map(col => (
+                  <button
+                    key={col.id}
+                    onClick={() => updateHighlightColor(selectedHighlight.id, col.id)}
+                    className={`w-6 h-6 rounded-full ${col.dot} ${col.border} border-2 hover:scale-110 active:scale-95 transition-all ${
+                      selectedHighlight.color === col.id ? 'ring-2 ring-primary ring-offset-1' : ''
+                    }`}
+                    title={`Change color to ${col.name}`}
+                  />
+                ))}
+              </div>
+              <div className="w-[1px] h-4 bg-border/80 mx-0.5" />
+              <button
+                onClick={() => removeHighlight(selectedHighlight.id)}
+                className="px-2.5 py-1 rounded-xl text-xs font-semibold text-error hover:bg-error/10 active:scale-95 transition-all flex items-center gap-1"
+                title="Remove Highlight"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Remove</span>
+              </button>
+              <button
+                onClick={() => setSelectedHighlight(null)}
+                className="w-6 h-6 rounded-full flex items-center justify-center text-muted hover:text-foreground active:scale-90"
+                title="Close"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Floating Toast Notification with Undo */}
+        {toast && (
+          <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
+            <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-card/95 backdrop-blur-xl border border-border shadow-bespoke-md text-xs font-semibold text-foreground">
+              <span>{toast.message}</span>
+              {toast.onUndo && (
+                <button
+                  onClick={() => {
+                    toast.onUndo?.();
+                    setToast(null);
+                  }}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-primary text-primary-foreground font-bold hover:bg-primary/95 transition-all active:scale-95"
+                >
+                  <Undo2 className="w-3 h-3" />
+                  <span>Undo</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Sticky Header */}
         <header className="sticky top-0 bg-card/95 backdrop-blur-xl z-40 border-b border-black/[0.06] dark:border-white/[0.08] px-3 sm:px-4 pt-3 pb-0">
@@ -113,11 +481,25 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                 <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">{readMins} min read</span>
               </div>
             </div>
+
+            {/* Highlighter Panel Button */}
+            <button
+              onClick={() => setShowHighlightsDrawer(prev => !prev)}
+              className={`h-9 px-2.5 rounded-[12px] flex items-center gap-1.5 text-xs font-bold border transition-all duration-200 ease-bespoke ${
+                highlights.length > 0
+                  ? 'bg-amber-400/10 text-amber-700 dark:text-amber-300 border-amber-400/30 hover:bg-amber-400/20'
+                  : 'bg-card text-muted border-border hover:bg-black/5 dark:hover:bg-white/5'
+              }`}
+              title="View highlights in this chapter"
+            >
+              <Highlighter className="w-4 h-4" />
+              <span className="tabular-nums">{highlights.length}</span>
+            </button>
           </div>
           <ReadingProgress />
         </header>
 
-        {/* Content */}
+        {/* Content Area */}
         <div
           ref={scrollRef}
           className="flex flex-col px-2.5 sm:px-4 pt-4 animate-fade-in"
@@ -126,18 +508,91 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             <MarkdownRenderer 
               content={selectedNote.content || ''} 
               accentBg={accentBg} 
-              accentText={accentText} 
+              accentText={accentText}
+              highlights={highlights}
+              onHighlightClick={handleHighlightClick}
             />
           </div>
-
-          <div className={`mt-10 mb-4 p-5 rounded-[20px] ${themeClass} text-center`}>
-            <div className="text-3xl mb-2">🎓</div>
-            <p className="font-bold text-[15px] text-gray-900 dark:text-gray-100">End of Chapter</p>
-            <p className="text-[13px] text-gray-500 dark:text-gray-400 font-medium mt-1">
-              You&apos;ve completed reading this chapter summary.
-            </p>
-          </div>
         </div>
+
+        {/* Highlights Drawer / Review Modal */}
+        {showHighlightsDrawer && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
+            <div className="bg-card w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 shadow-bespoke-lg border border-border animate-sheet-up flex flex-col max-h-[80vh]">
+              <div className="flex justify-between items-center mb-4 shrink-0">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                    <Highlighter className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-foreground">Chapter Highlights</h2>
+                    <p className="text-xs text-muted font-medium">{highlights.length} saved passage{highlights.length === 1 ? '' : 's'}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowHighlightsDrawer(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-ground border border-border text-muted hover:text-foreground active:scale-95 transition-all"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Action buttons: Undo Last & Clear All */}
+              <div className="flex items-center gap-2 mb-4 shrink-0">
+                <button
+                  onClick={undoLastHighlight}
+                  disabled={highlights.length === 0}
+                  className="flex-1 py-2 px-3 rounded-xl border border-border bg-ground text-xs font-semibold text-foreground hover:bg-black/5 dark:hover:bg-white/5 active:scale-98 transition-all flex items-center justify-center gap-1.5 disabled:opacity-40"
+                >
+                  <Undo2 className="w-3.5 h-3.5" />
+                  <span>Undo Last</span>
+                </button>
+                <button
+                  onClick={clearAllHighlights}
+                  disabled={highlights.length === 0}
+                  className="py-2 px-3 rounded-xl border border-error/20 bg-error/5 text-xs font-semibold text-error hover:bg-error/10 active:scale-98 transition-all flex items-center justify-center gap-1.5 disabled:opacity-40"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Clear All</span>
+                </button>
+              </div>
+
+              {/* Highlights List */}
+              <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2.5 pr-1">
+                {highlights.length === 0 ? (
+                  <div className="text-center py-8 px-4">
+                    <p className="text-xs font-semibold text-muted">No highlights yet</p>
+                    <p className="text-[11px] text-muted/80 mt-1">Select any text while reading to highlight with your favorite color.</p>
+                  </div>
+                ) : (
+                  highlights.map((h, i) => {
+                    const pal = HIGHLIGHT_PALETTE.find(p => p.id === h.color) || HIGHLIGHT_PALETTE[0];
+                    return (
+                      <div
+                        key={h.id || i}
+                        className="p-3 rounded-xl border border-border/80 bg-ground/60 hover:bg-ground transition-all flex items-start gap-2.5"
+                      >
+                        <span className={`w-3.5 h-3.5 rounded-full ${pal.dot} shrink-0 mt-1`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-foreground font-medium leading-relaxed italic line-clamp-3">
+                            &quot;{h.text}&quot;
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => removeHighlight(h.id)}
+                          className="w-7 h-7 rounded-lg text-muted hover:text-error hover:bg-error/10 flex items-center justify-center shrink-0 transition-all active:scale-95"
+                          title="Delete highlight"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Footer Action Bar */}
         <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-ground/90 backdrop-blur-xl border-t border-black/[0.06] dark:border-white/[0.08] p-3.5 z-30 flex gap-2.5 pb-safe">
