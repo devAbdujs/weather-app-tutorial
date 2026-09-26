@@ -297,6 +297,13 @@ export async function updatePaymentStatus(paymentId: string, telegramId: string,
       await supabase.from('payment_receipts').update({ status: 'pending' }).eq('id', paymentId);
       throw profileError;
     }
+
+    // Auto-resolve any other duplicate pending receipts from this user
+    await supabase
+      .from('payment_receipts')
+      .update({ status: 'approved' })
+      .eq('telegram_id', telegramId)
+      .eq('status', 'pending');
   }
   
   // 3. Notify student on Telegram

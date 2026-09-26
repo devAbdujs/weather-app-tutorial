@@ -193,6 +193,13 @@ export async function POST(req: NextRequest) {
             console.error('[BotWebhook] Profile upgrade failed:', profileUpdateErr.message);
             // Non-fatal for the admin response — log and continue
           }
+
+          // Auto-resolve any other duplicate pending receipts from this student
+          await supabaseAdmin
+            .from('payment_receipts')
+            .update({ status: 'approved' })
+            .eq('telegram_id', studentTelegramId)
+            .eq('status', 'pending');
         }
 
         // ── Auto-Purge receipt image from storage to keep Supabase free tier at ~0 MB ──
