@@ -3,7 +3,6 @@
 import React, { useMemo, useState } from 'react';
 import { 
   LogOut, 
-  Award, 
   ChevronRight, 
   Zap, 
   GraduationCap, 
@@ -18,8 +17,7 @@ import {
   ExternalLink, 
   TrendingUp, 
   MessageCircle,
-  HelpCircle,
-  Info
+  ArrowRight
 } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useRouter } from 'next/navigation';
@@ -133,7 +131,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
     const examMap: Record<string, string> = {
       entrance: 'Grade 12 Entrance',
       freshman: 'Freshman University',
-      exit: 'Exit Exam Track',
+      exit: 'Exit Exam',
     };
     const exam = examMap[profile.target_exam] || profile.target_exam || 'National Exam';
     const stream = profile.stream ? ` • ${profile.stream}` : '';
@@ -153,12 +151,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         />
       )}
 
-      <div className="flex flex-col pt-3 px-3.5 sm:px-4 pb-28 animate-fade-in bg-ground max-w-lg mx-auto w-full space-y-4">
+      <div className="flex flex-col pt-3 px-4 sm:px-5 pb-28 animate-fade-in bg-ground max-w-lg mx-auto w-full space-y-4">
         
         {/* ── 1. STUDENT IDENTITY HERO CARD ───────────────────────────── */}
         <section 
           aria-label="Student Identity"
-          className="relative bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm overflow-hidden"
+          className="relative bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-5 shadow-bespoke-md overflow-hidden"
         >
           {devMode && (
             <div className="absolute top-4 right-4 text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
@@ -166,14 +164,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             </div>
           )}
 
-          <div className="flex items-center gap-3.5">
+          <div className="flex items-center gap-4">
             {/* Avatar with Squircle & Interactive Dev Tap */}
             <div 
               onClick={handleAvatarClick} 
               className="relative w-16 h-16 shrink-0 cursor-pointer active:scale-95 transition-transform"
               title="Student avatar (tap 5 times for dev tools)"
             >
-              <div className="w-full h-full rounded-[20px] bg-primary/10 dark:bg-primary/20 p-0.5 border border-primary/20 shadow-sm">
+              <div className="w-full h-full rounded-[20px] bg-primary/10 dark:bg-primary/20 p-0.5 border border-primary/20 shadow-bespoke-sm">
                 <div className="w-full h-full bg-ground rounded-[18px] overflow-hidden flex items-center justify-center">
                   {profile.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -184,7 +182,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <span className="text-lg font-black text-primary tracking-tight">{initials}</span>
+                    <span className="text-xl font-black text-primary tracking-tight font-mono">{initials}</span>
                   )}
                 </div>
               </div>
@@ -195,7 +193,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                   <Zap className="w-3.5 h-3.5 fill-current" />
                 </div>
               ) : (
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-ground text-muted flex items-center justify-center border-2 border-card shadow-sm">
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-ground text-slate-400 dark:text-slate-500 flex items-center justify-center border-2 border-card shadow-sm">
                   <GraduationCap className="w-3.5 h-3.5" />
                 </div>
               )}
@@ -212,7 +210,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                     PRO
                   </span>
                 ) : (
-                  <span className="px-2 py-0.5 rounded-md bg-ground border border-border text-muted text-[10px] font-bold uppercase tracking-wider shrink-0">
+                  <span className="px-2 py-0.5 rounded-md bg-ground border border-border text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider shrink-0">
                     Free
                   </span>
                 )}
@@ -222,10 +220,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
               <button 
                 type="button"
                 onClick={handleCopyId}
-                className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-foreground transition-colors mb-2"
+                className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-foreground transition-colors mb-2.5"
                 title="Tap to copy ID"
               >
-                <span>{profile.username ? `@${profile.username}` : `ID: ${profile.telegram_id}`}</span>
+                <span className="font-mono">{profile.username ? `@${profile.username}` : `ID: ${profile.telegram_id}`}</span>
                 {copiedId ? (
                   <Check className="w-3 h-3 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]" />
                 ) : (
@@ -237,12 +235,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
               <div>
                 <button 
                   onClick={handleRetakeOnboarding}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[12px] bg-primary/10 hover:bg-primary/15 text-primary text-xs font-bold transition-all active:scale-[0.98] text-left max-w-full"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 hover:bg-primary/15 text-primary text-xs font-bold transition-all active:scale-[0.98] text-left max-w-full border border-primary/20"
                   title="Change curriculum track"
                 >
                   <Target className="w-3.5 h-3.5 shrink-0" />
                   <span className="truncate">{getGoalDisplay()}</span>
-                  <ChevronRight className="w-3 h-3 shrink-0 opacity-60" />
+                  <ChevronRight className="w-3 h-3 shrink-0 opacity-60 ml-0.5" />
                 </button>
               </div>
             </div>
@@ -252,43 +250,43 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 2. AI REASONING QUOTA & SUBSCRIPTION CARD ───────────────── */}
         <section 
           aria-label="AI Reasoning Allowance"
-          className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm relative overflow-hidden space-y-3.5"
+          className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-5 shadow-bespoke-md space-y-4"
         >
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shadow-sm">
-                <Sparkles className="w-4 h-4" />
+              <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shadow-bespoke-sm">
+                <Sparkles className="w-4.5 h-4.5" />
               </div>
               <div>
                 <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">
                   Temari AI Allowance
                 </h2>
-                <p className="text-[11px] font-medium text-muted">
+                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
                   Weekly intelligent reasoning quota
                 </p>
               </div>
             </div>
 
             {/* Reset Countdown */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-ground border border-border text-[11px] font-semibold text-muted">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-ground border border-black/[0.06] dark:border-white/[0.08] text-[11px] font-semibold text-slate-500 dark:text-slate-400">
               <Clock className="w-3 h-3 text-primary" />
               <span>Resets in {daysUntilReset}d</span>
             </div>
           </div>
 
           {/* Meter & Number */}
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <div className="flex items-baseline justify-between text-xs font-semibold">
               <div className="flex items-baseline gap-1.5">
-                <span className={`text-xl font-black font-mono tracking-tight ${getTextColor()} tabular-nums`}>
+                <span className={`text-2xl font-black font-mono tracking-tight ${getTextColor()} tabular-nums`}>
                   {usageClamped}
                 </span>
-                <span className="text-xs text-muted font-mono">
-                  / {weeklyCap} Qs used
+                <span className="text-xs text-slate-400 dark:text-slate-500 font-mono">
+                  / {weeklyCap} questions used
                 </span>
               </div>
-              <span className="text-muted">
+              <span className="text-slate-500 dark:text-slate-400">
                 {remainingQuestions} inquiries remaining
               </span>
             </div>
@@ -304,13 +302,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
 
           {/* Upgrade Prompt / Active Membership */}
           {!isPremium ? (
-            <div className="bg-ground border border-border rounded-[16px] p-3 flex items-center justify-between gap-3">
+            <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[18px] p-4 flex items-center justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100 mb-0.5">
                   Free Student Plan (5 Qs/week)
                 </p>
-                <p className="text-[11px] text-muted">
-                  Unlock 150 AI queries/week + 31,000+ past exams.
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
+                  Upgrade to unlock 150 AI queries/week + 31k past questions with CBE & Telebirr.
                 </p>
               </div>
               <button
@@ -319,96 +317,96 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                   haptic.impact('medium');
                   router.push('/upgrade');
                 }}
-                className="px-3.5 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-sm hover:bg-primary/90 active:scale-[0.98] transition-all shrink-0 flex items-center gap-1.5"
+                className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-bespoke-sm hover:bg-primary/90 active:scale-[0.98] transition-all shrink-0 flex items-center gap-1.5"
               >
                 <Zap className="w-3.5 h-3.5 fill-current" />
                 <span>Upgrade</span>
               </button>
             </div>
           ) : (
-            <div className="bg-[hsl(145,42%,38%)]/10 border border-[hsl(145,42%,38%)]/20 rounded-[16px] p-3 flex items-center gap-2.5 text-[hsl(145,42%,35%)] dark:text-[hsl(145,35%,62%)] text-xs font-bold">
-              <ShieldCheck className="w-4 h-4 shrink-0" />
+            <div className="bg-[hsl(145,42%,38%)]/10 border border-[hsl(145,42%,38%)]/20 rounded-[18px] p-3.5 flex items-center gap-3 text-[hsl(145,42%,35%)] dark:text-[hsl(145,35%,62%)] text-xs font-bold">
+              <ShieldCheck className="w-4.5 h-4.5 shrink-0" />
               <span>Temari PRO Active • 150 Inquiries / Week on Gemini Flash</span>
             </div>
           )}
         </section>
 
-        {/* ── 3. ACADEMIC SNAPSHOT & PROGRESS GATEWAY ─────────────────── */}
+        {/* ── 3. ACADEMIC HIGHLIGHTS & PROGRESS GATEWAY ───────────────── */}
         <section 
-          aria-label="Academic Snapshot"
-          className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm space-y-3.5"
+          aria-label="Academic Summary"
+          className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-5 shadow-bespoke-md space-y-4"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Award className="w-4 h-4 text-primary" />
-              Academic Performance
+              <TrendingUp className="w-4 h-4 text-primary" />
+              Academic Snapshot
             </h2>
-            <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
-              Lifetime Summary
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+              Lifetime Record
             </span>
           </div>
 
-          {/* 3 Micro-Metrics Row */}
-          <div className="grid grid-cols-3 gap-2">
+          {/* 3 Telemetry Metrics */}
+          <div className="grid grid-cols-3 gap-3">
             {/* Streak */}
-            <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 text-center flex flex-col items-center justify-center">
+            <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[18px] p-3.5 text-center flex flex-col items-center justify-center">
               <div className="w-7 h-7 rounded-[10px] bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] flex items-center justify-center mb-1">
                 <Flame className="w-4 h-4 fill-current" />
               </div>
               <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono leading-none mb-1 tabular-nums">
                 {profile.daily_streak || 0}
               </span>
-              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                 Streak
               </span>
             </div>
 
             {/* Questions */}
-            <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 text-center flex flex-col items-center justify-center">
+            <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[18px] p-3.5 text-center flex flex-col items-center justify-center">
               <div className="w-7 h-7 rounded-[10px] bg-primary/10 text-primary flex items-center justify-center mb-1">
                 <Target className="w-4 h-4" />
               </div>
               <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono leading-none mb-1 tabular-nums">
                 {totalQuestions}
               </span>
-              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                 Solved
               </span>
             </div>
 
             {/* Accuracy */}
-            <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 text-center flex flex-col items-center justify-center">
+            <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[18px] p-3.5 text-center flex flex-col items-center justify-center">
               <div className="w-7 h-7 rounded-[10px] bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] flex items-center justify-center mb-1">
                 <TrendingUp className="w-4 h-4" />
               </div>
               <span className="text-xl font-black text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] font-mono leading-none mb-1 tabular-nums">
                 {overallAccuracy}%
               </span>
-              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                 Accuracy
               </span>
             </div>
           </div>
 
-          {/* Clean Gateway to Detailed Progress Page */}
+          {/* Clean Link to Detailed Progress Page */}
           <button
             type="button"
             onClick={() => {
               haptic.selection();
               router.push('/mastery');
             }}
-            className="w-full bg-ground hover:bg-black/5 dark:hover:bg-white/5 border border-border rounded-[16px] p-3 flex items-center justify-between text-left transition-all active:scale-[0.99] group"
+            className="w-full bg-ground hover:bg-black/5 dark:hover:bg-white/5 border border-black/[0.06] dark:border-white/[0.08] rounded-[18px] p-3.5 flex items-center justify-between text-left transition-all active:scale-[0.99] group"
           >
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                <BarChart3 className="w-4 h-4" />
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <BarChart3 className="w-4.5 h-4.5" />
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
-                  Curriculum Breakdown & Radar
+                  Detailed Exam Score &amp; Subject Progress
                 </p>
-                <p className="text-[11px] text-muted">
-                  {stats.length > 0 ? `${stats.length} subjects analyzed with readiness score` : 'View subject ranks and exam pace'}
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {stats.length > 0 ? `${stats.length} curriculum subjects with pass cutoff tracking` : 'View subject breakdown and speed'}
                 </p>
               </div>
             </div>
@@ -422,28 +420,28 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 4. SETTINGS & SUPPORT GROUP ─────────────────────────────── */}
         <section 
           aria-label="Settings and Preferences"
-          className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-1.5 shadow-sm divide-y divide-black/[0.04] dark:divide-white/[0.04]"
+          className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-2 shadow-bespoke-md divide-y divide-black/[0.04] dark:divide-white/[0.04]"
         >
           {/* Switch Exam Track */}
           <button 
             type="button"
             onClick={handleRetakeOnboarding}
-            className="w-full p-3 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[16px] transition-colors active:scale-[0.99]"
+            className="w-full p-3.5 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[18px] transition-colors active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8.5 h-8.5 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                <Target className="w-4 h-4" />
+              <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <Target className="w-4.5 h-4.5" />
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
                   Switch Exam Track
                 </p>
-                <p className="text-[11px] text-muted">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
                   Grade 12, Freshman courses, or Exit disciplines
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-muted" />
+            <ChevronRight className="w-4 h-4 text-slate-400" />
           </button>
 
           {/* Subscription Link */}
@@ -453,26 +451,26 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
               haptic.selection();
               router.push('/upgrade');
             }}
-            className="w-full p-3 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[16px] transition-colors active:scale-[0.99]"
+            className="w-full p-3.5 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[18px] transition-colors active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className={`w-8.5 h-8.5 rounded-xl flex items-center justify-center ${
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
                 isPremium 
                   ? 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]' 
                   : 'bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)]'
               }`}>
-                <Zap className="w-4 h-4" />
+                <Zap className="w-4.5 h-4.5" />
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
                   {isPremium ? 'Temari PRO Membership' : 'Upgrade to Temari PRO'}
                 </p>
-                <p className="text-[11px] text-muted">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
                   {isPremium ? 'Active subscription • Unlimited practice' : '199 ETB / term (CBE & Telebirr)'}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-muted" />
+            <ChevronRight className="w-4 h-4 text-slate-400" />
           </button>
 
           {/* Telegram Bot & Support */}
@@ -481,22 +479,22 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             target="_blank" 
             rel="noopener noreferrer"
             onClick={() => haptic.selection()}
-            className="w-full p-3 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[16px] transition-colors active:scale-[0.99]"
+            className="w-full p-3.5 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[18px] transition-colors active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8.5 h-8.5 rounded-xl bg-[hsl(199,65%,40%)]/10 text-[hsl(199,65%,40%)] dark:text-[hsl(199,55%,62%)] flex items-center justify-center">
-                <MessageCircle className="w-4 h-4" />
+              <div className="w-9 h-9 rounded-xl bg-[hsl(199,65%,40%)]/10 text-[hsl(199,65%,40%)] dark:text-[hsl(199,55%,62%)] flex items-center justify-center">
+                <MessageCircle className="w-4.5 h-4.5" />
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
-                  Telegram Bot & Support
+                  Telegram Bot &amp; Support
                 </p>
-                <p className="text-[11px] text-muted">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
                   Connect with admins or report an issue
                 </p>
               </div>
             </div>
-            <ExternalLink className="w-4 h-4 text-muted" />
+            <ExternalLink className="w-4 h-4 text-slate-400" />
           </a>
         </section>
 
@@ -505,7 +503,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           <button 
             disabled={isLoggingOut} 
             onClick={handleLogout} 
-            className="w-full bg-card border border-red-500/15 rounded-[16px] p-3.5 flex items-center justify-center gap-2 text-red-600 dark:text-red-400 font-bold text-xs hover:bg-red-500/5 active:scale-[0.98] transition-all disabled:opacity-50"
+            className="w-full bg-card border border-red-500/15 rounded-[18px] p-3.5 flex items-center justify-center gap-2 text-red-600 dark:text-red-400 font-bold text-xs hover:bg-red-500/5 active:scale-[0.98] transition-all disabled:opacity-50 shadow-bespoke-sm"
           >
             {isLoggingOut ? (
               <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
