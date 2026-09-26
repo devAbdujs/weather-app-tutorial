@@ -112,9 +112,16 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
       if (!res.ok) {
         // Special handling for free users hitting the paywall
         if (res.status === 403) {
+          let customMsg = '🔒 **AI Tutor Limit Reached**\n\nUpgrade your account to unlock 150 Temari AI questions/week, full past exam archives, and chapter notes.\n\n👉 Head to your **Profile → Upgrade** to unlock premium for just **199 ETB/term**.';
+          try {
+            const errData = await res.json();
+            if (errData?.message) {
+              customMsg = `🔒 **Weekly AI Quota Reached**\n\n${errData.message}\n\n👉 Head to **Profile → Upgrade** to unlock **150 questions/week** for just **199 ETB/term**!`;
+            }
+          } catch (e) {}
           setMessages(prev => prev.map(m => m.id === assistantMsgId ? { 
             ...m, 
-            content: '🔒 **AI Tutor is a Premium Feature**\n\nUpgrade your account to unlock unlimited access to Temari AI, AI-generated quizzes, and Amharic explanations.\n\n👉 Go to your **Profile → Upgrade** to unlock premium for just **199 ETB/term**.'
+            content: customMsg
           } : m));
           setIsLoading(false);
           return;

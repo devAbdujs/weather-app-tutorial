@@ -104,19 +104,56 @@ export async function POST(req: NextRequest) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
 
-    // 1. SUBSCRIPTION GATE: Fetch profile — check premium status AND build context in one query
+    // 1. INDIVIDUAL QUOTA & SUBSCRIPTION ENGINE
     let profileContext = '';
+    let currentUsage = 0;
+    let isPremium = false;
+    let quotaLimit = 5; // Default free tier allowance: 5 questions/week
+
     try {
       const { data: profile } = await supabaseAdmin
         .from('profiles')
-        .select('target_exam, stream, subscription_status')
+        .select('target_exam, stream, subscription_status, ai_weekly_usage, ai_quota_reset_at')
         .eq('telegram_id', session.telegram_id)
         .maybeSingle();
 
-      // Block free users from accessing the AI Tutor
-      if (!profile || profile.subscription_status !== 'premium') {
+      if (!profile) {
+        return new Response(JSON.stringify({ error: 'Profile not found' }), { status: 404 });
+      }
+
+      isPremium = profile.subscription_status === 'premium';
+      quotaLimit = isPremium ? 150 : 5;
+
+      // Check weekly reset (if reset_at is null or passed, reset usage to 0 and set 7-day rolling window)
+      const now = new Date();
+      const resetAt = profile.ai_quota_reset_at ? new Date(profile.ai_quota_reset_at) : null;
+
+      if (!resetAt || now >= resetAt) {
+        const nextReset = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+        currentUsage = 0;
+        await supabaseAdmin
+          .from('profiles')
+          .update({
+            ai_weekly_usage: 0,
+            ai_quota_reset_at: nextReset.toISOString(),
+          })
+          .eq('telegram_id', session.telegram_id);
+      } else {
+        currentUsage = profile.ai_weekly_usage || 0;
+      }
+
+      // Check if user reached their weekly limit
+      if (currentUsage >= quotaLimit) {
         return new Response(
-          JSON.stringify({ error: 'upgrade_required', message: 'AI Tutor is a premium feature. Upgrade to access it.' }),
+          JSON.stringify({
+            error: 'quota_exceeded',
+            isPremium,
+            usage: currentUsage,
+            limit: quotaLimit,
+            message: isPremium
+              ? `You have reached your weekly allowance of ${quotaLimit} Temari AI inquiries. Your quota refreshes soon!`
+              : `You've used all ${quotaLimit} of your free Temari AI questions this week. Upgrade to Premium for 150 inquiries/week!`
+          }),
           { status: 403 }
         );
       }
@@ -128,7 +165,6 @@ export async function POST(req: NextRequest) {
       console.error('[AI Profile Error]', e);
     }
 
-
     if (payload.questionId && !isFollowUpChat) {
       try {
         const { data: cached } = await supabaseAdmin
@@ -139,6 +175,19 @@ export async function POST(req: NextRequest) {
           .maybeSingle();
 
         if (cached?.response) {
+          // Increment weekly quota usage even on cache hit
+          try {
+            await supabaseAdmin
+              .from('profiles')
+              .update({
+                ai_weekly_usage: currentUsage + 1,
+                updated_at: new Date().toISOString()
+              })
+              .eq('telegram_id', session.telegram_id);
+          } catch (quotaErr) {
+            console.error('[AI Cache Quota Update Error]', quotaErr);
+          }
+
           // Cache Hit! Return instantly.
           return new Response(cached.response, { 
             headers: { 'Content-Type': 'text/plain; charset=utf-8' }
@@ -175,6 +224,19 @@ export async function POST(req: NextRequest) {
           messages: finalMessages,
           temperature: 0.5,
           onFinish: async ({ text }) => {
+            // Increment weekly quota usage
+            try {
+              await supabaseAdmin
+                .from('profiles')
+                .update({
+                  ai_weekly_usage: currentUsage + 1,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('telegram_id', session.telegram_id);
+            } catch (quotaErr) {
+              console.error('[AI Quota Increment Error]', quotaErr);
+            }
+
             // 2. CACHE POPULATION: Save the generated response for the next student
             if (payload.questionId && !isFollowUpChat) {
               await supabaseAdmin.from('ai_cache').insert({
