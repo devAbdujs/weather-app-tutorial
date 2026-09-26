@@ -16,7 +16,9 @@ import {
   Award,
   AlertCircle,
   Copy,
-  Check
+  Check,
+  ImageIcon,
+  X
 } from 'lucide-react';
 import { TopHeader } from '@/components/layout/TopHeader';
 import confetti from 'canvas-confetti';
@@ -27,7 +29,8 @@ export default function UpgradePage() {
   const router = useRouter();
   const { setBackButton, haptic } = useTelegram();
   const [file, setFile] = useState<File | null>(null);
-  const [transactionId, setTransactionId] = useState('');
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [phase, setPhase] = useState<FlowPhase>('form');
   const [receiptId, setReceiptId] = useState<string | null>(null);
@@ -163,11 +166,36 @@ export default function UpgradePage() {
     setTimeout(() => setCopiedBank(null), 2000);
   };
 
+  // Clean up object URL when unmounted or changed
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selected = e.target.files[0];
+      setFile(selected);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(URL.createObjectURL(selected));
+      setError('');
       haptic.selection();
     }
+  };
+
+  const handleRemoveFile = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    haptic.selection();
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   // Client-side image compression to stay safely below Vercel's 4.5MB payload limit
@@ -228,7 +256,6 @@ export default function UpgradePage() {
 
       const formData = new FormData();
       formData.append('receipt', uploadFile);
-      formData.append('transactionId', transactionId);
 
       const res = await fetch('/api/payments/submit', {
         method: 'POST',
@@ -466,8 +493,7 @@ export default function UpgradePage() {
         <button 
           onClick={() => {
             setPhase('form');
-            setFile(null);
-            setTransactionId('');
+            handleRemoveFile();
           }}
           className="w-full max-w-xs h-14 rounded-2xl bg-primary text-white font-black shadow-lg active:scale-[0.98] transition-transform"
         >
@@ -507,12 +533,18 @@ export default function UpgradePage() {
           </ul>
         </div>
 
-        {/* Payment Instructions */}
-        <h3 className="text-lg font-black text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-          <CreditCard className="w-5 h-5 text-primary" /> Transfer Details
-        </h3>
+        {/* Step 1: Payment Instructions */}
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-base font-black text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-black">
+              1
+            </span>
+            Transfer 199 ETB
+          </h3>
+          <span className="text-xs text-gray-400 font-medium">Choose payment method</span>
+        </div>
         
-        <div className="space-y-3 mb-8">
+        <div className="space-y-3 mb-6">
           {/* CBE */}
           <div className="bg-card border border-black/5 dark:border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-sm">
             <div>
@@ -526,7 +558,7 @@ export default function UpgradePage() {
             <button 
               type="button" 
               onClick={() => handleCopy('1000217910448', 'cbe')} 
-              className="text-primary font-bold text-xs bg-primary/10 px-3 py-2 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5"
+              className="text-primary font-bold text-xs bg-primary/10 hover:bg-primary/20 px-3 py-2 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5"
             >
               {copiedBank === 'cbe' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
               {copiedBank === 'cbe' ? 'Copied' : 'Copy'}
@@ -546,7 +578,7 @@ export default function UpgradePage() {
             <button 
               type="button" 
               onClick={() => handleCopy('0942202051', 'telebirr')} 
-              className="text-primary font-bold text-xs bg-primary/10 px-3 py-2 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5"
+              className="text-primary font-bold text-xs bg-primary/10 hover:bg-primary/20 px-3 py-2 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5"
             >
               {copiedBank === 'telebirr' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
               {copiedBank === 'telebirr' ? 'Copied' : 'Copy'}
@@ -554,11 +586,19 @@ export default function UpgradePage() {
           </div>
         </div>
 
-        {/* Upload Form */}
-        <form onSubmit={handleSubmit} className="bg-card border-2 border-primary/10 p-5 rounded-[24px] shadow-sm">
-          <h3 className="text-lg font-black text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-            <Upload className="w-5 h-5 text-primary" /> Upload Screenshot
-          </h3>
+        {/* Step 2: Upload Form */}
+        <form onSubmit={handleSubmit} className="bg-card border border-black/5 dark:border-white/10 p-5 rounded-[24px] shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-black text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-black">
+                2
+              </span>
+              Upload Payment Receipt
+            </h3>
+            <span className="text-[11px] font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full uppercase tracking-wider">
+              Instant AI OCR
+            </span>
+          </div>
 
           {error && (
             <div className="p-3 mb-4 bg-red-50 text-red-600 dark:bg-red-950/20 dark:text-red-400 rounded-xl text-sm font-bold flex items-center gap-2">
@@ -567,57 +607,99 @@ export default function UpgradePage() {
             </div>
           )}
 
-          <div className="mb-4">
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5 uppercase tracking-wider">
-              Transaction ID / Ref (Optional)
-            </label>
-            <input 
-              type="text" 
-              placeholder="e.g. FT23101... or Telebirr Ref"
-              value={transactionId}
-              onChange={(e) => setTransactionId(e.target.value)}
-              className="w-full bg-ground border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/50 font-medium text-sm"
-            />
-          </div>
+          {/* Hidden File Input */}
+          <input 
+            ref={fileInputRef}
+            type="file" 
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
 
-          <div className="mb-6">
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5 uppercase tracking-wider">
-              Payment Screenshot *
-            </label>
-            <div className="relative">
-              <input 
-                type="file" 
-                accept="image/*"
-                onChange={handleFileChange}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-              />
-              <div className={`w-full border-2 border-dashed rounded-xl px-4 py-6 text-center transition-colors ${file ? 'border-primary bg-primary/5' : 'border-black/20 dark:border-white/20 bg-ground'}`}>
-                {file ? (
-                  <span className="font-bold text-primary truncate block text-sm">{file.name}</span>
+          {/* Upload Dropzone or File Preview Card */}
+          <div className="mb-5">
+            {!file ? (
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full border-2 border-dashed border-primary/30 hover:border-primary dark:border-white/20 hover:bg-primary/5 rounded-2xl p-6 text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center group active:scale-[0.99]"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Upload className="w-7 h-7" />
+                </div>
+                <p className="font-bold text-gray-900 dark:text-gray-100 text-sm mb-1">
+                  Tap to upload receipt screenshot
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  CBE Mobile, CBE Birr, or Telebirr (JPG, PNG)
+                </p>
+              </div>
+            ) : (
+              <div className="w-full bg-ground border border-emerald-500/30 rounded-2xl p-3.5 flex items-center gap-3.5 animate-in fade-in duration-200">
+                {previewUrl ? (
+                  <img 
+                    src={previewUrl} 
+                    alt="Receipt preview" 
+                    className="w-16 h-16 rounded-xl object-cover border border-black/10 dark:border-white/10 shrink-0 bg-black/5" 
+                  />
                 ) : (
-                  <div>
-                    <span className="font-bold text-gray-700 dark:text-gray-300 block text-sm">Tap to select receipt image</span>
-                    <span className="text-xs text-gray-400 mt-1 block">Supports JPG, PNG, or mobile screenshot</span>
+                  <div className="w-16 h-16 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                    <ImageIcon className="w-7 h-7" />
                   </div>
                 )}
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 text-xs font-bold mb-0.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    <span>Receipt attached</span>
+                  </div>
+                  <p className="text-xs font-semibold text-gray-900 dark:text-gray-100 truncate">
+                    {file.name}
+                  </p>
+                  <p className="text-[11px] text-gray-400">
+                    {formatFileSize(file.size)}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-3 py-1.5 rounded-xl text-xs font-bold bg-primary/10 text-primary hover:bg-primary/20 transition-colors active:scale-95"
+                  >
+                    Change
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRemoveFile}
+                    aria-label="Remove photo"
+                    className="p-1.5 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors active:scale-95"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <button 
             type="submit" 
             disabled={isSubmitting || !file}
-            className="w-full h-14 rounded-2xl bg-primary text-white font-black shadow-md shadow-primary/20 active:scale-[0.98] transition-transform disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-2"
+            className="w-full h-14 rounded-2xl bg-primary text-white font-black shadow-lg shadow-primary/25 active:scale-[0.98] transition-all disabled:opacity-50 disabled:shadow-none disabled:active:scale-100 flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Uploading Receipt...</span>
+                <span>Optimizing & Submitting...</span>
               </div>
             ) : (
-              'Submit for Instant Verification'
+              'Submit for Instant Verification 🚀'
             )}
           </button>
+
+          <p className="text-center text-[11px] text-gray-400 font-medium mt-3 flex items-center justify-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            Auto-approved in ~5 minutes • Instant access unlocked
+          </p>
         </form>
       </div>
     </div>
