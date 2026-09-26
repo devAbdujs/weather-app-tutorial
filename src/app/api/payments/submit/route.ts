@@ -45,6 +45,23 @@ export async function POST(req: NextRequest) {
 
     if (insertError) throw new Error(`DB Insert Failed: ${insertError.message}`);
 
+    // AUTOMATION BRIDGE: Send the uploaded receipt to n8n for Gemini AI verification
+    const webhookUrl = process.env.N8N_WEBHOOK_URL;
+    if (webhookUrl) {
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imageUrl: receiptUrl,
+            telegram_id: session.telegram_id
+          })
+        });
+      } catch (webhookErr) {
+        console.error('[n8n Webhook Error]', webhookErr);
+      }
+    }
+
     return NextResponse.json({ success: true });
   } catch (err: any) {
     console.error('[Payment Submit Error]', err);
