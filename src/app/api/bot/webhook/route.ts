@@ -89,6 +89,37 @@ export async function POST(req: NextRequest) {
         });
       }
 
+      // ── Handle Admin PDF Document Upload ──────────────────────────────────
+      if (message.document && telegramUser && String(telegramUser.id) === ADMIN_TELEGRAM_ID) {
+        const docName = message.document.file_name || 'document.pdf';
+        const caption = message.caption || '';
+        
+        // Notify admin that document was received
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: telegramUser.id,
+            text: `📥 <b>Document Received!</b>\n\n📄 File: <code>${docName}</code>\n🏷️ Caption: <i>${caption || 'No tags'}</i>\n\n⚙️ <i>Processing into study notes...</i>\n\n💡 <b>Tip:</b> For 100% precision on chapter names & course matching, you can also paste notes directly in the <a href="https://www.temari.top/admin/upload-notes">Web Admin Portal</a>.`,
+            parse_mode: 'HTML',
+          }),
+        });
+
+        // Forward to n8n if webhook URL is configured
+        const n8nWebhook = process.env.N8N_WEBHOOK_URL;
+        if (n8nWebhook) {
+          try {
+            await fetch(n8nWebhook, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(update),
+            });
+          } catch (fwdErr) {
+            console.warn('[BotWebhook] n8n forward failed:', fwdErr);
+          }
+        }
+      }
+
       return NextResponse.json({ ok: true });
     }
 
@@ -118,10 +149,10 @@ export async function POST(req: NextRequest) {
           process.env.SUPABASE_SERVICE_ROLE_KEY!
         );
 
-        // Fetch the receipt to get the student's telegram_id
+        // Fetch the receipt to get the student's telegram_id and receipt_url
         const { data: receipt, error: fetchErr } = await supabaseAdmin
           .from('payment_receipts')
-          .select('telegram_id, status, transaction_id')
+          .select('telegram_id, status, transaction_id, receipt_url')
           .eq('id', receiptId)
           .single();
 
@@ -161,6 +192,18 @@ export async function POST(req: NextRequest) {
           if (profileUpdateErr) {
             console.error('[BotWebhook] Profile upgrade failed:', profileUpdateErr.message);
             // Non-fatal for the admin response — log and continue
+          }
+        }
+
+        // ── Auto-Purge receipt image from storage to keep Supabase free tier at ~0 MB ──
+        if (receipt.receipt_url) {
+          try {
+            const fileName = receipt.receipt_url.split('/receipts/')[1];
+            if (fileName) {
+              await supabaseAdmin.storage.from('receipts').remove([decodeURIComponent(fileName)]);
+            }
+          } catch (storageErr) {
+            console.warn('[BotWebhook] Failed to purge processed receipt image:', storageErr);
           }
         }
 

@@ -312,5 +312,22 @@ export async function updatePaymentStatus(paymentId: string, telegramId: string,
     console.error('[Admin Update Payment] Failed to send Telegram notification:', notifyErr);
   }
 
+  // 4. Auto-purge image from Supabase storage to keep Free Tier clean
+  try {
+    const { data: receipt } = await supabase
+      .from('payment_receipts')
+      .select('receipt_url')
+      .eq('id', paymentId)
+      .single();
+    if (receipt?.receipt_url) {
+      const fileName = receipt.receipt_url.split('/receipts/')[1];
+      if (fileName) {
+        await supabase.storage.from('receipts').remove([decodeURIComponent(fileName)]);
+      }
+    }
+  } catch (storageErr) {
+    console.warn('[Admin Update Payment] Storage image purge error:', storageErr);
+  }
+
   return { success: true };
 }
