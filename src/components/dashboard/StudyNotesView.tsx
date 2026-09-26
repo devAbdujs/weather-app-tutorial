@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Clock, Sparkles, List, Pin, CheckCircle2, ChevronRight, ChevronLeft, Layers } from 'lucide-react';
+import { Clock, Sparkles, List, ChevronRight, ChevronLeft, Layers } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { StudyNote } from '@/types';
 import { useRouter } from 'next/navigation';
@@ -56,11 +56,6 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
   const [selectedNote, setSelectedNote] = useState<StudyNote | null>(null);
   const [showTutor, setShowTutor] = useState(false);
 
-  const [selectedText, setSelectedText] = useState('');
-  const [selectionRect, setSelectionRect] = useState<{ top: number; left: number } | null>(null);
-  const [isPinning, setIsPinning] = useState(false);
-  const [pinSuccess, setPinSuccess] = useState(false);
-
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const dept = subject && subject !== 'All' ? subject : 'General';
@@ -81,64 +76,6 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     else              setBackButton(true, () => router.push('/'));
   }, [selectedNote, setBackButton, router, handleBackFromNote]);
 
-  // Text selection → Pin to Notebook
-  useEffect(() => {
-    if (!selectedNote) return;
-    const handleSelectionChange = () => {
-      const selection = window.getSelection();
-      if (selection && selection.toString().trim().length > 5) {
-        const text = selection.toString().trim();
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-        const container = document.getElementById('note-content');
-        if (container && container.contains(selection.anchorNode)) {
-          setSelectedText(text);
-          setSelectionRect({ top: rect.top - 54, left: rect.left + rect.width / 2 });
-        } else {
-          setSelectionRect(null); setSelectedText('');
-        }
-      } else {
-        setTimeout(() => {
-          if (!window.getSelection()?.toString().trim()) {
-            setSelectionRect(null); setSelectedText('');
-          }
-        }, 100);
-      }
-    };
-    document.addEventListener('selectionchange', handleSelectionChange);
-    return () => document.removeEventListener('selectionchange', handleSelectionChange);
-  }, [selectedNote]);
-
-  const savePin = async () => {
-    if (!user?.id || !selectedText) return;
-    haptic.impact('medium');
-    setIsPinning(true);
-    try {
-      const res = await fetch('/api/pins', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subject: subject || 'General',
-          chapter_title: selectedNote?.title,
-          content: selectedText,
-        }),
-      });
-      if (res.ok) {
-        haptic.notification('success');
-        setPinSuccess(true);
-        setTimeout(() => {
-          setPinSuccess(false); setSelectionRect(null); setSelectedText('');
-          window.getSelection()?.removeAllRanges();
-        }, 2000);
-      }
-    } catch (err) {
-      console.error('Failed to pin:', err);
-      haptic.notification('error');
-    } finally {
-      setIsPinning(false);
-    }
-  };
-
   const calculateReadTime = (text: string) =>
     Math.max(1, Math.ceil(text.split(/\s+/).length / 200));
 
@@ -149,30 +86,6 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     const readMins = calculateReadTime(selectedNote.content || '');
     return (
       <div className="min-h-screen bg-ground flex flex-col font-sans animate-fade-in relative">
-
-        {/* Floating Pin Button */}
-        {selectionRect && selectedText && (
-          <div
-            className="fixed z-50 animate-scale-bounce"
-            style={{
-              top: Math.max(72, selectionRect.top),
-              left: Math.max(10, Math.min(selectionRect.left - 80, window.innerWidth - 170)),
-            }}
-          >
-            <button
-              onClick={savePin}
-              disabled={isPinning || pinSuccess}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-full font-black text-sm shadow-2xl border-2 transition-all active:scale-[0.98] active:opacity-80 ${
-                pinSuccess
-                  ? 'bg-emerald-500 text-white border-emerald-600'
-                  : 'bg-amber-300 text-amber-900 border-amber-400 hover:bg-amber-400'
-              }`}
-            >
-              {pinSuccess ? <CheckCircle2 className="w-4 h-4" /> : <Pin className="w-4 h-4 fill-amber-700" />}
-              {pinSuccess ? 'Saved!' : 'Pin Note'}
-            </button>
-          </div>
-        )}
 
         {/* Sticky Header */}
         <header className="sticky top-0 bg-card/95 backdrop-blur-xl z-40 border-b border-black/[0.06] dark:border-white/[0.08] px-3 sm:px-4 pt-3 pb-0">
@@ -221,7 +134,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             <div className="text-3xl mb-2">🎓</div>
             <p className="font-bold text-[15px] text-gray-900 dark:text-gray-100">End of Chapter</p>
             <p className="text-[13px] text-gray-500 dark:text-gray-400 font-medium mt-1">
-              Highlight any text to save it to your notebook
+              You&apos;ve completed reading this chapter summary.
             </p>
           </div>
         </div>

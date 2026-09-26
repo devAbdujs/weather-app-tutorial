@@ -9,7 +9,6 @@ export const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname() || '';
   const isFocusMode =
     pathname.startsWith('/exam/') ||
-    pathname.startsWith('/notebook/') ||
     pathname.startsWith('/notes/') ||
     pathname.startsWith('/practice/sessions');
 

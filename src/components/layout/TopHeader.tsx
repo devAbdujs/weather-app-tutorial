@@ -27,10 +27,9 @@ export const TopHeader = () => {
   const userProfile = useAppStore(s => s.userProfile);
   const { resolvedTheme, toggle } = useTheme();
 
-  // Hide during full-focus screens (exam, notebook, notes, practice sessions)
+  // Hide during full-focus screens (exam, notes, practice sessions)
   const isFocusMode =
     pathname.startsWith('/exam/') ||
-    pathname.startsWith('/notebook/') ||
     pathname.startsWith('/notes/') ||
     pathname.startsWith('/practice/sessions');
 

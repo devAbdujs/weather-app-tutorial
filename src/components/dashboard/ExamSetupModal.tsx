@@ -102,7 +102,7 @@ export const ExamSetupModal: React.FC = () => {
     const encodedSubject = encodeURIComponent(subject);
 
     if (setupModalType === 'flashcards') {
-      router.push(`/notebook/${encodedSubject}`);
+      router.push(`/flashcards/${encodedSubject}`);
     } else if (setupModalType === 'notes') {
       // Pass examType so the server-side query can isolate content correctly
       router.push(`/notes/${encodedSubject}?examType=${dbExamType}`);
@@ -133,7 +133,7 @@ export const ExamSetupModal: React.FC = () => {
 
   const titles = {
     exam:       'Start Practice',
-    flashcards: 'My Notebook',
+    flashcards: 'Speed Flashcards',
     notes:      'Study Notes',
   };
 
@@ -266,7 +266,7 @@ export const ExamSetupModal: React.FC = () => {
               </div>
               <div className="p-4 rounded-[20px] bg-[hsl(36,58%,42%)]/10 border border-[hsl(36,58%,42%)]/20 flex items-center gap-3">
                 <Zap className="w-5 h-5 text-[hsl(36,58%,42%)] shrink-0" />
-                <p className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-relaxed">Your saved highlights and custom pinned notes.</p>
+                <p className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-relaxed">Swipe through rapid-fire question cards to master key concepts.</p>
               </div>
             </div>
           )}

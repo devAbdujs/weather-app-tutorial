@@ -13,7 +13,6 @@ export const BottomNav = () => {
   // Hide during deep focus screens
   const isFocusMode =
     pathname.startsWith('/exam/') ||
-    pathname.startsWith('/notebook/') ||
     pathname.startsWith('/notes/') ||
     pathname.startsWith('/flashcards/') ||
     pathname.startsWith('/practice/sessions');

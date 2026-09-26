@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from 'react';
-import { BookOpen, Flame, FileText, BookMarked, ArrowRight, Target, Sparkles, RefreshCw, Zap } from 'lucide-react';
+import { BookOpen, Flame, FileText, ArrowRight, Target, Sparkles, RefreshCw, Zap } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { WelcomeOnboarding } from './WelcomeOnboarding';
 import { updateDailyStreak } from '@/app/actions/user';
@@ -227,38 +227,27 @@ export const HomeHub: React.FC = () => {
         )}
 
         {/* ── 5. BENTO QUICK TOOLS ── */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => { haptic.impact('medium'); router.push('/practice?mode=notes'); }}
-            className="group bg-card p-3.5 rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-primary/20 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
+            className="group bg-card p-4 rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-primary/20 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
           >
             <div className="w-10 h-10 bg-[hsl(213,55%,42%)]/10 text-[hsl(213,55%,42%)] dark:text-[hsl(213,50%,68%)] border border-[hsl(213,55%,42%)]/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
               <FileText className="w-4.5 h-4.5" />
             </div>
-            <h3 className="text-xs font-black text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
-            <p className="text-[10px] font-medium text-gray-400 dark:text-gray-500 mt-0.5 truncate">Summaries</p>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
+            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mt-0.5 truncate">Summaries &amp; Concepts</p>
           </button>
 
           <button
             onClick={() => { haptic.impact('medium'); router.push('/practice?mode=flashcards'); }}
-            className="group bg-card p-3.5 rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-primary/20 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
+            className="group bg-card p-4 rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-primary/20 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
           >
             <div className="w-10 h-10 bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] border border-[hsl(36,58%,42%)]/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
               <Zap className="w-4.5 h-4.5" />
             </div>
-            <h3 className="text-xs font-black text-gray-900 dark:text-gray-100 leading-tight">Flashcards</h3>
-            <p className="text-[10px] font-medium text-gray-400 dark:text-gray-500 mt-0.5 truncate">Speed Review</p>
-          </button>
-
-          <button
-            onClick={() => { haptic.impact('medium'); router.push('/notebook/All'); }}
-            className="group bg-card p-3.5 rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-primary/20 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
-          >
-            <div className="w-10 h-10 bg-[hsl(268,40%,48%)]/10 text-[hsl(268,40%,48%)] dark:text-[hsl(268,36%,70%)] border border-[hsl(268,40%,48%)]/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
-              <BookMarked className="w-4.5 h-4.5" />
-            </div>
-            <h3 className="text-xs font-black text-gray-900 dark:text-gray-100 leading-tight">Notebook</h3>
-            <p className="text-[10px] font-medium text-gray-400 dark:text-gray-500 mt-0.5 truncate">Saved Qs</p>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 leading-tight">Flashcards</h3>
+            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mt-0.5 truncate">Rapid-Fire Review</p>
           </button>
         </div>
 
