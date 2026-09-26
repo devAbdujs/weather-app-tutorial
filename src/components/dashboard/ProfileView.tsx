@@ -7,8 +7,6 @@ import {
   Zap, 
   Sparkles, 
   Flame, 
-  Check, 
-  Copy, 
   ExternalLink, 
   TrendingUp, 
   MessageCircle,
@@ -34,7 +32,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isChangingExam, setIsChangingExam] = useState(false);
   const [devClicks, setDevClicks] = useState(0);
-  const [copiedId, setCopiedId] = useState(false);
   const toggleDevMode = useAppStore(s => s.toggleDevMode);
   const devMode = useAppStore(s => s.devMode);
 
@@ -66,14 +63,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
       }
       return next;
     });
-  };
-
-  const handleCopyId = () => {
-    if (!profile.telegram_id) return;
-    navigator.clipboard.writeText(profile.telegram_id.toString());
-    setCopiedId(true);
-    haptic.selection();
-    setTimeout(() => setCopiedId(false), 2000);
   };
 
   const isPremium = profile.subscription_status === 'premium';
@@ -200,20 +189,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                 )}
               </div>
 
-              {/* Telegram Username / ID */}
-              <button 
-                type="button"
-                onClick={handleCopyId}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-foreground transition-colors font-mono mb-2"
-                title="Tap to copy ID"
-              >
-                <span>{profile.username ? `@${profile.username}` : `ID: ${profile.telegram_id}`}</span>
-                {copiedId ? (
-                  <Check className="w-3 h-3 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]" />
-                ) : (
-                  <Copy className="w-3 h-3 opacity-60" />
-                )}
-              </button>
+              {profile.username && (
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-2 truncate">
+                  @{profile.username}
+                </p>
+              )}
 
               {/* Target Track Button */}
               <div>
