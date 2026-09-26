@@ -83,11 +83,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const ip = req.ip || req.headers.get('x-forwarded-for') || session.telegram_id || 'unknown';
-    const rateLimitInfo = checkRateLimit(ip, 1, 60000);
+    const rateLimitKey = `tutor:${session.telegram_id}`;
+    const rateLimitInfo = checkRateLimit(rateLimitKey, 15, 60000);
     
     if (!rateLimitInfo.allowed) {
-      return new Response(JSON.stringify({ error: 'Too many AI requests. Please wait a minute.' }), { status: 429 });
+      return new Response(JSON.stringify({ error: 'Too many AI requests. Please slow down a moment.' }), { status: 429 });
     }
 
     const body = await req.json();

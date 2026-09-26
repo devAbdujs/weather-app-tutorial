@@ -170,6 +170,45 @@ export default function UpgradePage() {
     }
   };
 
+  // Client-side image compression to stay safely below Vercel's 4.5MB payload limit
+  const compressImage = async (inputFile: File): Promise<Blob> => {
+    if (inputFile.size <= 1.5 * 1024 * 1024) return inputFile; // already small enough
+
+    return new Promise((resolve) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(inputFile);
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        const maxDim = 1600;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => resolve(blob || inputFile),
+          'image/jpeg',
+          0.88
+        );
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(inputFile);
+      };
+      img.src = objectUrl;
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
@@ -182,8 +221,13 @@ export default function UpgradePage() {
     setError('');
 
     try {
+      const optimizedBlob = await compressImage(file);
+      const uploadFile = new File([optimizedBlob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+        type: 'image/jpeg'
+      });
+
       const formData = new FormData();
-      formData.append('receipt', file);
+      formData.append('receipt', uploadFile);
       formData.append('transactionId', transactionId);
 
       const res = await fetch('/api/payments/submit', {

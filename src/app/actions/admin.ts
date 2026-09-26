@@ -2,6 +2,7 @@
 
 import { cookies } from 'next/headers';
 import { createAdminClient } from '@/utils/supabase/admin';
+import { sendStudentNotification } from '@/lib/paymentNotifier';
 
 const ADMIN_COOKIE_NAME = 'temari_admin_session';
 
@@ -298,5 +299,18 @@ export async function updatePaymentStatus(paymentId: string, telegramId: string,
     }
   }
   
+  // 3. Notify student on Telegram
+  try {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('telegram_id', telegramId)
+      .single();
+    const studentName = profile?.full_name?.split(' ')[0] ?? 'Student';
+    await sendStudentNotification(telegramId, status === 'approved', studentName);
+  } catch (notifyErr) {
+    console.error('[Admin Update Payment] Failed to send Telegram notification:', notifyErr);
+  }
+
   return { success: true };
 }
