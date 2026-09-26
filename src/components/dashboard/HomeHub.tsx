@@ -230,36 +230,36 @@ export const HomeHub: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => { haptic.impact('medium'); router.push('/practice?mode=notes'); }}
-            className="group bg-card p-4 rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-primary/20 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
+            className="group bg-card p-4 rounded-[22px] border border-black/[0.08] dark:border-white/[0.08] hover:border-primary/30 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
           >
-            <div className="w-10 h-10 bg-accent-blue/10 text-accent-blue border border-accent-blue/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
+            <div className="w-10 h-10 bg-accent-purple/10 text-accent-purple border border-accent-purple/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
               <FileText className="w-4.5 h-4.5" />
             </div>
-            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
-            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mt-0.5 truncate">Summaries &amp; Concepts</p>
+            <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">Summaries &amp; Concepts</p>
           </button>
 
           <button
             onClick={() => { haptic.impact('medium'); router.push('/practice?mode=flashcards'); }}
-            className="group bg-card p-4 rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-primary/20 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
+            className="group bg-card p-4 rounded-[22px] border border-black/[0.08] dark:border-white/[0.08] hover:border-primary/30 shadow-bespoke-sm active:scale-[0.98] transition-all duration-200 ease-bespoke text-left"
           >
             <div className="w-10 h-10 bg-accent-gold/10 text-accent-gold border border-accent-gold/20 rounded-[14px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-200">
               <Zap className="w-4.5 h-4.5" />
             </div>
-            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 leading-tight">Flashcards</h3>
-            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mt-0.5 truncate">Rapid-Fire Review</p>
+            <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-tight">Flashcards</h3>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">Rapid-Fire Review</p>
           </button>
         </div>
 
         {/* ── 6. TEMARI AI DAILY SPARK ── */}
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4 shadow-bespoke-sm">
-          <div className="flex items-center justify-between mb-2.5">
+        <div className="bg-gradient-to-br from-card via-card to-accent-gold/[0.07] border border-accent-gold/25 rounded-[24px] p-4.5 shadow-bespoke-sm">
+          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-accent-gold/10 text-accent-gold border border-accent-gold/20 rounded-[12px] flex items-center justify-center">
+              <div className="w-8 h-8 bg-accent-gold/15 text-accent-gold border border-accent-gold/30 rounded-[12px] flex items-center justify-center">
                 <Sparkles className="w-4 h-4" />
               </div>
-              <span className="text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">
-                Temari AI Daily Tip
+              <span className="text-[11px] font-black text-accent-gold uppercase tracking-widest">
+                Temari AI Daily Spark
               </span>
             </div>
             <button
@@ -277,7 +277,7 @@ export const HomeHub: React.FC = () => {
               <div className="h-3 bg-black/5 dark:bg-white/5 rounded-full animate-pulse w-3/4" />
             </div>
           ) : tip ? (
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 leading-relaxed animate-fade-in pl-1">
+            <p className="text-xs font-medium text-gray-700 dark:text-gray-300 leading-relaxed animate-fade-in pl-1">
               {tip}
             </p>
           ) : null}

@@ -169,13 +169,13 @@ export const PracticeHub = () => {
 
       {devMode && (
         <div className="px-5 mb-6">
-          <div className="flex p-1 bg-black/5 dark:bg-white/5 rounded-[16px]">
+          <div className="flex p-1 bg-panel border border-black/[0.08] dark:border-white/[0.08] rounded-[16px]">
             {['entrance', 'freshman', 'exit'].map(tab => (
               <button
                 key={tab}
                 onClick={() => { haptic.selection(); setActiveTab(tab); }}
                 className={`flex-1 py-2 text-[13px] font-bold capitalize rounded-[12px] transition-all ${
-                  activeTab === tab ? 'bg-white dark:bg-card text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-400 dark:text-gray-400'
+                  activeTab === tab ? 'bg-card text-gray-900 dark:text-gray-100 shadow-bespoke-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-400'
                 }`}
               >
                 {tab}
@@ -196,7 +196,7 @@ export const PracticeHub = () => {
                 <button
                   key={c.id}
                   onClick={() => { haptic.selection(); navigate('freshman', { subject: c.id }); }}
-                  className="group p-4 rounded-[22px] border border-black/5 dark:border-white/[0.08] bg-card hover:border-primary/30 active:scale-[0.98] transition-all text-left flex flex-col gap-3 shadow-sm"
+                  className="group p-4 rounded-[22px] border border-black/[0.08] dark:border-white/[0.08] bg-card hover:border-primary/40 active:scale-[0.98] transition-all text-left flex flex-col gap-3 shadow-bespoke-sm"
                 >
                   <div className={`w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0 ${getSubjectTheme(c.id)}`}>
                     <c.Icon className="w-5 h-5" strokeWidth={2} />
@@ -220,7 +220,7 @@ export const PracticeHub = () => {
                 <button
                   key={c.id}
                   onClick={() => { haptic.selection(); navigate('entrance', { subject: c.id }); }}
-                  className="group p-4 rounded-[22px] border border-black/5 dark:border-white/[0.08] bg-card hover:border-primary/30 active:scale-[0.98] transition-all text-left flex flex-col gap-3 shadow-sm"
+                  className="group p-4 rounded-[22px] border border-black/[0.08] dark:border-white/[0.08] bg-card hover:border-primary/40 active:scale-[0.98] transition-all text-left flex flex-col gap-3 shadow-bespoke-sm"
                 >
                   <div className={`w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0 ${getSubjectTheme(c.id)}`}>
                     <c.Icon className="w-5 h-5" strokeWidth={2} />
@@ -239,7 +239,7 @@ export const PracticeHub = () => {
         {targetExam === 'exit' && (
           <div className="animate-fade-in">
             <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 px-1">Select department</p>
-            <div className="bg-card rounded-[24px] border border-black/5 dark:border-white/[0.08] shadow-sm overflow-hidden flex flex-col mb-10 divide-y divide-black/5 dark:divide-white/[0.05]">
+            <div className="bg-card rounded-[24px] border border-black/[0.08] dark:border-white/[0.08] shadow-bespoke-sm overflow-hidden flex flex-col mb-10 divide-y divide-black/5 dark:divide-white/[0.05]">
               {EXIT_DEPARTMENTS.map((d) => (
                 <button
                   key={d.id}

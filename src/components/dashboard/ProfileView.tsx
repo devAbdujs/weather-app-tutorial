@@ -134,7 +134,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 1. CLEAN STUDENT IDENTITY CARD ─────────────────────────── */}
         <section 
           aria-label="Student Identity"
-          className="relative bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-5 shadow-bespoke-md"
+          className="relative bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-[24px] p-5 shadow-bespoke-sm"
         >
           {devMode && (
             <div className="absolute top-4 right-4 text-[10px] font-black text-accent-gold uppercase tracking-widest bg-accent-gold/10 border border-accent-gold/20 px-2 py-0.5 rounded-full">
@@ -183,7 +183,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                     PRO
                   </span>
                 ) : (
-                  <span className="px-2 py-0.5 rounded-md bg-ground border border-border text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider shrink-0">
+                  <span className="px-2 py-0.5 rounded-md bg-panel border border-black/[0.08] dark:border-white/[0.08] text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider shrink-0">
                     Free
                   </span>
                 )}
@@ -215,8 +215,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           aria-label="Quick Stats"
           className="grid grid-cols-3 gap-3"
         >
-          <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[20px] p-3.5 text-center shadow-bespoke-sm">
-            <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-[20px] p-3.5 text-center shadow-bespoke-sm">
+            <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               <Flame className="w-3.5 h-3.5 text-accent-gold" />
               <span>Streak</span>
             </div>
@@ -225,8 +225,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             </span>
           </div>
 
-          <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[20px] p-3.5 text-center shadow-bespoke-sm">
-            <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-[20px] p-3.5 text-center shadow-bespoke-sm">
+            <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               <Target className="w-3.5 h-3.5 text-primary" />
               <span>Solved</span>
             </div>
@@ -235,8 +235,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             </span>
           </div>
 
-          <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[20px] p-3.5 text-center shadow-bespoke-sm">
-            <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-[20px] p-3.5 text-center shadow-bespoke-sm">
+            <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               <TrendingUp className="w-3.5 h-3.5 text-accent-emerald" />
               <span>Accuracy</span>
             </div>
@@ -249,7 +249,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 3. AI QUOTA (CLEAN & COMPACT) ────────────────────────────── */}
         <section 
           aria-label="AI Quota"
-          className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[20px] p-4 shadow-bespoke-sm space-y-2.5"
+          className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-[20px] p-4 shadow-bespoke-sm space-y-2.5"
         >
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-1.5 font-bold text-gray-900 dark:text-gray-100">
@@ -264,7 +264,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           </div>
 
           {/* Progress Bar */}
-          <div className="w-full bg-ground border border-black/[0.04] dark:border-white/[0.06] h-2 rounded-full overflow-hidden">
+          <div className="w-full bg-panel border border-black/[0.06] dark:border-white/[0.08] h-2.5 rounded-full overflow-hidden p-0.5">
             <div 
               className={`h-full rounded-full transition-all duration-500 ease-bespoke ${getProgressColor()}`}
               style={{ width: `${Math.max(4, usagePercent)}%` }}
@@ -294,7 +294,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 4. SETTINGS & NAVIGATION (INSET GROUP) ───────────────────── */}
         <section 
           aria-label="Account Settings"
-          className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] shadow-bespoke-md divide-y divide-black/[0.04] dark:divide-white/[0.04] overflow-hidden"
+          className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-[24px] shadow-bespoke-sm divide-y divide-black/[0.05] dark:divide-white/[0.05] overflow-hidden"
         >
           {/* Progress & Scores */}
           <button 

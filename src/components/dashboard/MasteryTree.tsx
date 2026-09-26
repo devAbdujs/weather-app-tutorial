@@ -206,12 +206,15 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         className="grid grid-cols-2 gap-3"
       >
         {/* Accuracy */}
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[20px] p-4 shadow-bespoke-sm flex flex-col justify-between space-y-2">
+        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-4 shadow-bespoke-sm flex flex-col justify-between space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-              <Target className="w-3.5 h-3.5 text-primary" /> Accuracy
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+              <div className="w-6 h-6 rounded-lg bg-accent-emerald/10 text-accent-emerald flex items-center justify-center">
+                <Target className="w-3.5 h-3.5" />
+              </div>
+              Accuracy
             </span>
-            <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">
+            <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 font-mono">
               {totalCorrect}/{totalAttempted}
             </span>
           </div>
@@ -226,13 +229,16 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         </div>
 
         {/* Total Questions */}
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[20px] p-4 shadow-bespoke-sm flex flex-col justify-between space-y-2">
+        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-4 shadow-bespoke-sm flex flex-col justify-between space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-              <BookOpen className="w-3.5 h-3.5 text-primary" /> Solved
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+              <div className="w-6 h-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                <BookOpen className="w-3.5 h-3.5" />
+              </div>
+              Solved
             </span>
-            <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">
-              {stats.length} subjects
+            <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 font-mono">
+              {stats.length} sub
             </span>
           </div>
           <div>
@@ -246,9 +252,12 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         </div>
 
         {/* Study Time */}
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[20px] p-4 shadow-bespoke-sm flex flex-col justify-between space-y-2">
-          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5 text-primary" /> Focus Time
+        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-4 shadow-bespoke-sm flex flex-col justify-between space-y-2">
+          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+            <div className="w-6 h-6 rounded-lg bg-accent-purple/10 text-accent-purple flex items-center justify-center">
+              <Clock className="w-3.5 h-3.5" />
+            </div>
+            Focus Time
           </span>
           <div>
             <span className="text-2xl font-black font-mono tracking-tight text-gray-900 dark:text-gray-100 tabular-nums">
@@ -261,9 +270,12 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         </div>
 
         {/* Exam Pace Velocity */}
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[20px] p-4 shadow-bespoke-sm flex flex-col justify-between space-y-2">
-          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 text-primary" /> Speed
+        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-4 shadow-bespoke-sm flex flex-col justify-between space-y-2">
+          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+            <div className="w-6 h-6 rounded-lg bg-accent-gold/10 text-accent-gold flex items-center justify-center">
+              <Zap className="w-3.5 h-3.5" />
+            </div>
+            Speed
           </span>
           <div>
             <span className="text-2xl font-black font-mono tracking-tight text-gray-900 dark:text-gray-100 tabular-nums">
@@ -369,7 +381,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
           </h2>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1 bg-ground border border-black/[0.06] dark:border-white/[0.08] p-1 rounded-xl">
+          <div className="flex items-center gap-1 bg-panel border border-black/[0.08] dark:border-white/[0.08] p-1 rounded-xl">
             <button
               onClick={() => {
                 haptic.selection();
@@ -377,7 +389,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
               }}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                 filterMode === 'all'
-                  ? 'bg-card text-gray-900 dark:text-gray-100 shadow-bespoke-sm border border-black/[0.06] dark:border-white/[0.08]'
+                  ? 'bg-card text-gray-900 dark:text-gray-100 shadow-bespoke-sm border border-black/[0.08] dark:border-white/[0.08]'
                   : 'text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-gray-100'
               }`}
             >
@@ -390,7 +402,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
               }}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                 filterMode === 'needs_practice'
-                  ? 'bg-card text-gray-900 dark:text-gray-100 shadow-bespoke-sm border border-black/[0.06] dark:border-white/[0.08]'
+                  ? 'bg-card text-gray-900 dark:text-gray-100 shadow-bespoke-sm border border-black/[0.08] dark:border-white/[0.08]'
                   : 'text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-gray-100'
               }`}
             >
@@ -403,7 +415,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
               }}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                 filterMode === 'strong'
-                  ? 'bg-card text-gray-900 dark:text-gray-100 shadow-bespoke-sm border border-black/[0.06] dark:border-white/[0.08]'
+                  ? 'bg-card text-gray-900 dark:text-gray-100 shadow-bespoke-sm border border-black/[0.08] dark:border-white/[0.08]'
                   : 'text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-gray-100'
               }`}
             >

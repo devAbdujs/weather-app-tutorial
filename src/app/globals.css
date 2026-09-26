@@ -4,13 +4,13 @@
 
 /* ─── CSS Custom Properties (Bespoke UI Design Tokens) ───────── */
 :root {
-  /* Light mode surfaces: soft anti-glare warm slate */
-  --background:    hsl(210, 40%, 98%);
-  --foreground:    hsl(222, 47%, 11%);
-  --surface:       hsl(0, 0%, 100%);
-  --surface-2:     hsl(210, 40%, 96%);
-  --border:        hsla(222, 47%, 11%, 0.06);
-  --border-strong: hsla(222, 47%, 11%, 0.12);
+  /* Light mode surfaces: Authentic iOS / mobile grouped canvas contrast */
+  --background:    hsl(214, 22%, 93.5%);  /* #EEF1F5 - distinct, cool-slate tactile canvas */
+  --foreground:    hsl(222, 47%, 11%);    /* #0F172A - deep ink readability */
+  --surface:       hsl(0, 0%, 100%);      /* #FFFFFF - crisp pure white cards that POP against canvas */
+  --surface-2:     hsl(214, 20%, 88.5%);  /* #DCE2E9 - recessed segmented bars, pills, search bars */
+  --border:        hsla(222, 35%, 15%, 0.08); /* crisp card edge contour */
+  --border-strong: hsla(222, 35%, 15%, 0.15);
 
   /* Brand: Bespoke Deep Indigo — single accent, used sparingly */
   --primary:            hsl(224, 64%, 33%);

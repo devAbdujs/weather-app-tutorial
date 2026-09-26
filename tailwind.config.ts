@@ -33,10 +33,12 @@ const config: Config = {
         "sticky-yellow":  "hsl(48, 100%, 96%)",   /* Warm parchment for sticky notes */
       },
       boxShadow: {
-        /* Neutral-only shadows — no colored shadows per bespoke design system */
-        "bespoke-sm": "0 1px 2px hsla(222, 20%, 15%, 0.06)",
-        "bespoke-md": "0 4px 12px hsla(222, 20%, 15%, 0.08)",
-        "bespoke-lg": "0 8px 24px hsla(222, 20%, 15%, 0.10)",
+        /* Crisp tactile shadows for elevated cards against the cool slate canvas */
+        "bespoke-sm": "0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05)",
+        "bespoke-md": "0 4px 16px -2px rgba(15, 23, 42, 0.07), 0 2px 6px -1px rgba(15, 23, 42, 0.04)",
+        "bespoke-lg": "0 12px 32px -4px rgba(15, 23, 42, 0.10), 0 4px 12px -2px rgba(15, 23, 42, 0.05)",
+        "bespoke-nav": "0 -2px 14px 0 rgba(15, 23, 42, 0.04)",
+        "bespoke-card": "0 1px 4px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.03)",
       },
       borderRadius: {
         /* 4px base grid system */
