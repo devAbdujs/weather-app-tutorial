@@ -8,18 +8,18 @@ import {
   Zap, 
   GraduationCap, 
   Target, 
-  BarChart2,
-  Sparkles,
-  Flame,
-  Clock,
-  ShieldCheck,
-  Check,
-  Copy,
-  ExternalLink,
-  BookOpen,
-  TrendingUp,
+  BarChart3,
+  Sparkles, 
+  Flame, 
+  Clock, 
+  ShieldCheck, 
+  Check, 
+  Copy, 
+  ExternalLink, 
+  TrendingUp, 
   MessageCircle,
-  AlertCircle
+  HelpCircle,
+  Info
 } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useRouter } from 'next/navigation';
@@ -27,7 +27,12 @@ import { useAppStore } from '@/store/useAppStore';
 import { logout } from '@/app/actions/user';
 import { WelcomeOnboarding } from './WelcomeOnboarding';
 
-export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) => {
+interface ProfileViewProps {
+  profile: any;
+  stats: any[];
+}
+
+export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
   const router = useRouter();
   const { haptic, isTelegram } = useTelegram();
   const updateProfile = useAppStore(s => s.setUserProfile);
@@ -95,15 +100,15 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
     return Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
   }, [profile.ai_quota_reset_at]);
 
-  // Dynamic progress bar color based on percentage used — desaturated, not neon
+  // Dynamic progress bar color based on percentage used — soft desaturated tones
   const getProgressColor = () => {
-    if (usagePercent < 60) return 'bg-[hsl(145,42%,38%)]';       /* Muted green */
-    if (usagePercent < 85) return 'bg-[hsl(36,58%,42%)]';         /* Warm amber */
-    return 'bg-error';                                              /* Muted rose-red */
+    if (usagePercent < 65) return 'bg-[hsl(145,42%,38%)]';
+    if (usagePercent < 85) return 'bg-[hsl(36,58%,42%)]';
+    return 'bg-error';
   };
 
   const getTextColor = () => {
-    if (usagePercent < 60) return 'text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]';
+    if (usagePercent < 65) return 'text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]';
     if (usagePercent < 85) return 'text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)]';
     return 'text-error';
   };
@@ -128,7 +133,7 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
     const examMap: Record<string, string> = {
       entrance: 'Grade 12 Entrance',
       freshman: 'Freshman University',
-      exit: 'Exit Exam',
+      exit: 'Exit Exam Track',
     };
     const exam = examMap[profile.target_exam] || profile.target_exam || 'National Exam';
     const stream = profile.stream ? ` • ${profile.stream}` : '';
@@ -148,15 +153,15 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
         />
       )}
 
-      <div className="flex flex-col pt-3 px-4 pb-28 animate-fade-in bg-ground max-w-lg mx-auto w-full space-y-4">
+      <div className="flex flex-col pt-3 px-3.5 sm:px-4 pb-28 animate-fade-in bg-ground max-w-lg mx-auto w-full space-y-4">
         
-        {/* ── 1. SLICK STUDENT HERO CARD ─────────────────────────────── */}
-        <div className="relative bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm overflow-hidden">
-          {/* Ambient subtle glow background */}
-          <div className="absolute top-0 right-0 w-44 h-44 bg-primary/5 dark:bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-          
+        {/* ── 1. STUDENT IDENTITY HERO CARD ───────────────────────────── */}
+        <section 
+          aria-label="Student Identity"
+          className="relative bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm overflow-hidden"
+        >
           {devMode && (
-            <div className="absolute top-4 right-4 text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full">
+            <div className="absolute top-4 right-4 text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
               Dev Mode
             </div>
           )}
@@ -165,9 +170,10 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
             {/* Avatar with Squircle & Interactive Dev Tap */}
             <div 
               onClick={handleAvatarClick} 
-              className="relative w-18 h-18 shrink-0 cursor-pointer active:scale-95 transition-transform"
+              className="relative w-16 h-16 shrink-0 cursor-pointer active:scale-95 transition-transform"
+              title="Student avatar (tap 5 times for dev tools)"
             >
-              <div className="w-full h-full rounded-[20px] bg-primary/20 dark:bg-primary/30 p-0.5 shadow-bespoke-sm">
+              <div className="w-full h-full rounded-[20px] bg-primary/10 dark:bg-primary/20 p-0.5 border border-primary/20 shadow-sm">
                 <div className="w-full h-full bg-ground rounded-[18px] overflow-hidden flex items-center justify-center">
                   {profile.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -178,18 +184,18 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <span className="text-xl font-black text-primary tracking-tight">{initials}</span>
+                    <span className="text-lg font-black text-primary tracking-tight">{initials}</span>
                   )}
                 </div>
               </div>
 
               {/* Status Badge floating on bottom right */}
               {isPremium ? (
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-accent border-2 border-card flex items-center justify-center shadow-bespoke-sm">
-                  <Zap className="w-3.5 h-3.5 fill-white text-white" />
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[hsl(36,58%,42%)] border-2 border-card flex items-center justify-center shadow-sm text-white">
+                  <Zap className="w-3.5 h-3.5 fill-current" />
                 </div>
               ) : (
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-black/5 dark:bg-white/10 text-gray-500 dark:text-gray-400 flex items-center justify-center border-2 border-card">
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-ground text-muted flex items-center justify-center border-2 border-card shadow-sm">
                   <GraduationCap className="w-3.5 h-3.5" />
                 </div>
               )}
@@ -198,12 +204,16 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
             {/* Student Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
-                <h1 className="text-lg font-black text-gray-900 dark:text-gray-100 tracking-tight truncate">
+                <h1 className="text-base font-black text-gray-900 dark:text-gray-100 tracking-tight truncate">
                   {profile.full_name || 'Scholar'}
                 </h1>
-                {isPremium && (
-                  <span className="px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-wider shrink-0">
+                {isPremium ? (
+                  <span className="px-2 py-0.5 rounded-md bg-[hsl(36,58%,42%)]/10 border border-[hsl(36,58%,42%)]/20 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] text-[10px] font-black uppercase tracking-wider shrink-0">
                     PRO
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-md bg-ground border border-border text-muted text-[10px] font-bold uppercase tracking-wider shrink-0">
+                    Free
                   </span>
                 )}
               </div>
@@ -212,21 +222,23 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
               <button 
                 type="button"
                 onClick={handleCopyId}
-                className="inline-flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-medium hover:text-primary transition-colors mb-2"
+                className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-foreground transition-colors mb-2"
+                title="Tap to copy ID"
               >
                 <span>{profile.username ? `@${profile.username}` : `ID: ${profile.telegram_id}`}</span>
                 {copiedId ? (
-                  <Check className="w-3 h-3 text-emerald-500" />
+                  <Check className="w-3 h-3 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]" />
                 ) : (
-                  <Copy className="w-3 h-3 text-gray-400" />
+                  <Copy className="w-3 h-3 opacity-60" />
                 )}
               </button>
 
-              {/* Academic Goal Chip */}
+              {/* Academic Target Track Pill */}
               <div>
                 <button 
                   onClick={handleRetakeOnboarding}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-[12px] bg-primary/10 hover:bg-primary/15 text-primary text-xs font-bold transition-all active:scale-[0.98] text-left max-w-full truncate"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[12px] bg-primary/10 hover:bg-primary/15 text-primary text-xs font-bold transition-all active:scale-[0.98] text-left max-w-full"
+                  title="Change curriculum track"
                 >
                   <Target className="w-3.5 h-3.5 shrink-0" />
                   <span className="truncate">{getGoalDisplay()}</span>
@@ -235,50 +247,53 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* ── 2. INDIVIDUAL AI QUOTA & USAGE DASHBOARD ────────────────── */}
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm relative overflow-hidden">
+        {/* ── 2. AI REASONING QUOTA & SUBSCRIPTION CARD ───────────────── */}
+        <section 
+          aria-label="AI Reasoning Allowance"
+          className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm relative overflow-hidden space-y-3.5"
+        >
           {/* Header */}
-          <div className="flex items-center justify-between mb-3.5">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8.5 h-8.5 rounded-[12px] bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shadow-sm">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shadow-sm">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <h2 className="text-sm font-black text-gray-900 dark:text-gray-100">
+                <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">
                   Temari AI Allowance
                 </h2>
-                <p className="text-[11px] font-semibold text-gray-400">
+                <p className="text-[11px] font-medium text-muted">
                   Weekly intelligent reasoning quota
                 </p>
               </div>
             </div>
 
-            {/* Reset Countdown Pill */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[10px] bg-ground border border-black/[0.06] dark:border-white/[0.08] text-[11px] font-bold text-gray-500 dark:text-gray-400">
+            {/* Reset Countdown */}
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-ground border border-border text-[11px] font-semibold text-muted">
               <Clock className="w-3 h-3 text-primary" />
               <span>Resets in {daysUntilReset}d</span>
             </div>
           </div>
 
-          {/* Numbers & Progress Meter */}
-          <div className="space-y-2 mb-3.5">
-            <div className="flex items-baseline justify-between">
+          {/* Meter & Number */}
+          <div className="space-y-1.5">
+            <div className="flex items-baseline justify-between text-xs font-semibold">
               <div className="flex items-baseline gap-1.5">
-                <span className={`text-2xl font-black font-mono tracking-tight ${getTextColor()}`}>
+                <span className={`text-xl font-black font-mono tracking-tight ${getTextColor()} tabular-nums`}>
                   {usageClamped}
                 </span>
-                <span className="text-xs font-bold text-gray-400 font-mono">
-                  / {weeklyCap} Qs
+                <span className="text-xs text-muted font-mono">
+                  / {weeklyCap} Qs used
                 </span>
               </div>
-              <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400">
+              <span className="text-muted">
                 {remainingQuestions} inquiries remaining
               </span>
             </div>
 
-            {/* Dynamic Progress Bar — solid, desaturated */}
+            {/* Dynamic Progress Bar */}
             <div className="w-full bg-ground border border-black/[0.06] dark:border-white/[0.08] h-2.5 rounded-full overflow-hidden p-0.5">
               <div 
                 className={`h-full rounded-full ${getProgressColor()} transition-all duration-700 ease-bespoke`}
@@ -287,15 +302,15 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
             </div>
           </div>
 
-          {/* Free Tier vs Premium Tier Hook */}
+          {/* Upgrade Prompt / Active Membership */}
           {!isPremium ? (
-            <div className="bg-primary/5 border border-primary/20 rounded-[16px] p-3 flex items-center justify-between gap-3">
+            <div className="bg-ground border border-border rounded-[16px] p-3 flex items-center justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-black text-gray-900 dark:text-gray-100 mb-0.5">
+                <p className="text-xs font-bold text-gray-900 dark:text-gray-100 mb-0.5">
                   Free Student Plan (5 Qs/week)
                 </p>
-                <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400">
-                  Upgrade to unlock 150 AI questions/week + 31k past exams.
+                <p className="text-[11px] text-muted">
+                  Unlock 150 AI queries/week + 31,000+ past exams.
                 </p>
               </div>
               <button
@@ -304,46 +319,51 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
                   haptic.impact('medium');
                   router.push('/upgrade');
                 }}
-                className="px-3.5 py-2 rounded-[12px] bg-primary text-white text-xs font-bold shadow-sm shadow-primary/25 hover:bg-primary/90 active:scale-[0.98] transition-all shrink-0 flex items-center gap-1.5"
+                className="px-3.5 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-sm hover:bg-primary/90 active:scale-[0.98] transition-all shrink-0 flex items-center gap-1.5"
               >
-                <Zap className="w-3.5 h-3.5 fill-white" />
-                Upgrade
+                <Zap className="w-3.5 h-3.5 fill-current" />
+                <span>Upgrade</span>
               </button>
             </div>
           ) : (
-            <div className="bg-[hsl(145,42%,38%)]/10 border border-[hsl(145,42%,38%)]/25 rounded-[16px] p-3 flex items-center gap-2.5 text-[hsl(145,42%,35%)] dark:text-[hsl(145,35%,62%)] text-xs font-bold">
+            <div className="bg-[hsl(145,42%,38%)]/10 border border-[hsl(145,42%,38%)]/20 rounded-[16px] p-3 flex items-center gap-2.5 text-[hsl(145,42%,35%)] dark:text-[hsl(145,35%,62%)] text-xs font-bold">
               <ShieldCheck className="w-4 h-4 shrink-0" />
-              <span>Premium Activated • 150 Inquiries / Week on Gemini Flash</span>
+              <span>Temari PRO Active • 150 Inquiries / Week on Gemini Flash</span>
             </div>
           )}
-        </div>
+        </section>
 
-        {/* ── 3. ACADEMIC PERFORMANCE OVERVIEW ───────────────────────── */}
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm">
-          <div className="flex items-center justify-between mb-3.5">
-            <h2 className="text-sm font-black text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Award className="w-4 h-4 text-primary" /> Performance Overview
+        {/* ── 3. ACADEMIC SNAPSHOT & PROGRESS GATEWAY ─────────────────── */}
+        <section 
+          aria-label="Academic Snapshot"
+          className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm space-y-3.5"
+        >
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <Award className="w-4 h-4 text-primary" />
+              Academic Performance
             </h2>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-              Lifetime Stats
+            <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+              Lifetime Summary
             </span>
           </div>
 
+          {/* 3 Micro-Metrics Row */}
           <div className="grid grid-cols-3 gap-2">
             {/* Streak */}
             <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 text-center flex flex-col items-center justify-center">
               <div className="w-7 h-7 rounded-[10px] bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)] flex items-center justify-center mb-1">
-                <Flame className="w-4 h-4 fill-current text-inherit" />
+                <Flame className="w-4 h-4 fill-current" />
               </div>
               <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono leading-none mb-1 tabular-nums">
                 {profile.daily_streak || 0}
               </span>
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
                 Streak
               </span>
             </div>
 
-            {/* Drills Solved */}
+            {/* Questions */}
             <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 text-center flex flex-col items-center justify-center">
               <div className="w-7 h-7 rounded-[10px] bg-primary/10 text-primary flex items-center justify-center mb-1">
                 <Target className="w-4 h-4" />
@@ -351,8 +371,8 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
               <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono leading-none mb-1 tabular-nums">
                 {totalQuestions}
               </span>
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Questions
+              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+                Solved
               </span>
             </div>
 
@@ -364,123 +384,79 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
               <span className="text-xl font-black text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)] font-mono leading-none mb-1 tabular-nums">
                 {overallAccuracy}%
               </span>
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
                 Accuracy
               </span>
             </div>
           </div>
-        </div>
 
-        {/* ── 4. SUBJECT MASTERY BREAKDOWN ────────────────────────────── */}
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-sm">
-          <div className="flex items-center justify-between mb-3.5">
-            <h2 className="text-sm font-black text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <BarChart2 className="w-4 h-4 text-primary" /> Subject Mastery
-            </h2>
-            <span className="text-[10px] font-bold text-gray-400">
-              {stats.length} Subjects Tracked
-            </span>
-          </div>
-
-          {stats.length > 0 ? (
-            <div className="space-y-2.5">
-              {stats
-                .sort((a, b) => (b.questions_attempted || 0) - (a.questions_attempted || 0))
-                .map((s) => {
-                  const acc = s.questions_attempted > 0 
-                    ? Math.round((s.questions_correct / s.questions_attempted) * 100) 
-                    : 0;
-
-                  return (
-                    <div 
-                      key={s.subject} 
-                      className="bg-ground/60 border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] p-3 space-y-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
-                            {s.subject}
-                          </p>
-                          <p className="text-[10px] font-medium text-gray-400">
-                            {s.questions_attempted} Qs attempted • {s.questions_correct} correct
-                          </p>
-                        </div>
-                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
-                          acc >= 75 
-                            ? 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]' 
-                            : acc >= 50 
-                            ? 'bg-primary/10 text-primary' 
-                            : 'bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)]'
-                        }`}>
-                          {acc}%
-                        </span>
-                      </div>
-
-                      {/* Visual mastery bar */}
-                      <div className="w-full bg-black/5 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full transition-all duration-500 ease-bespoke ${
-                            acc >= 75 ? 'bg-[hsl(145,42%,38%)]' : acc >= 50 ? 'bg-primary' : 'bg-[hsl(36,58%,42%)]'
-                          }`}
-                          style={{ width: `${acc}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+          {/* Clean Gateway to Detailed Progress Page */}
+          <button
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              router.push('/mastery');
+            }}
+            className="w-full bg-ground hover:bg-black/5 dark:hover:bg-white/5 border border-border rounded-[16px] p-3 flex items-center justify-between text-left transition-all active:scale-[0.99] group"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <BarChart3 className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
+                  Curriculum Breakdown & Radar
+                </p>
+                <p className="text-[11px] text-muted">
+                  {stats.length > 0 ? `${stats.length} subjects analyzed with readiness score` : 'View subject ranks and exam pace'}
+                </p>
+              </div>
             </div>
-          ) : (
-            <div className="text-center py-6 px-4 bg-ground/50 rounded-[16px] border border-dashed border-black/10 dark:border-white/10">
-              <BookOpen className="w-8 h-8 text-gray-400 mx-auto mb-2 opacity-50" />
-              <p className="text-xs font-bold text-gray-800 dark:text-gray-200 mb-1">
-                No Exam Drills Completed Yet
-              </p>
-              <p className="text-[11px] text-gray-400 mb-3.5 max-w-xs mx-auto">
-                Practice past exams or take quick quizzes to unlock your subject analytics.
-              </p>
-              <button
-                type="button"
-                onClick={() => router.push('/practice')}
-                className="px-4 py-2 rounded-[12px] bg-primary/10 text-primary text-xs font-bold hover:bg-primary/15 transition-all active:scale-[0.98]"
-              >
-                Go to Practice Hub
-              </button>
+            <div className="flex items-center gap-1 text-xs font-bold text-primary group-hover:translate-x-0.5 transition-transform">
+              <span>View</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </div>
-          )}
-        </div>
+          </button>
+        </section>
 
-        {/* ── 5. SETTINGS & COMMUNITY ACTIONS ─────────────────────────── */}
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-1.5 shadow-sm divide-y divide-black/[0.04] dark:divide-white/[0.04]">
-          {/* Retake Onboarding */}
+        {/* ── 4. SETTINGS & SUPPORT GROUP ─────────────────────────────── */}
+        <section 
+          aria-label="Settings and Preferences"
+          className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-1.5 shadow-sm divide-y divide-black/[0.04] dark:divide-white/[0.04]"
+        >
+          {/* Switch Exam Track */}
           <button 
             type="button"
             onClick={handleRetakeOnboarding}
             className="w-full p-3 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[16px] transition-colors active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8.5 h-8.5 rounded-[12px] bg-primary/10 text-primary flex items-center justify-center">
+              <div className="w-8.5 h-8.5 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                 <Target className="w-4 h-4" />
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
                   Switch Exam Track
                 </p>
-                <p className="text-[11px] text-gray-400">
-                  Change Grade 12, Freshman, or Exit discipline
+                <p className="text-[11px] text-muted">
+                  Grade 12, Freshman courses, or Exit disciplines
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <ChevronRight className="w-4 h-4 text-muted" />
           </button>
 
-          {/* Upgrade Link (if free) or Subscription Status (if premium) */}
+          {/* Subscription Link */}
           <button 
             type="button"
-            onClick={() => router.push('/upgrade')}
+            onClick={() => {
+              haptic.selection();
+              router.push('/upgrade');
+            }}
             className="w-full p-3 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[16px] transition-colors active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className={`w-8.5 h-8.5 rounded-[12px] flex items-center justify-center ${
+              <div className={`w-8.5 h-8.5 rounded-xl flex items-center justify-center ${
                 isPremium 
                   ? 'bg-[hsl(145,42%,38%)]/10 text-[hsl(145,42%,38%)] dark:text-[hsl(145,35%,62%)]' 
                   : 'bg-[hsl(36,58%,42%)]/10 text-[hsl(36,58%,42%)] dark:text-[hsl(36,50%,65%)]'
@@ -489,53 +465,54 @@ export const ProfileView = ({ profile, stats }: { profile: any; stats: any[] }) 
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
-                  {isPremium ? 'Temari Premium Active' : 'Upgrade to Premium'}
+                  {isPremium ? 'Temari PRO Membership' : 'Upgrade to Temari PRO'}
                 </p>
-                <p className="text-[11px] text-gray-400">
-                  {isPremium ? 'Unlimited exams & 150 AI questions/wk' : '199 ETB / term (CBE & Telebirr)'}
+                <p className="text-[11px] text-muted">
+                  {isPremium ? 'Active subscription • Unlimited practice' : '199 ETB / term (CBE & Telebirr)'}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <ChevronRight className="w-4 h-4 text-muted" />
           </button>
 
-          {/* Community & Bot Help */}
+          {/* Telegram Bot & Support */}
           <a 
             href="https://t.me/ethio_exam_bot" 
             target="_blank" 
             rel="noopener noreferrer"
+            onClick={() => haptic.selection()}
             className="w-full p-3 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-[16px] transition-colors active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8.5 h-8.5 rounded-[12px] bg-[hsl(199,65%,40%)]/10 text-[hsl(199,65%,40%)] dark:text-[hsl(199,55%,62%)] flex items-center justify-center">
+              <div className="w-8.5 h-8.5 rounded-xl bg-[hsl(199,65%,40%)]/10 text-[hsl(199,65%,40%)] dark:text-[hsl(199,55%,62%)] flex items-center justify-center">
                 <MessageCircle className="w-4 h-4" />
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
                   Telegram Bot & Support
                 </p>
-                <p className="text-[11px] text-gray-400">
+                <p className="text-[11px] text-muted">
                   Connect with admins or report an issue
                 </p>
               </div>
             </div>
-            <ExternalLink className="w-4 h-4 text-gray-400" />
+            <ExternalLink className="w-4 h-4 text-muted" />
           </a>
-        </div>
+        </section>
 
-        {/* ── 6. SIGN OUT BUTTON (ONLY ON WEB) ────────────────────────── */}
+        {/* ── 5. SIGN OUT (WEB ONLY) ──────────────────────────────────── */}
         {!isTelegram && (
           <button 
             disabled={isLoggingOut} 
             onClick={handleLogout} 
-            className="w-full bg-card border border-red-500/15 rounded-[16px] p-3.5 flex items-center justify-center gap-2 text-red-500 font-bold text-sm hover:bg-red-500/5 active:scale-[0.98] transition-all disabled:opacity-50"
+            className="w-full bg-card border border-red-500/15 rounded-[16px] p-3.5 flex items-center justify-center gap-2 text-red-600 dark:text-red-400 font-bold text-xs hover:bg-red-500/5 active:scale-[0.98] transition-all disabled:opacity-50"
           >
             {isLoggingOut ? (
-              <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+              <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
             ) : (
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
             )}
-            <span>{isLoggingOut ? 'Signing out...' : 'Sign Out'}</span>
+            <span>{isLoggingOut ? 'Signing out...' : 'Sign Out of Account'}</span>
           </button>
         )}
 
