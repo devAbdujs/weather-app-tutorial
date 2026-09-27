@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { TopHeader } from '@/components/layout/TopHeader';
 import confetti from 'canvas-confetti';
+import { sounds } from '@/lib/sounds';
+import { TemariMascot } from '@/components/mascot/TemariMascot';
 
 type FlowPhase = 'form' | 'verifying' | 'approved' | 'rejected';
 
@@ -292,15 +294,13 @@ export default function UpgradePage() {
   if (phase === 'approved') {
     return (
       <div className="min-h-screen bg-ground pb-24 flex flex-col items-center justify-center p-6 text-center animate-fade-in">
-        {/* Dignified Celebration Icon */}
-        <div className="relative mb-6">
-          <div className="w-20 h-20 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center shadow-bespoke-md">
-            <Award className="w-10 h-10 text-primary" />
-          </div>
+        {/* Teme Celebrating Mascot */}
+        <div className="mb-4">
+          <TemariMascot mood="celebrating" size={120} />
         </div>
 
         {/* Heartwarming Congratulations */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-emerald/10 border border-accent-emerald/20 text-accent-emerald text-xs font-black uppercase tracking-wider mb-3">
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-accent-emerald/15 border border-accent-emerald/30 text-accent-emerald text-xs font-black uppercase tracking-wider mb-3">
           <Sparkles className="w-3.5 h-3.5" />
           Premium Activated
         </div>
@@ -309,7 +309,7 @@ export default function UpgradePage() {
           Welcome to the Family, {studentName}! 🎉
         </h1>
 
-        <p className="text-gray-600 dark:text-gray-300 font-medium mb-8 max-w-sm leading-relaxed text-sm">
+        <p className="text-gray-600 dark:text-gray-300 font-medium mb-6 max-w-sm leading-relaxed text-sm">
           Your payment has been officially confirmed! You just unlocked unlimited access to 
           <span className="font-bold text-gray-900 dark:text-white"> 31,000+ past questions</span>, 
           instant <span className="font-bold text-primary">AI Tutoring</span>, and full analytics. 
@@ -317,33 +317,33 @@ export default function UpgradePage() {
         </p>
 
         {/* Feature Highlights Card */}
-        <div className="w-full max-w-sm bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-2xl p-4 mb-8 text-left space-y-3 shadow-bespoke-sm">
+        <div className="w-full max-w-sm bg-card border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 mb-6 text-left space-y-3 shadow-bespoke-sm">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-accent-emerald/10 text-accent-emerald flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-accent-emerald/15 text-accent-emerald flex items-center justify-center">
               <Zap className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-xs font-bold text-gray-900 dark:text-gray-100">Infinite AI Tutor Explanations</p>
+              <p className="text-xs font-black text-gray-900 dark:text-gray-100">Infinite AI Tutor Explanations</p>
               <p className="text-[11px] text-gray-500 dark:text-gray-400">Ask any question at any time</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-xs font-bold text-gray-900 dark:text-gray-100">All Past Exam Archives</p>
+              <p className="text-xs font-black text-gray-900 dark:text-gray-100">All Past Exam Archives</p>
               <p className="text-[11px] text-gray-500 dark:text-gray-400">Entrance, Freshman, & Exit exams</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-accent-gold/10 text-accent-gold flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-accent-gold/15 text-accent-gold flex items-center justify-center">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-xs font-bold text-gray-900 dark:text-gray-100">Mastery & Streaks Tracking</p>
+              <p className="text-xs font-black text-gray-900 dark:text-gray-100">Mastery & Streaks Tracking</p>
               <p className="text-[11px] text-gray-500 dark:text-gray-400">Track your Scholar Tree growth</p>
             </div>
           </div>
@@ -353,18 +353,19 @@ export default function UpgradePage() {
         <div className="w-full max-w-xs space-y-3">
           <button 
             onClick={() => {
+              sounds.playTap();
               haptic.impact('heavy');
               router.push('/practice');
             }}
-            className="w-full h-14 rounded-2xl bg-primary text-white font-black shadow-bespoke-md active:scale-[0.98] transition-all duration-200 ease-bespoke flex items-center justify-center gap-2"
+            className="btn-3d-primary w-full py-3.5 rounded-2xl font-black text-sm flex items-center justify-center gap-2"
           >
             Start Practicing Now 🚀
             <ArrowRight className="w-5 h-5" />
           </button>
 
           <button 
-            onClick={() => router.push('/')}
-            className="w-full h-12 rounded-2xl bg-card border border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 font-bold active:scale-[0.98] transition-all duration-200 ease-bespoke text-sm"
+            onClick={() => { sounds.playTap(); router.push('/'); }}
+            className="btn-3d-card w-full py-3 rounded-2xl font-black text-sm text-gray-700 dark:text-gray-300"
           >
             Go to Home Hub
           </button>
@@ -382,14 +383,9 @@ export default function UpgradePage() {
         <TopHeader />
 
         <div className="max-w-sm w-full mx-auto pt-6 flex flex-col items-center">
-          {/* Animated Verification Pulse */}
-          <div className="relative mb-6">
-            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
-              <Clock className="w-10 h-10 text-primary" />
-            </div>
-            <div className="absolute -top-1 -right-1 w-6 h-6 bg-accent-emerald text-white rounded-full flex items-center justify-center text-xs font-bold border-2 border-ground shadow-bespoke-sm">
-              <Sparkles className="w-3.5 h-3.5" />
-            </div>
+          {/* Teme Mascot studying/verifying */}
+          <div className="relative mb-3">
+            <TemariMascot mood="studying" size={100} />
           </div>
 
           {/* Heading */}
@@ -402,7 +398,7 @@ export default function UpgradePage() {
           </p>
 
           {/* Large Countdown Badge */}
-          <div className="bg-card border border-primary/20 rounded-3xl p-6 mb-6 shadow-bespoke-sm w-full relative overflow-hidden">
+          <div className="bg-card border-2 border-b-[5px] border-primary/25 rounded-3xl p-6 mb-6 shadow-bespoke-sm w-full relative overflow-hidden">
             <div className="text-xs font-black uppercase tracking-widest text-primary mb-1">
               Estimated Approval In
             </div>
@@ -412,9 +408,9 @@ export default function UpgradePage() {
             </div>
 
             {/* Live Progress Bar */}
-            <div className="w-full bg-black/5 dark:bg-white/10 h-2 rounded-full overflow-hidden mb-3">
+            <div className="w-full bg-black/5 dark:bg-white/10 h-2.5 rounded-full overflow-hidden p-0.5 mb-3">
               <div 
-                className="bg-primary h-full transition-all duration-1000 ease-bespoke rounded-full"
+                className="bg-primary h-full transition-all duration-1000 ease-out rounded-full"
                 style={{ width: `${Math.max(5, ((300 - secondsLeft) / 300) * 100)}%` }}
               />
             </div>
@@ -427,7 +423,7 @@ export default function UpgradePage() {
           </div>
 
           {/* 3 Step Interactive Progress */}
-          <div className="w-full bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-2xl p-4 mb-6 text-left space-y-3 shadow-bespoke-sm">
+          <div className="w-full bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 mb-6 text-left space-y-3 shadow-bespoke-sm">
             <div className="flex items-center gap-3">
               <div className="w-6 h-6 rounded-full bg-accent-emerald text-white flex items-center justify-center text-xs font-black">
                 <Check className="w-3.5 h-3.5" />
@@ -464,8 +460,8 @@ export default function UpgradePage() {
           </p>
 
           <button 
-            onClick={() => router.push('/practice')}
-            className="w-full h-12 rounded-2xl bg-card border border-black/[0.06] dark:border-white/[0.08] text-gray-800 dark:text-gray-200 font-bold active:scale-[0.98] transition-all duration-200 ease-bespoke text-sm"
+            onClick={() => { sounds.playTap(); router.push('/practice'); }}
+            className="btn-3d-card w-full py-3.5 rounded-2xl font-black text-sm text-gray-800 dark:text-gray-200"
           >
             Practice Free Questions While Waiting
           </button>
@@ -513,12 +509,20 @@ export default function UpgradePage() {
         <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight mb-2">
           Unlock Premium 🚀
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 font-medium mb-8 text-sm">
+        <p className="text-gray-600 dark:text-gray-400 font-medium mb-5 text-sm">
           Get unlimited AI tutor access, full exam past papers, and progress tracking.
         </p>
 
+        {/* Mascot Encouragement */}
+        <div className="flex items-center gap-3 mb-5 bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-[24px] p-4 shadow-bespoke-sm">
+          <TemariMascot mood="happy" size={56} className="shrink-0" />
+          <p className="text-xs font-bold text-gray-800 dark:text-gray-200 leading-snug">
+            &ldquo;Unlock everything once, study with zero limits! 31,000+ past questions and unlimited AI explanations.&rdquo;
+          </p>
+        </div>
+
         {/* Pricing Card */}
-        <div className="bg-gradient-to-br from-primary to-primary-hover p-6 rounded-[24px] shadow-bespoke-md text-white mb-8 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-primary to-primary-hover p-6 rounded-[26px] border-2 border-b-[6px] border-primary-hover shadow-bespoke-md text-white mb-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.06] rounded-full blur-2xl -mr-10 -mt-10" />
           <h2 className="text-lg font-bold text-white/85 mb-1">Premium Pass</h2>
           <div className="flex items-baseline gap-2 mb-4">
@@ -683,7 +687,7 @@ export default function UpgradePage() {
           <button 
             type="submit" 
             disabled={isSubmitting || !file}
-            className="w-full h-14 rounded-2xl bg-primary text-white font-black shadow-bespoke-md active:scale-[0.98] transition-all duration-200 ease-bespoke disabled:opacity-50 disabled:shadow-none disabled:active:scale-100 flex items-center justify-center gap-2"
+            className="btn-3d-primary w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:active:border-b-4 disabled:active:translate-y-0"
           >
             {isSubmitting ? (
               <div className="flex items-center gap-2">

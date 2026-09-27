@@ -3,20 +3,17 @@
 import React from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChevronLeft, Sun, Moon } from 'lucide-react';
+import { ChevronLeft, Sun, Moon, Flame, Zap, Volume2, VolumeX } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTheme } from '@/hooks/useTheme';
-
-const TelegramIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <path d="M10.28 15.688L9.988 19.824C10.404 19.824 10.584 19.644 10.8 19.428L12.752 17.548L16.8 20.536C17.544 20.948 18.068 20.732 18.264 19.864L20.92 7.348L20.924 7.344C21.156 6.248 20.528 5.82 19.808 6.088L4.256 12.084C3.204 12.504 3.22 13.092 4.068 13.352L8.048 14.596L17.288 8.772C17.724 8.48 18.12 8.644 17.776 8.948L10.28 15.688Z" fill="currentColor"/>
-  </svg>
-);
+import { useGamificationStore } from '@/store/useGamificationStore';
+import { sounds } from '@/lib/sounds';
 
 // Map routes to display titles
 const ROUTE_TITLES: Record<string, string> = {
   '/':          'Temari',
-  '/practice':  'Practice',
+  '/dashboard': 'Temari',
+  '/practice':  'Practice Hub',
   '/mastery':   'Progress',
   '/profile':   'Profile',
 };
@@ -26,6 +23,7 @@ export const TopHeader = () => {
   const router = useRouter();
   const userProfile = useAppStore(s => s.userProfile);
   const { resolvedTheme, toggle } = useTheme();
+  const { xp, soundEnabled, toggleSound } = useGamificationStore();
 
   // Hide during full-focus screens (exam, notes, practice sessions)
   const isFocusMode =
@@ -35,117 +33,120 @@ export const TopHeader = () => {
 
   if (isFocusMode) return null;
 
-  // Determine title and whether to show back button
-  const isRoot = pathname === '/' || Object.keys(ROUTE_TITLES).includes(pathname);
+  const isHome = pathname === '/' || pathname === '/dashboard';
+  const showBack = !isHome && !Object.keys(ROUTE_TITLES).includes(pathname);
   const title = ROUTE_TITLES[pathname] ?? 'Temari';
-  const showBack = !isRoot;
-  const showLogo = pathname === '/';
-
-  const initial = userProfile?.first_name
-    ? userProfile.first_name.charAt(0).toUpperCase()
-    : 'T';
+  const streak = userProfile?.daily_streak || 0;
 
   return (
     <header
       className="
-        w-full h-14 shrink-0 z-40
-        bg-card/85 dark:bg-card/90
+        w-full h-15 shrink-0 z-40
+        bg-card/90 dark:bg-card/90
         backdrop-blur-xl
-        border-b border-black/[0.08] dark:border-white/[0.08]
-        shadow-[0_1px_4px_rgba(15,23,42,0.03)]
-        flex items-center px-4 gap-3
+        border-b-2 border-black/[0.08] dark:border-white/[0.08]
+        shadow-bespoke-sm
+        flex items-center justify-between px-3.5 gap-2
       "
     >
-      {/* Left: back button or logo */}
-      <div className="flex items-center gap-2 min-w-[40px]">
+      {/* Left: Back button OR Temari Logo + Brand */}
+      <div className="flex items-center gap-2">
         {showBack ? (
           <button
-            onClick={() => router.back()}
+            onClick={() => { sounds.playTap(); router.back(); }}
             aria-label="Go back"
             className="
-              w-9 h-9 flex items-center justify-center
-              rounded-[12px]
-              bg-card border border-black/[0.06] dark:border-white/[0.08]
-              text-gray-600 dark:text-gray-400
+              w-9.5 h-9.5 flex items-center justify-center
+              rounded-[14px]
+              bg-card border-2 border-b-[3px] border-black/[0.09] dark:border-white/[0.12]
+              text-gray-700 dark:text-gray-300
               hover:text-gray-900 dark:hover:text-gray-100
-              active:scale-90 transition-all
+              active:translate-y-[1px] active:border-b-2 transition-all
             "
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
         ) : (
-          <div className="w-8.5 h-8.5 rounded-[12px] overflow-hidden shadow-sm border border-black/[0.06] dark:border-white/[0.08] shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <Image
-              src="/assets/temari logo.png"
-              alt="Temari"
-              className="w-full h-full object-cover"
-              width={34}
-              height={34}
-            />
+          <div 
+            onClick={() => { sounds.playTap(); router.push('/dashboard'); }}
+            className="flex items-center gap-2 cursor-pointer active:scale-95 transition-transform"
+          >
+            <div className="w-9 h-9 rounded-[13px] overflow-hidden shadow-sm border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.12] shrink-0 bg-primary/10 flex items-center justify-center">
+              <Image
+                src="/assets/temari logo.png"
+                alt="Temari"
+                className="w-full h-full object-cover"
+                width={36}
+                height={36}
+              />
+            </div>
+            <span className="font-black text-base text-gray-900 dark:text-gray-100 tracking-tight hidden xs:inline">
+              Temari
+            </span>
           </div>
         )}
       </div>
 
-      {/* Center: title or Join button */}
-      <div className="flex-1 flex items-center justify-center">
-        {showLogo ? (
-          <a
-            href="https://t.me/temari_top"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="
-              flex items-center gap-1.5 px-3.5 py-1.5 
-              bg-accent-blue hover:bg-accent-blue/90 
-              text-white
-              rounded-[12px] transition-all duration-200 ease-bespoke
-              font-bold text-[12px] tracking-tight shadow-bespoke-sm
-              border border-white/15 active:scale-[0.98]
-            "
-          >
-            <TelegramIcon className="w-3.5 h-3.5 shrink-0" />
-            Join Channel
-          </a>
-        ) : (
-          <h1 className="text-[16px] font-bold text-gray-900 dark:text-gray-100 tracking-tight truncate text-center">
-            {title}
-          </h1>
-        )}
+      {/* Center: Live Gamification Telemetry (Streak & XP) */}
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Streak Pill */}
+        <button
+          onClick={() => { sounds.playStreak(); router.push('/mastery'); }}
+          title={`${streak} Day Streak`}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-accent-gold/15 border-2 border-b-[3px] border-accent-gold/30 text-accent-gold font-black text-xs active:translate-y-[1px] active:border-b-2 transition-all shadow-sm"
+        >
+          <Flame className="w-4 h-4 fill-accent-gold text-accent-gold animate-pulse" />
+          <span className="font-mono tabular-nums">{streak}</span>
+        </button>
+
+        {/* XP Counter Pill */}
+        <button
+          onClick={() => { sounds.playCorrect(); router.push('/profile'); }}
+          title={`${xp} Total XP`}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-primary/15 border-2 border-b-[3px] border-primary/30 text-primary font-black text-xs active:translate-y-[1px] active:border-b-2 transition-all shadow-sm"
+        >
+          <Zap className="w-3.5 h-3.5 fill-primary text-primary" />
+          <span className="font-mono tabular-nums">{xp}</span>
+        </button>
       </div>
 
-      {/* Right: theme toggle + avatar */}
-      <div className="flex items-center gap-2 min-w-[40px] justify-end">
+      {/* Right: Sound toggle + Theme toggle */}
+      <div className="flex items-center gap-1.5 justify-end">
+        {/* Sound FX Toggle */}
+        <button
+          onClick={toggleSound}
+          aria-label={soundEnabled ? 'Mute sound effects' : 'Unmute sound effects'}
+          title={soundEnabled ? 'Sound FX On' : 'Sound FX Muted'}
+          className="
+            w-9 h-9 flex items-center justify-center
+            rounded-[14px]
+            bg-card border-2 border-b-[3px] border-black/[0.09] dark:border-white/[0.12]
+            text-gray-600 dark:text-gray-300
+            hover:text-primary dark:hover:text-primary
+            active:translate-y-[1px] active:border-b-2 transition-all
+          "
+        >
+          {soundEnabled ? (
+            <Volume2 className="w-4 h-4 text-primary" />
+          ) : (
+            <VolumeX className="w-4 h-4 text-slate-400" />
+          )}
+        </button>
+
+        {/* Dark/Light Mode Toggle */}
         <button
           onClick={toggle}
           aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           className="
             w-9 h-9 flex items-center justify-center
-            rounded-[12px]
-            bg-card border border-black/[0.06] dark:border-white/[0.08]
-            text-gray-600 dark:text-gray-400
+            rounded-[14px]
+            bg-card border-2 border-b-[3px] border-black/[0.09] dark:border-white/[0.12]
+            text-gray-600 dark:text-gray-300
             hover:text-gray-900 dark:hover:text-gray-100
-            active:scale-90 transition-all
+            active:translate-y-[1px] active:border-b-2 transition-all
           "
         >
-          {resolvedTheme === 'dark'
-            ? <Sun className="w-4 h-4" />
-            : <Moon className="w-4 h-4" />
-          }
-        </button>
-
-        {/* Avatar — links to profile */}
-        <button
-          onClick={() => router.push('/profile')}
-          aria-label="Go to profile"
-          className="
-            w-9 h-9 rounded-[12px]
-            bg-primary/10 border border-primary/20
-            flex items-center justify-center
-            text-primary font-black text-xs
-            active:scale-[0.96] transition-transform
-          "
-        >
-          {initial}
+          {resolvedTheme === 'dark' ? <Sun className="w-4 h-4 text-accent-gold" /> : <Moon className="w-4 h-4" />}
         </button>
       </div>
     </header>

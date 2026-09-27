@@ -4,13 +4,13 @@
 
 /* ─── CSS Custom Properties (Bespoke UI Design Tokens) ───────── */
 :root {
-  /* Light mode surfaces: Authentic iOS / mobile grouped canvas contrast */
-  --background:    hsl(214, 22%, 93.5%);  /* #EEF1F5 - distinct, cool-slate tactile canvas */
-  --foreground:    hsl(222, 47%, 11%);    /* #0F172A - deep ink readability */
-  --surface:       hsl(0, 0%, 100%);      /* #FFFFFF - crisp pure white cards that POP against canvas */
-  --surface-2:     hsl(214, 20%, 88.5%);  /* #DCE2E9 - recessed segmented bars, pills, search bars */
-  --border:        hsla(222, 35%, 15%, 0.08); /* crisp card edge contour */
-  --border-strong: hsla(222, 35%, 15%, 0.15);
+  /* Light mode surfaces: Warm Ethiopian linen / parchment canvas contrast */
+  --background:    hsl(40, 24%, 94.5%);   /* #F6F3EC: Warm comforting tactile canvas */
+  --foreground:    hsl(222, 47%, 11%);    /* #0F172A: Deep ink readability */
+  --surface:       hsl(40, 30%, 99%);     /* #FCFBF8: Warm crisp white cards that POP */
+  --surface-2:     hsl(38, 20%, 89%);     /* #EAE5DA: Recessed controls, pills, trays */
+  --border:        hsla(30, 25%, 15%, 0.09); /* Crisp warm contour */
+  --border-strong: hsla(30, 25%, 15%, 0.16);
 
   /* Brand: Bespoke Deep Indigo — single accent, used sparingly */
   --primary:            hsl(224, 64%, 33%);
@@ -207,3 +207,64 @@ body {
   background-color: hsla(213, 90%, 60%, 0.28);
   color: inherit;
 }
+
+/* ─── Tactile Chunky 3D Interactions (Duolingo Engagement Philosophy) ─── */
+.btn-3d-primary {
+  background-color: var(--primary);
+  color: #ffffff;
+  border-bottom: 4px solid hsl(224, 75%, 22%);
+  transition: all 0.08s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-3d-primary:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.btn-3d-gold {
+  background-color: rgb(var(--accent-gold-rgb));
+  color: #ffffff;
+  border-bottom: 4px solid hsl(36, 68%, 28%);
+  transition: all 0.08s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-3d-gold:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.btn-3d-emerald {
+  background-color: rgb(var(--accent-emerald-rgb));
+  color: #ffffff;
+  border-bottom: 4px solid hsl(145, 52%, 25%);
+  transition: all 0.08s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-3d-emerald:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.btn-3d-card {
+  background-color: var(--surface);
+  border: 2px solid hsla(30, 20%, 15%, 0.10);
+  border-bottom: 4px solid hsla(30, 20%, 15%, 0.18);
+  transition: all 0.08s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-3d-card:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+.dark .btn-3d-card {
+  border-color: hsla(0, 0%, 100%, 0.10);
+  border-bottom-color: hsla(0, 0%, 100%, 0.20);
+}
+
+.card-chunky {
+  background-color: var(--surface);
+  border: 2px solid hsla(30, 20%, 15%, 0.08);
+  border-bottom: 4px solid hsla(30, 20%, 15%, 0.14);
+  border-radius: 24px;
+}
+.dark .card-chunky {
+  border-color: hsla(0, 0%, 100%, 0.08);
+  border-bottom-color: hsla(0, 0%, 100%, 0.16);
+}
+

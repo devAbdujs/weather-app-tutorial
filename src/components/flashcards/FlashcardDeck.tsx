@@ -8,6 +8,9 @@ import { useTelegram } from '@/hooks/useTelegram';
 import { createClient } from '@/utils/supabase/client';
 import { AITutorDrawer } from '@/components/ai/AITutorDrawer';
 import { useRouter } from 'next/navigation';
+import { sounds } from '@/lib/sounds';
+import { useGamificationStore } from '@/store/useGamificationStore';
+import { TemariMascot } from '@/components/mascot/TemariMascot';
 
 interface FlashcardDeckProps {
   subject?: string;
@@ -91,7 +94,13 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
   }, [loadDeck]);
 
   const nextCard = (difficulty: 'easy' | 'hard') => {
-    haptic.impact(difficulty === 'easy' ? 'light' : 'medium');
+    if (difficulty === 'easy') {
+      sounds.playCorrect();
+      haptic.impact('light');
+    } else {
+      sounds.playWrong();
+      haptic.impact('medium');
+    }
     setIsFlipped(false);
     // Use functional updater to avoid stale closure on currentIndex
     setCurrentIndex(prev => {
@@ -100,7 +109,16 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
         // Schedule completion after state update
         setTimeout(() => {
           setIsCompleted(true);
+          sounds.playCelebration();
           haptic.notification('success');
+          useGamificationStore.getState().addXp(25, 'Completed Flashcard Deck');
+          useGamificationStore.getState().triggerCelebration({
+            type: 'deck_completed',
+            title: 'Deck Completed!',
+            subtitle: 'You reviewed key concepts and definitions, Gobeze!',
+            xpEarned: 25,
+            mascotMood: 'celebrating'
+          });
         }, 160);
         return prev; // Don't advance past end
       }
@@ -108,8 +126,8 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
     });
   };
 
-
   const handleFlip = () => {
+    sounds.playTap();
     haptic.selection();
     setIsFlipped(!isFlipped);
   };
@@ -194,17 +212,32 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
         {loading ? (
           <div className="w-full max-w-sm h-[420px] rounded-[32px] bg-black/5 dark:bg-white/5 animate-pulse" />
         ) : isCompleted ? (
-          <div className="w-full max-w-sm bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[32px] p-8 text-center space-y-6 shadow-bespoke-md animate-fade-in">
-            <div className="w-20 h-20 rounded-[20px] bg-accent-emerald/10 border border-accent-emerald/20 mx-auto flex items-center justify-center shadow-bespoke-sm">
-              <CheckCircle2 className="w-10 h-10 text-accent-emerald" />
+          <div className="w-full max-w-sm bg-card border-2 border-b-[6px] border-black/[0.08] dark:border-white/[0.08] rounded-[32px] p-6 text-center space-y-5 shadow-bespoke-md animate-fade-in">
+            <div className="flex flex-col items-center">
+              <TemariMascot mood="celebrating" size={100} />
+              <span className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 text-xs font-black">
+                <Zap className="w-3.5 h-3.5 fill-current" />
+                +25 XP Earned
+              </span>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Deck Completed!</h2>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">Excellent spaced repetition session.</p>
+              <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Deck Completed!</h2>
+              <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1">Excellent spaced repetition session.</p>
             </div>
-            <button onClick={() => { haptic.impact('medium'); loadDeck(); }} className="w-full py-4 bg-primary text-white font-bold text-sm rounded-[16px] shadow-bespoke-md active:scale-[0.98] transition-all duration-200 ease-bespoke">
-              Study Next Batch
-            </button>
+            <div className="space-y-2.5 pt-2">
+              <button 
+                onClick={() => { sounds.playTap(); haptic.impact('medium'); loadDeck(); }} 
+                className="btn-3d-primary w-full py-3.5 rounded-[18px] font-black text-sm"
+              >
+                Study Next Batch (+25 XP)
+              </button>
+              <button 
+                onClick={() => { sounds.playTap(); router.push('/practice?mode=flashcards'); }} 
+                className="btn-3d-card w-full py-3 rounded-[16px] font-black text-xs text-gray-700 dark:text-gray-300"
+              >
+                Change Subject
+              </button>
+            </div>
           </div>
         ) : cards.length === 0 ? (
           <div className="text-center font-bold text-gray-500 dark:text-gray-400">No cards found.</div>
@@ -242,7 +275,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
               <div className={`relative w-full h-full duration-[500ms] transform-style-3d ease-snap ${isFlipped ? 'rotate-y-180' : ''}`}>
                 
                 {/* Front Side */}
-                <div className="absolute inset-0 w-full h-full bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[32px] p-8 flex flex-col justify-center items-center backface-hidden shadow-bespoke-md">
+                <div className="absolute inset-0 w-full h-full bg-card border-2 border-b-[6px] border-black/[0.08] dark:border-white/[0.08] rounded-[32px] p-8 flex flex-col justify-center items-center backface-hidden shadow-bespoke-md">
                   <span className="absolute top-6 left-6 text-[10px] uppercase tracking-widest font-black text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><HelpCircle className="w-4 h-4"/> Concept</span>
                   <div className="text-xl font-bold text-gray-900 dark:text-gray-100 text-center leading-relaxed max-h-64 overflow-y-auto no-scrollbar w-full">
                     <MathText content={currentCard.front} />
@@ -250,7 +283,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
                 </div>
 
                 {/* Back Side */}
-                <div className="absolute inset-0 w-full h-full bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[32px] p-8 flex flex-col justify-center items-center rotate-y-180 backface-hidden shadow-bespoke-md">
+                <div className="absolute inset-0 w-full h-full bg-card border-2 border-b-[6px] border-black/[0.08] dark:border-white/[0.08] rounded-[32px] p-8 flex flex-col justify-center items-center rotate-y-180 backface-hidden shadow-bespoke-md">
                   <span className="absolute top-6 left-6 text-[10px] uppercase tracking-widest font-black text-accent-gold flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4"/> Answer</span>
                   <div className="text-base font-medium text-gray-900 dark:text-gray-100 text-center leading-relaxed max-h-64 overflow-y-auto no-scrollbar w-full">
                     <MathText content={currentCard.back} />
@@ -260,6 +293,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
                   <button 
                     onClick={(e) => { 
                       e.stopPropagation(); 
+                      sounds.playTap();
                       haptic.impact('light'); 
                       setShowAI(true); 
                     }}
@@ -274,15 +308,24 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
             {/* Action Buttons */}
             <div className="w-full mt-2 h-14 relative">
               {!isFlipped ? (
-                <button onClick={handleFlip} className="w-full absolute inset-0 h-14 rounded-[16px] bg-primary text-white font-black uppercase tracking-widest text-sm transition-all duration-200 ease-bespoke animate-fade-in shadow-bespoke-sm active:scale-[0.98]">
+                <button 
+                  onClick={handleFlip} 
+                  className="btn-3d-primary w-full absolute inset-0 h-13 rounded-[18px] font-black uppercase tracking-wider text-xs animate-fade-in flex items-center justify-center gap-2"
+                >
                   Tap to Reveal Answer
                 </button>
               ) : (
-                <div className="flex gap-4 w-full absolute inset-0 animate-fade-in">
-                  <button onClick={() => nextCard('hard')} className="flex-1 h-14 rounded-[16px] bg-card text-error font-black uppercase tracking-widest text-xs border border-error/20 shadow-bespoke-sm active:scale-[0.98] transition-all">
+                <div className="flex gap-3 w-full absolute inset-0 animate-fade-in">
+                  <button 
+                    onClick={() => nextCard('hard')} 
+                    className="flex-1 h-13 rounded-[18px] bg-accent-rose/10 text-accent-rose font-black uppercase tracking-wider text-xs border-2 border-b-[4px] border-accent-rose/40 hover:bg-accent-rose/15 active:border-b-2 active:translate-y-[2px] transition-all shadow-sm flex items-center justify-center"
+                  >
                     Forgot
                   </button>
-                  <button onClick={() => nextCard('easy')} className="flex-1 h-14 rounded-[16px] bg-accent-emerald text-white font-black uppercase tracking-widest text-xs shadow-bespoke-sm active:scale-[0.98] transition-all">
+                  <button 
+                    onClick={() => nextCard('easy')} 
+                    className="btn-3d-emerald flex-1 h-13 rounded-[18px] font-black uppercase tracking-wider text-xs flex items-center justify-center"
+                  >
                     Knew It
                   </button>
                 </div>

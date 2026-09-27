@@ -4,6 +4,7 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import { BottomNav } from './BottomNav';
 import { TopHeader } from './TopHeader';
+import { CelebrationModal } from '@/components/gamification/CelebrationModal';
 
 export const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname() || '';
@@ -29,6 +30,9 @@ export const DashboardShell = ({ children }: { children: React.ReactNode }) => {
 
         {/* Fixed Mobile Bottom Nav */}
         <BottomNav />
+
+        {/* Global Gamification Celebration Overlay */}
+        <CelebrationModal />
       </main>
     </div>
   );

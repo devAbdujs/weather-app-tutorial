@@ -1,12 +1,15 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Clock, Sparkles, List, ChevronRight, ChevronLeft, Layers, Highlighter, Undo2, Trash2, Copy, Check, RotateCcw, X, PenLine } from 'lucide-react';
+import { Clock, Sparkles, List, ChevronRight, ChevronLeft, Layers, Highlighter, Undo2, Trash2, Copy, Check, RotateCcw, X, PenLine, Zap } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { StudyNote, NoteHighlight, HighlightColor } from '@/types';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { getSubjectTheme } from '@/components/practice/PracticeHub';
+import { sounds } from '@/lib/sounds';
+import { useGamificationStore } from '@/store/useGamificationStore';
+import { MascotBubble } from '@/components/mascot/TemariMascot';
 
 const HIGHLIGHT_PALETTE: {
   id: HighlightColor;
@@ -801,13 +804,22 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         </div>
       </div>
 
+      {/* Mascot Encouragement Banner */}
+      <div className="mb-3">
+        <MascotBubble
+          mood="studying"
+          mascotSize={54}
+          message="Master these key concepts! Every chapter read earns +15 XP towards your Scholar Level."
+        />
+      </div>
+
       {initialNotes.length > 0 && (
         <div className="px-5 py-2.5 flex gap-4 border-b border-black/[0.06] dark:border-white/[0.08] mb-3">
-          <div className="flex items-center gap-1.5 text-[12px] font-bold text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-1.5 text-[12px] font-black text-gray-500 dark:text-gray-400">
             <Layers className="w-3.5 h-3.5 text-gray-400" />
             {initialNotes.length} Chapters
           </div>
-          <div className="flex items-center gap-1.5 text-[12px] font-bold text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-1.5 text-[12px] font-black text-gray-500 dark:text-gray-400">
             <Clock className="w-3.5 h-3.5 text-gray-400" />
             {initialNotes.reduce((sum, n) => sum + calculateReadTime(n.content || ''), 0)} min total read
           </div>
@@ -831,30 +843,41 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             return (
               <button
                 key={note.id}
-                onClick={() => { haptic.selection(); setSelectedNote(note); }}
-                className="w-full bg-card rounded-[22px] border border-black/[0.06] dark:border-white/[0.08] hover:border-black/20 dark:hover:border-white/20 shadow-sm active:scale-[0.98] transition-all text-left group overflow-hidden animate-fade-up"
+                onClick={() => {
+                  sounds.playTap();
+                  haptic.selection();
+                  useGamificationStore.getState().addXp(15, 'Read Study Note');
+                  setSelectedNote(note);
+                }}
+                className="w-full bg-card rounded-[22px] border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] hover:border-primary/40 active:border-b-2 active:translate-y-[3px] shadow-bespoke-sm transition-all text-left group overflow-hidden animate-fade-up"
                 style={{ animationDelay: `${idx * 0.04}s` }}
               >
                 <div className="flex items-center gap-3.5 p-3.5">
-                  <div className={`w-10 h-10 rounded-[12px] flex items-center justify-center font-black text-sm shrink-0 ${themeClass}`}>
+                  <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center font-black text-sm shrink-0 ${themeClass} shadow-xs`}>
                     {idx + 1}
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900 dark:text-gray-100 text-[15px] leading-snug line-clamp-2 tracking-tight">
+                    <h3 className="font-black text-gray-900 dark:text-gray-100 text-[14px] leading-snug line-clamp-2 tracking-tight">
                       {note.title}
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-lg ${themeClass}`}>
+                      <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-lg ${themeClass}`}>
                         {note.department}
                       </span>
-                      <span className="text-[12px] font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
                         <Clock className="w-3 h-3 text-gray-400" /> {mins} min
                       </span>
                     </div>
                   </div>
 
-                  <ChevronRight className="w-4 h-4 shrink-0 text-gray-400 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="inline-flex items-center gap-0.5 text-[10px] font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
+                      <Zap className="w-2.5 h-2.5 fill-current" />
+                      +15 XP
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-gray-400 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                  </div>
                 </div>
               </button>
             );

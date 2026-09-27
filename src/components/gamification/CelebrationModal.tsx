@@ -1,0 +1,98 @@
+'use client';
+
+import React from 'react';
+import { useGamificationStore } from '@/store/useGamificationStore';
+import { TemariMascot } from '@/components/mascot/TemariMascot';
+import { Zap, Target, Flame, ArrowRight, X } from 'lucide-react';
+import confetti from 'canvas-confetti';
+
+export const CelebrationModal: React.FC = () => {
+  const { activeCelebration, dismissCelebration } = useGamificationStore();
+
+  React.useEffect(() => {
+    if (activeCelebration) {
+      try {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#F59E0B', '#10B981', '#1E3B8A', '#8B5CF6', '#EF4444'],
+        });
+      } catch {}
+    }
+  }, [activeCelebration]);
+
+  if (!activeCelebration) return null;
+
+  return (
+    <div 
+      className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+      onClick={dismissCelebration}
+    >
+      <div 
+        className="w-full max-w-sm bg-card rounded-[32px] border-2 border-b-[6px] border-black/[0.12] dark:border-white/[0.12] p-6 shadow-2xl animate-scale-bounce text-center relative overflow-hidden"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Subtle decorative background bursts */}
+        <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-accent-gold/15 blur-2xl pointer-events-none" />
+        <div className="absolute -bottom-12 -left-12 w-32 h-32 rounded-full bg-accent-emerald/15 blur-2xl pointer-events-none" />
+
+        <button 
+          onClick={dismissCelebration}
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-ground border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        {/* Mascot Centerpiece */}
+        <div className="flex justify-center mb-3 pt-2">
+          <TemariMascot 
+            mood={activeCelebration.mascotMood || 'celebrating'} 
+            size="xl" 
+          />
+        </div>
+
+        {/* Title & Subtitle */}
+        <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight leading-tight mb-1.5">
+          {activeCelebration.title}
+        </h2>
+        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs mx-auto mb-5">
+          {activeCelebration.subtitle}
+        </p>
+
+        {/* Stats Pill Row */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          {activeCelebration.xpEarned > 0 && (
+            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-gold/15 border-2 border-b-[3px] border-accent-gold/30 text-accent-gold font-black text-sm shadow-sm">
+              <Zap className="w-4 h-4 fill-current" />
+              <span>+{activeCelebration.xpEarned} XP</span>
+            </div>
+          )}
+
+          {typeof activeCelebration.accuracy === 'number' && (
+            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-emerald/15 border-2 border-b-[3px] border-accent-emerald/30 text-accent-emerald font-black text-sm shadow-sm">
+              <Target className="w-4 h-4" />
+              <span>{activeCelebration.accuracy}%</span>
+            </div>
+          )}
+
+          {typeof activeCelebration.streakCount === 'number' && (
+            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-rose/15 border-2 border-b-[3px] border-accent-rose/30 text-accent-rose font-black text-sm shadow-sm">
+              <Flame className="w-4 h-4 fill-current" />
+              <span>{activeCelebration.streakCount}d</span>
+            </div>
+          )}
+        </div>
+
+        {/* Chunky Tactile 3D Action Button */}
+        <button
+          onClick={dismissCelebration}
+          className="w-full py-3.5 rounded-[20px] bg-primary text-white font-black text-sm tracking-wide border-b-[4px] border-primary-hover active:translate-y-[2px] active:border-b-[2px] transition-all shadow-md flex items-center justify-center gap-2"
+        >
+          <span>Continue (ቀጥል)</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+};

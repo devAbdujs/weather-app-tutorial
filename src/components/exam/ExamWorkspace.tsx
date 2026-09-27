@@ -3,7 +3,7 @@
 
 import { toast } from "sonner";
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, Flag, Grid, Sparkles, CheckCircle2, XCircle, Bookmark, Award, X, Lock, Lightbulb, Clock, Maximize2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Flag, Grid, Sparkles, CheckCircle2, XCircle, Bookmark, Award, X, Lock, Lightbulb, Clock, Maximize2, Zap } from 'lucide-react';
 import { Question } from '@/types';
 import Image from 'next/image';
 import { MathText } from '@/components/MathText';
@@ -11,6 +11,9 @@ import { AIResponse } from '@/components/AIResponse';
 import dynamic from 'next/dynamic';
 import { ExamTimer } from './ExamTimer';
 import { useTelegram } from '@/hooks/useTelegram';
+import { sounds } from '@/lib/sounds';
+import { useGamificationStore } from '@/store/useGamificationStore';
+import { TemariMascot } from '@/components/mascot/TemariMascot';
 
 const AITutorDrawer = dynamic(() => import('@/components/ai/AITutorDrawer').then(m => m.AITutorDrawer), { ssr: false });
 import { toggleSavedMistake, updateDailyStreak, getSavedMistakes } from '@/app/actions/user';
@@ -147,19 +150,27 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
   }, [user?.id]);
 
   const handleSelectOption = (letter: 'A' | 'B' | 'C' | 'D') => {
+    const wasAlreadyAnswered = selectedAnswers[currentIndex] !== undefined;
     setSelectedAnswers((prev) => ({ ...prev, [currentIndex]: letter }));
     
     const normalizedAns = currentQ?.answer ? currentQ.answer.trim().toUpperCase() : null;
     
     if (!isSimulator) {
       if (!normalizedAns) {
+        sounds.playTap();
         haptic.selection();
       } else if (letter === normalizedAns) {
+        sounds.playCorrect();
         haptic.notification('success');
+        if (!wasAlreadyAnswered) {
+          useGamificationStore.getState().addXp(10, 'Correct Answer');
+        }
       } else {
+        sounds.playWrong();
         haptic.notification('error');
       }
     } else {
+      sounds.playTap();
       haptic.selection();
     }
   };
@@ -190,18 +201,31 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     setIsFinished(true);
     const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
     setTimeSpentSeconds(elapsed);
+
+    // Calculate accuracy and correct count
+    let correctCount = 0;
+    questions.forEach((q, idx) => {
+      const norm = q.answer ? q.answer.trim().toUpperCase() : null;
+      if (norm && selectedAnswers[idx] === norm) correctCount++;
+    });
+    const percentage = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
+
+    // Gamification: Award 50 XP and trigger celebration modal!
+    useGamificationStore.getState().addXp(50, 'Completed Exam Session');
+    useGamificationStore.getState().triggerCelebration({
+      type: 'quiz_completed',
+      title: percentage >= 75 ? 'Outstanding Performance!' : percentage >= 50 ? 'Great Practice Session!' : 'Keep Going, Gobeze!',
+      subtitle: percentage >= 75 ? `You scored ${percentage}%! Outstanding work on ${title}.` : `You scored ${percentage}%. Review your mistakes to master every topic.`,
+      xpEarned: 50,
+      accuracy: percentage,
+      mascotMood: percentage >= 70 ? 'celebrating' : 'happy',
+    });
+
     if (!hasRecordedCompletion) {
       setHasRecordedCompletion(true);
       try {
         if (!user?.id) return;
         await updateDailyStreak();
-
-        // Record subject mastery stats
-        let correctCount = 0;
-        questions.forEach((q, idx) => {
-          const norm = q.answer ? q.answer.trim().toUpperCase() : null;
-          if (norm && selectedAnswers[idx] === norm) correctCount++;
-        });
 
         try {
           const res = await fetch('/api/exam/submit', {
@@ -231,7 +255,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         console.error("Error saving exam stats:", err);
       }
     }
-  }, [hasRecordedCompletion, user?.id, questions, selectedAnswers, subject]);
+  }, [hasRecordedCompletion, user?.id, questions, selectedAnswers, subject, title]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
@@ -264,27 +288,59 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
       const norm = q.answer ? q.answer.trim().toUpperCase() : null;
       if (norm && selectedAnswers[idx] === norm) score++;
     });
-    const percentage = Math.round((score / questions.length) * 100);
+    const percentage = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+    const isPassing = percentage >= 50;
 
     return (
-      <div className="min-h-screen bg-ground text-gray-900 dark:text-gray-100 p-6 flex flex-col justify-center items-center max-w-md mx-auto animate-fade-in font-sans">
-        <div className="w-full bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[28px] p-6 text-center shadow-bespoke-sm space-y-5">
-          <div className="w-14 h-14 rounded-[18px] bg-primary text-white mx-auto flex items-center justify-center shadow-bespoke-sm">
-            <Award className="w-7 h-7" />
+      <div className="min-h-screen bg-ground text-gray-900 dark:text-gray-100 p-5 flex flex-col justify-center items-center max-w-md mx-auto animate-fade-in font-sans">
+        <div className="w-full bg-card border-2 border-b-[6px] border-black/[0.08] dark:border-white/[0.08] rounded-[32px] p-6 text-center shadow-bespoke-md space-y-5">
+          
+          <div className="flex flex-col items-center">
+            <TemariMascot expression={percentage >= 70 ? 'celebrating' : isPassing ? 'happy' : 'studying'} size={110} />
+            <span className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 text-xs font-black">
+              <Zap className="w-3.5 h-3.5 fill-current" />
+              +50 XP Earned
+            </span>
           </div>
+
           <div>
-            <h2 className="text-2xl font-black tracking-tight">Exam Completed!</h2>
-            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1">{title}</p>
+            <h2 className="text-2xl font-black tracking-tight text-gray-900 dark:text-gray-100">
+              {percentage >= 75 ? 'Incredible Work!' : isPassing ? 'Session Completed!' : 'Keep Practicing!'}
+            </h2>
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1">{title}</p>
           </div>
-          <div className="py-6 bg-ground rounded-[20px] border border-black/[0.06] dark:border-white/[0.08]">
-            <div className="text-5xl font-black text-gray-900 dark:text-gray-100 tracking-tight tabular-nums">{percentage}%</div>
-            <p className="text-xs font-bold text-gray-600 dark:text-gray-400 mt-1.5">Score: <span className="text-accent-emerald font-black">{score}</span> / {questions.length}</p>
-            {isSimulator && <p className="text-[11px] font-bold text-gray-400 mt-1">Time: {Math.floor(timeSpentSeconds / 60)}m {timeSpentSeconds % 60}s</p>}
+
+          <div className="py-5 px-4 bg-ground rounded-[22px] border-2 border-black/[0.06] dark:border-white/[0.08] flex items-center justify-around">
+            <div className="text-center">
+              <div className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight tabular-nums">{percentage}%</div>
+              <p className="text-[11px] font-black text-slate-400 uppercase tracking-wider mt-0.5">Accuracy</p>
+            </div>
+            <div className="h-10 w-[2px] bg-black/10 dark:bg-white/10" />
+            <div className="text-center">
+              <div className="text-3xl font-black text-accent-emerald tracking-tight tabular-nums">{score} <span className="text-base text-slate-400 font-bold">/ {questions.length}</span></div>
+              <p className="text-[11px] font-black text-slate-400 uppercase tracking-wider mt-0.5">Correct</p>
+            </div>
           </div>
-          <div className="space-y-2.5 pt-1">
-            <button onClick={() => { haptic.impact('medium'); setIsFinished(false); setIsReviewMode(true); setCurrentIndex(0); }} className="w-full py-3.5 bg-primary text-white rounded-[16px] font-bold text-sm shadow-bespoke-md active:scale-[0.98] transition-all">Review Answers</button>
-            <button onClick={() => { haptic.impact('medium'); setIsFinished(false); setIsReviewMode(false); setCurrentIndex(0); setSelectedAnswers({}); setFlagged(new Set()); startTimeRef.current = Date.now(); setHasRecordedCompletion(false); }} className="w-full py-3.5 bg-card border border-black/[0.06] dark:border-white/[0.08] text-gray-900 dark:text-gray-100 rounded-[16px] font-bold text-sm active:scale-[0.98] transition-all">Retake Exam</button>
-            <button onClick={onExit} className="w-full py-3.5 bg-ground border border-black/[0.06] dark:border-white/[0.08] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-[16px] font-bold text-sm active:scale-[0.98] transition-all">Exit to Dashboard</button>
+
+          <div className="space-y-3 pt-2">
+            <button 
+              onClick={() => { sounds.playTap(); haptic.impact('medium'); setIsFinished(false); setIsReviewMode(true); setCurrentIndex(0); }} 
+              className="btn-3d-primary w-full py-3.5 rounded-[18px] font-black text-sm flex items-center justify-center gap-2"
+            >
+              Review Answers
+            </button>
+            <button 
+              onClick={() => { sounds.playTap(); haptic.impact('medium'); setIsFinished(false); setIsReviewMode(false); setCurrentIndex(0); setSelectedAnswers({}); setFlagged(new Set()); startTimeRef.current = Date.now(); setHasRecordedCompletion(false); }} 
+              className="btn-3d-card w-full py-3.5 rounded-[18px] font-black text-sm text-gray-800 dark:text-gray-200"
+            >
+              Retake Exam
+            </button>
+            <button 
+              onClick={() => { sounds.playTap(); onExit(); }} 
+              className="w-full py-2.5 text-xs font-black text-slate-500 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            >
+              Exit to Dashboard
+            </button>
           </div>
         </div>
       </div>
@@ -334,19 +390,21 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           }} className={`w-10 h-10 flex items-center justify-center rounded-[14px] border transition-all active:scale-[0.98] ${flagged.has(currentIndex) ? 'bg-error/10 border-error/30 text-error' : 'bg-card border-black/[0.06] dark:border-white/[0.08] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}><Flag className="w-4 h-4" fill={flagged.has(currentIndex) ? 'currentColor' : 'none'} /></button>
         </div>
         
-        {/* Progress Bar */}
+        {/* Chunky Duolingo Progress Bar */}
         <div className="px-5">
-          <div className="h-[2px] w-full bg-black/[0.05] dark:bg-white/[0.06] rounded-full overflow-hidden">
+          <div className="h-3 w-full bg-black/[0.06] dark:bg-white/[0.08] rounded-full p-0.5 border border-black/[0.05] overflow-hidden shadow-inner">
              <div 
-               className="h-full bg-primary transition-all duration-300 ease-bespoke rounded-full" 
+               className="h-full bg-gradient-to-r from-primary to-primary-light transition-all duration-300 ease-out rounded-full relative overflow-hidden" 
                style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
-             />
+             >
+               <div className="absolute inset-0 bg-white/25 h-1 rounded-full top-0" />
+             </div>
           </div>
         </div>
       </header>
 
       <main className="flex-1 px-5 py-5 space-y-5 relative">
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-5 md:p-6 shadow-sm relative mb-2">
+        <div className="bg-card border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] rounded-[26px] p-5 md:p-6 shadow-bespoke-sm relative mb-2">
           <button onClick={toggleBookmark} className={`absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full transition-all active:scale-[0.98] ${isSaved ? 'bg-primary/10 text-primary' : 'bg-black/5 dark:bg-white/5 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100'}`}><Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} /></button>
           
           <div className="pr-8 text-base md:text-lg leading-relaxed font-bold text-gray-900 dark:text-gray-100 relative whitespace-pre-wrap">
@@ -376,19 +434,19 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
             const isCorrect = isRevealed && normalizedAns ? letter === normalizedAns : false;
             const isWrongSelected = isRevealed && isSelected && normalizedAns ? letter !== normalizedAns : false;
 
-            let cls = 'bg-card border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:border-black/20 dark:hover:border-white/20 hover:bg-black/[0.02] dark:hover:bg-white/[0.02]';
+            let cls = 'bg-card border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:border-black/25 dark:hover:border-white/25 active:border-b-2 active:translate-y-[3px] shadow-bespoke-sm';
             
-            if (isSelected) cls = 'bg-primary/10 border-primary/40 text-gray-900 dark:text-gray-100 font-bold shadow-bespoke-sm';
+            if (isSelected) cls = 'bg-primary/10 border-2 border-b-[5px] border-primary border-b-primary/70 text-gray-900 dark:text-gray-100 font-bold active:border-b-2 active:translate-y-[3px] shadow-bespoke-sm';
             
             if (isRevealed) {
               if (isCorrect) {
-                cls = 'bg-accent-emerald/10 border-accent-emerald/30 text-accent-emerald shadow-bespoke-sm font-bold';
+                cls = 'bg-accent-emerald/15 border-2 border-b-[5px] border-accent-emerald border-b-emerald-600 text-accent-emerald font-black shadow-bespoke-sm';
               } else if (isWrongSelected) {
-                cls = 'bg-accent-rose/10 border-accent-rose/30 text-accent-rose shadow-bespoke-sm font-bold';
+                cls = 'bg-accent-rose/15 border-2 border-b-[5px] border-accent-rose border-b-rose-600 text-accent-rose font-black shadow-bespoke-sm';
               } else if (isSelected && !normalizedAns) {
-                cls = 'bg-primary/10 border-primary/40 text-gray-900 dark:text-gray-100 shadow-bespoke-sm font-bold';
+                cls = 'bg-primary/10 border-2 border-b-[5px] border-primary border-b-primary/70 text-gray-900 dark:text-gray-100 shadow-bespoke-sm font-bold';
               } else {
-                cls = 'bg-card/40 border-black/[0.04] dark:border-white/[0.04] text-gray-400 dark:text-gray-500 opacity-50';
+                cls = 'bg-card/40 border-2 border-black/[0.04] dark:border-white/[0.04] text-gray-400 dark:text-gray-500 opacity-40';
               }
             }
 
@@ -397,7 +455,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                 key={letter}
                 onClick={() => (!isReviewMode && (isSimulator || !isAnswered)) && handleSelectOption(letter as any)}
                 disabled={isReviewMode || (!isSimulator && isAnswered)}
-                className={`w-full flex items-center justify-between gap-3.5 p-3.5 rounded-[22px] border transition-all duration-200 ease-bespoke text-left ${cls} ${(!isReviewMode && (isSimulator || !isAnswered)) ? 'active:scale-[0.98] active:opacity-85' : ''}`}
+                className={`w-full flex items-center justify-between gap-3.5 p-3.5 rounded-[22px] transition-all duration-150 text-left ${cls}`}
               >
                 <div className="flex items-start gap-3.5 flex-1 min-w-0">
                   <div className={`w-8 h-8 rounded-[12px] flex items-center justify-center shrink-0 text-sm font-black transition-colors duration-200 ${
@@ -415,7 +473,10 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                 </div>
 
                 {isRevealed && isCorrect && (
-                  <CheckCircle2 className="w-5 h-5 text-accent-emerald shrink-0 self-center" />
+                  <div className="flex items-center gap-1.5 shrink-0 self-center">
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-accent-emerald/20 text-accent-emerald">+10 XP</span>
+                    <CheckCircle2 className="w-5 h-5 text-accent-emerald" />
+                  </div>
                 )}
 
                 {isRevealed && isWrongSelected && (
@@ -470,34 +531,56 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         <button 
           onClick={() => { 
             if (canUseAI) {
+              sounds.playTap();
               haptic.impact('light'); 
               setShowAI(true); 
             } else {
+              sounds.playWrong();
               haptic.notification('error');
             }
           }} 
-          className={`px-4.5 h-13 rounded-[18px] text-sm font-bold flex items-center gap-2 transition-all active:scale-[0.98] ${
+          className={`px-4 h-12 rounded-[18px] text-xs font-black flex items-center gap-1.5 transition-all border-2 border-b-[4px] active:border-b-2 active:translate-y-[2px] ${
             canUseAI 
-              ? 'bg-accent-gold/10 text-accent-gold border border-accent-gold/25 hover:bg-accent-gold/15' 
-              : 'bg-black/5 dark:bg-white/5 text-gray-400 dark:text-gray-500 opacity-60'
+              ? 'bg-accent-gold/15 text-accent-gold border-accent-gold/40 hover:bg-accent-gold/20' 
+              : 'bg-black/5 dark:bg-white/5 text-gray-400 dark:text-gray-500 border-black/5 dark:border-white/5 opacity-60'
           }`}
         >
           {canUseAI ? (
-            <Sparkles className="w-4.5 h-4.5 fill-accent-gold text-accent-gold"/>
+            <Sparkles className="w-4 h-4 fill-accent-gold text-accent-gold"/>
           ) : (
-            <Lock className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <Lock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
           )}
           Ask AI
         </button>
         <div className="flex gap-2">
           {currentIndex > 0 && (
-            <button onClick={() => { haptic.selection(); setCurrentIndex(prev => prev - 1); }} className="w-13 h-13 rounded-[18px] bg-card border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-center text-gray-900 dark:text-gray-100 active:scale-[0.98] hover:border-black/15 dark:hover:border-white/20 transition-all shadow-sm"><ChevronLeft className="w-5 h-5"/></button>
+            <button 
+              onClick={() => { sounds.playTap(); haptic.selection(); setCurrentIndex(prev => prev - 1); }} 
+              className="w-12 h-12 rounded-[18px] bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center text-gray-900 dark:text-gray-100 active:border-b-2 active:translate-y-[2px] hover:border-black/20 dark:hover:border-white/20 transition-all shadow-sm"
+            >
+              <ChevronLeft className="w-5 h-5"/>
+            </button>
           )}
-          <button onClick={() => { haptic.selection(); setShowGrid(true); }} className="w-13 h-13 rounded-[18px] bg-card border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-center text-gray-900 dark:text-gray-100 active:scale-[0.98] hover:border-black/15 dark:hover:border-white/20 transition-all shadow-sm"><Grid className="w-5 h-5"/></button>
+          <button 
+            onClick={() => { sounds.playTap(); haptic.selection(); setShowGrid(true); }} 
+            className="w-12 h-12 rounded-[18px] bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center text-gray-900 dark:text-gray-100 active:border-b-2 active:translate-y-[2px] hover:border-black/20 dark:hover:border-white/20 transition-all shadow-sm"
+          >
+            <Grid className="w-5 h-5"/>
+          </button>
           {currentIndex < questions.length - 1 ? (
-            <button onClick={() => { haptic.selection(); setCurrentIndex(prev => prev + 1); }} className="px-5.5 h-13 bg-primary text-white rounded-[18px] text-sm font-bold active:scale-[0.98] flex items-center gap-1.5 shadow-bespoke-sm transition-all">Next <ChevronRight className="w-4.5 h-4.5"/></button>
+            <button 
+              onClick={() => { sounds.playTap(); haptic.selection(); setCurrentIndex(prev => prev + 1); }} 
+              className="btn-3d-primary px-5 h-12 rounded-[18px] text-xs font-black flex items-center gap-1.5"
+            >
+              Next <ChevronRight className="w-4 h-4"/>
+            </button>
           ) : (
-            <button onClick={isReviewMode ? () => setIsFinished(true) : handleFinish} className="px-5.5 h-13 bg-primary text-white rounded-[18px] text-sm font-bold active:scale-[0.98] flex items-center gap-1.5 shadow-bespoke-sm transition-all">{isReviewMode ? 'Finish' : 'Submit'}</button>
+            <button 
+              onClick={isReviewMode ? () => { sounds.playTap(); setIsFinished(true); } : handleFinish} 
+              className="btn-3d-primary px-5 h-12 rounded-[18px] text-xs font-black flex items-center gap-1.5"
+            >
+              {isReviewMode ? 'Finish' : 'Submit'}
+            </button>
           )}
         </div>
       </footer>

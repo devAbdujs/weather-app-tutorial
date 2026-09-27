@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, CheckCircle2, Search } from 'lucide-react';
+import { ChevronRight, ChevronLeft, CheckCircle2, Search, Sparkles, GraduationCap } from 'lucide-react';
 import { updateProfilePreferences } from '@/app/actions/user';
 import { useTelegram } from '@/hooks/useTelegram';
+import { TemariMascot, MascotBubble } from '@/components/mascot/TemariMascot';
+import { sounds } from '@/lib/sounds';
 
 interface OnboardingResult {
   target: string;
@@ -16,8 +18,32 @@ interface WelcomeOnboardingProps {
 // ── Data ──────────────────────────────────────────────────────────────────────
 
 const G12_STREAMS = [
-  { id: 'Natural Science', label: 'Natural Science' },
-  { id: 'Social Science',  label: 'Social Science' },
+  { id: 'Natural Science', label: 'Natural Science', desc: 'Physics, Chemistry, Biology, Math (Natural)' },
+  { id: 'Social Science',  label: 'Social Science',  desc: 'Economics, Geography, History, Math (Social)' },
+];
+
+const TARGET_OPTIONS = [
+  { 
+    id: 'entrance', 
+    title: 'Grade 12 EUEE', 
+    subtitle: 'National University Entrance Exam',
+    icon: '🎓',
+    tag: 'High School'
+  },
+  { 
+    id: 'freshman', 
+    title: 'University Freshman', 
+    subtitle: 'Remedial & Common University Courses',
+    icon: '🏛️',
+    tag: 'Year 1'
+  },
+  { 
+    id: 'exit', 
+    title: 'University Exit Exam', 
+    subtitle: 'MoSHE Graduation Competency Test',
+    icon: '⚖️',
+    tag: 'Final Year'
+  },
 ];
 
 // For Exit Exam, "Discipline Area" IS the subject — no separate subject needed
@@ -46,7 +72,7 @@ const EXIT_DISCIPLINES = [
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete, onCancel }) => {
-  const { user, haptic } = useTelegram();
+  const { haptic } = useTelegram();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [target, setTarget] = useState<string>('');
   const [stream, setStream] = useState<string>(''); // used for G12 stream and Exit discipline
@@ -54,11 +80,13 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
   const [searchQuery, setSearchQuery] = useState('');
 
   const select = (val: string, setter: (v: string) => void) => {
+    sounds.playTap();
     haptic.selection();
     setter(val);
   };
 
   const goNext = () => {
+    sounds.playTap();
     haptic.impact('light');
     if (step === 1) {
       if (target === 'entrance' || target === 'freshman') { setStep(2); return; }
@@ -73,6 +101,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
     haptic.impact('medium');
     try {
       await updateProfilePreferences(target, finalStream);
+      sounds.playCelebration();
       haptic.notification('success');
       onComplete({ target, stream: finalStream });
     } catch (err) {
@@ -81,149 +110,221 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
     }
   };
 
-  // ── Reusable pill selector ────────────────────────────────────────────────
-
-  const PillList = ({
-    options, value, onChange,
-  }: { options: { id: string; label: string }[]; value: string; onChange: (v: string) => void }) => (
-    <div className="w-full flex flex-col gap-2">
-      {options.map((o) => (
-        <button
-          key={o.id}
-          onClick={() => select(o.id, onChange)}
-          className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl border text-left transition-all duration-200 ease-bespoke active:scale-[0.98] ${
-            value === o.id
-              ? 'border-primary/40 bg-primary/10 shadow-bespoke-sm'
-              : 'border-black/[0.06] dark:border-white/[0.08] bg-card hover:border-black/20 dark:hover:border-white/20'
-          }`}
-        >
-          <span className={`font-bold text-sm ${value === o.id ? 'text-primary' : 'text-gray-900 dark:text-gray-100'}`}>
-            {o.label}
-          </span>
-          <div className={`w-5 h-5 rounded-full flex items-center justify-center border shrink-0 ${value === o.id ? 'border-primary bg-primary text-white' : 'border-black/20 dark:border-white/20'}`}>
-            {value === o.id && <CheckCircle2 className="w-3.5 h-3.5" />}
-          </div>
-        </button>
-      ))}
-    </div>
-  );
-
-  // ── Render ────────────────────────────────────────────────────────────────
-
   const canProceed =
     (step === 1 && !!target) ||
     (step === 2 && !!stream) ||
     (step === 3 && !!stream);
 
   return (
-    <div className="fixed inset-0 z-50 bg-ground flex flex-col px-6 py-12 overflow-y-auto animate-fade-in">
-      <div className="w-full max-w-md mx-auto flex flex-col gap-6 flex-1">
+    <div className="fixed inset-0 z-50 bg-ground flex flex-col px-5 py-8 overflow-y-auto animate-fade-in">
+      <div className="w-full max-w-md mx-auto flex flex-col gap-5 flex-1 pb-6">
 
-        {/* Navigation / Header */}
+        {/* Navigation & Progress Header */}
         <div className="flex items-center justify-between">
           {step > 1 ? (
-            <button onClick={() => { haptic.impact('light'); setStep(1); setStream(''); }} className="flex items-center gap-1 text-sm font-bold text-gray-600 dark:text-gray-400 w-fit">
+            <button 
+              onClick={() => { sounds.playTap(); haptic.impact('light'); setStep(1); setStream(''); }} 
+              className="flex items-center gap-1.5 text-xs font-black text-slate-600 dark:text-slate-400 px-3 py-1.5 rounded-xl bg-card border border-black/[0.08] dark:border-white/[0.08] hover:bg-black/5"
+            >
               <ChevronLeft className="w-4 h-4" /> Back
             </button>
           ) : (
             onCancel ? (
-              <button onClick={() => { haptic.impact('light'); onCancel(); }} className="flex items-center gap-1 text-sm font-bold text-gray-600 dark:text-gray-400 w-fit">
+              <button 
+                onClick={() => { sounds.playTap(); haptic.impact('light'); onCancel(); }} 
+                className="flex items-center gap-1.5 text-xs font-black text-slate-600 dark:text-slate-400 px-3 py-1.5 rounded-xl bg-card border border-black/[0.08] dark:border-white/[0.08]"
+              >
                 <ChevronLeft className="w-4 h-4" /> Cancel
               </button>
             ) : <div />
           )}
+
+          {/* Chunky Step Indicator */}
+          <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-black uppercase tracking-wider flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-accent-gold" /> Step {step} of {target === 'freshman' ? 2 : target === 'entrance' ? 2 : 2}
+          </div>
         </div>
 
-        {/* Progress dots */}
-        <div className="flex gap-2">
-          {[1, target === 'entrance' ? 2 : null, target === 'exit' ? 3 : null]
-            .filter(Boolean)
-            .map((s, i) => (
-              <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-200 ease-bespoke ${step >= (s as number) ? 'bg-primary' : 'bg-black/10 dark:bg-white/10'}`} />
-            ))}
+        {/* Chunky Duolingo-style Progress Bar */}
+        <div className="h-3 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-black/[0.06] dark:border-white/[0.08]">
+          <div 
+            className="h-full bg-gradient-to-r from-accent-emerald to-emerald-400 rounded-full transition-all duration-300 shadow-sm"
+            style={{ width: step === 1 ? '45%' : '100%' }}
+          />
         </div>
+
+        {/* Mascot Speech Bubble Greeting */}
+        <MascotBubble
+          mood={step === 1 ? 'greeting' : step === 2 ? 'studying' : 'tutor'}
+          mascotSize={64}
+          message={
+            step === 1 
+              ? "Selam! I'm Teme 🦁 What exam are we mastering together?" 
+              : step === 2 
+                ? "Awesome! Which stream or track are you in?" 
+                : "Great! Which discipline are you preparing for?"
+          }
+          subtext={
+            step === 1 
+              ? "I will customize your practice questions, streak challenges, and notes."
+              : "I'll curate past exam papers specifically for your track."
+          }
+        />
 
         {/* ── Step 1: Exam Type ── */}
         {step === 1 && (
-          <>
-            <div>
-              <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">What are you<br/>preparing for?</h1>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">This personalizes your entire experience.</p>
-            </div>
-            <PillList
-              options={[
-                { id: 'entrance', label: 'Grade 12 EUEE (University Entrance)' },
-                { id: 'freshman', label: 'University Freshman Common Courses' },
-                { id: 'exit',     label: 'University Exit Exam' },
-              ]}
-              value={target}
-              onChange={setTarget}
-            />
-          </>
+          <div className="flex flex-col gap-3 mt-1">
+            {TARGET_OPTIONS.map((opt) => {
+              const isSelected = target === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  onClick={() => select(opt.id, setTarget)}
+                  className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-100 text-left ${
+                    isSelected
+                      ? 'border-primary bg-primary/10 border-b-[5px] border-b-primary shadow-sm translate-y-0'
+                      : 'border-black/[0.08] dark:border-white/[0.08] bg-card border-b-[4px] border-b-black/[0.12] dark:border-b-white/[0.14] hover:border-black/20 dark:hover:border-white/20 active:translate-y-[2px] active:border-b-2'
+                  }`}
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-12 h-12 rounded-xl bg-ground border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-center text-2xl shadow-inner shrink-0">
+                      {opt.icon}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className={`font-black text-sm ${isSelected ? 'text-primary' : 'text-gray-900 dark:text-gray-100'}`}>
+                          {opt.title}
+                        </span>
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-black/[0.05] dark:bg-white/[0.08] text-slate-500 dark:text-slate-400">
+                          {opt.tag}
+                        </span>
+                      </div>
+                      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                        {opt.subtitle}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 shrink-0 ${
+                    isSelected 
+                      ? 'border-primary bg-primary text-white' 
+                      : 'border-black/20 dark:border-white/20'
+                  }`}>
+                    {isSelected && <CheckCircle2 className="w-4 h-4" />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         )}
 
         {/* ── Step 2: Stream ── */}
         {step === 2 && (
-          <>
-            <div>
-              <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Your Stream</h1>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">Select your academic track to personalize your materials.</p>
-            </div>
-            <PillList options={G12_STREAMS} value={stream} onChange={setStream} />
-          </>
+          <div className="flex flex-col gap-3 mt-1">
+            {G12_STREAMS.map((s) => {
+              const isSelected = stream === s.id;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => select(s.id, setStream)}
+                  className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-100 text-left ${
+                    isSelected
+                      ? 'border-primary bg-primary/10 border-b-[5px] border-b-primary shadow-sm'
+                      : 'border-black/[0.08] dark:border-white/[0.08] bg-card border-b-[4px] border-b-black/[0.12] dark:border-b-white/[0.14] hover:border-black/20 active:translate-y-[2px] active:border-b-2'
+                  }`}
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-11 h-11 rounded-xl bg-ground border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-center text-xl shrink-0">
+                      {s.id === 'Natural Science' ? '🔬' : '📚'}
+                    </div>
+                    <div>
+                      <span className={`font-black text-sm block ${isSelected ? 'text-primary' : 'text-gray-900 dark:text-gray-100'}`}>
+                        {s.label}
+                      </span>
+                      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                        {s.desc}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 shrink-0 ${
+                    isSelected ? 'border-primary bg-primary text-white' : 'border-black/20 dark:border-white/20'
+                  }`}>
+                    {isSelected && <CheckCircle2 className="w-4 h-4" />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         )}
 
         {/* ── Step 3: Exit Discipline ── */}
         {step === 3 && (
-          <>
-            <div>
-              <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Your Discipline</h1>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">Search and select your field of study.</p>
+          <div className="flex flex-col gap-3 mt-1 flex-1">
+            <div className="relative">
+              <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input 
+                type="text" 
+                placeholder="Search your department..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-3.5 bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl text-sm font-bold focus:border-primary focus:ring-0 outline-none transition-all shadow-sm"
+              />
             </div>
-            <div className="flex flex-col gap-4 mt-2 h-full min-h-[300px]">
-              <div className="relative">
-                <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input 
-                  type="text" 
-                  placeholder="Search departments..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-2xl text-sm font-bold focus:border-primary/40 focus:ring-2 focus:ring-primary/10 outline-none transition-all shadow-bespoke-sm"
-                />
-              </div>
-              <div className="flex-1 overflow-y-auto rounded-2xl border border-black/[0.06] dark:border-white/[0.08] p-2 space-y-1 bg-card">
-                {EXIT_DISCIPLINES.filter(d => d.label.toLowerCase().includes(searchQuery.toLowerCase())).map(d => (
+            <div className="flex-1 max-h-[300px] overflow-y-auto rounded-2xl border-2 border-black/[0.08] dark:border-white/[0.08] p-2 space-y-1.5 bg-card">
+              {EXIT_DISCIPLINES.filter(d => d.label.toLowerCase().includes(searchQuery.toLowerCase())).map(d => {
+                const isSelected = stream === d.id;
+                return (
                   <button
                     key={d.id}
                     onClick={() => select(d.id, setStream)}
-                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all duration-150 ${stream === d.id ? 'bg-primary/10 text-primary' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300'}`}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-xs font-black transition-all duration-100 border-2 ${
+                      isSelected 
+                        ? 'border-primary bg-primary/10 text-primary border-b-[3px]' 
+                        : 'border-transparent hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 active:translate-y-[1px]'
+                    }`}
                   >
                     {d.label}
                   </button>
-                ))}
-                {EXIT_DISCIPLINES.filter(d => d.label.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
-                   <p className="text-center text-sm font-bold text-gray-400 mt-4">No departments found.</p>
-                )}
-              </div>
+                );
+              })}
+              {EXIT_DISCIPLINES.filter(d => d.label.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                 <p className="text-center text-xs font-bold text-gray-400 py-6">No departments found.</p>
+              )}
             </div>
-          </>
+          </div>
         )}
 
-        {/* CTA */}
+        {/* 3D Tactile CTA Button */}
         <button
           onClick={goNext}
           disabled={!canProceed || isSaving}
-          className={`w-full py-4 rounded-[16px] font-bold text-base flex items-center justify-center gap-2 transition-all duration-200 ease-bespoke mt-auto ${
+          className={`w-full py-4 rounded-2xl font-black text-base flex items-center justify-center gap-2 mt-auto transition-all duration-100 ${
             canProceed && !isSaving
-              ? 'bg-primary text-white shadow-bespoke-md active:scale-[0.98]'
-              : 'bg-ground border border-black/[0.06] dark:border-white/[0.08] text-gray-400 dark:text-gray-600 cursor-not-allowed'
+              ? 'btn-3d-primary shadow-bespoke-md cursor-pointer'
+              : 'bg-ground border-2 border-black/[0.06] dark:border-white/[0.08] text-slate-400 dark:text-slate-600 cursor-not-allowed'
           }`}
         >
-          {isSaving ? 'Saving...' : step >= 2 ? 'Finish Setup' : 'Continue'}
-          {!isSaving && <ChevronRight className="w-5 h-5" />}
+          {isSaving ? (
+            <span className="flex items-center gap-2">
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Personalizing your journey...
+            </span>
+          ) : step >= 2 ? (
+            <>
+              <span>Let's Start Learning!</span>
+              <GraduationCap className="w-5 h-5" />
+            </>
+          ) : (
+            <>
+              <span>Continue</span>
+              <ChevronRight className="w-5 h-5" />
+            </>
+          )}
         </button>
 
       </div>
     </div>
   );
 };
+
