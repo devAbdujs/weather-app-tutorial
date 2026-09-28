@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useAppStore } from '@/store/useAppStore';
 import { sounds } from '@/lib/sounds';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import { MascotBubble } from '@/components/mascot/TemariMascot';
 import { 
   ChevronRight, BookOpen, Brain, Lightbulb, 
@@ -214,7 +215,7 @@ export const PracticeHub = () => {
   const [savedSubjects, setSavedSubjects] = useState<string[]>([]);
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('temari_saved_subjects');
+      const stored = safeLocalStorage.getItem('temari_saved_subjects');
       if (stored) setSavedSubjects(JSON.parse(stored));
     } catch {}
   }, []);
@@ -225,7 +226,7 @@ export const PracticeHub = () => {
     haptic.selection();
     setSavedSubjects(prev => {
       const next = prev.includes(subjectId) ? prev.filter(s => s !== subjectId) : [...prev, subjectId];
-      try { localStorage.setItem('temari_saved_subjects', JSON.stringify(next)); } catch {}
+      try { safeLocalStorage.setItem('temari_saved_subjects', JSON.stringify(next)); } catch {}
       return next;
     });
   };

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { ChevronRight, ChevronLeft, CheckCircle2, Search, Sparkles, GraduationCap } from 'lucide-react';
 import { updateProfilePreferences } from '@/app/actions/user';

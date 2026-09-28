@@ -10,22 +10,37 @@ export default async function MasteryPage() {
     redirect('/');
   }
 
-  // Fetch subject stats & student profile securely via SSR
-  const supabase = await createClient();
-  const [{ data: stats }, { data: profile }] = await Promise.all([
-    supabase
-      .from('user_subject_stats')
-      .select('*')
-      .eq('telegram_id', session.telegram_id)
-      .order('questions_correct', { ascending: false }),
-    supabase
-      .from('profiles')
-      .select('target_exam, stream, full_name, daily_streak')
-      .eq('telegram_id', session.telegram_id)
-      .maybeSingle(),
-  ]);
+  let stats: any[] = [];
+  let profile: any = null;
+
+  try {
+    const supabase = await createClient();
+    const [statsRes, profileRes] = await Promise.all([
+      supabase
+        .from('user_subject_stats')
+        .select('*')
+        .eq('telegram_id', session.telegram_id)
+        .order('questions_correct', { ascending: false }),
+      supabase
+        .from('profiles')
+        .select('target_exam, stream, full_name, daily_streak')
+        .eq('telegram_id', session.telegram_id)
+        .maybeSingle(),
+    ]);
+    stats = statsRes.data || [];
+    profile = profileRes.data || null;
+  } catch (err) {
+    console.error('[MasteryPage Error]', err);
+  }
+
+  const finalProfile = profile || {
+    target_exam: session.target_exam || null,
+    stream: session.stream || '',
+    full_name: session.first_name,
+    daily_streak: 0,
+  };
 
   return (
-    <MasteryTree stats={stats || []} profile={profile || undefined} />
+    <MasteryTree stats={stats} profile={finalProfile} />
   );
 }

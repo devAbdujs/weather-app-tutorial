@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { useGamificationStore, getLevelForXp } from '@/store/useGamificationStore';
 import { sounds } from '@/lib/sounds';
+import { safeLocalStorage } from '@/lib/safeStorage';
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -63,7 +64,7 @@ export const HomeHub: React.FC = () => {
     }).catch(() => {});
 
     try {
-      const stored = localStorage.getItem('temari_last_session');
+      const stored = safeLocalStorage.getItem('temari_last_session');
       if (stored) setLastSession(JSON.parse(stored));
     } catch {}
   }, [setBackButton]);

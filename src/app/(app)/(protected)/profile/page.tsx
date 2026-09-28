@@ -10,15 +10,31 @@ export default async function ProfilePage() {
     redirect('/');
   }
 
-  const supabase = await createAdminClient();
-  const [{ data: profile }, { data: stats }] = await Promise.all([
-    supabase.from('profiles').select('*').eq('telegram_id', session.telegram_id).single(),
-    supabase.from('user_subject_stats').select('*').eq('telegram_id', session.telegram_id)
-  ]);
+  let profile = null;
+  let stats: any[] = [];
 
-  if (!profile) {
-    redirect('/');
+  try {
+    const supabase = await createAdminClient();
+    const [profileRes, statsRes] = await Promise.all([
+      supabase.from('profiles').select('*').eq('telegram_id', session.telegram_id).maybeSingle(),
+      supabase.from('user_subject_stats').select('*').eq('telegram_id', session.telegram_id),
+    ]);
+    profile = profileRes.data;
+    stats = statsRes.data || [];
+  } catch (err) {
+    console.error('[ProfilePage Error]', err);
   }
 
-  return <ProfileView profile={profile} stats={stats || []} />;
+  // Resilient fallback profile if database lookup fails
+  const finalProfile = profile || {
+    id: session.profile_id,
+    telegram_id: session.telegram_id,
+    full_name: session.first_name,
+    target_exam: session.target_exam || null,
+    stream: session.stream || '',
+    daily_streak: 0,
+    subscription_status: 'free',
+  };
+
+  return <ProfileView profile={finalProfile as any} stats={stats} />;
 }

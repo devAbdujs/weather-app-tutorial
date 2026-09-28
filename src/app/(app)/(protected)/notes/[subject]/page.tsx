@@ -25,7 +25,7 @@ export default async function NotesPage({
     .from('profiles')
     .select('target_exam, stream')
     .eq('telegram_id', session.telegram_id)
-    .single();
+    .maybeSingle();
     
   // Use URL param if valid, otherwise fall back to profile (prevents manual URL tampering)
   const validExamTypes = ['entrance', 'freshman', 'exit'];

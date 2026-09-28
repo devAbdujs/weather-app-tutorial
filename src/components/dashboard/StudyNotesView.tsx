@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { getSubjectTheme } from '@/components/practice/PracticeHub';
 import { sounds } from '@/lib/sounds';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import { useGamificationStore } from '@/store/useGamificationStore';
 import { MascotBubble } from '@/components/mascot/TemariMascot';
 
@@ -125,7 +126,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
     const key = getStorageKey(selectedNote.title);
     try {
-      const cached = localStorage.getItem(key);
+      const cached = safeLocalStorage.getItem(key);
       if (cached) {
         setHighlights(JSON.parse(cached));
       } else {
@@ -159,7 +160,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     setHighlights(prev => {
       if (prev.some(h => h.text === cleanText && h.color === color)) return prev;
       const updated = [...prev, newHighlight];
-      try { localStorage.setItem(key, JSON.stringify(updated)); } catch {}
+      try { safeLocalStorage.setItem(key, JSON.stringify(updated)); } catch {}
       return updated;
     });
 
@@ -181,7 +182,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
     setHighlights(prev => {
       const updated = prev.filter(h => h.id !== id);
-      try { localStorage.setItem(key, JSON.stringify(updated)); } catch {}
+      try { safeLocalStorage.setItem(key, JSON.stringify(updated)); } catch {}
       return updated;
     });
 
@@ -198,7 +199,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
     setHighlights(prev => {
       const updated = prev.map(h => h.id === id ? { ...h, color: newColor } : h);
-      try { localStorage.setItem(key, JSON.stringify(updated)); } catch {}
+      try { safeLocalStorage.setItem(key, JSON.stringify(updated)); } catch {}
       return updated;
     });
 
