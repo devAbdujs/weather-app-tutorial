@@ -58,7 +58,7 @@ export const BottomNav = () => {
           transition-all duration-200
         "
       >
-        {/* Left 2 items */}
+        {/* Left 2 icon tabs */}
         <div className="flex items-center flex-1 justify-around">
           {leftNavItems.map((item) => {
             const isActive =
@@ -75,34 +75,21 @@ export const BottomNav = () => {
                   sounds.playTap();
                   haptic.selection();
                 }}
-                className="flex-1 max-w-[68px]"
+                className="flex items-center justify-center p-2 rounded-2xl active:scale-90 transition-transform"
+                aria-label={item.name}
+                title={item.name}
               >
-                <div className="flex flex-col items-center justify-center gap-0.5 py-1 active:scale-95 transition-transform duration-100">
-                  <div
-                    className={`
-                      relative flex items-center justify-center w-10 h-7 rounded-full transition-all duration-150
-                      ${isActive
-                        ? 'text-primary'
-                        : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}
-                    `}
-                  >
-                    <Icon
-                      className="w-5 h-5 transition-transform duration-150"
-                      strokeWidth={isActive ? 2.5 : 2}
-                    />
-                  </div>
-                  <span
-                    className={`
-                      text-[10px] font-black tracking-tight leading-none transition-colors duration-150
-                      ${isActive
-                        ? 'text-primary'
-                        : 'text-slate-400 dark:text-slate-500'}
-                    `}
-                  >
-                    {item.name}
-                  </span>
+                <div className="relative flex flex-col items-center justify-center">
+                  <Icon
+                    className={`w-6 h-6 transition-all duration-150 ${
+                      isActive
+                        ? 'text-primary scale-110 drop-shadow-xs'
+                        : 'text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200'
+                    }`}
+                    strokeWidth={isActive ? 2.6 : 2}
+                  />
                   {isActive && (
-                    <div className="w-1 h-1 rounded-full bg-primary mt-0.5 animate-fade-in" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1 shadow-sm shadow-orange-500/50 animate-fade-in" />
                   )}
                 </div>
               </Link>
@@ -117,22 +104,22 @@ export const BottomNav = () => {
             aria-label="Start Quick Exam"
             title="Start Quick Exam Simulator"
             className="
-              relative -top-3.5
-              w-12 h-12 rounded-full
+              relative -top-4
+              w-13 h-13 rounded-full
               bg-gradient-to-tr from-[#EA580C] via-[#F96E10] to-[#FB923C]
               text-white
-              shadow-lg shadow-orange-500/40
+              shadow-xl shadow-orange-500/40
               border-4 border-[#FAF9F5] dark:border-[#0C0F14]
               flex items-center justify-center
               active:scale-90 transition-all duration-150
               hover:shadow-orange-500/60
             "
           >
-            <Sparkles className="w-5 h-5 fill-white text-white drop-shadow-sm animate-pulse-soft" />
+            <Sparkles className="w-6 h-6 fill-white text-white drop-shadow-sm animate-pulse-soft" />
           </button>
         </div>
 
-        {/* Right 2 items */}
+        {/* Right 2 icon tabs */}
         <div className="flex items-center flex-1 justify-around">
           {rightNavItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
@@ -146,34 +133,21 @@ export const BottomNav = () => {
                   sounds.playTap();
                   haptic.selection();
                 }}
-                className="flex-1 max-w-[68px]"
+                className="flex items-center justify-center p-2 rounded-2xl active:scale-90 transition-transform"
+                aria-label={item.name}
+                title={item.name}
               >
-                <div className="flex flex-col items-center justify-center gap-0.5 py-1 active:scale-95 transition-transform duration-100">
-                  <div
-                    className={`
-                      relative flex items-center justify-center w-10 h-7 rounded-full transition-all duration-150
-                      ${isActive
-                        ? 'text-primary'
-                        : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}
-                    `}
-                  >
-                    <Icon
-                      className="w-5 h-5 transition-transform duration-150"
-                      strokeWidth={isActive ? 2.5 : 2}
-                    />
-                  </div>
-                  <span
-                    className={`
-                      text-[10px] font-black tracking-tight leading-none transition-colors duration-150
-                      ${isActive
-                        ? 'text-primary'
-                        : 'text-slate-400 dark:text-slate-500'}
-                    `}
-                  >
-                    {item.name}
-                  </span>
+                <div className="relative flex flex-col items-center justify-center">
+                  <Icon
+                    className={`w-6 h-6 transition-all duration-150 ${
+                      isActive
+                        ? 'text-primary scale-110 drop-shadow-xs'
+                        : 'text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200'
+                    }`}
+                    strokeWidth={isActive ? 2.6 : 2}
+                  />
                   {isActive && (
-                    <div className="w-1 h-1 rounded-full bg-primary mt-0.5 animate-fade-in" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1 shadow-sm shadow-orange-500/50 animate-fade-in" />
                   )}
                 </div>
               </Link>

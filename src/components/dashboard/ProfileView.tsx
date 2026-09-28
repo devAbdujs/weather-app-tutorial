@@ -15,7 +15,10 @@ import {
   Target,
   Volume2,
   VolumeX,
-  Award
+  Award,
+  Bell,
+  Headphones,
+  Settings
 } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useRouter } from 'next/navigation';
@@ -254,31 +257,31 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           className="grid grid-cols-3 gap-3"
         >
           {/* Questions (Pastel Lavender) */}
-          <div className="bg-tint-purple text-tint-purple-fg border border-tint-purple-border rounded-2xl p-3 text-center shadow-xs">
-            <span className="text-xl font-black font-mono tabular-nums block">
+          <div className="bg-tint-purple text-tint-purple-fg border-2 border-b-[3px] border-tint-purple-border rounded-2xl p-3.5 text-center shadow-2xs">
+            <span className="text-2xl font-black font-mono tabular-nums block text-gray-950 dark:text-white">
               {totalQuestions}
             </span>
-            <span className="text-micro font-black uppercase tracking-wider opacity-80 mt-0.5 block">
+            <span className="text-xs font-black uppercase tracking-wider text-gray-800 dark:text-gray-200 mt-1 block">
               Questions
             </span>
           </div>
 
           {/* Solved (Pastel Mint) */}
-          <div className="bg-tint-green text-tint-green-fg border border-tint-green-border rounded-2xl p-3 text-center shadow-xs">
-            <span className="text-xl font-black font-mono tabular-nums block">
+          <div className="bg-tint-green text-tint-green-fg border-2 border-b-[3px] border-tint-green-border rounded-2xl p-3.5 text-center shadow-2xs">
+            <span className="text-2xl font-black font-mono tabular-nums block text-gray-950 dark:text-white">
               {totalCorrect}
             </span>
-            <span className="text-micro font-black uppercase tracking-wider opacity-80 mt-0.5 block">
+            <span className="text-xs font-black uppercase tracking-wider text-gray-800 dark:text-gray-200 mt-1 block">
               Solved
             </span>
           </div>
 
           {/* Saved / Accuracy (Pastel Sky) */}
-          <div className="bg-tint-sky text-tint-sky-fg border border-tint-sky-border rounded-2xl p-3 text-center shadow-xs">
-            <span className="text-xl font-black font-mono tabular-nums block">
+          <div className="bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-tint-sky-border rounded-2xl p-3.5 text-center shadow-2xs">
+            <span className="text-2xl font-black font-mono tabular-nums block text-gray-950 dark:text-white">
               {overallAccuracy}%
             </span>
-            <span className="text-micro font-black uppercase tracking-wider opacity-80 mt-0.5 block">
+            <span className="text-xs font-black uppercase tracking-wider text-gray-800 dark:text-gray-200 mt-1 block">
               Accuracy
             </span>
           </div>
@@ -291,17 +294,17 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             haptic.impact('heavy');
             router.push('/upgrade');
           }}
-          className="bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white rounded-3xl p-4.5 shadow-lg shadow-orange-500/25 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all relative overflow-hidden"
+          className="bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white rounded-3xl p-5 shadow-lg shadow-orange-500/25 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all relative overflow-hidden"
         >
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-amber-300/40 backdrop-blur-xs flex items-center justify-center text-stone-900 shadow-2xs shrink-0 text-xl font-black border border-white/20">
+            <div className="w-13 h-13 rounded-2xl bg-amber-300/40 backdrop-blur-xs flex items-center justify-center text-stone-900 shadow-2xs shrink-0 text-2xl font-black border border-white/20">
               👑
             </div>
             <div>
-              <h2 className="text-sm font-black text-white tracking-tight leading-tight">
+              <h2 className="text-base font-black text-white tracking-tight leading-tight">
                 Upgrade To Premium
               </h2>
-              <p className="text-caption font-medium text-white/90 mt-0.5 line-clamp-1 max-w-[190px]">
+              <p className="text-xs font-bold text-white/95 mt-0.5 line-clamp-1 max-w-[200px]">
                 Unlock Unlimited AI Tutor &amp; Past Exams
               </p>
             </div>
@@ -309,31 +312,31 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
 
           <button
             type="button"
-            className="bg-stone-950 text-white px-3.5 py-2 rounded-full text-xs font-black shadow-md shrink-0 flex items-center gap-1 hover:bg-black transition-all"
+            className="bg-stone-950 text-white px-4 py-2.5 rounded-full text-xs font-black shadow-md shrink-0 flex items-center gap-1.5 hover:bg-black transition-all"
           >
             <span>Upgrade</span>
-            <span className="text-amber-400">↗</span>
+            <span className="text-amber-400 text-sm">↗</span>
           </button>
         </section>
 
         {/* ── 5. AI QUOTA STATUS BAR ── */}
         <section 
           aria-label="AI Quota"
-          className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 shadow-xs space-y-2"
+          className="bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 shadow-2xs space-y-2.5"
         >
           <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1.5 font-black text-gray-900 dark:text-gray-100">
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <div className="flex items-center gap-2 font-black text-gray-900 dark:text-gray-100">
+              <Sparkles className="w-4 h-4 text-primary" />
               <span>Weekly AI Quota</span>
             </div>
-            <div className="flex items-center gap-2 font-mono text-caption text-slate-500 dark:text-slate-400">
-              <span className="font-bold text-gray-900 dark:text-gray-100">{usageClamped}/{weeklyCap}</span>
+            <div className="flex items-center gap-2 font-mono text-xs font-bold text-gray-700 dark:text-gray-300">
+              <span className="font-black text-gray-900 dark:text-gray-100">{usageClamped}/{weeklyCap}</span>
               <span>•</span>
               <span>Resets in {daysUntilReset}d</span>
             </div>
           </div>
 
-          <div className="w-full bg-ground border border-black/[0.06] dark:border-white/[0.08] h-2.5 rounded-full overflow-hidden p-0.5">
+          <div className="w-full bg-ground border border-black/[0.08] dark:border-white/[0.08] h-3 rounded-full overflow-hidden p-0.5">
             <div 
               className={`h-full rounded-full transition-all duration-500 ease-bespoke ${getProgressColor()}`}
               style={{ width: `${Math.max(4, usagePercent)}%` }}
@@ -342,30 +345,30 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         </section>
 
         {/* ── 6. SETTINGS & APP PREFERENCES (ui_inspiration3.png SEPARATE CARDS) ── */}
-        <section aria-label="Account Settings" className="space-y-2.5">
-          {/* Sound & Notifications */}
+        <section aria-label="Account Settings" className="space-y-3">
+          {/* Notifications (ui_inspiration3.png) */}
           <div 
             onClick={() => {
               toggleSound();
               haptic.selection();
             }}
-            className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-xs hover:border-primary/40 transition-colors cursor-pointer select-none active:scale-[0.99]"
+            className="bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors cursor-pointer select-none active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-primary border border-orange-200/40 flex items-center justify-center">
-                {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5 text-slate-400" />}
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 border border-amber-200/50 flex items-center justify-center shadow-2xs">
+                <Bell className="w-5 h-5 stroke-[2.4]" />
               </div>
               <div>
-                <h3 className="text-xs font-black text-gray-900 dark:text-gray-100">
-                  Sound &amp; Notifications
+                <h3 className="text-sm font-black text-gray-900 dark:text-gray-100">
+                  Notifications &amp; Audio
                 </h3>
-                <p className="text-caption font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs font-bold text-gray-600 dark:text-gray-300">
                   Sound Effects {soundEnabled ? 'Enabled' : 'Muted'}
                 </p>
               </div>
             </div>
-            <div className={`w-9 h-5 rounded-full p-0.5 transition-colors ${soundEnabled ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-700'}`}>
-              <div className={`w-4 h-4 rounded-full bg-white transition-transform ${soundEnabled ? 'translate-x-4' : 'translate-x-0'}`} />
+            <div className={`w-10 h-6 rounded-full p-0.5 transition-colors ${soundEnabled ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-700'}`}>
+              <div className={`w-5 h-5 rounded-full bg-white transition-transform ${soundEnabled ? 'translate-x-4' : 'translate-x-0'}`} />
             </div>
           </div>
 
@@ -375,44 +378,44 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             target="_blank" 
             rel="noopener noreferrer"
             onClick={() => { sounds.playTap(); haptic.selection(); }}
-            className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-xs hover:border-primary/40 transition-colors cursor-pointer active:scale-[0.99]"
+            className="bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors cursor-pointer active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/40 text-sky-600 border border-sky-200/40 flex items-center justify-center">
-                <MessageCircle className="w-5 h-5" />
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-sky-50 dark:bg-sky-950/40 text-sky-600 border border-sky-200/50 flex items-center justify-center shadow-2xs">
+                <Headphones className="w-5 h-5 stroke-[2.4]" />
               </div>
               <div>
-                <h3 className="text-xs font-black text-gray-900 dark:text-gray-100">
+                <h3 className="text-sm font-black text-gray-900 dark:text-gray-100">
                   Help &amp; Support
                 </h3>
-                <p className="text-caption font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs font-bold text-gray-600 dark:text-gray-300">
                   Telegram Bot, FAQ &amp; Community Support
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-slate-400" />
+            <ChevronRight className="w-5 h-5 text-gray-500 dark:text-gray-400 stroke-[2.5]" />
           </a>
 
-          {/* Settings / Curriculum Track (ui_inspiration3.png) */}
+          {/* Settings / Preferences (ui_inspiration3.png) */}
           <button 
             type="button"
             onClick={handleRetakeOnboarding}
-            className="w-full bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-xs hover:border-primary/40 transition-colors text-left active:scale-[0.99]"
+            className="w-full bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors text-left active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 border border-purple-200/40 flex items-center justify-center">
-                <Target className="w-5 h-5" />
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 border border-purple-200/50 flex items-center justify-center shadow-2xs">
+                <Settings className="w-5 h-5 stroke-[2.4]" />
               </div>
               <div>
-                <h3 className="text-xs font-black text-gray-900 dark:text-gray-100">
+                <h3 className="text-sm font-black text-gray-900 dark:text-gray-100">
                   Settings &amp; Preferences
                 </h3>
-                <p className="text-caption font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs font-bold text-gray-600 dark:text-gray-300">
                   Curriculum: {profile.stream || 'Natural Science'}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-slate-400" />
+            <ChevronRight className="w-5 h-5 text-gray-500 dark:text-gray-400 stroke-[2.5]" />
           </button>
         </section>
 
@@ -422,12 +425,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             <button 
               disabled={isLoggingOut} 
               onClick={handleLogout} 
-              className="w-full py-3.5 bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-2xl flex items-center justify-center gap-2 text-gray-800 dark:text-gray-200 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-300 font-black text-xs shadow-xs transition-all active:scale-[0.98] disabled:opacity-50"
+              className="w-full py-4 bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center justify-center gap-2.5 text-gray-900 dark:text-gray-100 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-400 font-black text-sm shadow-2xs transition-all active:translate-y-0.5 disabled:opacity-50"
             >
               {isLoggingOut ? (
                 <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
               ) : (
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4 h-4 stroke-[2.5]" />
               )}
               <span>{isLoggingOut ? 'Signing out...' : 'Sign Out'}</span>
             </button>

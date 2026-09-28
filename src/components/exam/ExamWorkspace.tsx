@@ -3,7 +3,7 @@
 
 import { toast } from "sonner";
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, Flag, Grid, Sparkles, CheckCircle2, XCircle, Bookmark, Award, X, Lock, Lightbulb, Clock, Maximize2, Zap } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Flag, Grid, Sparkles, CheckCircle2, XCircle, Bookmark, Award, X, Lock, Lightbulb, Clock, Maximize2, Zap, Bot, Check, Compass } from 'lucide-react';
 import { Question } from '@/types';
 import Image from 'next/image';
 import { MathText } from '@/components/MathText';
@@ -307,18 +307,18 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
             <h2 className="text-2xl font-black tracking-tight text-gray-900 dark:text-gray-100">
               {percentage >= 75 ? 'Incredible Work!' : isPassing ? 'Session Completed!' : 'Keep Practicing!'}
             </h2>
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1">{title}</p>
+            <p className="text-xs font-black text-gray-700 dark:text-gray-300 mt-1">{title}</p>
           </div>
 
-          <div className="py-5 px-4 bg-ground rounded-card-sm border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-around">
+          <div className="py-5 px-4 bg-ground rounded-card-sm border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-around">
             <div className="text-center">
               <div className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight tabular-nums">{percentage}%</div>
-              <p className="text-caption font-black text-slate-400 uppercase tracking-wider mt-0.5">Accuracy</p>
+              <p className="text-caption font-black text-gray-700 dark:text-gray-300 uppercase tracking-wider mt-0.5">Accuracy</p>
             </div>
             <div className="h-10 w-[2px] bg-black/10 dark:bg-white/10" />
             <div className="text-center">
-              <div className="text-3xl font-black text-accent-emerald tracking-tight tabular-nums">{score} <span className="text-base text-slate-400 font-bold">/ {questions.length}</span></div>
-              <p className="text-caption font-black text-slate-400 uppercase tracking-wider mt-0.5">Correct</p>
+              <div className="text-3xl font-black text-accent-emerald tracking-tight tabular-nums">{score} <span className="text-base text-gray-700 dark:text-gray-300 font-black">/ {questions.length}</span></div>
+              <p className="text-caption font-black text-gray-700 dark:text-gray-300 uppercase tracking-wider mt-0.5">Correct</p>
             </div>
           </div>
 
@@ -331,13 +331,13 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
             </button>
             <button 
               onClick={() => { sounds.playTap(); haptic.impact('medium'); setIsFinished(false); setIsReviewMode(false); setCurrentIndex(0); setSelectedAnswers({}); setFlagged(new Set()); startTimeRef.current = Date.now(); setHasRecordedCompletion(false); }} 
-              className="btn-3d-card w-full py-3.5 rounded-card-sm font-black text-sm text-gray-800 dark:text-gray-200"
+              className="btn-3d-card w-full py-3.5 rounded-card-sm font-black text-sm text-gray-900 dark:text-gray-100"
             >
               Retake Exam
             </button>
             <button 
               onClick={() => { sounds.playTap(); onExit(); }} 
-              className="w-full py-2.5 text-xs font-black text-slate-500 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+              className="w-full py-2.5 text-xs font-black text-gray-800 dark:text-gray-200 hover:text-gray-950 dark:hover:text-white transition-colors"
             >
               Exit to Dashboard
             </button>
@@ -359,9 +359,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     <div className="min-h-screen bg-ground text-gray-900 dark:text-gray-100 flex flex-col justify-between max-w-md mx-auto pb-24 font-sans select-none relative">
       <header className="sticky top-0 z-30 bg-ground/90 backdrop-blur-xl pt-safe border-b border-black/[0.06] dark:border-white/[0.08] pb-3">
         <div className="px-5 pt-3 pb-2 flex justify-between items-center mb-1">
-          <button onClick={onExit} className="w-10 h-10 flex items-center justify-center rounded-btn bg-card border border-black/[0.06] dark:border-white/[0.08] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 active:scale-[0.98] transition-transform"><X className="w-5 h-5" /></button>
+          <button onClick={onExit} className="w-10 h-10 flex items-center justify-center rounded-btn bg-card border border-black/[0.08] dark:border-white/[0.08] text-gray-800 dark:text-gray-200 hover:text-gray-950 dark:hover:text-white active:scale-[0.98] transition-transform shadow-tactile-xs"><X className="w-5 h-5" /></button>
           <div className="flex flex-col items-center">
-            <span className="text-micro uppercase tracking-widest font-bold text-gray-500 dark:text-gray-400">{title}</span>
+            <span className="text-micro uppercase tracking-widest font-black text-gray-700 dark:text-gray-300">{title}</span>
             <div className="flex items-center gap-1.5 mt-0.5">
                {isSimulator && !isReviewMode ? (
                   <ExamTimer 
@@ -373,8 +373,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                     }} 
                   />
                ) : (
-                  <span className="text-sm font-black text-gray-900 dark:text-gray-100 tabular-nums">
-                    Practice Mode
+                  <span className="inline-flex items-center gap-1 text-xs font-black text-primary px-2.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20">
+                    <Compass className="w-3.5 h-3.5" /> Practice Mode
                   </span>
                )}
             </div>
@@ -387,12 +387,12 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
               else next.add(currentIndex);
               return next;
             });
-          }} className={`w-10 h-10 flex items-center justify-center rounded-btn border transition-all active:scale-[0.98] ${flagged.has(currentIndex) ? 'bg-error/10 border-error/30 text-error' : 'bg-card border-black/[0.06] dark:border-white/[0.08] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}><Flag className="w-4 h-4" fill={flagged.has(currentIndex) ? 'currentColor' : 'none'} /></button>
+          }} className={`w-10 h-10 flex items-center justify-center rounded-btn border transition-all active:scale-[0.98] shadow-tactile-xs ${flagged.has(currentIndex) ? 'bg-error/10 border-error/30 text-error' : 'bg-card border-black/[0.08] dark:border-white/[0.08] text-gray-800 dark:text-gray-200 hover:text-gray-950 dark:hover:text-white'}`}><Flag className="w-4 h-4" fill={flagged.has(currentIndex) ? 'currentColor' : 'none'} /></button>
         </div>
         
         {/* Chunky Duolingo Progress Bar */}
         <div className="px-5">
-          <div className="h-3 w-full bg-black/[0.06] dark:bg-white/[0.08] rounded-full p-0.5 border border-black/[0.05] overflow-hidden shadow-inner">
+          <div className="h-3 w-full bg-black/[0.08] dark:bg-white/[0.08] rounded-full p-0.5 border border-black/[0.08] overflow-hidden shadow-inner">
              <div 
                className="h-full bg-gradient-to-r from-primary to-accent-blue transition-all duration-300 ease-out rounded-full relative overflow-hidden" 
                style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
@@ -405,7 +405,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
       <main className="flex-1 px-5 py-5 space-y-5 relative">
         <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] rounded-card-lg p-5 md:p-6 shadow-tactile-xs relative mb-2">
-          <button onClick={toggleBookmark} className={`absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full transition-all active:scale-[0.98] ${isSaved ? 'bg-accent-gold/15 text-accent-gold border border-accent-gold/30' : 'bg-black/5 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-gray-100'}`}><Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} /></button>
+          <button onClick={toggleBookmark} className={`absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-xl transition-all active:scale-[0.98] shadow-2xs ${isSaved ? 'bg-accent-gold/20 text-accent-gold border border-accent-gold/40' : 'bg-black/5 dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white'}`}><Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} /></button>
           
           <div className="pr-8 text-base md:text-lg leading-relaxed font-bold text-gray-900 dark:text-gray-100 relative whitespace-pre-wrap">
             <MathText content={currentQ.question} />
@@ -494,35 +494,35 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
         {(!isSimulator || isReviewMode) && (isAnswered || isReviewMode) && (
           <div className="pt-2 pb-4 animate-fade-up">
-            <div className="bg-tint-cream text-tint-cream-fg border border-tint-cream-border rounded-3xl p-5 shadow-xs relative overflow-hidden">
+            <div className="bg-tint-cream text-tint-cream-fg border-2 border-tint-cream-border rounded-3xl p-5 shadow-xs relative overflow-hidden">
               <div className="flex items-start gap-3 mb-3">
                 {currentQ?.answer?.trim() ? (
                   <>
-                    <div className="bg-white/80 dark:bg-black/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50 rounded-2xl p-2 shrink-0 shadow-2xs">
+                    <div className="bg-white dark:bg-black/30 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/50 rounded-2xl p-2 shrink-0 shadow-2xs">
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <div>
-                      <span className="text-micro font-bold uppercase tracking-widest block opacity-75 mb-0.5">Verified Correct Key</span>
-                      <p className="text-lg font-black">{currentQ.answer.trim().toUpperCase()}</p>
+                      <span className="text-micro font-black uppercase tracking-widest block text-emerald-950 dark:text-emerald-200 mb-0.5">Verified Correct Key</span>
+                      <p className="text-lg font-black text-gray-950 dark:text-white">{currentQ.answer.trim().toUpperCase()}</p>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="bg-white/80 dark:bg-black/30 text-primary border border-orange-200/50 rounded-2xl p-2 shrink-0 shadow-2xs">
+                    <div className="bg-white dark:bg-black/30 text-primary border border-orange-300 dark:border-orange-700/50 rounded-2xl p-2 shrink-0 shadow-2xs">
                       <Sparkles className="w-5 h-5" />
                     </div>
                     <div>
-                      <span className="text-micro font-bold uppercase tracking-widest block opacity-75 mb-0.5">No Key Provided</span>
-                      <p className="text-xs font-semibold">Tap <strong className="text-primary font-black">Ask AI</strong> below for step-by-step guidance.</p>
+                      <span className="text-micro font-black uppercase tracking-widest block text-orange-950 dark:text-orange-200 mb-0.5">No Key Provided</span>
+                      <p className="text-xs font-bold text-gray-900 dark:text-gray-100">Tap <strong className="text-primary font-black">Ask AI</strong> below for step-by-step guidance.</p>
                     </div>
                   </>
                 )}
               </div>
 
               {currentQ.explanation ? (
-                <div className="mt-3 border-t border-black/[0.06] dark:border-white/[0.08] pt-3">
-                  <span className="text-micro font-black uppercase tracking-widest block opacity-75 mb-1.5">Official Explanation</span>
-                  <div className="text-sm font-medium leading-relaxed whitespace-pre-wrap">
+                <div className="mt-3 border-t border-tint-cream-border pt-3">
+                  <span className="text-micro font-black uppercase tracking-widest block text-tint-cream-fg mb-1.5">Official Explanation</span>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-wrap">
                     <MathText content={currentQ.explanation} />
                   </div>
                 </div>
@@ -532,7 +532,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         )}
       </main>
 
-      <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-ground/90 backdrop-blur-xl border-t border-black/[0.06] dark:border-white/[0.08] p-3.5 z-30 flex justify-between items-center pb-safe">
+      <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-ground/95 backdrop-blur-xl border-t border-black/[0.08] dark:border-white/[0.08] p-3.5 z-30 flex justify-between items-center pb-safe shadow-tactile-md">
         <button 
           onClick={() => { 
             if (canUseAI) {
@@ -544,47 +544,60 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
               haptic.notification('error');
             }
           }} 
-          className={`px-4 h-11 rounded-card-sm text-xs font-black flex items-center gap-1.5 transition-all border border-b-2 active:translate-y-[1px] ${
+          className={`h-12 px-3.5 rounded-2xl border-2 border-b-[3px] font-black text-xs flex items-center gap-2 transition-all active:translate-y-[2px] shadow-tactile-xs ${
             canUseAI 
-              ? 'bg-accent-gold/15 text-accent-gold border-accent-gold/30 border-b-accent-gold/50 hover:bg-accent-gold/20' 
-              : 'bg-black/5 dark:bg-white/5 text-gray-400 dark:text-gray-500 border-black/5 dark:border-white/5 opacity-60'
+              ? 'bg-tint-peach text-tint-peach-fg border-tint-peach-border hover:brightness-105' 
+              : 'bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-black/[0.06] dark:border-white/[0.08] opacity-60'
           }`}
+          title="Ask Temari AI Tutor"
         >
           {canUseAI ? (
-            <Sparkles className="w-4 h-4 fill-accent-gold text-accent-gold"/>
+            <>
+              <Bot className="w-5 h-5 text-primary stroke-[2.5]" />
+              <span className="font-black text-xs text-primary">AI</span>
+            </>
           ) : (
-            <Lock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+            <>
+              <Lock className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <span className="font-bold text-xs text-gray-600 dark:text-gray-400">AI</span>
+            </>
           )}
-          Ask AI
         </button>
-        <div className="flex gap-2">
+
+        <div className="flex items-center gap-2">
           {currentIndex > 0 && (
             <button 
               onClick={() => { sounds.playTap(); haptic.selection(); setCurrentIndex(prev => prev - 1); }} 
-              className="w-11 h-11 rounded-card-sm bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 border-b-black/[0.14] dark:border-b-white/[0.14] flex items-center justify-center text-gray-900 dark:text-gray-100 active:translate-y-[1px] hover:border-black/20 dark:hover:border-white/20 transition-all shadow-tactile-xs"
+              className="w-12 h-12 rounded-2xl bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center text-gray-900 dark:text-gray-100 active:translate-y-[2px] hover:border-black/20 dark:hover:border-white/20 transition-all shadow-tactile-xs"
+              title="Previous question"
             >
-              <ChevronLeft className="w-5 h-5"/>
+              <ChevronLeft className="w-5 h-5 stroke-[2.5]"/>
             </button>
           )}
           <button 
             onClick={() => { sounds.playTap(); haptic.selection(); setShowGrid(true); }} 
-            className="w-11 h-11 rounded-card-sm bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 border-b-black/[0.14] dark:border-b-white/[0.14] flex items-center justify-center text-gray-900 dark:text-gray-100 active:translate-y-[1px] hover:border-black/20 dark:hover:border-white/20 transition-all shadow-tactile-xs"
+            className="w-12 h-12 rounded-2xl bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center text-gray-900 dark:text-gray-100 active:translate-y-[2px] hover:border-black/20 dark:hover:border-white/20 transition-all shadow-tactile-xs"
+            title="Question overview grid"
           >
-            <Grid className="w-5 h-5"/>
+            <Grid className="w-5 h-5 stroke-[2.5]"/>
           </button>
           {currentIndex < questions.length - 1 ? (
             <button 
               onClick={() => { sounds.playTap(); haptic.selection(); setCurrentIndex(prev => prev + 1); }} 
-              className="btn-3d-primary px-5 h-11 rounded-card-sm text-xs font-black flex items-center gap-1.5"
+              className="btn-3d-primary h-12 px-6 rounded-2xl font-black text-sm flex items-center justify-center gap-1.5 shadow-tactile-xs"
+              title="Next question"
             >
-              Next <ChevronRight className="w-4 h-4"/>
+              <span className="text-xs font-black uppercase tracking-wider">Next</span>
+              <ChevronRight className="w-5 h-5 stroke-[2.5]"/>
             </button>
           ) : (
             <button 
               onClick={isReviewMode ? () => { sounds.playTap(); setIsFinished(true); } : handleFinish} 
-              className="btn-3d-primary px-5 h-11 rounded-card-sm text-xs font-black flex items-center gap-1.5"
+              className="h-12 px-6 rounded-2xl font-black text-sm flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white border-2 border-b-[4px] border-emerald-800 active:translate-y-[2px] shadow-tactile-xs transition-all"
+              title="Submit exam"
             >
-              {isReviewMode ? 'Finish' : 'Submit'}
+              <Check className="w-5 h-5 stroke-[3]"/>
+              <span className="text-xs font-black uppercase tracking-wider">{isReviewMode ? 'Finish' : 'Submit'}</span>
             </button>
           )}
         </div>

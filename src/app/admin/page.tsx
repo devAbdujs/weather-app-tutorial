@@ -24,7 +24,7 @@ export default async function AdminDashboard() {
     <div>
       <header className="mb-8">
         <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Overview Dashboard</h1>
-        <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">Welcome back. Here is what is happening across the platform.</p>
+        <p className="text-gray-700 dark:text-gray-300 font-bold mt-1">Welcome back. Here is what is happening across the platform.</p>
       </header>
 
       {error && (
@@ -66,17 +66,17 @@ export default async function AdminDashboard() {
 
       {/* Gemini AI Engine Spotlight */}
       <div className="bg-tint-cream text-tint-cream-fg border-2 border-b-[4px] border-tint-cream-border rounded-3xl p-6 md:p-8 shadow-tactile-sm mb-8 relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-tint-cream-border/50">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-tint-cream-border">
           <div>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center shadow-xs">
                 <Bot className="w-4 h-4" />
               </div>
-              <h2 className="text-xl font-black tracking-tight">
+              <h2 className="text-xl font-black tracking-tight text-tint-cream-fg">
                 Gemini &amp; AI Operations Engine
               </h2>
             </div>
-            <p className="text-sm font-semibold opacity-80 mt-1">
+            <p className="text-sm font-bold text-tint-cream-fg mt-1">
               Live telemetry for Gemini 3.6 Flash key rotation, student inquiry quotas, and cache savings.
             </p>
           </div>
@@ -90,42 +90,42 @@ export default async function AdminDashboard() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-5 rounded-2xl bg-white/80 dark:bg-black/30 border-2 border-b-[4px] border-tint-cream-border/60 shadow-2xs">
-            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider opacity-75 mb-1.5">
+          <div className="p-5 rounded-2xl bg-white dark:bg-black/40 border-2 border-b-[4px] border-tint-cream-border shadow-2xs">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-tint-cream-fg mb-1.5">
               <Key className="w-4 h-4 text-primary" />
               <span>Key Pool Health</span>
             </div>
-            <p className="text-3xl font-black tabular-nums">
+            <p className="text-3xl font-black tabular-nums text-gray-950 dark:text-white">
               {aiStats?.keyDetails.activeKeys ?? 0} / {aiStats?.keyDetails.totalKeys ?? 0}
             </p>
-            <p className="text-caption font-black text-emerald-600 dark:text-emerald-400 mt-1.5 flex items-center gap-1.5">
+            <p className="text-caption font-black text-emerald-700 dark:text-emerald-300 mt-1.5 flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
               All configured keys active
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white/80 dark:bg-black/30 border-2 border-b-[4px] border-tint-cream-border/60 shadow-2xs">
-            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider opacity-75 mb-1.5">
+          <div className="p-5 rounded-2xl bg-white dark:bg-black/40 border-2 border-b-[4px] border-tint-cream-border shadow-2xs">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-tint-cream-fg mb-1.5">
               <Sparkles className="w-4 h-4 text-primary" />
               <span>Weekly Inquiries</span>
             </div>
-            <p className="text-3xl font-black tabular-nums">
+            <p className="text-3xl font-black tabular-nums text-gray-950 dark:text-white">
               {aiStats?.usage.totalWeeklyInquiries.toLocaleString() ?? '0'}
             </p>
-            <p className="text-caption font-semibold opacity-70 mt-1.5">
+            <p className="text-caption font-bold text-gray-700 dark:text-gray-300 mt-1.5">
               {aiStats?.usage.activeAiUsersCount ?? 0} students queried Teme
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white/80 dark:bg-black/30 border-2 border-b-[4px] border-tint-cream-border/60 shadow-2xs">
-            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider opacity-75 mb-1.5">
+          <div className="p-5 rounded-2xl bg-white dark:bg-black/40 border-2 border-b-[4px] border-tint-cream-border shadow-2xs">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-tint-cream-fg mb-1.5">
               <Database className="w-4 h-4 text-emerald-600" />
               <span>Cache Savings</span>
             </div>
-            <p className="text-3xl font-black tabular-nums">
+            <p className="text-3xl font-black tabular-nums text-gray-950 dark:text-white">
               {aiStats?.cache.totalCached.toLocaleString() ?? '0'}
             </p>
-            <p className="text-caption font-black text-emerald-600 dark:text-emerald-400 mt-1.5">
+            <p className="text-caption font-black text-emerald-700 dark:text-emerald-300 mt-1.5">
               ~{((aiStats?.cache.estimatedTokensSaved ?? 0) / 1000).toFixed(1)}k tokens served free
             </p>
           </div>
@@ -151,15 +151,15 @@ function StatCard({
   return (
     <div className={`border-2 border-b-[4px] rounded-3xl p-6 flex flex-col justify-between shadow-tactile-xs hover:-translate-y-0.5 active:translate-y-0 transition-all ${cardClass}`}>
       <div className="flex items-center justify-between gap-3 mb-4">
-        <div className="w-13 h-13 rounded-2xl bg-white/80 dark:bg-black/30 border border-white/60 dark:border-white/10 flex items-center justify-center shrink-0 shadow-2xs">
+        <div className="w-13 h-13 rounded-2xl bg-white dark:bg-black/30 border border-white/60 dark:border-white/10 flex items-center justify-center shrink-0 shadow-2xs">
           {icon}
         </div>
-        <span className="text-micro font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/60 dark:bg-black/20 border border-current/10">
+        <span className="text-micro font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/80 dark:bg-black/40 border border-current/20 shadow-2xs">
           {badge}
         </span>
       </div>
       <div>
-        <p className="text-xs font-black uppercase tracking-wider opacity-75 mb-1">{title}</p>
+        <p className="text-xs font-black uppercase tracking-wider mb-1">{title}</p>
         <p className="text-3xl md:text-4xl font-black tracking-tight leading-none">{value}</p>
       </div>
     </div>

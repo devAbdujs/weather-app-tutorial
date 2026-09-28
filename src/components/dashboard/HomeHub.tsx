@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from 'react';
-import { BookOpen, Flame, FileText, ArrowRight, Target, Sparkles, RefreshCw, Zap, BarChart2, CheckCircle2, ChevronRight } from 'lucide-react';
+import { BookOpen, Flame, FileText, ArrowRight, Target, Sparkles, RefreshCw, Zap, BarChart2, CheckCircle2, ChevronRight, Camera, Mic } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { WelcomeOnboarding } from './WelcomeOnboarding';
 import { updateDailyStreak } from '@/app/actions/user';
@@ -201,17 +201,17 @@ export const HomeHub: React.FC = () => {
       <div className="px-5 space-y-4 mt-2">
 
         {/* ── 2. AI BUDDY HERO BANNER (ui_inspiration2.png: "Start With Chegg") ── */}
-        <div className="bg-tint-cream text-tint-cream-fg border border-tint-cream-border rounded-3xl p-4.5 shadow-xs relative overflow-hidden">
+        <div className="bg-tint-cream text-tint-cream-fg border-2 border-b-[4px] border-tint-cream-border rounded-3xl p-5 shadow-tactile-xs relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl overflow-hidden bg-white/80 dark:bg-black/30 border border-orange-200/50 dark:border-orange-900/40 p-0.5 shadow-2xs shrink-0 flex items-center justify-center">
-                <TemariMascot mood="happy" size={38} animate={false} />
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl overflow-hidden bg-white dark:bg-black/40 border-2 border-orange-300/60 dark:border-orange-900/60 p-0.5 shadow-2xs shrink-0 flex items-center justify-center">
+                <TemariMascot mood="happy" size={40} animate={false} />
               </div>
               <div>
-                <span className="text-micro font-bold opacity-75 uppercase tracking-wider block">
+                <span className="text-xs font-black uppercase tracking-wider block opacity-90">
                   Your A.I Study Buddy
                 </span>
-                <h2 className="text-base font-black tracking-tight leading-tight">
+                <h2 className="text-lg font-black tracking-tight leading-tight">
                   Start With <span className="text-primary font-black">Teme</span>
                 </h2>
               </div>
@@ -219,26 +219,40 @@ export const HomeHub: React.FC = () => {
 
             {/* Mascot Buddy illustration */}
             <div className="shrink-0 -mr-1">
-              <TemariMascot mood="studying" size={52} />
+              <TemariMascot mood="studying" size={54} />
             </div>
           </div>
 
-          {/* Quick Question Input Search Bar (ui_inspiration2.png style) */}
+          {/* Quick Question Input Search Bar with Camera & Mic (ui_inspiration2.png) */}
           <div 
             onClick={() => { sounds.playTap(); haptic.selection(); setShowAI(true); }}
-            className="mt-3.5 flex items-center justify-between bg-white dark:bg-black/40 border border-black/[0.06] dark:border-white/[0.08] rounded-full pl-3 pr-1.5 py-1.5 shadow-xs cursor-pointer active:scale-[0.99] transition-transform"
+            className="mt-4 flex items-center justify-between bg-white dark:bg-black/50 border-2 border-black/[0.08] dark:border-white/[0.1] rounded-full pl-2 pr-1.5 py-1.5 shadow-xs cursor-pointer active:scale-[0.99] transition-transform"
           >
-            <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500">
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 select-none">
+            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+              <button 
+                type="button" 
+                className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-700 dark:text-gray-200 hover:text-primary transition-colors shrink-0 shadow-2xs"
+                title="Scan problem with camera"
+              >
+                <Camera className="w-4 h-4" />
+              </button>
+              <button 
+                type="button" 
+                className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-700 dark:text-gray-200 hover:text-primary transition-colors shrink-0 shadow-2xs"
+                title="Voice inquiry"
+              >
+                <Mic className="w-4 h-4" />
+              </button>
+              <span className="text-xs font-bold text-gray-800 dark:text-gray-200 select-none pl-1 truncate">
                 Ask an expert question...
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 ml-2">
               <button
                 type="button"
                 aria-label="Ask AI"
-                className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-md shadow-orange-500/30 hover:scale-105 active:scale-95 transition-all"
+                className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-md shadow-orange-500/30 hover:scale-105 active:scale-95 transition-all shrink-0"
               >
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />
               </button>
@@ -247,29 +261,29 @@ export const HomeHub: React.FC = () => {
         </div>
 
         {/* ── 3. DAILY QUEST XP GOAL METER ── */}
-        <div className="card-chunky p-4 space-y-2.5">
+        <div className="card-chunky p-4.5 space-y-2.5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-control bg-accent-gold/15 text-accent-gold border border-accent-gold/30 flex items-center justify-center font-black text-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-accent-gold/20 text-accent-gold border border-accent-gold/40 flex items-center justify-center font-black text-sm shadow-2xs">
                 ⚡
               </div>
               <div>
                 <h3 className="text-xs font-black uppercase tracking-wider text-gray-900 dark:text-gray-100 leading-tight">
                   Daily Quest Goal
                 </h3>
-                <p className="text-caption font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
                   {dailyXp >= dailyXpGoal ? 'Goal achieved! You are on fire 🔥' : 'Earn XP by solving past questions'}
                 </p>
               </div>
             </div>
 
-            <span className="font-mono font-black text-xs text-gray-900 dark:text-gray-100 tabular-nums">
-              {dailyXp} <span className="text-slate-400 font-normal">/ {dailyXpGoal} XP</span>
+            <span className="font-mono font-black text-sm text-gray-900 dark:text-gray-100 tabular-nums">
+              {dailyXp} <span className="text-gray-500 font-bold text-xs">/ {dailyXpGoal} XP</span>
             </span>
           </div>
 
           {/* Progress Trough */}
-          <div className="w-full bg-panel border border-black/[0.06] dark:border-white/[0.08] h-3 rounded-full overflow-hidden p-0.5 relative">
+          <div className="w-full bg-panel border-2 border-black/[0.08] dark:border-white/[0.08] h-3.5 rounded-full overflow-hidden p-0.5 relative">
             <div 
               className="h-full rounded-full bg-gradient-to-r from-accent-gold via-amber-500 to-accent-emerald transition-all duration-500 ease-bespoke"
               style={{ width: `${dailyPercent}%` }}
@@ -285,7 +299,7 @@ export const HomeHub: React.FC = () => {
             </h2>
             <button
               onClick={() => { sounds.playTap(); router.push('/practice'); }}
-              className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-primary flex items-center gap-0.5 transition-colors"
+              className="text-xs font-black text-gray-700 dark:text-gray-300 hover:text-primary flex items-center gap-0.5 transition-colors"
             >
               <span>See All</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -294,29 +308,29 @@ export const HomeHub: React.FC = () => {
 
           <div
             onClick={() => { sounds.playTap(); haptic.impact('heavy'); router.push('/practice'); }}
-            className="group relative bg-tint-green text-tint-green-fg border border-tint-green-border rounded-3xl p-5 shadow-xs cursor-pointer active:scale-[0.99] transition-all overflow-hidden"
+            className="group relative bg-tint-green text-tint-green-fg border-2 border-b-[4px] border-tint-green-border rounded-3xl p-5 shadow-tactile-xs cursor-pointer active:translate-y-0.5 active:border-b-2 transition-all overflow-hidden"
           >
-            {/* 3D Visual Icon / Graduation Illustration */}
-            <div className="w-16 h-16 rounded-2xl bg-white/80 dark:bg-black/30 backdrop-blur-xs flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-2xs mb-4 border border-emerald-200/50 dark:border-emerald-900/40">
-              <BookOpen className="w-8 h-8 stroke-[2.2]" />
+            {/* Visual Icon */}
+            <div className="w-16 h-16 rounded-2xl bg-white/90 dark:bg-black/40 backdrop-blur-xs flex items-center justify-center text-emerald-700 dark:text-emerald-300 shadow-2xs mb-4 border border-emerald-500/20">
+              <BookOpen className="w-8 h-8 stroke-[2.4]" />
             </div>
 
             <div className="flex items-end justify-between gap-3">
               <div>
-                <span className="text-micro font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300 bg-white/70 dark:bg-black/30 px-2 py-0.5 rounded-full inline-block mb-1.5">
+                <span className="text-xs font-black uppercase tracking-wider text-emerald-950 dark:text-emerald-200 bg-white/80 dark:bg-black/40 border border-emerald-500/30 px-3 py-1 rounded-full inline-block mb-2 shadow-2xs">
                   31,000+ Past Papers
                 </span>
-                <h3 className="text-lg font-black tracking-tight leading-snug">
+                <h3 className="text-xl font-black tracking-tight leading-snug">
                   See <span className="text-primary font-black">Temari Solutions</span> In Action
                 </h3>
-                <p className="text-caption font-medium opacity-80 mt-1 max-w-[240px]">
-                  Real national entrance and university exams with detailed explanations.
+                <p className="text-xs font-bold opacity-90 mt-1 max-w-[250px]">
+                  Real national entrance and university exams with step-by-step guidance.
                 </p>
               </div>
 
               {/* Large Round Orange Action Button (ui_inspiration2.png) */}
-              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/35 group-hover:scale-105 active:scale-95 transition-all">
-                <ArrowRight className="w-5 h-5 stroke-[2.5]" />
+              <div className="w-13 h-13 rounded-full bg-primary text-white flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/35 group-hover:scale-105 active:scale-95 transition-all">
+                <ArrowRight className="w-6 h-6 stroke-[2.6]" />
               </div>
             </div>
           </div>
@@ -326,18 +340,18 @@ export const HomeHub: React.FC = () => {
         {lastSession && (
           <button
             onClick={() => { sounds.playTap(); handleContinue(); }}
-            className="w-full btn-3d-card p-4 rounded-card text-left flex items-center justify-between transition-all"
+            className="w-full btn-3d-card p-4 rounded-3xl text-left flex items-center justify-between transition-all"
           >
             <div>
-              <div className="flex items-center gap-1.5 text-micro font-black text-accent-gold uppercase tracking-widest mb-0.5">
-                <Flame className="w-3 h-3 fill-current" />
+              <div className="flex items-center gap-1.5 text-micro font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-0.5">
+                <Flame className="w-3.5 h-3.5 fill-current" />
                 <span>Resume Active Study</span>
               </div>
               <h3 className="font-black text-gray-900 dark:text-gray-100 text-sm leading-snug">{lastSession.subject}</h3>
-              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
+              <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
             </div>
-            <div className="w-9 h-9 bg-primary/10 border border-primary/20 text-primary rounded-control flex items-center justify-center shrink-0">
-              <ArrowRight className="w-4 h-4" />
+            <div className="w-10 h-10 bg-primary/10 border-2 border-primary/20 text-primary rounded-2xl flex items-center justify-center shrink-0 shadow-2xs">
+              <ArrowRight className="w-5 h-5 stroke-[2.4]" />
             </div>
           </button>
         )}
@@ -350,25 +364,25 @@ export const HomeHub: React.FC = () => {
             </h2>
             <button
               onClick={() => { sounds.playTap(); router.push('/practice'); }}
-              className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-primary flex items-center gap-0.5 transition-colors"
+              className="text-xs font-black text-gray-700 dark:text-gray-300 hover:text-primary flex items-center gap-0.5 transition-colors"
             >
               <span>See All</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3.5">
             {/* Short Notes Card (Pastel Lavender) */}
             <button
               onClick={() => { sounds.playTap(); haptic.impact('medium'); router.push('/practice?mode=notes'); }}
-              className="bg-tint-purple text-tint-purple-fg border border-tint-purple-border p-4 rounded-3xl text-left group shadow-xs hover:shadow-md transition-all active:scale-[0.98]"
+              className="bg-tint-purple text-tint-purple-fg border-2 border-b-[4px] border-tint-purple-border p-4.5 rounded-3xl text-left group shadow-tactile-xs hover:-translate-y-0.5 transition-all active:translate-y-0 active:border-b-2"
             >
-              <div className="w-10 h-10 bg-white/80 dark:bg-black/30 text-purple-700 dark:text-purple-300 border border-purple-200/40 rounded-2xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform shadow-2xs">
-                <FileText className="w-5 h-5 stroke-[2.2]" />
+              <div className="w-11 h-11 bg-white dark:bg-black/40 text-purple-700 dark:text-purple-300 border border-purple-300/40 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-2xs">
+                <FileText className="w-5 h-5 stroke-[2.4]" />
               </div>
               <h3 className="text-sm font-black leading-tight">Short Notes</h3>
-              <p className="text-caption font-medium opacity-80 mt-0.5 truncate">Summaries &amp; Concepts</p>
-              <div className="mt-2.5 text-micro font-black px-2 py-0.5 rounded-full bg-white/70 dark:bg-black/30 inline-flex items-center">
+              <p className="text-xs font-bold opacity-90 mt-0.5 truncate">Summaries &amp; Concepts</p>
+              <div className="mt-3 text-micro font-black px-2.5 py-1 rounded-full bg-white/80 dark:bg-black/40 border border-current/10 inline-flex items-center shadow-2xs">
                 +20 XP / unit
               </div>
             </button>
@@ -376,14 +390,14 @@ export const HomeHub: React.FC = () => {
             {/* Flashcards Card (Pastel Peach) */}
             <button
               onClick={() => { sounds.playTap(); haptic.impact('medium'); router.push('/practice?mode=flashcards'); }}
-              className="bg-tint-peach text-tint-peach-fg border border-tint-peach-border p-4 rounded-3xl text-left group shadow-xs hover:shadow-md transition-all active:scale-[0.98]"
+              className="bg-tint-peach text-tint-peach-fg border-2 border-b-[4px] border-tint-peach-border p-4.5 rounded-3xl text-left group shadow-tactile-xs hover:-translate-y-0.5 transition-all active:translate-y-0 active:border-b-2"
             >
-              <div className="w-10 h-10 bg-white/80 dark:bg-black/30 text-amber-700 dark:text-amber-300 border border-amber-200/40 rounded-2xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform shadow-2xs">
-                <Zap className="w-5 h-5 stroke-[2.2]" />
+              <div className="w-11 h-11 bg-white dark:bg-black/40 text-amber-700 dark:text-amber-300 border border-amber-300/40 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-2xs">
+                <Zap className="w-5 h-5 stroke-[2.4]" />
               </div>
               <h3 className="text-sm font-black leading-tight">Flashcards</h3>
-              <p className="text-caption font-medium opacity-80 mt-0.5 truncate">Rapid-Fire Drills</p>
-              <div className="mt-2.5 text-micro font-black px-2 py-0.5 rounded-full bg-white/70 dark:bg-black/30 inline-flex items-center">
+              <p className="text-xs font-bold opacity-90 mt-0.5 truncate">Rapid-Fire Drills</p>
+              <div className="mt-3 text-micro font-black px-2.5 py-1 rounded-full bg-white/80 dark:bg-black/40 border border-current/10 inline-flex items-center shadow-2xs">
                 +15 XP / deck
               </div>
             </button>

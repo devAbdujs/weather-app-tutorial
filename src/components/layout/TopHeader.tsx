@@ -54,51 +54,51 @@ export const TopHeader = () => {
           <button
             onClick={() => { sounds.playTap(); router.back(); }}
             aria-label="Go back"
-            className="w-9 h-9 flex items-center justify-center rounded-control btn-3d-card text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+            className="w-10 h-10 flex items-center justify-center rounded-2xl border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-white dark:bg-[#1A222D] text-gray-900 dark:text-gray-100 hover:text-primary transition-all shadow-2xs"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
           </button>
         ) : (
           <div 
             onClick={() => { sounds.playTap(); router.push('/dashboard'); }}
             className="flex items-center gap-2 cursor-pointer active:scale-95 transition-transform"
           >
-            <div className="w-9 h-9 rounded-control overflow-hidden shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.12] border-b-bevel shrink-0 bg-primary/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl overflow-hidden shadow-2xs border-2 border-b-[3px] border-orange-500/30 shrink-0 bg-primary/10 flex items-center justify-center">
               <Image
                 src="/assets/temari logo.png"
                 alt="Temari"
                 className="w-full h-full object-cover"
-                width={36}
-                height={36}
+                width={40}
+                height={40}
               />
             </div>
-            <span className="font-black text-base text-gray-900 dark:text-gray-100 tracking-tight hidden xs:inline">
+            <span className="font-black text-lg text-gray-900 dark:text-gray-100 tracking-tight hidden xs:inline">
               Temari
             </span>
           </div>
         )}
       </div>
 
-      {/* Center: Live Gamification Telemetry (Streak & XP) */}
+      {/* Center: Live Gamification Telemetry (Streak & XP - High Contrast) */}
       <div className="flex items-center gap-1.5 sm:gap-2">
         {/* Streak Pill - Warm Gold Flame */}
         <button
           onClick={() => { sounds.playStreak(); router.push('/mastery'); }}
           title={`${streak} Day Streak`}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-gold/15 border border-accent-gold/30 border-b-bevel border-b-accent-gold/50 text-accent-gold font-black text-xs active:translate-y-[2px] transition-all shadow-tactile-xs"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/15 border-2 border-b-[3px] border-amber-500/30 text-amber-950 dark:text-amber-200 font-black text-xs active:translate-y-[1px] transition-all shadow-2xs"
         >
-          <Flame className="w-3.5 h-3.5 fill-accent-gold text-accent-gold" />
-          <span className="font-mono tabular-nums">{streak}</span>
+          <Flame className="w-4 h-4 fill-amber-500 text-amber-500" />
+          <span className="font-mono font-black tabular-nums">{streak}</span>
         </button>
 
-        {/* XP Counter Pill - Vibrant Royal Cobalt */}
+        {/* XP Counter Pill - High Contrast */}
         <button
           onClick={() => { sounds.playCorrect(); router.push('/profile'); }}
           title={`${xp} Total XP`}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/12 border border-primary/25 border-b-bevel border-b-primary/45 text-primary font-black text-xs active:translate-y-[2px] transition-all shadow-tactile-xs"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/15 border-2 border-b-[3px] border-orange-500/30 text-orange-950 dark:text-orange-200 font-black text-xs active:translate-y-[1px] transition-all shadow-2xs"
         >
-          <Zap className="w-3.5 h-3.5 fill-primary text-primary" />
-          <span className="font-mono tabular-nums">{xp} XP</span>
+          <Zap className="w-4 h-4 fill-primary text-primary" />
+          <span className="font-mono font-black tabular-nums">{xp}</span>
         </button>
       </div>
 
@@ -108,7 +108,7 @@ export const TopHeader = () => {
         {userProfile?.subscription_status !== 'premium' && (
           <button
             onClick={() => { sounds.playTap(); router.push('/upgrade'); }}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-control bg-amber-400 hover:bg-amber-500 text-stone-900 font-black text-micro sm:text-xs shadow-tactile-xs active:scale-95 transition-all"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-2xl bg-amber-400 hover:bg-amber-500 border-2 border-b-[3px] border-amber-600 text-stone-950 font-black text-xs shadow-2xs active:translate-y-0.5 transition-all"
             title="Upgrade to Pro"
           >
             <span>👑</span>
@@ -121,12 +121,12 @@ export const TopHeader = () => {
           onClick={toggleSound}
           aria-label={soundEnabled ? 'Mute sound effects' : 'Unmute sound effects'}
           title={soundEnabled ? 'Sound FX On' : 'Sound FX Muted'}
-          className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-control btn-3d-card text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary"
+          className="w-9 h-9 flex items-center justify-center rounded-2xl border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 hover:text-primary transition-all shadow-2xs"
         >
           {soundEnabled ? (
             <Volume2 className="w-4 h-4 text-primary" />
           ) : (
-            <VolumeX className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+            <VolumeX className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           )}
         </button>
 
@@ -134,9 +134,9 @@ export const TopHeader = () => {
         <button
           onClick={toggle}
           aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-control btn-3d-card text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100"
+          className="w-9 h-9 flex items-center justify-center rounded-2xl border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 hover:text-primary transition-all shadow-2xs"
         >
-          {resolvedTheme === 'dark' ? <Sun className="w-4 h-4 text-accent-gold" /> : <Moon className="w-4 h-4 text-gray-700" />}
+          {resolvedTheme === 'dark' ? <Sun className="w-4 h-4 text-accent-gold" /> : <Moon className="w-4 h-4 text-gray-800" />}
         </button>
       </div>
     </header>

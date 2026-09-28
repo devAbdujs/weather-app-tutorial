@@ -229,21 +229,21 @@ export const PracticeHub = () => {
       {/* ── 2. TOP STAT BOXES (ui_inspiration1.png) ── */}
       <div className="px-5 grid grid-cols-2 gap-3 mt-2 mb-4">
         {/* Questions Asked Box (Cyan Pastel) */}
-        <div className="bg-tint-sky text-tint-sky-fg border border-tint-sky-border rounded-2xl p-3.5 flex items-center gap-3.5 shadow-xs">
-          <div className="text-2xl font-black font-mono leading-none">
+        <div className="bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-tint-sky-border rounded-2xl p-4 flex items-center gap-4 shadow-2xs">
+          <div className="text-3xl font-black font-mono leading-none">
             32
           </div>
-          <div className="text-caption font-black leading-tight">
+          <div className="text-xs font-black uppercase tracking-wider leading-tight">
             Questions<br />Asked
           </div>
         </div>
 
         {/* Solutions Saved Box (Peach/Amber Pastel) */}
-        <div className="bg-tint-peach text-tint-peach-fg border border-tint-peach-border rounded-2xl p-3.5 flex items-center gap-3.5 shadow-xs">
-          <div className="text-2xl font-black font-mono leading-none">
+        <div className="bg-tint-peach text-tint-peach-fg border-2 border-b-[3px] border-tint-peach-border rounded-2xl p-4 flex items-center gap-4 shadow-2xs">
+          <div className="text-3xl font-black font-mono leading-none">
             18
           </div>
-          <div className="text-caption font-black leading-tight">
+          <div className="text-xs font-black uppercase tracking-wider leading-tight">
             Solutions<br />Saved
           </div>
         </div>
@@ -251,14 +251,14 @@ export const PracticeHub = () => {
 
       {/* ── 3. SEGMENTED TOGGLE (ui_inspiration1.png: "My Questions" / "Saved") ── */}
       <div className="px-5 mb-4">
-        <div className="p-1 bg-[#F4EFEA] dark:bg-[#1E2530] border border-black/[0.05] dark:border-white/[0.08] rounded-full flex items-center">
+        <div className="p-1 bg-[#F4EFEA] dark:bg-[#1E2530] border-2 border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center">
           <button
             onClick={() => { sounds.playTap(); haptic.selection(); setFilterMode('all'); }}
             className={`
-              flex-1 py-2 rounded-full text-xs font-black transition-all duration-150
+              flex-1 py-2.5 rounded-full text-xs font-black transition-all duration-150
               ${filterMode === 'all'
                 ? 'bg-primary text-white shadow-md shadow-orange-500/25'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}
+                : 'text-gray-800 dark:text-gray-200 hover:text-primary'}
             `}
           >
             All Subjects
@@ -266,10 +266,10 @@ export const PracticeHub = () => {
           <button
             onClick={() => { sounds.playTap(); haptic.selection(); setFilterMode('saved'); }}
             className={`
-              flex-1 py-2 rounded-full text-xs font-black transition-all duration-150
+              flex-1 py-2.5 rounded-full text-xs font-black transition-all duration-150
               ${filterMode === 'saved'
                 ? 'bg-primary text-white shadow-md shadow-orange-500/25'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}
+                : 'text-gray-800 dark:text-gray-200 hover:text-primary'}
             `}
           >
             Saved &amp; Starred
@@ -280,13 +280,13 @@ export const PracticeHub = () => {
       {/* Dev Mode Curriculum Override */}
       {devMode && (
         <div className="px-5 mb-4">
-          <div className="flex p-1 bg-panel border border-black/[0.08] dark:border-white/[0.08] rounded-card-sm">
+          <div className="flex p-1 bg-panel border-2 border-black/[0.08] dark:border-white/[0.08] rounded-card-sm">
             {['entrance', 'freshman', 'exit'].map(tab => (
               <button
                 key={tab}
                 onClick={() => { sounds.playTap(); haptic.selection(); setActiveTab(tab); }}
                 className={`flex-1 py-2 text-xs font-black capitalize rounded-btn transition-all ${
-                  activeTab === tab ? 'bg-primary text-white shadow-tactile-xs' : 'text-slate-600 dark:text-slate-400'
+                  activeTab === tab ? 'bg-primary text-white shadow-tactile-xs' : 'text-gray-800 dark:text-gray-200'
                 }`}
               >
                 {tab}
@@ -297,65 +297,67 @@ export const PracticeHub = () => {
       )}
 
       {/* ── 4. COLORFUL PASTEL SUBJECT CARDS (ui_inspiration1.png) ── */}
-      <div className="px-5 space-y-3">
+      <div className="px-5 space-y-3.5">
         {subjects.map((c) => {
           const style = getSubjectCardStyle(c.id);
-          const Icon = c.Icon;
 
           return (
             <div
               key={c.id}
               onClick={() => navigate(targetExam || 'entrance', { subject: c.id })}
               className={`
-                group relative p-4 rounded-3xl border ${style.card}
-                shadow-xs hover:shadow-md
+                group relative p-5 rounded-3xl border-2 border-b-[4px] ${style.card}
+                shadow-tactile-xs hover:-translate-y-0.5
                 transition-all duration-150 cursor-pointer
-                active:scale-[0.98] active:translate-y-[1px]
+                active:translate-y-0 active:border-b-2
                 flex flex-col justify-between
               `}
             >
               {/* Top Row: White Pill Badge + Star Rating */}
-              <div className="flex items-center justify-between mb-2">
-                <span className={`px-3 py-1 rounded-full text-xs font-black shadow-2xs border ${style.badge}`}>
+              <div className="flex items-center justify-between mb-2.5">
+                <span className={`px-3.5 py-1 rounded-full text-xs font-black shadow-2xs border ${style.badge}`}>
                   {c.id}
                 </span>
 
-                <div className="flex items-center gap-1 bg-white/70 dark:bg-black/30 backdrop-blur-xs px-2.5 py-0.5 rounded-full text-xs font-black text-amber-600 dark:text-amber-400 shadow-2xs">
+                <div className="flex items-center gap-1 bg-white/85 dark:bg-black/40 backdrop-blur-xs px-2.5 py-0.5 rounded-full text-xs font-black text-amber-700 dark:text-amber-300 border border-amber-400/30 shadow-2xs">
                   <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                   <span>{style.star}</span>
                 </div>
               </div>
 
-              {/* Middle Row: Title & Subtitle */}
+              {/* Middle Row: Title & Subtitle (High Contrast) */}
               <div className="my-1.5 pr-2">
-                <h3 className="text-sm font-black tracking-tight leading-snug">
+                <h3 className="text-base font-black tracking-tight leading-snug">
                   {c.id} — Complete Exam Syllabus
                 </h3>
-                <p className="text-caption font-medium opacity-80 mt-0.5 line-clamp-1">
+                <p className="text-xs font-bold opacity-90 mt-1 line-clamp-1">
                   {style.topics}
                 </p>
               </div>
 
-              {/* Bottom Row: XP / Saved indicator & tactile action buttons */}
-              <div className="flex items-center justify-between mt-2 pt-2 border-t border-black/[0.06] dark:border-white/[0.06]">
-                <span className="text-micro font-black opacity-75">
-                  Saved past papers • <span className="text-primary font-black">+10 XP</span>
+              {/* Bottom Row: Status Indicator & Pure Icon Buttons (ui_inspiration1.png) */}
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-current/10">
+                <span className="flex items-center gap-1.5 text-xs font-black">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Active Syllabus</span>
                 </span>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={(e) => { e.stopPropagation(); sounds.playTap(); haptic.selection(); }}
                     aria-label="Bookmark subject"
-                    className="w-7 h-7 rounded-xl bg-white/70 dark:bg-black/30 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-primary transition-colors shadow-2xs"
+                    title="Bookmark"
+                    className="w-9 h-9 rounded-2xl bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-800 dark:text-gray-200 hover:text-primary transition-all shadow-2xs active:scale-90"
                   >
-                    <Bookmark className="w-3.5 h-3.5" />
+                    <Bookmark className="w-4 h-4" />
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); navigate(targetExam || 'entrance', { subject: c.id }); }}
                     aria-label="Enter practice session"
-                    className="w-7 h-7 rounded-xl bg-primary text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs"
+                    title="Start Practice"
+                    className="w-9 h-9 rounded-2xl bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 flex items-center justify-center text-primary hover:scale-105 transition-all shadow-2xs active:scale-90"
                   >
-                    <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
+                    <Download className="w-4 h-4" />
                   </button>
                 </div>
               </div>

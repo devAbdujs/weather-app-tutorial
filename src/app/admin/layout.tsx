@@ -30,48 +30,48 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <span className="text-accent-gold text-xs px-2 py-0.5 rounded-full bg-white/10 font-bold">Admin</span>
             </h2>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="px-1.5 py-0.5 bg-white/15 rounded text-[10px] font-black uppercase tracking-wider text-white/90">
+              <span className="px-2 py-0.5 bg-black/25 rounded text-[10px] font-black uppercase tracking-wider text-accent-gold">
                 {admin.role}
               </span>
-              <span className="text-xs font-semibold text-white/60">@{admin.username}</span>
+              <span className="text-xs font-bold text-white/90">@{admin.username}</span>
             </div>
           </div>
         </div>
         
-        <nav className="flex-1 px-3 space-y-1.5 overflow-y-auto custom-scrollbar mt-4">
-          <Link href="/admin" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-bold text-sm text-white/90 hover:text-white">
-            <LayoutDashboard className="w-5 h-5 text-white/80" />
+        <nav className="flex-1 px-3 space-y-2 overflow-y-auto custom-scrollbar mt-4">
+          <Link href="/admin" className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 active:translate-x-1 transition-all font-black text-sm text-white shadow-2xs">
+            <LayoutDashboard className="w-5 h-5 text-accent-gold stroke-[2.2]" />
             Dashboard
           </Link>
-          <Link href="/admin/ai" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-bold text-sm text-white/90 hover:text-white">
-            <Bot className="w-5 h-5 text-accent-gold" />
+          <Link href="/admin/ai" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-black text-sm text-white">
+            <Bot className="w-5 h-5 text-accent-gold stroke-[2.2]" />
             AI &amp; Gemini
           </Link>
-          <Link href="/admin/users" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-bold text-sm text-white/90 hover:text-white">
-            <Users className="w-5 h-5 text-white/80" />
+          <Link href="/admin/users" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-black text-sm text-white">
+            <Users className="w-5 h-5 text-white stroke-[2.2]" />
             Users
           </Link>
-          <Link href="/admin/payments" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-bold text-sm text-white/90 hover:text-white">
-            <CreditCard className="w-5 h-5 text-white/80" />
+          <Link href="/admin/payments" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-black text-sm text-white">
+            <CreditCard className="w-5 h-5 text-white stroke-[2.2]" />
             Payments
           </Link>
-          <Link href="/admin/questions" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-bold text-sm text-white/90 hover:text-white">
-            <BookOpen className="w-5 h-5 text-white/80" />
+          <Link href="/admin/questions" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-black text-sm text-white">
+            <BookOpen className="w-5 h-5 text-white stroke-[2.2]" />
             Questions
           </Link>
           
           {/* Hide Upload Notes from Readonly admins */}
           {!isReadonly && (
-            <Link href="/admin/upload-notes" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-bold text-sm text-white/90 hover:text-white">
-              <FileText className="w-5 h-5 text-white/80" />
+            <Link href="/admin/upload-notes" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-black text-sm text-white">
+              <FileText className="w-5 h-5 text-white stroke-[2.2]" />
               Upload Notes
             </Link>
           )}
 
           {/* Superadmin Settings */}
           {isSuperAdmin && (
-            <Link href="/admin/managers" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-bold text-sm text-white/90 hover:text-white">
-              <ShieldCheck className="w-5 h-5 text-white/80" />
+            <Link href="/admin/managers" className="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/15 active:translate-x-1 transition-all font-black text-sm text-white">
+              <ShieldCheck className="w-5 h-5 text-white stroke-[2.2]" />
               Manage Admins
             </Link>
           )}
