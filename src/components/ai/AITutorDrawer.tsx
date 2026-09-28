@@ -2,7 +2,24 @@
 import { toast } from 'sonner';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Lightbulb, Globe, Loader2, Send, User, Sparkles, GraduationCap, Camera, Mic } from 'lucide-react';
+import { 
+  X, 
+  Lightbulb, 
+  Globe, 
+  Loader2, 
+  Send, 
+  Sparkles, 
+  GraduationCap, 
+  Camera, 
+  Mic,
+  ChevronRight,
+  BookOpen,
+  Target,
+  CheckCircle2,
+  Brain,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -35,6 +52,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showPromptsMenu, setShowPromptsMenu] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize with a welcoming message
@@ -44,8 +62,8 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
         id: 'welcome',
         role: 'assistant',
         content: mode === 'exam' 
-          ? "👋 **Hello! I'm Temari AI, your study companion.** \n\nLet's tackle this question together! You can ask me for a hint, an Amharic translation, or simply ask whatever is on your mind."
-          : "👋 **Hello! I'm Temari AI, your study companion.** \n\nI have read this chapter. Ask me any custom question you have, and I will explain it to you!"
+          ? "👋 **Hello! I'm Temari AI, your exam study companion.** \n\nI have this question loaded. Pick a guidance action below or type your custom question!"
+          : "👋 **Hello! I'm Temari AI, your textbook study companion.** \n\nI have read this chapter note. Pick an action below or ask me anything you want clarified!"
       }]);
     }
   }, [isOpen, mode, messages.length]);
@@ -57,21 +75,26 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
 
   if (!isOpen) return null;
 
-  const sendMessage = async (type: 'hint' | 'explain' | 'amharic' | 'chat', customUserText?: string) => {
+  const sendMessage = async (
+    type: 'hint' | 'explain' | 'eli5' | 'amharic' | 'chat', 
+    customUserText?: string,
+    customDisplayText?: string
+  ) => {
     haptic.impact('light');
+    setShowPromptsMenu(false);
     
     let userText = customUserText || '';
-    let displayText = userText;
+    let displayText = customDisplayText || userText;
 
-    if (type === 'hint') {
+    if (type === 'hint' && !customUserText) {
       userText = 'Please give me a small, guiding hint to help me understand this. Do not give me the full answer directly.';
       displayText = '💡 Give me a hint';
     }
-    if (type === 'explain') {
-      userText = 'Please explain the correct answer to me in detail.';
-      displayText = '💡 Explain the answer';
+    if (type === 'explain' && !customUserText) {
+      userText = 'Please explain the correct answer to me in detail and show me the step-by-step reasoning.';
+      displayText = '📖 Explain the solution';
     }
-    if (type === 'amharic') {
+    if (type === 'amharic' && !customUserText) {
       userText = 'Please translate the main idea and explain it simply in Amharic.';
       displayText = '🇪🇹 በአማርኛ አስረዳኝ';
     }
@@ -100,6 +123,8 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
         body: JSON.stringify({
           mode,
           noteText,
+          questionId: question?.id, // Fix: pass questionId to enable ai_cache
+          subject: question?.subject,
           questionText: question?.question,
           options: question ? [question.option_a, question.option_b, question.option_c, question.option_d] : undefined,
           correctAnswer: question?.answer,
@@ -170,11 +195,92 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
     sendMessage('chat', input);
   };
 
+  // ── VERTICALLY STACKED QUICK PROMPT ACTIONS ──────────────────────────
+  const examPrompts = [
+    {
+      id: 'hint',
+      icon: Lightbulb,
+      title: 'Get a Guiding Hint',
+      desc: 'Clue to solve it yourself without giving the answer away',
+      tint: 'bg-tint-peach text-tint-peach-fg border-tint-peach-border',
+      iconBg: 'text-amber-600 bg-white/90 dark:bg-black/40',
+      action: () => sendMessage('hint', 'Please give me a small, guiding hint to help me solve this step-by-step without giving away the direct answer.', '💡 Give me a hint'),
+    },
+    {
+      id: 'explain',
+      icon: CheckCircle2,
+      title: 'Full Step-by-Step Solution',
+      desc: 'Detailed breakdown of why the correct choice is right',
+      tint: 'bg-tint-green text-tint-green-fg border-tint-green-border',
+      iconBg: 'text-emerald-600 bg-white/90 dark:bg-black/40',
+      action: () => sendMessage('explain', 'Please explain the correct answer in detail with clear step-by-step reasoning.', '📖 Explain the solution'),
+    },
+    {
+      id: 'amharic',
+      icon: Globe,
+      title: 'በአማርኛ ማብራሪያ',
+      desc: 'ጥያቄውን እና የትክክለኛውን መልስ ማብራሪያ በአማርኛ አስረዳኝ',
+      tint: 'bg-tint-sky text-tint-sky-fg border-tint-sky-border',
+      iconBg: 'text-sky-600 bg-white/90 dark:bg-black/40',
+      action: () => sendMessage('amharic', 'Please translate the core problem and explain the solution in clear, natural Amharic (አማርኛ).', '🇪🇹 በአማርኛ አስረዳኝ'),
+    },
+    {
+      id: 'concept',
+      icon: Brain,
+      title: 'Core Concept & Exam Traps',
+      desc: 'Key formulas, principles, or common mistakes in this question',
+      tint: 'bg-tint-purple text-tint-purple-fg border-tint-purple-border',
+      iconBg: 'text-purple-600 bg-white/90 dark:bg-black/40',
+      action: () => sendMessage('eli5', 'What core formula, scientific principle, or common exam trap does this question test? Explain clearly.', '🧠 Core concept & exam traps'),
+    },
+  ];
+
+  const notePrompts = [
+    {
+      id: 'summary',
+      icon: BookOpen,
+      title: 'Chapter Key Takeaways',
+      desc: '3 most crucial exam-focused takeaways from this note',
+      tint: 'bg-tint-peach text-tint-peach-fg border-tint-peach-border',
+      iconBg: 'text-amber-600 bg-white/90 dark:bg-black/40',
+      action: () => sendMessage('chat', 'Please summarize the 3 most crucial takeaways and exam-focused points from this chapter note.', '📝 Chapter Key Takeaways'),
+    },
+    {
+      id: 'quiz',
+      icon: Target,
+      title: 'Generate Practice Question',
+      desc: 'Quiz me with an exam-style multiple-choice question on this note',
+      tint: 'bg-tint-green text-tint-green-fg border-tint-green-border',
+      iconBg: 'text-emerald-600 bg-white/90 dark:bg-black/40',
+      action: () => sendMessage('chat', 'Generate a realistic multiple-choice exam question based strictly on this chapter note with 4 options (A, B, C, D). Wait for me to answer before revealing the solution.', '🎯 Generate Practice Quiz'),
+    },
+    {
+      id: 'amharic',
+      icon: Globe,
+      title: 'ዋና ዋና ነጥቦች በአማርኛ',
+      desc: 'የዚህን ምዕራፍ ዋና ዋና ጽንሰ-ሀሳቦች በአማርኛ አጠቃልልልኝ',
+      tint: 'bg-tint-sky text-tint-sky-fg border-tint-sky-border',
+      iconBg: 'text-sky-600 bg-white/90 dark:bg-black/40',
+      action: () => sendMessage('amharic', 'የዚህን ምዕራፍ ዋና ዋና ጽንሰ-ሀሳቦች እና ፈተና ላይ ሊወጡ የሚችሉ ነጥቦችን በአማርኛ አጠቃልለህ አስረዳኝ።', '🇪🇹 ዋና ዋና ነጥቦች በአማርኛ'),
+    },
+    {
+      id: 'analogy',
+      icon: Sparkles,
+      title: 'Simplify Tough Concept',
+      desc: 'Break down the most complex idea here with a simple analogy',
+      tint: 'bg-tint-purple text-tint-purple-fg border-tint-purple-border',
+      iconBg: 'text-purple-600 bg-white/90 dark:bg-black/40',
+      action: () => sendMessage('eli5', 'Take the most difficult or complex concept in this chapter note and explain it using a simple, intuitive real-world analogy.', '💡 Explain tough concept simply'),
+    },
+  ];
+
+  const activePrompts = mode === 'exam' ? examPrompts : notePrompts;
+
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm animate-fade-in transition-all duration-300">
-      <div className="w-full max-w-lg bg-card border-t border-black/[0.06] dark:border-white/[0.08] rounded-t-modal p-5 max-h-[90vh] h-[90vh] flex flex-col shadow-2xl animate-drawer-up">
+      <div className="w-full max-w-lg bg-card border-t border-black/[0.06] dark:border-white/[0.08] rounded-t-modal p-4 sm:p-5 max-h-[92vh] h-[92vh] flex flex-col shadow-2xl animate-drawer-up">
         {/* Premium Header */}
-        <div className="flex items-center justify-between pb-3.5 border-b border-black/[0.06] dark:border-white/[0.08] shrink-0">
+        <div className="flex items-center justify-between pb-3 border-b border-black/[0.06] dark:border-white/[0.08] shrink-0">
           <div className="flex items-center gap-3">
             <div className="relative p-1 rounded-2xl bg-tint-cream border border-tint-cream-border shadow-xs">
               <TemariMascot mood="happy" size={36} animate={false} />
@@ -185,7 +291,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
                 Temari AI <span className="text-primary">Tutor</span>
               </h3>
               <p className="text-caption text-gray-700 dark:text-gray-300 font-bold flex items-center gap-1">
-                <GraduationCap className="w-3.5 h-3.5 text-primary" /> Ethiopian Exam Companion
+                <GraduationCap className="w-3.5 h-3.5 text-primary" /> {mode === 'exam' ? 'Exam Problem Solver' : 'Chapter Note Companion'}
               </p>
             </div>
           </div>
@@ -202,48 +308,97 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           </button>
         </div>
 
-        {/* Floating Quick Action Chips (Inspiration Pastel Tints) */}
-        <div className="flex gap-2 py-3 overflow-x-auto no-scrollbar shrink-0 -mx-5 px-5">
-          <button
-            onClick={() => { sounds.playTap(); sendMessage(studentAnswer ? 'explain' : 'hint'); }}
-            disabled={isLoading}
-            className="flex items-center gap-1.5 text-xs px-4 py-2 rounded-full font-black border-2 border-b-[3px] transition-all whitespace-nowrap bg-tint-peach text-tint-peach-fg border-tint-peach-border hover:brightness-105 active:scale-95 shadow-tactile-xs"
-          >
-            <Lightbulb className="w-4 h-4 fill-current stroke-[2.5]" />
-            {mode === 'exam' 
-              ? (studentAnswer ? 'Explain Solution' : 'Guiding Hint') 
-              : 'Summarize Chapter'}
-          </button>
+        {/* ── CONTEXT PILL CARD (Question or Note snippet) ── */}
+        <div className="pt-2 shrink-0">
+          {mode === 'exam' && question && (
+            <div className="p-2.5 bg-ground border border-black/[0.08] dark:border-white/[0.08] rounded-2xl flex items-center justify-between text-xs shadow-2xs">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="px-2 py-0.5 rounded-lg bg-primary/10 text-primary font-black uppercase text-micro shrink-0">
+                  {question.subject || 'Question'}
+                </span>
+                <span className="font-semibold text-gray-700 dark:text-gray-300 truncate">
+                  {question.question.replace(/\n/g, ' ')}
+                </span>
+              </div>
+              {studentAnswer ? (
+                <span className="px-2 py-0.5 rounded-md bg-accent-gold/20 text-accent-gold font-mono font-black text-micro shrink-0 ml-2">
+                  Choice: {studentAnswer}
+                </span>
+              ) : (
+                <span className="text-micro font-bold text-slate-400 shrink-0 ml-2">
+                  Unanswered
+                </span>
+              )}
+            </div>
+          )}
 
-          <button
-            onClick={() => { sounds.playTap(); sendMessage('amharic'); }}
-            disabled={isLoading}
-            className="flex items-center gap-1.5 text-xs px-4 py-2 rounded-full font-black border-2 border-b-[3px] transition-all whitespace-nowrap bg-tint-sky text-tint-sky-fg border-tint-sky-border hover:brightness-105 active:scale-95 shadow-tactile-xs"
-          >
-            <Globe className="w-4 h-4 stroke-[2.5]" />
-            🇪🇹 በአማርኛ አስረዳኝ
-          </button>
-
-          {mode === 'exam' && !studentAnswer && (
-            <button
-              onClick={() => { sounds.playTap(); sendMessage('explain'); }}
-              disabled={isLoading}
-              className="flex items-center gap-1.5 text-xs px-4 py-2 rounded-full font-black border-2 border-b-[3px] transition-all whitespace-nowrap bg-tint-purple text-tint-purple-fg border-tint-purple-border hover:brightness-105 active:scale-95 shadow-tactile-xs"
-            >
-              <Sparkles className="w-4 h-4 stroke-[2.5]" />
-              Detailed Breakdown
-            </button>
+          {mode === 'notes' && (
+            <div className="p-2.5 bg-ground border border-black/[0.08] dark:border-white/[0.08] rounded-2xl flex items-center justify-between text-xs shadow-2xs">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="px-2 py-0.5 rounded-lg bg-accent-purple/15 text-accent-purple font-black uppercase text-micro shrink-0">
+                  Chapter Guide
+                </span>
+                <span className="font-semibold text-gray-700 dark:text-gray-300 truncate">
+                  Active study note loaded for analysis
+                </span>
+              </div>
+            </div>
           )}
         </div>
 
+        {/* Mid-chat Collapsible Toggle for Quick Prompts */}
+        {messages.length > 1 && (
+          <div className="pt-2 shrink-0">
+            <button
+              onClick={() => { sounds.playTap(); setShowPromptsMenu(!showPromptsMenu); }}
+              className="w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-card border border-black/[0.08] dark:border-white/[0.08] text-xs font-black text-gray-700 dark:text-gray-300 hover:text-primary transition-colors shadow-2xs"
+            >
+              <span className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+                <span>{mode === 'exam' ? 'Question Actions' : 'Chapter Actions'}</span>
+              </span>
+              {showPromptsMenu ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+        )}
+
+        {/* ── VERTICALLY STACKED PROMPT CARDS (Collapsible in chat, default when fresh) ── */}
+        {(messages.length <= 1 || showPromptsMenu) && (
+          <div className="pt-2 pb-1 space-y-2 shrink-0 animate-fade-in">
+            {activePrompts.map((p) => {
+              const Icon = p.icon;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => { sounds.playTap(); p.action(); }}
+                  disabled={isLoading}
+                  className={`w-full flex items-center justify-between gap-3 p-3 rounded-2xl border-2 border-b-[3px] text-left transition-all active:translate-y-[1px] shadow-tactile-xs hover:brightness-105 ${p.tint}`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-2xs border border-current/10 ${p.iconBg}`}>
+                      <Icon className="w-5 h-5 stroke-[2.4]" />
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="text-xs font-black leading-tight truncate">
+                        {p.title}
+                      </h4>
+                      <p className="text-micro font-medium opacity-85 mt-0.5 truncate">
+                        {p.desc}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="w-7 h-7 rounded-full bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center shrink-0 shadow-2xs">
+                    <ChevronRight className="w-3.5 h-3.5 stroke-[2.8]" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {/* Chat Messages Area */}
-        <div className="flex-1 overflow-y-auto py-2 space-y-4 text-sm leading-relaxed text-gray-900 dark:text-gray-100 custom-scrollbar pr-1">
-          {messages.length === 1 && !isLoading && (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-3 animate-fade-up">
-              <TemariMascot mood="studying" size={64} />
-              <p className="text-xs font-black text-gray-800 dark:text-gray-200">Ask any question or tap a prompt above!</p>
-            </div>
-          )}
+        <div className="flex-1 overflow-y-auto py-2 space-y-3.5 text-sm leading-relaxed text-gray-900 dark:text-gray-100 custom-scrollbar pr-1 mt-1">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex w-full animate-fade-up ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               {msg.role === 'assistant' && (

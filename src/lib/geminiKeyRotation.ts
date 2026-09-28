@@ -7,7 +7,10 @@
  */
 
 const GEMINI_KEYS: string[] = Object.keys(process.env)
-  .filter(key => key.toLowerCase().startsWith('gemini_api_key'))
+  .filter(key => {
+    const k = key.toLowerCase();
+    return k.startsWith('gemini_api_key') || k.startsWith('gemini_key') || k === 'google_generative_ai_api_key';
+  })
   .map(key => process.env[key])
   .filter((k): k is string => typeof k === 'string' && k.trim().length > 0);
 

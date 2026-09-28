@@ -43,6 +43,9 @@ function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string
       system.push(`"${noteText.substring(0, 4000)}"`);
     }
     system.push(`Answer any questions they have based on this text. Keep explanations simple, engaging, and directly related to the text. Do not make up formulas or facts not supported by the text.`);
+    if (data.promptType === 'amharic') {
+      system.push(`Important: Explain the core concepts entirely in clear, natural Amharic (አማርኛ).`);
+    }
   } else {
     const isIncorrect = studentAnswer && correctAnswer && studentAnswer.trim().toLowerCase() !== correctAnswer.trim().toLowerCase();
     system.push(`Question Context:`);
@@ -54,15 +57,16 @@ function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string
     
     system.push('');
     system.push(`Rules:
-1. DO NOT just give the answer right away unless they explicitly demand it or it's 'eli5'.
-2. Use the Socratic method—guide them to the answer.
-3. If they got it wrong, gently explain why their choice was incorrect without making them feel stupid.
+1. If promptType='explain', provide the full step-by-step solution clearly explaining why the correct choice is right and others are wrong.
+2. If promptType='hint', DO NOT give the answer away—use the Socratic method to guide them with a clue.
+3. If student got it wrong, gently explain why their choice was incorrect without being discouraging.
 4. Keep responses concise (under 3-4 short paragraphs). Use Markdown formatting (bold, bullet points) for readability.
-5. If promptType='amharic', explain entirely in easy-to-understand Amharic.`);
+5. If promptType='amharic', explain entirely in easy-to-understand Amharic (አማርኛ).`);
   }
 
   const userPrompts: Record<string, string> = {
-    hint: 'Give me a small hint to help me solve this.',
+    hint: 'Give me a small hint to help me solve this without giving the answer away.',
+    explain: 'Please explain the correct answer step-by-step with clear reasoning.',
     eli5: 'Explain the core concept behind this simply, like I am 5 years old.',
     amharic: 'Translate the main idea and explain it in Amharic.',
     chat: 'Hello! I need help with this.'
