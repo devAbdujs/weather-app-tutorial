@@ -253,7 +253,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
               )}
               <div className={`p-4 rounded-3xl max-w-[85%] font-sans shadow-tactile-xs ${
                 msg.role === 'user' 
-                  ? 'bg-primary text-white rounded-br-xs font-semibold whitespace-pre-line shadow-md shadow-orange-500/20' 
+                  ? 'bg-gray-950 text-white dark:bg-[#202938] dark:text-white border border-black/10 dark:border-white/10 rounded-br-xs font-semibold whitespace-pre-line shadow-tactile-xs' 
                   : 'bg-white dark:bg-[#1A222D] border border-black/[0.06] dark:border-white/[0.08] rounded-bl-xs text-gray-900 dark:text-gray-100'
               }`}>
                 {msg.role === 'assistant' ? (
@@ -316,7 +316,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
             type="submit"
             disabled={!input.trim() || isLoading}
             onClick={() => sounds.playTap()}
-            className="w-12 h-12 rounded-full flex items-center justify-center bg-primary hover:bg-orange-600 disabled:opacity-40 disabled:hover:bg-primary text-white transition-all shrink-0 shadow-md shadow-orange-500/30 active:scale-95 border-2 border-b-[4px] border-orange-700"
+            className="w-12 h-12 rounded-full flex items-center justify-center bg-gray-950 hover:bg-black dark:bg-white dark:text-gray-950 dark:hover:bg-gray-100 text-white disabled:opacity-30 transition-all shrink-0 shadow-tactile-xs active:scale-95 border-2 border-b-[4px] border-black dark:border-white"
             title="Send query"
           >
             <Send className="w-4 h-4 ml-0.5" />

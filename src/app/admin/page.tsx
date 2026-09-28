@@ -69,7 +69,7 @@ export default async function AdminDashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-tint-cream-border">
           <div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center shadow-xs">
                 <Bot className="w-4 h-4" />
               </div>
               <h2 className="text-xl font-black tracking-tight text-tint-cream-fg">
@@ -82,10 +82,10 @@ export default async function AdminDashboard() {
           </div>
           <Link
             href="/admin/ai"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary hover:bg-orange-600 active:translate-y-0.5 active:border-b-2 text-white font-black text-xs uppercase tracking-wider transition-all border-2 border-b-[4px] border-orange-700 shadow-md shadow-orange-500/20 shrink-0"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 font-black text-xs uppercase tracking-wider transition-all border-2 border-b-[4px] border-black dark:border-white shadow-tactile-sm active:translate-y-0.5 shrink-0"
           >
             <span>Open AI Telemetry</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
           </Link>
         </div>
 

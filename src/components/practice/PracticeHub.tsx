@@ -251,14 +251,14 @@ export const PracticeHub = () => {
 
       {/* ── 3. SEGMENTED TOGGLE (ui_inspiration1.png: "My Questions" / "Saved") ── */}
       <div className="px-5 mb-4">
-        <div className="p-1 bg-[#F4EFEA] dark:bg-[#1E2530] border-2 border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center">
+        <div className="p-1 bg-[#F0EBE5] dark:bg-[#18202C] border-2 border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center shadow-inner">
           <button
             onClick={() => { sounds.playTap(); haptic.selection(); setFilterMode('all'); }}
             className={`
               flex-1 py-2.5 rounded-full text-xs font-black transition-all duration-150
               ${filterMode === 'all'
-                ? 'bg-primary text-white shadow-md shadow-orange-500/25'
-                : 'text-gray-800 dark:text-gray-200 hover:text-primary'}
+                ? 'bg-white dark:bg-[#10141D] text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
+                : 'text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white font-bold'}
             `}
           >
             All Subjects
@@ -268,8 +268,8 @@ export const PracticeHub = () => {
             className={`
               flex-1 py-2.5 rounded-full text-xs font-black transition-all duration-150
               ${filterMode === 'saved'
-                ? 'bg-primary text-white shadow-md shadow-orange-500/25'
-                : 'text-gray-800 dark:text-gray-200 hover:text-primary'}
+                ? 'bg-white dark:bg-[#10141D] text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
+                : 'text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white font-bold'}
             `}
           >
             Saved &amp; Starred
@@ -286,7 +286,9 @@ export const PracticeHub = () => {
                 key={tab}
                 onClick={() => { sounds.playTap(); haptic.selection(); setActiveTab(tab); }}
                 className={`flex-1 py-2 text-xs font-black capitalize rounded-btn transition-all ${
-                  activeTab === tab ? 'bg-primary text-white shadow-tactile-xs' : 'text-gray-800 dark:text-gray-200'
+                  activeTab === tab 
+                    ? 'bg-white dark:bg-[#10141D] text-gray-950 dark:text-white shadow-tactile-xs border border-black/10' 
+                    : 'text-gray-700 dark:text-gray-300 font-bold'
                 }`}
               >
                 {tab}

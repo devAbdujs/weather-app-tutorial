@@ -207,10 +207,10 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
 
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 shrink-0 ${
                     isSelected 
-                      ? 'border-primary bg-primary text-white' 
+                      ? 'border-gray-950 bg-gray-950 text-white dark:border-white dark:bg-white dark:text-gray-950' 
                       : 'border-black/20 dark:border-white/20'
                   }`}>
-                    {isSelected && <CheckCircle2 className="w-4 h-4" />}
+                    {isSelected && <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />}
                   </div>
                 </button>
               );
@@ -248,9 +248,9 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                   </div>
 
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 shrink-0 ${
-                    isSelected ? 'border-primary bg-primary text-white' : 'border-black/20 dark:border-white/20'
+                    isSelected ? 'border-gray-950 bg-gray-950 text-white dark:border-white dark:bg-white dark:text-gray-950' : 'border-black/20 dark:border-white/20'
                   }`}>
-                    {isSelected && <CheckCircle2 className="w-4 h-4" />}
+                    {isSelected && <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />}
                   </div>
                 </button>
               );

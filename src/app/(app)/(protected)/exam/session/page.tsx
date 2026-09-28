@@ -62,7 +62,7 @@ export default async function ExamSessionPage({ searchParams }: PageProps) {
         <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
           <Link 
             href="/practice"
-            className="w-full h-12 rounded-xl bg-primary text-white font-bold flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform text-sm"
+            className="w-full h-12 rounded-xl bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 font-black flex items-center justify-center gap-2 shadow-tactile-xs border border-black/10 dark:border-white/10 active:scale-95 transition-transform text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Pick Another Subject

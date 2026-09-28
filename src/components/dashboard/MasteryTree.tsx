@@ -449,7 +449,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
           </h2>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1 bg-panel border border-black/[0.08] dark:border-white/[0.08] p-1 rounded-control">
+          <div className="flex items-center gap-1 bg-[#F0EBE5] dark:bg-[#18202C] border-2 border-black/[0.08] dark:border-white/[0.08] p-1 rounded-2xl shadow-inner">
             {(['all', 'needs_practice', 'strong'] as const).map(tab => (
               <button
                 key={tab}
@@ -458,10 +458,10 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                   haptic.selection();
                   setFilterMode(tab);
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-black capitalize transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-black capitalize transition-all ${
                   filterMode === tab
-                    ? 'bg-primary text-white shadow-tactile-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-bold'
+                    ? 'bg-white dark:bg-[#10141D] text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
+                    : 'text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white font-bold'
                 }`}
               >
                 {tab === 'needs_practice' ? 'Needs Work' : tab}
@@ -476,7 +476,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
             <p className="text-xs font-black text-gray-900 dark:text-gray-100">
               No subjects in this category
             </p>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
               {filterMode === 'needs_practice'
                 ? 'All your practiced subjects are currently at 65% accuracy or higher!'
                 : 'Solve more questions to build your subject scores.'}
@@ -501,10 +501,10 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                 : 0;
 
               const status = accuracy >= 75 
-                ? { label: '👑 Mastered', badge: 'bg-accent-emerald/15 text-accent-emerald border border-accent-emerald/30', bar: 'bg-accent-emerald' }
+                ? { label: '👑 Mastered', badge: 'bg-emerald-500/20 text-emerald-950 dark:text-emerald-200 border border-emerald-500/40 font-black', bar: 'bg-accent-emerald' }
                 : accuracy >= 55 
-                ? { label: '🔥 On Track', badge: 'bg-primary/15 text-primary border border-primary/30', bar: 'bg-primary' }
-                : { label: '🌱 Needs Work', badge: 'bg-accent-rose/15 text-accent-rose border border-accent-rose/30', bar: 'bg-accent-rose' };
+                ? { label: '🔥 On Track', badge: 'bg-amber-500/20 text-amber-950 dark:text-amber-200 border border-amber-500/40 font-black', bar: 'bg-accent-gold' }
+                : { label: '🌱 Needs Work', badge: 'bg-rose-500/20 text-rose-950 dark:text-rose-200 border border-rose-500/40 font-black', bar: 'bg-accent-rose' };
 
               return (
                 <div

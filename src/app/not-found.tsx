@@ -17,9 +17,9 @@ export default function NotFound() {
         </p>
         <Link
           href="/dashboard"
-          className="w-full h-14 bg-primary text-white rounded-card-sm font-bold shadow-tactile-md active:scale-[0.98] transition-all duration-200 ease-bespoke flex items-center justify-center gap-2"
+          className="w-full h-14 bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 rounded-2xl font-black shadow-tactile-sm active:translate-y-0.5 border-2 border-b-[4px] border-black dark:border-white transition-all flex items-center justify-center gap-2"
         >
-          <Home className="w-4 h-4" />
+          <Home className="w-4 h-4 stroke-[2.5]" />
           Go Home
         </Link>
       </div>

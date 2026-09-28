@@ -327,7 +327,9 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${
-                            isPrem ? 'bg-accent/15 text-accent' : 'bg-primary/10 text-primary'
+                            isPrem 
+                              ? 'bg-amber-500/20 text-amber-950 dark:text-amber-200 border border-amber-500/30' 
+                              : 'bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white border border-black/10 dark:border-white/10'
                           }`}>
                             {user.full_name?.charAt(0).toUpperCase() || '?'}
                           </div>
@@ -453,7 +455,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                       Q: {c.question_id}
                     </p>
                     <p className="text-caption font-bold text-gray-700 dark:text-gray-300 mt-0.5">
-                      Type: <span className="font-mono font-black text-primary">{c.prompt_type}</span> · Cached: {new Date(c.created_at).toLocaleDateString()}
+                      Type: <span className="font-mono font-black text-gray-900 dark:text-gray-100">{c.prompt_type}</span> · Cached: {new Date(c.created_at).toLocaleDateString()}
                     </p>
                   </div>
                   <span className="text-micro font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 shrink-0">

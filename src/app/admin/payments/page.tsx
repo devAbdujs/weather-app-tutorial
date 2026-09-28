@@ -38,7 +38,7 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
                 <tr key={payment.id} className="border-b border-black/[0.04] dark:border-white/[0.04] hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                      <div className="w-10 h-10 rounded-full bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center font-black text-sm shadow-2xs">
                         {payment.profiles?.full_name?.charAt(0).toUpperCase() || '?'}
                       </div>
                       <div>

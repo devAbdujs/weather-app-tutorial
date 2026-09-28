@@ -186,8 +186,8 @@ export const ExamSetupModal: React.FC = () => {
                         onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
-                            ? 'bg-primary text-white border-primary border-b-primary-active shadow-tactile-xs active:translate-y-0.5' 
-                            : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-0.5'
+                            ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5' 
+                            : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
                         {s.label}
@@ -208,8 +208,8 @@ export const ExamSetupModal: React.FC = () => {
                         onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
-                            ? 'bg-primary text-white border-primary border-b-primary-active shadow-tactile-xs active:translate-y-0.5' 
-                            : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-0.5'
+                            ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5' 
+                            : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
                         {s.label}
@@ -282,8 +282,8 @@ export const ExamSetupModal: React.FC = () => {
                               onClick={() => { sounds.playTap(); haptic.selection(); setSelectedYear(yr); }}
                               className={`shrink-0 px-4 py-2.5 rounded-2xl border-2 border-b-[4px] text-sm font-black transition-all ${
                                 selectedYear === yr 
-                                  ? 'bg-primary text-white border-primary border-b-primary-active shadow-tactile-xs' 
-                                  : 'bg-white dark:bg-[#1A222D] text-gray-700 dark:text-gray-300 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/20'
+                                  ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs' 
+                                  : 'bg-white dark:bg-[#1A222D] text-gray-700 dark:text-gray-300 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30'
                               }`}
                             >
                               {yr}
@@ -318,8 +318,8 @@ export const ExamSetupModal: React.FC = () => {
                       onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
                       className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                         subject === s.id
-                          ? 'bg-primary text-white border-primary border-b-primary-active shadow-tactile-xs active:translate-y-0.5'
-                          : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-0.5'
+                          ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5'
+                          : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                       }`}
                     >
                       {s.label}
@@ -347,8 +347,8 @@ export const ExamSetupModal: React.FC = () => {
                         onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
-                            ? 'bg-primary text-white border-primary border-b-primary-active shadow-tactile-xs active:translate-y-0.5' 
-                            : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-0.5'
+                            ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5' 
+                            : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
                         {s.label}
@@ -368,8 +368,8 @@ export const ExamSetupModal: React.FC = () => {
                         onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
-                            ? 'bg-primary text-white border-primary border-b-primary-active shadow-tactile-xs active:translate-y-0.5' 
-                            : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-0.5'
+                            ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5' 
+                            : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
                         {s.label}

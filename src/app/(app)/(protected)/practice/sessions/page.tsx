@@ -322,18 +322,18 @@ function SessionsContent() {
                 onClick={() => handleStart(selectedSession, 'exam')}
                 className="w-full group text-left p-4 rounded-card-lg bg-card border-2 border-primary/40 dark:border-primary/30 border-b-bevel-lg border-b-primary/60 hover:border-primary active:translate-y-[2px] transition-all flex items-center gap-4 shadow-tactile-xs"
               >
-                <div className="w-12 h-12 rounded-card-sm bg-primary text-white flex items-center justify-center shrink-0 shadow-tactile-xs group-hover:scale-105 transition-transform">
-                  <Layers className="w-6 h-6" />
+                <div className="w-12 h-12 rounded-card-sm bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center shrink-0 shadow-tactile-xs group-hover:scale-105 transition-transform">
+                  <Layers className="w-6 h-6 stroke-[2.5]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <h4 className="font-black text-gray-900 dark:text-gray-100 text-base leading-tight">Exam Simulator</h4>
-                    <span className="text-micro font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/25">Timed</span>
+                    <span className="text-micro font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-black/10 dark:bg-white/10 text-gray-900 dark:text-gray-100 border border-black/10 dark:border-white/10">Timed</span>
                   </div>
                   <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Timed countdown &amp; score at the end</p>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
-                  <ArrowRight className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-full bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center shrink-0 shadow-tactile-xs">
+                  <ArrowRight className="w-4 h-4 stroke-[2.5]" />
                 </div>
               </button>
             </div>

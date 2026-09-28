@@ -215,11 +215,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
               <div>
                 <button 
                   onClick={handleRetakeOnboarding}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-primary/10 hover:bg-primary/15 text-primary text-xs font-black transition-all active:scale-[0.98] text-left max-w-full border border-primary/20"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-tint-peach text-tint-peach-fg text-xs font-black transition-all active:scale-[0.98] text-left max-w-full border-2 border-b-[3px] border-tint-peach-border shadow-tactile-xs"
                 >
-                  <GraduationCap className="w-3.5 h-3.5 shrink-0" />
+                  <GraduationCap className="w-3.5 h-3.5 shrink-0 stroke-[2.5]" />
                   <span className="truncate">{getGoalDisplay()}</span>
-                  <ChevronRight className="w-3 h-3 shrink-0 opacity-60 ml-0.5" />
+                  <ChevronRight className="w-3 h-3 shrink-0 opacity-70 ml-0.5" />
                 </button>
               </div>
             </div>
@@ -245,7 +245,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
 
           <button
             onClick={() => { sounds.playTap(); haptic.selection(); router.push('/mastery'); }}
-            className="px-3 py-1.5 rounded-xl bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-2 hover:border-primary/40 text-xs font-black text-primary transition-all active:translate-y-[1px]"
+            className="px-3.5 py-1.5 rounded-xl bg-gray-950 text-white dark:bg-white dark:text-gray-950 text-xs font-black transition-all active:scale-95 shadow-tactile-xs border border-black/10 dark:border-white/10"
           >
             Scores
           </button>

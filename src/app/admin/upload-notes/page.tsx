@@ -96,7 +96,7 @@ export default function AdminUploadNotes() {
 
           <button 
             onClick={handleUpload} disabled={loading}
-            className="w-full py-3 bg-primary text-primary-foreground font-semibold text-sm rounded-xl hover:bg-primary/95 shadow-tactile-sm active:scale-[0.99] transition-all duration-200 ease-bespoke disabled:opacity-50"
+            className="w-full py-3.5 bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 font-black text-sm rounded-2xl shadow-tactile-sm active:translate-y-0.5 border-2 border-b-[4px] border-black dark:border-white transition-all disabled:opacity-50"
           >
             {loading ? 'Uploading...' : 'Save to Database'}
           </button>

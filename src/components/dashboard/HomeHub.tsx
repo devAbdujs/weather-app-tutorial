@@ -252,9 +252,9 @@ export const HomeHub: React.FC = () => {
               <button
                 type="button"
                 aria-label="Ask AI"
-                className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-md shadow-orange-500/30 hover:scale-105 active:scale-95 transition-all shrink-0"
+                className="w-8 h-8 rounded-full bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all shrink-0"
               >
-                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                <ArrowRight className="w-4 h-4 stroke-[2.8]" />
               </button>
             </div>
           </div>
@@ -278,7 +278,7 @@ export const HomeHub: React.FC = () => {
             </div>
 
             <span className="font-mono font-black text-sm text-gray-900 dark:text-gray-100 tabular-nums">
-              {dailyXp} <span className="text-gray-500 font-bold text-xs">/ {dailyXpGoal} XP</span>
+              {dailyXp} <span className="text-gray-600 dark:text-gray-400 font-bold text-xs">/ {dailyXpGoal} XP</span>
             </span>
           </div>
 
@@ -328,9 +328,9 @@ export const HomeHub: React.FC = () => {
                 </p>
               </div>
 
-              {/* Large Round Orange Action Button (ui_inspiration2.png) */}
-              <div className="w-13 h-13 rounded-full bg-primary text-white flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/35 group-hover:scale-105 active:scale-95 transition-all">
-                <ArrowRight className="w-6 h-6 stroke-[2.6]" />
+              {/* Large Round High-Contrast Action Button */}
+              <div className="w-13 h-13 rounded-full bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-2 border-black/20 dark:border-white/20 flex items-center justify-center shrink-0 shadow-tactile-sm group-hover:scale-105 active:scale-95 transition-all">
+                <ArrowRight className="w-6 h-6 stroke-[3]" />
               </div>
             </div>
           </div>
@@ -343,15 +343,15 @@ export const HomeHub: React.FC = () => {
             className="w-full btn-3d-card p-4 rounded-3xl text-left flex items-center justify-between transition-all"
           >
             <div>
-              <div className="flex items-center gap-1.5 text-micro font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-0.5">
+              <div className="flex items-center gap-1.5 text-micro font-black text-amber-700 dark:text-amber-300 uppercase tracking-widest mb-0.5">
                 <Flame className="w-3.5 h-3.5 fill-current" />
                 <span>Resume Active Study</span>
               </div>
               <h3 className="font-black text-gray-900 dark:text-gray-100 text-sm leading-snug">{lastSession.subject}</h3>
               <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
             </div>
-            <div className="w-10 h-10 bg-primary/10 border-2 border-primary/20 text-primary rounded-2xl flex items-center justify-center shrink-0 shadow-2xs">
-              <ArrowRight className="w-5 h-5 stroke-[2.4]" />
+            <div className="w-10 h-10 bg-gray-950 text-white dark:bg-white dark:text-gray-950 rounded-2xl flex items-center justify-center shrink-0 shadow-tactile-xs">
+              <ArrowRight className="w-5 h-5 stroke-[2.6]" />
             </div>
           </button>
         )}
