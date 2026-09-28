@@ -1,19 +1,14 @@
 "use client";
-import React, { useEffect, useState, useCallback } from 'react';
-import { BookOpen, Flame, FileText, ArrowRight, Target, Sparkles, RefreshCw, Zap, BarChart2, CheckCircle2, ChevronRight, Camera, Mic } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { BookOpen, Flame, FileText, ArrowRight, Target, Zap, ChevronRight } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { WelcomeOnboarding } from './WelcomeOnboarding';
 import { updateDailyStreak } from '@/app/actions/user';
 import { useAppStore } from '@/store/useAppStore';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { TemariMascot, MascotBubble } from '@/components/mascot/TemariMascot';
 import { useGamificationStore, getLevelForXp } from '@/store/useGamificationStore';
 import { sounds } from '@/lib/sounds';
-
-import dynamic from 'next/dynamic';
-
-const AITutorDrawer = dynamic(() => import('@/components/ai/AITutorDrawer').then(m => m.AITutorDrawer), { ssr: false });
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -31,9 +26,6 @@ interface LastSession {
   mode: string;
   label?: string;
 }
-
-const TIP_CACHE_KEY = 'temari_daily_tip';
-const TIP_DATE_KEY  = 'temari_tip_date';
 
 export const HomeHub: React.FC = () => {
   const { haptic, setBackButton } = useTelegram();
@@ -56,44 +48,7 @@ export const HomeHub: React.FC = () => {
   const setUserProfile = useAppStore(s => s.setUserProfile);
   const setSetupModalType = useAppStore(s => s.setSetupModalType);
 
-  const [showAI, setShowAI]             = useState(false);
-  const [lastSession, setLastSession]   = useState<LastSession | null>(null);
-  const [tip, setTip]                   = useState<string | null>(null);
-  const [tipLoading, setTipLoading]     = useState(false);
-
-  const fetchTip = useCallback(async (force = false) => {
-    const today = new Date().toDateString();
-    if (!force) {
-      try {
-        const cachedDate = localStorage.getItem(TIP_DATE_KEY);
-        const cachedTip  = localStorage.getItem(TIP_CACHE_KEY);
-        if (cachedDate === today && cachedTip) {
-          setTip(cachedTip);
-          return;
-        }
-      } catch {}
-    }
-
-    setTipLoading(true);
-    try {
-      const hour   = new Date().getHours();
-      const streak = userProfile?.daily_streak || 0;
-      const res = await fetch('/api/ai/tip', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ examType: userProfile?.target_exam, streak, hour }),
-      });
-      if (!res.ok) throw new Error('tip fetch failed');
-      const { tip: newTip } = await res.json();
-      setTip(newTip);
-      localStorage.setItem(TIP_CACHE_KEY, newTip);
-      localStorage.setItem(TIP_DATE_KEY, today);
-    } catch {
-      setTip('Every question you practice today is one less surprise on exam day.');
-    } finally {
-      setTipLoading(false);
-    }
-  }, [userProfile?.target_exam, userProfile?.daily_streak]);
+  const [lastSession, setLastSession] = useState<LastSession | null>(null);
 
   useEffect(() => {
     setBackButton(false);
@@ -112,11 +67,6 @@ export const HomeHub: React.FC = () => {
       if (stored) setLastSession(JSON.parse(stored));
     } catch {}
   }, [setBackButton]);
-
-  // Fetch tip once profile is loaded
-  useEffect(() => {
-    if (profileLoaded && userProfile) fetchTip();
-  }, [profileLoaded, userProfile, fetchTip]);
 
   if (!profileLoaded) return null;
 
@@ -182,59 +132,7 @@ export const HomeHub: React.FC = () => {
 
       <div className="px-5 space-y-3.5 mt-2">
 
-        {/* ── 2. AI BUDDY HERO (ui_inspiration2.png) ── */}
-        <div className="bg-tint-cream text-tint-cream-fg border-2 border-b-[4px] border-tint-cream-border rounded-3xl p-4.5 shadow-tactile-xs relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-micro font-black uppercase tracking-wider text-orange-950/70 dark:text-orange-200/70">
-                AI Companion
-              </span>
-              <h2 className="text-xl font-black tracking-tight leading-tight text-gray-950 dark:text-white mt-0.5">
-                Ask <span className="text-primary font-black">Teme</span>
-              </h2>
-            </div>
-
-            <TemariMascot mood="happy" size={48} />
-          </div>
-
-          {/* Quick Question Input Search Bar */}
-          <div 
-            onClick={() => { sounds.playTap(); haptic.selection(); setShowAI(true); }}
-            className="mt-3.5 flex items-center justify-between bg-white dark:bg-[#1A222D] border-2 border-black/[0.08] dark:border-white/[0.1] rounded-full pl-2 pr-1.5 py-1.5 shadow-tactile-xs cursor-pointer active:scale-[0.99] transition-transform"
-          >
-            <div className="flex items-center gap-1.5 flex-1 min-w-0">
-              <button 
-                type="button" 
-                className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-700 dark:text-gray-200 hover:text-gray-950 dark:hover:text-white transition-colors shrink-0 shadow-2xs"
-                title="Scan problem"
-              >
-                <Camera className="w-4 h-4 stroke-[2.2]" />
-              </button>
-              <button 
-                type="button" 
-                className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-700 dark:text-gray-200 hover:text-gray-950 dark:hover:text-white transition-colors shrink-0 shadow-2xs"
-                title="Voice inquiry"
-              >
-                <Mic className="w-4 h-4 stroke-[2.2]" />
-              </button>
-              <span className="text-xs font-bold text-gray-600 dark:text-gray-300 select-none pl-1 truncate">
-                Ask any question...
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1.5 ml-2">
-              <button
-                type="button"
-                aria-label="Ask AI"
-                className="w-8 h-8 rounded-full bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all shrink-0"
-              >
-                <ArrowRight className="w-4 h-4 stroke-[2.8]" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* ── 3. DAILY GOAL ── */}
+        {/* ── 2. DAILY GOAL ── */}
         <div className="card-chunky p-4 space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -371,45 +269,7 @@ export const HomeHub: React.FC = () => {
           </div>
         </div>
 
-        {/* ── 7. DAILY STUDY TIP ── */}
-        <div className="card-chunky p-4 bg-card relative overflow-hidden">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <TemariMascot mood="studying" size="sm" animate={false} />
-              <span className="text-xs font-black text-accent-gold uppercase tracking-wider">
-                Daily Tip
-              </span>
-            </div>
-            <button
-              onClick={() => { sounds.playTap(); haptic.selection(); fetchTip(true); }}
-              className="w-7 h-7 flex items-center justify-center rounded-xl btn-3d-card text-slate-600 dark:text-slate-300"
-              title="Refresh tip"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${tipLoading ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
-
-          {tipLoading ? (
-            <div className="space-y-1.5 py-1">
-              <div className="h-2.5 bg-black/5 dark:bg-white/5 rounded-full animate-pulse w-full" />
-              <div className="h-2.5 bg-black/5 dark:bg-white/5 rounded-full animate-pulse w-3/4" />
-            </div>
-          ) : tip ? (
-            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 leading-relaxed pl-1">
-              &ldquo;{tip}&rdquo;
-            </p>
-          ) : null}
-        </div>
-
       </div>
-
-      {/* Dynamic AI Tutor Drawer for Quick Questions */}
-      {showAI && (
-        <AITutorDrawer
-          isOpen={showAI}
-          onClose={() => setShowAI(false)}
-        />
-      )}
     </div>
   );
 };
