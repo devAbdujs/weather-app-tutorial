@@ -194,7 +194,6 @@ body {
   -moz-user-select: text;
   user-select: text;
   -webkit-touch-callout: default;
-  touch-action: pan-y;
 }
 
 .note-reading-canvas * {
@@ -204,67 +203,78 @@ body {
 }
 
 .note-reading-canvas ::selection {
-  background-color: hsla(213, 90%, 60%, 0.28);
+  background-color: hsla(43, 95%, 65%, 0.45);
   color: inherit;
 }
 
-/* ─── Tactile Chunky 3D Interactions (Duolingo Engagement Philosophy) ─── */
+/* ─── Tactile Refined Mobile Interactions ─────────────────────────── */
 .btn-3d-primary {
   background-color: var(--primary);
   color: #ffffff;
-  border-bottom: 4px solid hsl(224, 75%, 22%);
-  transition: all 0.08s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid var(--primary);
+  border-bottom: 3px solid hsl(224, 75%, 22%);
+  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .btn-3d-primary:active {
-  transform: translateY(2px);
-  border-bottom-width: 2px;
+  transform: translateY(1px);
+  filter: brightness(0.96);
 }
 
 .btn-3d-gold {
   background-color: rgb(var(--accent-gold-rgb));
   color: #ffffff;
-  border-bottom: 4px solid hsl(36, 68%, 28%);
-  transition: all 0.08s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgb(var(--accent-gold-rgb));
+  border-bottom: 3px solid hsl(36, 68%, 28%);
+  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .btn-3d-gold:active {
-  transform: translateY(2px);
-  border-bottom-width: 2px;
+  transform: translateY(1px);
+  filter: brightness(0.96);
 }
 
 .btn-3d-emerald {
   background-color: rgb(var(--accent-emerald-rgb));
   color: #ffffff;
-  border-bottom: 4px solid hsl(145, 52%, 25%);
-  transition: all 0.08s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgb(var(--accent-emerald-rgb));
+  border-bottom: 3px solid hsl(145, 52%, 25%);
+  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .btn-3d-emerald:active {
-  transform: translateY(2px);
-  border-bottom-width: 2px;
+  transform: translateY(1px);
+  filter: brightness(0.96);
 }
 
 .btn-3d-card {
   background-color: var(--surface);
-  border: 2px solid hsla(30, 20%, 15%, 0.10);
-  border-bottom: 4px solid hsla(30, 20%, 15%, 0.18);
-  transition: all 0.08s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid hsla(30, 20%, 15%, 0.08);
+  border-bottom: 3px solid hsla(30, 20%, 15%, 0.15);
+  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 .btn-3d-card:active {
-  transform: translateY(2px);
-  border-bottom-width: 2px;
+  transform: translateY(1px);
+  filter: brightness(0.98);
 }
 .dark .btn-3d-card {
-  border-color: hsla(0, 0%, 100%, 0.10);
-  border-bottom-color: hsla(0, 0%, 100%, 0.20);
+  border-color: hsla(0, 0%, 100%, 0.08);
+  border-bottom-color: hsla(0, 0%, 100%, 0.18);
+  box-shadow: none;
 }
 
 .card-chunky {
   background-color: var(--surface);
-  border: 2px solid hsla(30, 20%, 15%, 0.08);
-  border-bottom: 4px solid hsla(30, 20%, 15%, 0.14);
-  border-radius: 24px;
+  border: 1px solid hsla(30, 20%, 15%, 0.07);
+  border-bottom: 3px solid hsla(30, 20%, 15%, 0.13);
+  border-radius: 22px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 .dark .card-chunky {
-  border-color: hsla(0, 0%, 100%, 0.08);
-  border-bottom-color: hsla(0, 0%, 100%, 0.16);
+  border-color: hsla(0, 0%, 100%, 0.07);
+  border-bottom-color: hsla(0, 0%, 100%, 0.15);
+  box-shadow: none;
 }
+
 

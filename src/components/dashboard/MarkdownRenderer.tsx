@@ -8,11 +8,11 @@ import 'katex/dist/katex.min.css';
 import { NoteHighlight, HighlightColor } from '@/types';
 
 export const HIGHLIGHT_STYLE_MAP: Record<HighlightColor, string> = {
-  yellow: 'bg-amber-300/85 text-amber-950 dark:bg-amber-400/30 dark:text-amber-100',
-  green:  'bg-emerald-300/85 text-emerald-950 dark:bg-emerald-400/30 dark:text-emerald-100',
-  blue:   'bg-sky-300/85 text-sky-950 dark:bg-sky-400/30 dark:text-sky-100',
-  purple: 'bg-purple-300/85 text-purple-950 dark:bg-purple-400/30 dark:text-purple-100',
-  orange: 'bg-orange-300/85 text-orange-950 dark:bg-orange-400/30 dark:text-orange-100',
+  yellow: 'bg-amber-300/85 text-amber-950 dark:bg-amber-400/35 dark:text-amber-100',
+  green:  'bg-emerald-300/85 text-emerald-950 dark:bg-emerald-400/35 dark:text-emerald-100',
+  blue:   'bg-sky-300/85 text-sky-950 dark:bg-sky-400/35 dark:text-sky-100',
+  purple: 'bg-purple-300/85 text-purple-950 dark:bg-purple-400/35 dark:text-purple-100',
+  orange: 'bg-orange-300/85 text-orange-950 dark:bg-orange-400/35 dark:text-orange-100',
 };
 
 const preprocessMath = (text: string) => {
@@ -22,51 +22,164 @@ const preprocessMath = (text: string) => {
   return p;
 };
 
-function renderHighlightedText(
+// Extracts plain text from any node or element tree
+function getPlainText(node: React.ReactNode): string {
+  if (typeof node === 'string') return node;
+  if (typeof node === 'number') return String(node);
+  if (!node) return '';
+  if (Array.isArray(node)) return node.map(getPlainText).join('');
+  if (React.isValidElement(node) && node.props && (node.props as any).children) {
+    return getPlainText((node.props as any).children);
+  }
+  return '';
+}
+
+interface HighlightRange {
+  start: number;
+  end: number;
+  highlight: NoteHighlight;
+}
+
+function findHighlightRanges(text: string, highlights: NoteHighlight[]): HighlightRange[] {
+  if (!highlights || highlights.length === 0 || !text) return [];
+  const escapeRegex = (s: string) => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const ranges: HighlightRange[] = [];
+
+  for (const h of highlights) {
+    if (!h.text || h.text.trim().length < 2) continue;
+    // Build regex that matches the statement words across any whitespace (including newlines and extra spaces)
+    const wordsPattern = escapeRegex(h.text.trim()).replace(/\s+/g, '\\s+');
+    try {
+      const re = new RegExp(wordsPattern, 'gi');
+      let match: RegExpExecArray | null;
+      while ((match = re.exec(text)) !== null) {
+        ranges.push({
+          start: match.index,
+          end: match.index + match[0].length,
+          highlight: h,
+        });
+        if (!re.global) break;
+      }
+    } catch {}
+  }
+
+  // Sort by start position, then longest match first
+  ranges.sort((a, b) => a.start - b.start || (b.end - b.start) - (a.end - a.start));
+
+  // Deduplicate and filter out nested/overlapping intervals
+  const nonOverlapping: HighlightRange[] = [];
+  let lastEnd = -1;
+  for (const r of ranges) {
+    if (r.start >= lastEnd) {
+      nonOverlapping.push(r);
+      lastEnd = r.end;
+    }
+  }
+
+  return nonOverlapping;
+}
+
+function sliceTextIntoSegments(
   text: string,
-  highlights: NoteHighlight[],
+  offset: number,
+  ranges: HighlightRange[],
   onHighlightClick?: (h: NoteHighlight) => void
 ): React.ReactNode {
-  if (!highlights || highlights.length === 0 || !text) {
-    return text;
-  }
+  const textEnd = offset + text.length;
+  const overlapping = ranges.filter(r => r.start < textEnd && r.end > offset);
+  if (overlapping.length === 0) return text;
 
-  const activeHighlights = highlights.filter(h => h.text && text.includes(h.text));
-  if (activeHighlights.length === 0) {
-    return text;
-  }
+  const result: React.ReactNode[] = [];
+  let cursor = 0;
 
-  const escapeRegex = (s: string) => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-  const sorted = [...activeHighlights].sort((a, b) => b.text.length - a.text.length);
-  const pattern = new RegExp(`(${sorted.map(h => escapeRegex(h.text)).join('|')})`, 'g');
+  for (const r of overlapping) {
+    const localStart = Math.max(0, r.start - offset);
+    const localEnd = Math.min(text.length, r.end - offset);
 
-  const parts = text.split(pattern);
-  if (parts.length <= 1) return text;
-
-  return parts.map((part, index) => {
-    const match = sorted.find(h => h.text === part);
-    if (match) {
-      const colorClass = HIGHLIGHT_STYLE_MAP[match.color] || HIGHLIGHT_STYLE_MAP.yellow;
-      return (
+    if (localStart > cursor) {
+      result.push(text.slice(cursor, localStart));
+    }
+    if (localEnd > localStart) {
+      const matchedText = text.slice(localStart, localEnd);
+      const colorClass = HIGHLIGHT_STYLE_MAP[r.highlight.color] || HIGHLIGHT_STYLE_MAP.yellow;
+      result.push(
         <mark
-          key={`${match.id}-${index}`}
-          data-highlight-id={match.id}
+          key={`mark-${r.highlight.id}-${offset + localStart}`}
+          data-highlight-id={r.highlight.id}
           className={`${colorClass} px-1 py-0.5 rounded-[4px] font-inherit cursor-pointer transition-all hover:opacity-90 active:scale-[0.99] border-b border-black/10 dark:border-white/10 select-text inline`}
           onClick={(e) => {
             e.stopPropagation();
-            onHighlightClick?.(match);
+            onHighlightClick?.(r.highlight);
           }}
-          title="Tap to edit or remove highlight"
+          title="Tap to change color or remove"
         >
-          {part}
+          {matchedText}
         </mark>
       );
     }
-    return part;
-  });
+    cursor = Math.max(cursor, localEnd);
+  }
+
+  if (cursor < text.length) {
+    result.push(text.slice(cursor));
+  }
+
+  return result;
 }
 
-function wrapWithHighlights(
+function renderTreeWithRanges(
+  node: React.ReactNode,
+  offset: number,
+  ranges: HighlightRange[],
+  onHighlightClick?: (h: NoteHighlight) => void
+): React.ReactNode {
+  if (typeof node === 'string') {
+    return sliceTextIntoSegments(node, offset, ranges, onHighlightClick);
+  }
+  if (!node) return node;
+
+  if (Array.isArray(node)) {
+    let cur = offset;
+    return node.map((child, idx) => {
+      const rendered = renderTreeWithRanges(child, cur, ranges, onHighlightClick);
+      cur += getPlainText(child).length;
+      return <React.Fragment key={idx}>{rendered}</React.Fragment>;
+    });
+  }
+
+  if (React.isValidElement(node)) {
+    const type = (node as any).type;
+    // Skip code and math elements
+    if (type === 'code' || (node.props as any).className?.includes('katex')) {
+      return node;
+    }
+
+    if (node.props && (node.props as any).children) {
+      const childProp = (node.props as any).children;
+      let cur = offset;
+      let newChildren: React.ReactNode;
+
+      if (Array.isArray(childProp)) {
+        newChildren = childProp.map((child, idx) => {
+          const rendered = renderTreeWithRanges(child, cur, ranges, onHighlightClick);
+          cur += getPlainText(child).length;
+          return <React.Fragment key={idx}>{rendered}</React.Fragment>;
+        });
+      } else {
+        newChildren = renderTreeWithRanges(childProp, cur, ranges, onHighlightClick);
+      }
+
+      return React.cloneElement(node, {
+        ...(node.props as any),
+        children: newChildren,
+      });
+    }
+  }
+
+  return node;
+}
+
+function wrapBlockWithHighlights(
   children: React.ReactNode,
   highlights: NoteHighlight[],
   onHighlightClick?: (h: NoteHighlight) => void
@@ -75,24 +188,13 @@ function wrapWithHighlights(
     return children;
   }
 
-  return React.Children.map(children, (child) => {
-    if (typeof child === 'string') {
-      return renderHighlightedText(child, highlights, onHighlightClick);
-    }
-    if (React.isValidElement(child)) {
-      const type = (child as any).type;
-      if (type === 'code' || (child.props && child.props.className?.includes('katex'))) {
-        return child;
-      }
-      if (child.props && child.props.children) {
-        return React.cloneElement(child, {
-          ...child.props,
-          children: wrapWithHighlights(child.props.children, highlights, onHighlightClick),
-        });
-      }
-    }
-    return child;
-  });
+  const plainText = getPlainText(children);
+  if (!plainText || plainText.length === 0) return children;
+
+  const ranges = findHighlightRanges(plainText, highlights);
+  if (ranges.length === 0) return children;
+
+  return renderTreeWithRanges(children, 0, ranges, onHighlightClick);
 }
 
 interface MarkdownRendererProps {
@@ -110,7 +212,7 @@ export default function MarkdownRenderer({
   highlights = [],
   onHighlightClick,
 }: MarkdownRendererProps) {
-  const wrap = (nodes: React.ReactNode) => wrapWithHighlights(nodes, highlights, onHighlightClick);
+  const wrap = (nodes: React.ReactNode) => wrapBlockWithHighlights(nodes, highlights, onHighlightClick);
 
   return (
     <ReactMarkdown
@@ -124,7 +226,8 @@ export default function MarkdownRenderer({
         ul: ({ children }) => <ul className="list-disc pl-5 mb-5 space-y-2 text-[15px] text-gray-600 dark:text-gray-400 font-medium">{wrap(children)}</ul>,
         ol: ({ children }) => <ol className="list-decimal pl-5 mb-5 space-y-2 text-[15px] text-gray-600 dark:text-gray-400 font-medium">{wrap(children)}</ol>,
         li: ({ children }) => <li className="pl-1">{wrap(children)}</li>,
-        strong: ({ children }) => <strong className="font-bold text-gray-900 dark:text-gray-100">{wrap(children)}</strong>,
+        strong: ({ children }) => <strong className="font-bold text-gray-900 dark:text-gray-100">{children}</strong>,
+        em: ({ children }) => <em className="italic">{children}</em>,
         blockquote: ({ children }) => (
           <blockquote className={`pl-4 border-l-4 border-primary/20 ${accentBg} py-2 pr-4 rounded-r-xl my-5 italic text-gray-600 dark:text-gray-400`}>
             {wrap(children)}

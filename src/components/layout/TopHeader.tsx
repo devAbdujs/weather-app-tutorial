@@ -42,10 +42,10 @@ export const TopHeader = () => {
     <header
       className="
         w-full h-15 shrink-0 z-40
-        bg-card/90 dark:bg-card/90
+        bg-card/95 dark:bg-card/95
         backdrop-blur-xl
-        border-b-2 border-black/[0.08] dark:border-white/[0.08]
-        shadow-bespoke-sm
+        border-b border-black/[0.08] dark:border-white/[0.08]
+        shadow-sm
         flex items-center justify-between px-3.5 gap-2
       "
     >
@@ -56,12 +56,12 @@ export const TopHeader = () => {
             onClick={() => { sounds.playTap(); router.back(); }}
             aria-label="Go back"
             className="
-              w-9.5 h-9.5 flex items-center justify-center
-              rounded-[14px]
-              bg-card border-2 border-b-[3px] border-black/[0.09] dark:border-white/[0.12]
+              w-9 h-9 flex items-center justify-center
+              rounded-[13px]
+              bg-card border border-black/[0.08] dark:border-white/[0.12] border-b-2 border-b-black/[0.15] dark:border-b-white/[0.18]
               text-gray-700 dark:text-gray-300
               hover:text-gray-900 dark:hover:text-gray-100
-              active:translate-y-[1px] active:border-b-2 transition-all
+              active:translate-y-[1px] transition-all shadow-xs
             "
           >
             <ChevronLeft className="w-5 h-5" />
@@ -71,7 +71,7 @@ export const TopHeader = () => {
             onClick={() => { sounds.playTap(); router.push('/dashboard'); }}
             className="flex items-center gap-2 cursor-pointer active:scale-95 transition-transform"
           >
-            <div className="w-9 h-9 rounded-[13px] overflow-hidden shadow-sm border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.12] shrink-0 bg-primary/10 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-[13px] overflow-hidden shadow-xs border border-black/[0.08] dark:border-white/[0.12] border-b-2 border-b-black/[0.15] dark:border-b-white/[0.18] shrink-0 bg-primary/10 flex items-center justify-center">
               <Image
                 src="/assets/temari logo.png"
                 alt="Temari"
@@ -93,9 +93,9 @@ export const TopHeader = () => {
         <button
           onClick={() => { sounds.playStreak(); router.push('/mastery'); }}
           title={`${streak} Day Streak`}
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-accent-gold/15 border-2 border-b-[3px] border-accent-gold/30 text-accent-gold font-black text-xs active:translate-y-[1px] active:border-b-2 transition-all shadow-sm"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-gold/12 border border-accent-gold/25 border-b-2 border-b-accent-gold/40 text-accent-gold font-black text-xs active:translate-y-[1px] transition-all shadow-xs"
         >
-          <Flame className="w-4 h-4 fill-accent-gold text-accent-gold animate-pulse" />
+          <Flame className="w-3.5 h-3.5 fill-accent-gold text-accent-gold" />
           <span className="font-mono tabular-nums">{streak}</span>
         </button>
 
@@ -103,7 +103,7 @@ export const TopHeader = () => {
         <button
           onClick={() => { sounds.playCorrect(); router.push('/profile'); }}
           title={`${xp} Total XP`}
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-primary/15 border-2 border-b-[3px] border-primary/30 text-primary font-black text-xs active:translate-y-[1px] active:border-b-2 transition-all shadow-sm"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/12 border border-primary/25 border-b-2 border-b-primary/40 text-primary font-black text-xs active:translate-y-[1px] transition-all shadow-xs"
         >
           <Zap className="w-3.5 h-3.5 fill-primary text-primary" />
           <span className="font-mono tabular-nums">{xp}</span>
@@ -119,11 +119,11 @@ export const TopHeader = () => {
           title={soundEnabled ? 'Sound FX On' : 'Sound FX Muted'}
           className="
             w-9 h-9 flex items-center justify-center
-            rounded-[14px]
-            bg-card border-2 border-b-[3px] border-black/[0.09] dark:border-white/[0.12]
+            rounded-[13px]
+            bg-card border border-black/[0.08] dark:border-white/[0.12] border-b-2 border-b-black/[0.15] dark:border-b-white/[0.18]
             text-gray-600 dark:text-gray-300
             hover:text-primary dark:hover:text-primary
-            active:translate-y-[1px] active:border-b-2 transition-all
+            active:translate-y-[1px] transition-all shadow-xs
           "
         >
           {soundEnabled ? (
@@ -139,11 +139,11 @@ export const TopHeader = () => {
           aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           className="
             w-9 h-9 flex items-center justify-center
-            rounded-[14px]
-            bg-card border-2 border-b-[3px] border-black/[0.09] dark:border-white/[0.12]
+            rounded-[13px]
+            bg-card border border-black/[0.08] dark:border-white/[0.12] border-b-2 border-b-black/[0.15] dark:border-b-white/[0.18]
             text-gray-600 dark:text-gray-300
             hover:text-gray-900 dark:hover:text-gray-100
-            active:translate-y-[1px] active:border-b-2 transition-all
+            active:translate-y-[1px] transition-all shadow-xs
           "
         >
           {resolvedTheme === 'dark' ? <Sun className="w-4 h-4 text-accent-gold" /> : <Moon className="w-4 h-4" />}

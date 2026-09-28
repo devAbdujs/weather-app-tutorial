@@ -161,7 +161,7 @@ export const ExamSetupModal: React.FC = () => {
               <div className="space-y-2">
                 <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Target Exam</label>
                 <div className="grid grid-cols-1 gap-2">
-                  <div className="px-4 py-3 rounded-[16px] bg-primary text-white font-black text-sm shadow-bespoke-sm border-2 border-b-[4px] border-primary-hover">
+                  <div className="px-4 py-3 rounded-[14px] bg-primary text-white font-black text-sm shadow-xs border border-primary-hover border-b-[3px]">
                     {resolveExamType()}
                   </div>
                 </div>
@@ -174,7 +174,7 @@ export const ExamSetupModal: React.FC = () => {
                   <div className="grid grid-cols-2 gap-2">
                     {g12Subjects.map((s) => (
                       <button key={s.id} type="button" onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
-                        className={`px-3 py-2.5 rounded-[14px] border-2 text-xs font-black transition-all text-left ${subject === s.id ? 'bg-primary text-white border-primary border-b-[4px] border-b-primary-hover shadow-sm' : 'bg-card text-gray-700 dark:text-gray-300 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] hover:border-black/20 active:border-b-2 active:translate-y-[2px]'}`}
+                        className={`px-3 py-2.5 rounded-[14px] border text-xs font-black transition-all text-left ${subject === s.id ? 'bg-primary text-white border-primary border-b-[3px] border-b-primary-hover shadow-xs' : 'bg-card text-gray-700 dark:text-gray-300 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] hover:border-black/20 active:translate-y-[1px]'}`}
                       >{s.label}</button>
                     ))}
                   </div>
@@ -187,7 +187,7 @@ export const ExamSetupModal: React.FC = () => {
                   <div className="grid grid-cols-2 gap-2">
                     {freshmanSubjects.map((s) => (
                       <button key={s.id} type="button" onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
-                        className={`px-3 py-2.5 rounded-[14px] border-2 text-xs font-black transition-all text-left ${subject === s.id ? 'bg-primary text-white border-primary border-b-[4px] border-b-primary-hover shadow-sm' : 'bg-card text-gray-700 dark:text-gray-300 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] hover:border-black/20 active:border-b-2 active:translate-y-[2px]'}`}
+                        className={`px-3 py-2.5 rounded-[14px] border text-xs font-black transition-all text-left ${subject === s.id ? 'bg-primary text-white border-primary border-b-[3px] border-b-primary-hover shadow-xs' : 'bg-card text-gray-700 dark:text-gray-300 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] hover:border-black/20 active:translate-y-[1px]'}`}
                       >{s.label}</button>
                     ))}
                   </div>
@@ -210,12 +210,12 @@ export const ExamSetupModal: React.FC = () => {
                       <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Session Type</label>
                       <div className="grid grid-cols-2 gap-3">
                         <button type="button" onClick={() => { sounds.playTap(); haptic.selection(); setMixType('quick'); setMode('practice'); }}
-                          className={`p-3.5 rounded-[18px] border-2 text-xs font-black transition-all flex flex-col items-center text-center ${mixType === 'quick' ? 'bg-primary text-white border-primary border-b-[5px] border-b-primary-hover shadow-sm' : 'bg-card text-gray-700 dark:text-gray-300 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] hover:border-black/20 active:border-b-2 active:translate-y-[3px]'}`}
+                          className={`p-3.5 rounded-[18px] border text-xs font-black transition-all flex flex-col items-center text-center ${mixType === 'quick' ? 'bg-primary text-white border-primary border-b-[3px] border-b-primary-hover shadow-xs' : 'bg-card text-gray-700 dark:text-gray-300 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] hover:border-black/20 active:translate-y-[1px]'}`}
                         >
                           <div className="text-2xl mb-1">⚡</div>Quick Drill (+10 XP)
                         </button>
                         <button type="button" onClick={() => { sounds.playTap(); haptic.selection(); setMixType('past_paper'); setMode('simulator'); }}
-                          className={`p-3.5 rounded-[18px] border-2 text-xs font-black transition-all flex flex-col items-center text-center ${mixType === 'past_paper' ? 'bg-primary text-white border-primary border-b-[5px] border-b-primary-hover shadow-sm' : 'bg-card text-gray-700 dark:text-gray-300 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] hover:border-black/20 active:border-b-2 active:translate-y-[3px]'}`}
+                          className={`p-3.5 rounded-[18px] border text-xs font-black transition-all flex flex-col items-center text-center ${mixType === 'past_paper' ? 'bg-primary text-white border-primary border-b-[3px] border-b-primary-hover shadow-xs' : 'bg-card text-gray-700 dark:text-gray-300 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] hover:border-black/20 active:translate-y-[1px]'}`}
                         >
                           <div className="text-2xl mb-1">🏛️</div>Past Paper (+50 XP)
                         </button>

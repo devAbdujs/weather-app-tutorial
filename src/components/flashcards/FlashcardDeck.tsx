@@ -212,7 +212,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
         {loading ? (
           <div className="w-full max-w-sm h-[420px] rounded-[32px] bg-black/5 dark:bg-white/5 animate-pulse" />
         ) : isCompleted ? (
-          <div className="w-full max-w-sm bg-card border-2 border-b-[6px] border-black/[0.08] dark:border-white/[0.08] rounded-[32px] p-6 text-center space-y-5 shadow-bespoke-md animate-fade-in">
+          <div className="w-full max-w-sm bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[24px] p-6 text-center space-y-5 shadow-bespoke-md animate-fade-in">
             <div className="flex flex-col items-center">
               <TemariMascot mood="celebrating" size={100} />
               <span className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 text-xs font-black">
@@ -275,7 +275,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
               <div className={`relative w-full h-full duration-[500ms] transform-style-3d ease-snap ${isFlipped ? 'rotate-y-180' : ''}`}>
                 
                 {/* Front Side */}
-                <div className="absolute inset-0 w-full h-full bg-card border-2 border-b-[6px] border-black/[0.08] dark:border-white/[0.08] rounded-[32px] p-8 flex flex-col justify-center items-center backface-hidden shadow-bespoke-md">
+                <div className="absolute inset-0 w-full h-full bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[24px] p-8 flex flex-col justify-center items-center backface-hidden shadow-bespoke-md">
                   <span className="absolute top-6 left-6 text-[10px] uppercase tracking-widest font-black text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><HelpCircle className="w-4 h-4"/> Concept</span>
                   <div className="text-xl font-bold text-gray-900 dark:text-gray-100 text-center leading-relaxed max-h-64 overflow-y-auto no-scrollbar w-full">
                     <MathText content={currentCard.front} />
@@ -283,7 +283,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
                 </div>
 
                 {/* Back Side */}
-                <div className="absolute inset-0 w-full h-full bg-card border-2 border-b-[6px] border-black/[0.08] dark:border-white/[0.08] rounded-[32px] p-8 flex flex-col justify-center items-center rotate-y-180 backface-hidden shadow-bespoke-md">
+                <div className="absolute inset-0 w-full h-full bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[24px] p-8 flex flex-col justify-center items-center rotate-y-180 backface-hidden shadow-bespoke-md">
                   <span className="absolute top-6 left-6 text-[10px] uppercase tracking-widest font-black text-accent-gold flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4"/> Answer</span>
                   <div className="text-base font-medium text-gray-900 dark:text-gray-100 text-center leading-relaxed max-h-64 overflow-y-auto no-scrollbar w-full">
                     <MathText content={currentCard.back} />

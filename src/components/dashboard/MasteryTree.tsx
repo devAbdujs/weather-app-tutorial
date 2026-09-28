@@ -201,7 +201,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         </div>
 
         {profile?.daily_streak ? (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-accent-gold/15 text-accent-gold text-xs font-black border-2 border-accent-gold/30 shadow-bespoke-sm">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-accent-gold/15 text-accent-gold text-xs font-black border border-accent-gold/30 shadow-xs">
             <Flame className="w-3.5 h-3.5 fill-current" />
             <span className="font-mono">{profile.daily_streak}</span>
             <span className="text-[10px] uppercase tracking-wider">days</span>
@@ -210,7 +210,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
       </header>
 
       {/* ── 2. SCHOLAR LEVEL TIER CARD (DUOLINGO PROGRESSION) ───────── */}
-      <section className="bg-card border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] rounded-[26px] p-4.5 shadow-bespoke-sm space-y-3">
+      <section className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[22px] p-4 shadow-bespoke-sm space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <span className="text-2xl">{currentLevel.badge}</span>
@@ -272,7 +272,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         className="grid grid-cols-2 gap-3"
       >
         {/* Accuracy */}
-        <div className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-4 shadow-bespoke-sm flex flex-col justify-between space-y-2">
+        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-[18px] p-3.5 shadow-bespoke-sm flex flex-col justify-between space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
               <div className="w-6 h-6 rounded-lg bg-accent-emerald/15 text-accent-emerald flex items-center justify-center">
@@ -295,7 +295,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         </div>
 
         {/* Total Questions */}
-        <div className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-4 shadow-bespoke-sm flex flex-col justify-between space-y-2">
+        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-[18px] p-3.5 shadow-bespoke-sm flex flex-col justify-between space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
               <div className="w-6 h-6 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
@@ -318,7 +318,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         </div>
 
         {/* Study Time */}
-        <div className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-4 shadow-bespoke-sm flex flex-col justify-between space-y-2">
+        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-[18px] p-3.5 shadow-bespoke-sm flex flex-col justify-between space-y-2">
           <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
             <div className="w-6 h-6 rounded-lg bg-accent-purple/15 text-accent-purple flex items-center justify-center">
               <Clock className="w-3.5 h-3.5" />
@@ -336,7 +336,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         </div>
 
         {/* Exam Pace Velocity */}
-        <div className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-4 shadow-bespoke-sm flex flex-col justify-between space-y-2">
+        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-[18px] p-3.5 shadow-bespoke-sm flex flex-col justify-between space-y-2">
           <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
             <div className="w-6 h-6 rounded-lg bg-accent-gold/15 text-accent-gold flex items-center justify-center">
               <Zap className="w-3.5 h-3.5" />
@@ -363,7 +363,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
           return (
             <section 
               aria-label="Priority Improvement Area"
-              className="bg-card border-2 border-b-[4px] border-accent-gold/30 rounded-[22px] p-4 shadow-bespoke-sm"
+              className="bg-card border border-accent-gold/30 border-b-[3px] rounded-[20px] p-4 shadow-bespoke-sm"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 min-w-0">
@@ -409,7 +409,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
       {unpracticedSubjects.length > 0 && (
         <section 
           aria-label="Curriculum Completeness"
-          className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-4.5 shadow-bespoke-sm space-y-3"
+          className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[20px] p-4.5 shadow-bespoke-sm space-y-3"
         >
           <div className="flex items-center gap-2">
             <GraduationCap className="w-4.5 h-4.5 text-primary" />
@@ -429,7 +429,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                   haptic.selection();
                   router.push('/practice');
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-ground border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] hover:border-primary/40 text-xs font-black text-gray-800 dark:text-gray-200 transition-all active:border-b-0 active:translate-y-[2px]"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-2 hover:border-primary/40 text-xs font-black text-gray-800 dark:text-gray-200 transition-all active:translate-y-[1px]"
               >
                 <span>{getSubjectEmoji(sub)}</span>
                 <span>{sub}</span>
@@ -449,7 +449,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
           </h2>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1 bg-panel border-2 border-black/[0.08] dark:border-white/[0.08] p-1 rounded-xl">
+          <div className="flex items-center gap-1 bg-panel border border-black/[0.08] dark:border-white/[0.08] p-1 rounded-xl">
             {(['all', 'needs_practice', 'strong'] as const).map(tab => (
               <button
                 key={tab}
@@ -509,7 +509,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
               return (
                 <div
                   key={stat.subject}
-                  className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-4 shadow-bespoke-sm space-y-3 transition-all hover:border-black/20"
+                  className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-[20px] p-4 shadow-bespoke-sm space-y-3 transition-all hover:border-black/20"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
@@ -568,7 +568,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
 
       {/* ── 8. EMPTY STATE (IF ZERO HISTORY) ─────────────────────────── */}
       {stats.length === 0 && (
-        <section className="bg-card border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] rounded-[28px] p-8 text-center flex flex-col items-center shadow-bespoke-sm">
+        <section className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[24px] p-8 text-center flex flex-col items-center shadow-bespoke-sm">
           <TemariMascot mood="happy" size={90} className="mb-2" />
           <h3 className="text-base font-black text-gray-900 dark:text-gray-100 mb-1">
             Start Your Exam Prep!

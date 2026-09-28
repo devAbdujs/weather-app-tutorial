@@ -147,7 +147,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 1. CLEAN STUDENT IDENTITY CARD ─────────────────────────── */}
         <section 
           aria-label="Student Identity"
-          className="relative bg-card border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] rounded-[26px] p-5 shadow-bespoke-sm"
+          className="relative bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[22px] p-5 shadow-bespoke-sm"
         >
           {devMode && (
             <div className="absolute top-4 right-4 text-[10px] font-black text-accent-gold uppercase tracking-widest bg-accent-gold/10 border border-accent-gold/20 px-2 py-0.5 rounded-full">
@@ -162,7 +162,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
               className="relative w-16 h-16 shrink-0 cursor-pointer active:scale-95 transition-transform"
               title="Student avatar (tap 5 times for dev tools)"
             >
-              <div className="w-full h-full rounded-[22px] bg-primary/10 dark:bg-primary/20 p-0.5 border-2 border-primary/25 shadow-bespoke-sm">
+              <div className="w-full h-full rounded-[20px] bg-primary/10 dark:bg-primary/20 p-0.5 border border-primary/25 shadow-xs">
                 <div className="w-full h-full bg-ground rounded-[18px] overflow-hidden flex items-center justify-center">
                   {profile.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -224,7 +224,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         </section>
 
         {/* ── 2. GAMIFICATION SCHOLAR TIER CARD ─────────────────────── */}
-        <section className="bg-card border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] rounded-[24px] p-4.5 shadow-bespoke-sm flex items-center justify-between">
+        <section className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[22px] p-4 shadow-bespoke-sm flex items-center justify-between">
           <div className="flex items-center gap-3">
             <TemariMascot mood="happy" size={54} />
             <div>
@@ -242,7 +242,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
 
           <button
             onClick={() => { sounds.playTap(); haptic.selection(); router.push('/mastery'); }}
-            className="px-3 py-1.5 rounded-xl bg-ground border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] hover:border-primary/40 text-xs font-black text-primary transition-all active:border-b-0 active:translate-y-[2px]"
+            className="px-3 py-1.5 rounded-xl bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-2 hover:border-primary/40 text-xs font-black text-primary transition-all active:translate-y-[1px]"
           >
             Scores
           </button>
@@ -253,7 +253,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           aria-label="Quick Stats"
           className="grid grid-cols-3 gap-3"
         >
-          <div className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-3.5 text-center shadow-bespoke-sm">
+          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-[18px] p-3 text-center shadow-bespoke-sm">
             <div className="flex items-center justify-center gap-1 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               <Flame className="w-3.5 h-3.5 text-accent-gold" />
               <span>Streak</span>
@@ -263,7 +263,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             </span>
           </div>
 
-          <div className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-3.5 text-center shadow-bespoke-sm">
+          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-[18px] p-3 text-center shadow-bespoke-sm">
             <div className="flex items-center justify-center gap-1 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               <Target className="w-3.5 h-3.5 text-primary" />
               <span>Solved</span>
@@ -273,7 +273,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             </span>
           </div>
 
-          <div className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-3.5 text-center shadow-bespoke-sm">
+          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-[18px] p-3 text-center shadow-bespoke-sm">
             <div className="flex items-center justify-center gap-1 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               <TrendingUp className="w-3.5 h-3.5 text-accent-emerald" />
               <span>Accuracy</span>
@@ -287,7 +287,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 4. AI QUOTA (CLEAN & COMPACT) ────────────────────────────── */}
         <section 
           aria-label="AI Quota"
-          className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-[22px] p-4 shadow-bespoke-sm space-y-2.5"
+          className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[22px] p-4 shadow-bespoke-sm space-y-2.5"
         >
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-1.5 font-black text-gray-900 dark:text-gray-100">
@@ -333,7 +333,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 5. SETTINGS & APP PREFERENCES ───────────────────────────── */}
         <section 
           aria-label="Account Settings"
-          className="bg-card border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] rounded-[24px] shadow-bespoke-sm divide-y divide-black/[0.05] dark:divide-white/[0.05] overflow-hidden"
+          className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[22px] shadow-bespoke-sm divide-y divide-black/[0.05] dark:divide-white/[0.05] overflow-hidden"
         >
           {/* Sound Effects Toggle */}
           <div 
@@ -458,7 +458,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             <button 
               disabled={isLoggingOut} 
               onClick={handleLogout} 
-              className="w-full py-3 flex items-center justify-center gap-2 text-red-600 dark:text-red-400 font-black text-xs hover:underline active:scale-[0.98] transition-all disabled:opacity-50"
+              className="w-full py-3 flex items-center justify-center gap-2 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 rounded-xl font-black text-xs transition-all active:scale-[0.98] disabled:opacity-50"
             >
               {isLoggingOut ? (
                 <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />

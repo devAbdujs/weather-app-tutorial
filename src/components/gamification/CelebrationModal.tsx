@@ -30,7 +30,7 @@ export const CelebrationModal: React.FC = () => {
       onClick={dismissCelebration}
     >
       <div 
-        className="w-full max-w-sm bg-card rounded-[32px] border-2 border-b-[6px] border-black/[0.12] dark:border-white/[0.12] p-6 shadow-2xl animate-scale-bounce text-center relative overflow-hidden"
+        className="w-full max-w-sm bg-card rounded-[24px] border border-black/[0.12] dark:border-white/[0.12] border-b-[4px] p-6 shadow-2xl animate-scale-bounce text-center relative overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         {/* Subtle decorative background bursts */}
@@ -63,21 +63,21 @@ export const CelebrationModal: React.FC = () => {
         {/* Stats Pill Row */}
         <div className="flex items-center justify-center gap-2 mb-6">
           {activeCelebration.xpEarned > 0 && (
-            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-gold/15 border-2 border-b-[3px] border-accent-gold/30 text-accent-gold font-black text-sm shadow-sm">
+            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-gold/15 border border-accent-gold/30 border-b-2 text-accent-gold font-black text-sm shadow-xs">
               <Zap className="w-4 h-4 fill-current" />
               <span>+{activeCelebration.xpEarned} XP</span>
             </div>
           )}
 
           {typeof activeCelebration.accuracy === 'number' && (
-            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-emerald/15 border-2 border-b-[3px] border-accent-emerald/30 text-accent-emerald font-black text-sm shadow-sm">
+            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-emerald/15 border border-accent-emerald/30 border-b-2 text-accent-emerald font-black text-sm shadow-xs">
               <Target className="w-4 h-4" />
               <span>{activeCelebration.accuracy}%</span>
             </div>
           )}
 
           {typeof activeCelebration.streakCount === 'number' && (
-            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-rose/15 border-2 border-b-[3px] border-accent-rose/30 text-accent-rose font-black text-sm shadow-sm">
+            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-rose/15 border border-accent-rose/30 border-b-2 text-accent-rose font-black text-sm shadow-xs">
               <Flame className="w-4 h-4 fill-current" />
               <span>{activeCelebration.streakCount}d</span>
             </div>
@@ -87,7 +87,7 @@ export const CelebrationModal: React.FC = () => {
         {/* Chunky Tactile 3D Action Button */}
         <button
           onClick={dismissCelebration}
-          className="w-full py-3.5 rounded-[20px] bg-primary text-white font-black text-sm tracking-wide border-b-[4px] border-primary-hover active:translate-y-[2px] active:border-b-[2px] transition-all shadow-md flex items-center justify-center gap-2"
+          className="btn-3d-primary w-full py-3.5 rounded-[18px] text-sm flex items-center justify-center gap-2"
         >
           <span>Continue (ቀጥል)</span>
           <ArrowRight className="w-4 h-4" />

@@ -180,10 +180,10 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                 <button
                   key={opt.id}
                   onClick={() => select(opt.id, setTarget)}
-                  className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-100 text-left ${
+                  className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-100 text-left ${
                     isSelected
-                      ? 'border-primary bg-primary/10 border-b-[5px] border-b-primary shadow-sm translate-y-0'
-                      : 'border-black/[0.08] dark:border-white/[0.08] bg-card border-b-[4px] border-b-black/[0.12] dark:border-b-white/[0.14] hover:border-black/20 dark:hover:border-white/20 active:translate-y-[2px] active:border-b-2'
+                      ? 'border-primary bg-primary/10 border-b-[3px] border-b-primary shadow-xs'
+                      : 'border-black/[0.08] dark:border-white/[0.08] bg-card border-b-[3px] hover:border-black/20 dark:hover:border-white/20 active:translate-y-[1px]'
                   }`}
                 >
                   <div className="flex items-center gap-3.5">
@@ -227,10 +227,10 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                 <button
                   key={s.id}
                   onClick={() => select(s.id, setStream)}
-                  className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-100 text-left ${
+                  className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-100 text-left ${
                     isSelected
-                      ? 'border-primary bg-primary/10 border-b-[5px] border-b-primary shadow-sm'
-                      : 'border-black/[0.08] dark:border-white/[0.08] bg-card border-b-[4px] border-b-black/[0.12] dark:border-b-white/[0.14] hover:border-black/20 active:translate-y-[2px] active:border-b-2'
+                      ? 'border-primary bg-primary/10 border-b-[3px] border-b-primary shadow-xs'
+                      : 'border-black/[0.08] dark:border-white/[0.08] bg-card border-b-[3px] hover:border-black/20 active:translate-y-[1px]'
                   }`}
                 >
                   <div className="flex items-center gap-3.5">
@@ -268,17 +268,17 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                 placeholder="Search your department..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl text-sm font-bold focus:border-primary focus:ring-0 outline-none transition-all shadow-sm"
+                className="w-full pl-12 pr-4 py-3.5 bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-2xl text-sm font-bold focus:border-primary focus:ring-0 outline-none transition-all shadow-sm"
               />
             </div>
-            <div className="flex-1 max-h-[300px] overflow-y-auto rounded-2xl border-2 border-black/[0.08] dark:border-white/[0.08] p-2 space-y-1.5 bg-card">
+            <div className="flex-1 max-h-[300px] overflow-y-auto rounded-2xl border border-black/[0.08] dark:border-white/[0.08] p-2 space-y-1.5 bg-card">
               {EXIT_DISCIPLINES.filter(d => d.label.toLowerCase().includes(searchQuery.toLowerCase())).map(d => {
                 const isSelected = stream === d.id;
                 return (
                   <button
                     key={d.id}
                     onClick={() => select(d.id, setStream)}
-                    className={`w-full text-left px-4 py-3 rounded-xl text-xs font-black transition-all duration-100 border-2 ${
+                    className={`w-full text-left px-4 py-3 rounded-xl text-xs font-black transition-all duration-100 border ${
                       isSelected 
                         ? 'border-primary bg-primary/10 text-primary border-b-[3px]' 
                         : 'border-transparent hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 active:translate-y-[1px]'
@@ -302,7 +302,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
           className={`w-full py-4 rounded-2xl font-black text-base flex items-center justify-center gap-2 mt-auto transition-all duration-100 ${
             canProceed && !isSaving
               ? 'btn-3d-primary shadow-bespoke-md cursor-pointer'
-              : 'bg-ground border-2 border-black/[0.06] dark:border-white/[0.08] text-slate-400 dark:text-slate-600 cursor-not-allowed'
+              : 'bg-ground border border-black/[0.08] dark:border-white/[0.08] text-slate-400 dark:text-slate-600 cursor-not-allowed'
           }`}
         >
           {isSaving ? (

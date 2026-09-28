@@ -34,7 +34,7 @@ export const BottomNav = () => {
         fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto pb-safe
         bg-card/95 dark:bg-card/95
         backdrop-blur-xl
-        border-t-2 border-black/[0.08] dark:border-white/[0.08]
+        border-t border-black/[0.08] dark:border-white/[0.08]
         shadow-bespoke-nav
         transition-colors duration-200
       "
@@ -57,18 +57,18 @@ export const BottomNav = () => {
               }}
               className="flex-1"
             >
-              <div className="flex flex-col items-center justify-center gap-1 active:translate-y-[2px] transition-transform duration-100">
+              <div className="flex flex-col items-center justify-center gap-1 active:translate-y-[1px] transition-transform duration-100">
                 <div
                   className={`
-                    relative flex items-center justify-center w-12 h-7.5 rounded-[14px] transition-all duration-150 ease-spring
+                    relative flex items-center justify-center w-12 h-7 rounded-[13px] transition-all duration-150 ease-spring
                     ${isActive
-                      ? `${item.color} border-2 border-b-[3px] shadow-sm`
+                      ? `${item.color} border border-current/25 shadow-xs`
                       : 'bg-transparent text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}
                   `}
                 >
                   <Icon
-                    className="w-[19px] h-[19px] transition-transform duration-150"
-                    strokeWidth={isActive ? 2.5 : 1.9}
+                    className="w-[18px] h-[18px] transition-transform duration-150"
+                    strokeWidth={isActive ? 2.4 : 1.8}
                   />
                 </div>
                 <span

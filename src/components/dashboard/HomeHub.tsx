@@ -180,9 +180,9 @@ export const HomeHub: React.FC = () => {
           {/* Flame Pill */}
           <div 
             onClick={() => { sounds.playStreak(); router.push('/mastery'); }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border-2 border-b-[3px] transition-all cursor-pointer active:translate-y-[1px] active:border-b-2 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-b-2 transition-all cursor-pointer active:translate-y-[1px] ${
               streak > 0
-                ? 'bg-accent-gold/15 border-accent-gold/30 text-accent-gold shadow-sm'
+                ? 'bg-accent-gold/15 border-accent-gold/30 border-b-accent-gold/45 text-accent-gold shadow-xs'
                 : 'bg-card border-black/[0.08] dark:border-white/[0.08] text-slate-400 dark:text-slate-500'
             }`}
           >
@@ -240,19 +240,19 @@ export const HomeHub: React.FC = () => {
             </span>
           </div>
 
-          {/* Chunky Progress Trough */}
-          <div className="w-full bg-panel border-2 border-black/[0.06] dark:border-white/[0.08] h-3.5 rounded-full overflow-hidden p-0.5 relative">
+          {/* Progress Trough */}
+          <div className="w-full bg-panel border border-black/[0.06] dark:border-white/[0.08] h-3 rounded-full overflow-hidden p-0.5 relative">
             <div 
-              className="h-full rounded-full bg-gradient-to-r from-accent-gold via-accent-amber to-accent-emerald transition-all duration-500 ease-bespoke"
+              className="h-full rounded-full bg-gradient-to-r from-accent-gold via-amber-500 to-accent-emerald transition-all duration-500 ease-bespoke"
               style={{ width: `${dailyPercent}%` }}
             />
           </div>
         </div>
 
-        {/* ── 4. CHUNKY 3D HERO LAUNCHPAD ── */}
+        {/* ── 4. TACTILE HERO LAUNCHPAD ── */}
         <button
           onClick={() => { sounds.playTap(); haptic.impact('heavy'); router.push('/practice'); }}
-          className="w-full text-left p-5 rounded-[26px] bg-primary text-white border-b-[6px] border-[hsl(224,75%,20%)] active:translate-y-[3px] active:border-b-[2px] transition-all relative overflow-hidden group shadow-md"
+          className="w-full text-left p-5 rounded-[24px] bg-primary text-white border border-primary/20 border-b-[4px] border-b-[hsl(224,75%,22%)] active:translate-y-[1px] transition-all relative overflow-hidden group shadow-md"
         >
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/[0.08] rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500" />
           <div className="relative z-10">
@@ -265,12 +265,12 @@ export const HomeHub: React.FC = () => {
             </h2>
           </div>
           <div className="flex items-center justify-between relative z-10">
-            <div className="bg-white text-primary px-4 py-2.5 rounded-[16px] font-black text-xs shadow-sm flex items-center gap-1.5 group-hover:scale-[1.03] transition-transform duration-150">
+            <div className="bg-white text-primary px-4 py-2 rounded-[14px] font-black text-xs shadow-xs flex items-center gap-1.5 group-hover:scale-[1.02] transition-transform duration-150">
               Start Practicing
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
-            <div className="w-10 h-10 bg-white/[0.15] rounded-[16px] flex items-center justify-center group-hover:bg-white/[0.22] transition-colors duration-150">
-              <BookOpen className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 bg-white/[0.15] rounded-[14px] flex items-center justify-center group-hover:bg-white/[0.22] transition-colors duration-150">
+              <BookOpen className="w-4.5 h-4.5 text-white" />
             </div>
           </div>
         </button>
@@ -279,7 +279,7 @@ export const HomeHub: React.FC = () => {
         {lastSession && (
           <button
             onClick={() => { sounds.playTap(); handleContinue(); }}
-            className="w-full btn-3d-card p-4 rounded-[22px] text-left flex items-center justify-between transition-all"
+            className="w-full btn-3d-card p-4 rounded-[20px] text-left flex items-center justify-between transition-all"
           >
             <div>
               <div className="flex items-center gap-1.5 text-[10px] font-black text-accent-gold uppercase tracking-widest mb-0.5">
@@ -289,25 +289,25 @@ export const HomeHub: React.FC = () => {
               <h3 className="font-black text-gray-900 dark:text-gray-100 text-sm leading-snug">{lastSession.subject}</h3>
               <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
             </div>
-            <div className="w-10 h-10 bg-primary/10 border border-primary/20 text-primary rounded-xl flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 bg-primary/10 border border-primary/20 text-primary rounded-[12px] flex items-center justify-center shrink-0">
               <ArrowRight className="w-4 h-4" />
             </div>
           </button>
         )}
 
-        {/* ── 6. BENTO QUICK TOOLS (TACTILE 3D TILES) ── */}
+        {/* ── 6. BENTO QUICK TOOLS ── */}
         <div className="grid grid-cols-2 gap-3">
           {/* Short Notes */}
           <button
             onClick={() => { sounds.playTap(); haptic.impact('medium'); router.push('/practice?mode=notes'); }}
-            className="btn-3d-card p-4 rounded-[24px] text-left group"
+            className="btn-3d-card p-4 rounded-[20px] text-left group"
           >
-            <div className="w-11 h-11 bg-accent-purple/15 text-accent-purple border-2 border-b-[3px] border-accent-purple/30 rounded-[16px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 bg-accent-purple/12 text-accent-purple border border-accent-purple/25 border-b-2 border-b-accent-purple/40 rounded-[13px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
               <FileText className="w-5 h-5" />
             </div>
             <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
             <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5 truncate">Summaries &amp; Concepts</p>
-            <div className="mt-2 text-[10px] font-black text-accent-purple inline-block bg-accent-purple/10 px-2 py-0.5 rounded-full">
+            <div className="mt-2 text-[10px] font-black text-accent-purple inline-flex items-center bg-accent-purple/10 border border-accent-purple/20 px-2 py-0.5 rounded-full">
               +20 XP / unit
             </div>
           </button>
@@ -315,14 +315,14 @@ export const HomeHub: React.FC = () => {
           {/* Flashcards */}
           <button
             onClick={() => { sounds.playTap(); haptic.impact('medium'); router.push('/practice?mode=flashcards'); }}
-            className="btn-3d-card p-4 rounded-[24px] text-left group"
+            className="btn-3d-card p-4 rounded-[20px] text-left group"
           >
-            <div className="w-11 h-11 bg-accent-gold/15 text-accent-gold border-2 border-b-[3px] border-accent-gold/30 rounded-[16px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 bg-accent-gold/12 text-accent-gold border border-accent-gold/25 border-b-2 border-b-accent-gold/40 rounded-[13px] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
               <Zap className="w-5 h-5" />
             </div>
             <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-tight">Flashcards</h3>
             <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5 truncate">Rapid-Fire Drills</p>
-            <div className="mt-2 text-[10px] font-black text-accent-gold inline-block bg-accent-gold/10 px-2 py-0.5 rounded-full">
+            <div className="mt-2 text-[10px] font-black text-accent-gold inline-flex items-center bg-accent-gold/10 border border-accent-gold/20 px-2 py-0.5 rounded-full">
               +15 XP / deck
             </div>
           </button>

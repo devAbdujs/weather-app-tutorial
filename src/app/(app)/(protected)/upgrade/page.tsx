@@ -317,7 +317,7 @@ export default function UpgradePage() {
         </p>
 
         {/* Feature Highlights Card */}
-        <div className="w-full max-w-sm bg-card border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 mb-6 text-left space-y-3 shadow-bespoke-sm">
+        <div className="w-full max-w-sm bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-2xl p-4 mb-6 text-left space-y-3 shadow-bespoke-sm">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-accent-emerald/15 text-accent-emerald flex items-center justify-center">
               <Zap className="w-4 h-4" />
@@ -398,7 +398,7 @@ export default function UpgradePage() {
           </p>
 
           {/* Large Countdown Badge */}
-          <div className="bg-card border-2 border-b-[5px] border-primary/25 rounded-3xl p-6 mb-6 shadow-bespoke-sm w-full relative overflow-hidden">
+          <div className="bg-card border border-primary/25 border-b-[3px] rounded-2xl p-6 mb-6 shadow-bespoke-sm w-full relative overflow-hidden">
             <div className="text-xs font-black uppercase tracking-widest text-primary mb-1">
               Estimated Approval In
             </div>
@@ -423,7 +423,7 @@ export default function UpgradePage() {
           </div>
 
           {/* 3 Step Interactive Progress */}
-          <div className="w-full bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 mb-6 text-left space-y-3 shadow-bespoke-sm">
+          <div className="w-full bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-2xl p-4 mb-6 text-left space-y-3 shadow-bespoke-sm">
             <div className="flex items-center gap-3">
               <div className="w-6 h-6 rounded-full bg-accent-emerald text-white flex items-center justify-center text-xs font-black">
                 <Check className="w-3.5 h-3.5" />
@@ -514,7 +514,7 @@ export default function UpgradePage() {
         </p>
 
         {/* Mascot Encouragement */}
-        <div className="flex items-center gap-3 mb-5 bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-[24px] p-4 shadow-bespoke-sm">
+        <div className="flex items-center gap-3 mb-5 bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[22px] p-4 shadow-bespoke-sm">
           <TemariMascot mood="happy" size={56} className="shrink-0" />
           <p className="text-xs font-bold text-gray-800 dark:text-gray-200 leading-snug">
             &ldquo;Unlock everything once, study with zero limits! 31,000+ past questions and unlimited AI explanations.&rdquo;
@@ -522,7 +522,7 @@ export default function UpgradePage() {
         </div>
 
         {/* Pricing Card */}
-        <div className="bg-gradient-to-br from-primary to-primary-hover p-6 rounded-[26px] border-2 border-b-[6px] border-primary-hover shadow-bespoke-md text-white mb-8 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-primary to-primary-hover p-6 rounded-[22px] border border-primary-hover border-b-[4px] shadow-bespoke-md text-white mb-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.06] rounded-full blur-2xl -mr-10 -mt-10" />
           <h2 className="text-lg font-bold text-white/85 mb-1">Premium Pass</h2>
           <div className="flex items-baseline gap-2 mb-4">

@@ -154,7 +154,7 @@ export const LandingPage = () => {
       </header>
 
       {/* 4. Gamified Pillars Section */}
-      <section className="px-6 py-12 bg-card border-t-2 border-black/[0.06] dark:border-white/[0.08]">
+      <section className="px-6 py-12 bg-card border-t border-black/[0.08] dark:border-white/[0.08]">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-2">Designed for Daily Momentum</h2>
@@ -162,7 +162,7 @@ export const LandingPage = () => {
           </div>
           
           <div className="grid sm:grid-cols-3 gap-5">
-            <div className="flex flex-col justify-between p-6 rounded-[26px] bg-ground border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] shadow-bespoke-sm">
+            <div className="flex flex-col justify-between p-6 rounded-[22px] bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] shadow-bespoke-sm">
               <div className="w-12 h-12 rounded-[16px] bg-accent-blue/15 flex items-center justify-center mb-4">
                 <Target className="w-6 h-6 text-accent-blue" />
               </div>
@@ -172,7 +172,7 @@ export const LandingPage = () => {
               </div>
             </div>
 
-            <div className="flex flex-col justify-between p-6 rounded-[26px] bg-ground border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] shadow-bespoke-sm">
+            <div className="flex flex-col justify-between p-6 rounded-[22px] bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] shadow-bespoke-sm">
               <div className="w-12 h-12 rounded-[16px] bg-accent-purple/15 flex items-center justify-center mb-4">
                 <Bot className="w-6 h-6 text-accent-purple" />
               </div>
@@ -182,7 +182,7 @@ export const LandingPage = () => {
               </div>
             </div>
 
-            <div className="flex flex-col justify-between p-6 rounded-[26px] bg-ground border-2 border-b-[5px] border-black/[0.08] dark:border-white/[0.08] shadow-bespoke-sm">
+            <div className="flex flex-col justify-between p-6 rounded-[22px] bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] shadow-bespoke-sm">
               <div className="w-12 h-12 rounded-[16px] bg-accent-gold/15 flex items-center justify-center mb-4">
                 <Zap className="w-6 h-6 text-accent-gold" />
               </div>
@@ -196,42 +196,42 @@ export const LandingPage = () => {
       </section>
 
       {/* 5. Curriculum Trust Section */}
-      <section className="px-6 py-12 border-t-2 border-black/[0.06] dark:border-white/[0.08] bg-ground">
+      <section className="px-6 py-12 border-t border-black/[0.08] dark:border-white/[0.08] bg-ground">
         <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
-           <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 tracking-widest uppercase mb-8">
-             Aligned with Ethiopian Academic Standards
-           </h3>
-           <div className="flex flex-wrap justify-center gap-8 sm:gap-16">
-              
-              <div className="flex items-center gap-3">
-                 <ShieldCheck className="w-8 h-8 text-accent-emerald" />
-                 <div className="text-left flex flex-col">
-                    <span className="font-black text-base leading-none text-gray-900 dark:text-white">MoE</span>
-                    <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Curriculum Aligned</span>
-                 </div>
-              </div>
+          <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 tracking-widest uppercase mb-8">
+            Aligned with Ethiopian Academic Standards
+          </h3>
+          <div className="flex flex-wrap justify-center gap-8 sm:gap-16">
+             
+             <div className="flex items-center gap-3">
+                <ShieldCheck className="w-8 h-8 text-accent-emerald" />
+                <div className="text-left flex flex-col">
+                   <span className="font-black text-base leading-none text-gray-900 dark:text-white">MoE</span>
+                   <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Curriculum Aligned</span>
+                </div>
+             </div>
 
-              <div className="flex items-center gap-3">
-                 <Building2 className="w-8 h-8 text-accent-blue" />
-                 <div className="text-left flex flex-col">
-                    <span className="font-black text-base leading-none text-gray-900 dark:text-white">EUEE</span>
-                    <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">National Standards</span>
-                 </div>
-              </div>
+             <div className="flex items-center gap-3">
+                <Building2 className="w-8 h-8 text-accent-blue" />
+                <div className="text-left flex flex-col">
+                   <span className="font-black text-base leading-none text-gray-900 dark:text-white">EUEE</span>
+                   <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">National Standards</span>
+                </div>
+             </div>
 
-              <div className="flex items-center gap-3">
-                 <GraduationCap className="w-8 h-8 text-accent-purple" />
-                 <div className="text-left flex flex-col">
-                    <span className="font-black text-base leading-none text-gray-900 dark:text-white">Freshman</span>
-                    <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">University Track</span>
-                 </div>
-              </div>
-           </div>
+             <div className="flex items-center gap-3">
+                <GraduationCap className="w-8 h-8 text-accent-purple" />
+                <div className="text-left flex flex-col">
+                   <span className="font-black text-base leading-none text-gray-900 dark:text-white">Freshman</span>
+                   <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">University Track</span>
+                </div>
+             </div>
+          </div>
         </div>
       </section>
 
       {/* 6. Bottom CTA */}
-      <section className="px-6 py-16 flex flex-col items-center text-center bg-card border-t-2 border-black/[0.06] dark:border-white/[0.08]">
+      <section className="px-6 py-16 flex flex-col items-center text-center bg-card border-t border-black/[0.08] dark:border-white/[0.08]">
         <TemariMascot mood="celebrating" size={80} className="mb-3" />
         <h2 className="text-2xl sm:text-3xl font-black mb-2 tracking-tight">Ready to ace your exams?</h2>
         <p className="text-xs sm:text-sm font-bold text-gray-500 mb-6">Join thousands of Ethiopian students learning smarter today.</p>
