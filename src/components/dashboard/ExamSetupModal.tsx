@@ -212,12 +212,16 @@ export const ExamSetupModal: React.FC = () => {
                         <button type="button" onClick={() => { sounds.playTap(); haptic.selection(); setMixType('quick'); setMode('practice'); }}
                           className={`p-3.5 rounded-[18px] border text-xs font-black transition-all flex flex-col items-center text-center ${mixType === 'quick' ? 'bg-primary text-white border-primary border-b-[3px] border-b-black/25 shadow-xs' : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px]'}`}
                         >
-                          <div className="text-2xl mb-1">⚡</div>Quick Drill (+10 XP)
+                          <div className="text-2xl mb-1">⚡</div>
+                          <span className="text-[13px] font-black leading-tight">Quick Drill</span>
+                          <span className={`mt-1 inline-flex items-center text-[10px] font-black px-2 py-0.5 rounded-full ${mixType === 'quick' ? 'bg-white/20 text-white border border-white/25' : 'bg-accent-gold/15 text-accent-gold border border-accent-gold/30'}`}>+10 XP</span>
                         </button>
                         <button type="button" onClick={() => { sounds.playTap(); haptic.selection(); setMixType('past_paper'); setMode('simulator'); }}
                           className={`p-3.5 rounded-[18px] border text-xs font-black transition-all flex flex-col items-center text-center ${mixType === 'past_paper' ? 'bg-primary text-white border-primary border-b-[3px] border-b-black/25 shadow-xs' : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px]'}`}
                         >
-                          <div className="text-2xl mb-1">🏛️</div>Past Paper (+50 XP)
+                          <div className="text-2xl mb-1">🏛️</div>
+                          <span className="text-[13px] font-black leading-tight">Past Paper</span>
+                          <span className={`mt-1 inline-flex items-center text-[10px] font-black px-2 py-0.5 rounded-full ${mixType === 'past_paper' ? 'bg-white/20 text-white border border-white/25' : 'bg-accent-gold/15 text-accent-gold border border-accent-gold/30'}`}>+50 XP</span>
                         </button>
                       </div>
                     </div>

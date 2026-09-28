@@ -254,22 +254,22 @@ function SessionsContent() {
               <button
                 key={s.id}
                 onClick={() => { haptic.selection(); setSelectedSession(s); }}
-                className="w-full group bg-card p-4 rounded-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-bespoke-sm hover:border-primary/30 active:scale-[0.98] transition-all flex items-center gap-4"
+                className="w-full group bg-card p-4 rounded-[22px] border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] shadow-xs hover:border-primary/40 active:translate-y-[1px] transition-all flex items-center gap-4"
               >
-                <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center font-black text-lg shrink-0 ${
-                  isFreshman && activeTab === 'midterm' ? 'bg-accent-blue/10 text-accent-blue' : 'bg-accent-purple/10 text-accent-purple'
+                <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center font-black text-base shrink-0 shadow-xs border ${
+                  isFreshman && activeTab === 'midterm' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-accent-purple/10 text-accent-purple border-accent-purple/20'
                 }`}>
                   {s.id}
                 </div>
                 <div className="text-left flex-1 min-w-0">
                   <h3 className="font-black text-gray-900 dark:text-gray-100 text-[15px]">{s.label}</h3>
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500 dark:text-gray-400 mt-0.5">
-                    <CheckCircle2 className="w-3 h-3" />
-                    {s.count} questions
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 mt-0.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-accent-emerald" />
+                    <span>{s.count} questions</span>
                   </div>
                 </div>
-                <div className="w-9 h-9 rounded-full bg-ground flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors shrink-0">
-                  <ArrowRight className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-full bg-panel border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-center group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all shrink-0">
+                  <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors" />
                 </div>
               </button>
             ))}
@@ -284,12 +284,14 @@ function SessionsContent() {
           onClick={() => setSelectedSession(null)}
         >
           <div
-            className="bg-card w-full max-w-sm rounded-[32px] shadow-bespoke-lg animate-scale-bounce overflow-hidden border border-black/[0.06] dark:border-white/[0.08]"
+            className="bg-card w-full max-w-sm rounded-[32px] shadow-bespoke-lg animate-scale-bounce overflow-hidden border border-black/[0.08] dark:border-white/[0.10]"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="px-6 pt-6 pb-5 border-b border-black/[0.06] dark:border-white/[0.08]">
-              <p className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">{selectedSession.count} questions</p>
+            <div className="px-6 pt-6 pb-4 border-b border-black/[0.06] dark:border-white/[0.08]">
+              <span className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest block mb-1">
+                {selectedSession.count} Questions • Choose Mode
+              </span>
               <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">{selectedSession.label}</h3>
             </div>
 
@@ -298,31 +300,41 @@ function SessionsContent() {
               {/* Practice */}
               <button
                 onClick={() => handleStart(selectedSession, 'practice')}
-                className="w-full group text-left p-4 rounded-[20px] bg-accent-emerald/10 border border-accent-emerald/20 hover:bg-accent-emerald/15 active:scale-[0.97] transition-all flex items-center gap-4"
+                className="w-full group text-left p-4 rounded-[22px] bg-card border-2 border-accent-emerald/40 dark:border-accent-emerald/30 border-b-[4px] border-b-accent-emerald/60 hover:border-accent-emerald active:translate-y-[1px] transition-all flex items-center gap-4 shadow-xs"
               >
-                <div className="w-14 h-14 rounded-[18px] bg-accent-emerald text-white flex items-center justify-center shrink-0 shadow-bespoke-sm group-hover:scale-105 transition-transform">
+                <div className="w-13 h-13 rounded-[16px] bg-accent-emerald text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                   <BookOpen className="w-6 h-6" />
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-black text-gray-900 dark:text-gray-100 text-[17px] leading-tight">Practice Mode</h4>
-                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">Instant feedback · learn as you go</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <h4 className="font-black text-gray-900 dark:text-gray-100 text-base leading-tight">Practice Mode</h4>
+                    <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-accent-emerald/15 text-accent-emerald border border-accent-emerald/25">Untimed</span>
+                  </div>
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Instant answer reveal &amp; AI explanations</p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-accent-emerald shrink-0" />
+                <div className="w-8 h-8 rounded-full bg-accent-emerald/15 text-accent-emerald flex items-center justify-center shrink-0 group-hover:bg-accent-emerald group-hover:text-white transition-colors">
+                  <ArrowRight className="w-4 h-4" />
+                </div>
               </button>
 
               {/* Exam */}
               <button
                 onClick={() => handleStart(selectedSession, 'exam')}
-                className="w-full group text-left p-4 rounded-[20px] bg-primary/5 hover:bg-primary/10 border border-primary/15 active:scale-[0.97] transition-all flex items-center gap-4"
+                className="w-full group text-left p-4 rounded-[22px] bg-card border-2 border-primary/40 dark:border-primary/30 border-b-[4px] border-b-primary/60 hover:border-primary active:translate-y-[1px] transition-all flex items-center gap-4 shadow-xs"
               >
-                <div className="w-14 h-14 rounded-[18px] bg-primary text-white flex items-center justify-center shrink-0 shadow-bespoke-sm group-hover:scale-105 transition-transform">
+                <div className="w-13 h-13 rounded-[16px] bg-primary text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                   <Layers className="w-6 h-6" />
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-black text-gray-900 dark:text-gray-100 text-[17px] leading-tight">Exam Mode</h4>
-                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">Timed · answers revealed at the end</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <h4 className="font-black text-gray-900 dark:text-gray-100 text-base leading-tight">Exam Simulator</h4>
+                    <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/25">Timed</span>
+                  </div>
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Timed countdown &amp; score at the end</p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors shrink-0" />
+                <div className="w-8 h-8 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
+                  <ArrowRight className="w-4 h-4" />
+                </div>
               </button>
             </div>
 

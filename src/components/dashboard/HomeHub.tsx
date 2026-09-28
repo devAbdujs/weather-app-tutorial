@@ -252,12 +252,12 @@ export const HomeHub: React.FC = () => {
         {/* ── 4. TACTILE HERO LAUNCHPAD ── */}
         <button
           onClick={() => { sounds.playTap(); haptic.impact('heavy'); router.push('/practice'); }}
-          className="w-full text-left p-5 rounded-[24px] bg-primary text-white border border-primary/20 border-b-[4px] border-b-[var(--primary-border-bottom)] active:translate-y-[1px] transition-all relative overflow-hidden group shadow-md"
+          className="w-full text-left p-5 rounded-[24px] bg-gradient-to-br from-primary via-primary to-blue-800 dark:from-blue-600 dark:via-blue-700 dark:to-slate-900 text-white border border-primary/40 border-b-[4px] border-b-black/35 active:translate-y-[1px] transition-all relative overflow-hidden group shadow-bespoke-md"
         >
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/[0.08] rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500" />
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 text-white text-[10px] font-black uppercase tracking-widest mb-1.5 border border-white/20">
-              <Zap className="w-3 h-3 fill-accent-gold text-accent-gold" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-[11px] font-black uppercase tracking-wider mb-2 border border-white/25">
+              <Zap className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
               <span>31,000+ Past Exam Papers</span>
             </div>
             <h2 className="text-xl font-black text-white tracking-tight mb-4">
@@ -265,12 +265,12 @@ export const HomeHub: React.FC = () => {
             </h2>
           </div>
           <div className="flex items-center justify-between relative z-10">
-            <div className="bg-white text-primary px-4 py-2 rounded-[14px] font-black text-xs shadow-xs flex items-center gap-1.5 group-hover:scale-[1.02] transition-transform duration-150">
-              Start Practicing
-              <ArrowRight className="w-3.5 h-3.5" />
+            <div className="bg-white text-blue-700 dark:text-blue-800 px-4 py-2.5 rounded-[14px] font-black text-xs shadow-md border-b-2 border-b-slate-200 flex items-center gap-1.5 group-hover:scale-[1.02] transition-transform duration-150">
+              <span>Start Practicing</span>
+              <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
             </div>
-            <div className="w-9 h-9 bg-white/[0.15] rounded-[14px] flex items-center justify-center group-hover:bg-white/[0.22] transition-colors duration-150">
-              <BookOpen className="w-4.5 h-4.5 text-white" />
+            <div className="w-10 h-10 bg-white/20 rounded-[14px] flex items-center justify-center group-hover:bg-white/30 transition-colors duration-150 border border-white/25">
+              <BookOpen className="w-5 h-5 text-white" />
             </div>
           </div>
         </button>
