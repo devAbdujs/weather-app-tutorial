@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, ArrowRight, X, Check, BookOpen, Brain, LibraryBig } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
+import { safeLocalStorage } from '@/lib/safeStorage';
 
 const TOUR_STEPS = [
   {
@@ -37,7 +38,7 @@ export const ProductTour: React.FC = () => {
   const [step, setStep] = useState(0);
 
   useEffect(() => {
-    const hasSeenTour = localStorage.getItem('temari_tour_v1');
+    const hasSeenTour = safeLocalStorage.getItem('temari_tour_v1');
     if (!hasSeenTour) {
       // Small delay to allow the app to render first
       const timer = setTimeout(() => setIsVisible(true), 800);
@@ -57,7 +58,7 @@ export const ProductTour: React.FC = () => {
   const handleComplete = () => {
     haptic.notification('success');
     setIsVisible(false);
-    localStorage.setItem('temari_tour_v1', 'true');
+    safeLocalStorage.setItem('temari_tour_v1', 'true');
   };
 
   if (!isVisible) return null;

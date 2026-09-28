@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { PracticeHub } from '@/components/practice/PracticeHub';
 
 export default function PracticePage() {
-  return <PracticeHub />;
+  return (
+    <Suspense fallback={null}>
+      <PracticeHub />
+    </Suspense>
+  );
 }

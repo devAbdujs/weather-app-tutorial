@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Send, Bot, BookOpen, Target, Sparkles, GraduationCap, ShieldCheck, Building2, UserCircle2, Zap } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
+import { safeSessionStorage } from '@/lib/safeStorage';
 import { TemariMascot, MascotBubble } from '@/components/mascot/TemariMascot';
 
 export const LandingPage = () => {
@@ -66,8 +67,8 @@ export const LandingPage = () => {
       const state = generateRandomString(32);
       const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-      sessionStorage.setItem('tg_oidc_verifier', codeVerifier);
-      sessionStorage.setItem('tg_oidc_state', state);
+      safeSessionStorage.setItem('tg_oidc_verifier', codeVerifier);
+      safeSessionStorage.setItem('tg_oidc_state', state);
 
       const BOT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CLIENT_ID || '8400954528';
       const baseOrigin = process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top';

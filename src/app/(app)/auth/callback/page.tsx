@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { safeSessionStorage } from '@/lib/safeStorage';
 
 function CallbackContent() {
   const router = useRouter();
@@ -17,8 +18,8 @@ function CallbackContent() {
       return;
     }
 
-    const savedState = sessionStorage.getItem('tg_oidc_state');
-    const codeVerifier = sessionStorage.getItem('tg_oidc_verifier');
+    const savedState = safeSessionStorage.getItem('tg_oidc_state');
+    const codeVerifier = safeSessionStorage.getItem('tg_oidc_verifier');
 
     if (state !== savedState) {
       setError('State mismatch. Possible CSRF attack.');
@@ -44,8 +45,8 @@ function CallbackContent() {
     .then(({ ok, data }) => {
       if (ok) {
         // Cleanup storage and reload the main page
-        sessionStorage.removeItem('tg_oidc_state');
-        sessionStorage.removeItem('tg_oidc_verifier');
+        safeSessionStorage.removeItem('tg_oidc_state');
+        safeSessionStorage.removeItem('tg_oidc_verifier');
         window.location.replace('/');
       } else {
         setError(data.error || 'Failed to authenticate');

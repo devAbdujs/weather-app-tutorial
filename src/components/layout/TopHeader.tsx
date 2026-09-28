@@ -88,7 +88,7 @@ export const TopHeader = () => {
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/15 border-2 border-b-[3px] border-amber-500/30 text-amber-950 dark:text-amber-200 font-black text-xs active:translate-y-[1px] transition-all shadow-2xs"
         >
           <Flame className="w-4 h-4 fill-amber-500 text-amber-500" />
-          <span className="font-mono font-black tabular-nums">{streak}</span>
+          <span className="font-mono font-black tabular-nums" suppressHydrationWarning>{streak}</span>
         </button>
 
         {/* XP Counter Pill - High Contrast */}
@@ -98,7 +98,7 @@ export const TopHeader = () => {
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/15 border-2 border-b-[3px] border-orange-500/30 text-orange-950 dark:text-orange-200 font-black text-xs active:translate-y-[1px] transition-all shadow-2xs"
         >
           <Zap className="w-4 h-4 fill-primary text-primary" />
-          <span className="font-mono font-black tabular-nums">{xp}</span>
+          <span className="font-mono font-black tabular-nums" suppressHydrationWarning>{xp}</span>
         </button>
       </div>
 

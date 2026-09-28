@@ -1,5 +1,6 @@
 'use client';
-import { useRef } from 'react';
+
+import { useEffect, useRef } from 'react';
 import { useAppStore, UserProfile } from '@/store/useAppStore';
 
 interface StoreInitializerProps {
@@ -7,15 +8,25 @@ interface StoreInitializerProps {
 }
 
 export function StoreInitializer({ profile }: StoreInitializerProps) {
-  const initialized = useRef(false);
-  
-  if (!initialized.current) {
+  const isFirstRender = useRef(true);
+
+  if (isFirstRender.current) {
+    const current = useAppStore.getState().userProfile;
+    if (!current || current.telegram_id !== profile.telegram_id) {
+      useAppStore.setState({ 
+        userProfile: profile, 
+        profileLoaded: true 
+      });
+    }
+    isFirstRender.current = false;
+  }
+
+  useEffect(() => {
     useAppStore.setState({ 
       userProfile: profile, 
       profileLoaded: true 
     });
-    initialized.current = true;
-  }
-  
+  }, [profile]);
+
   return null;
 }

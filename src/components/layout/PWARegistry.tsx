@@ -12,6 +12,10 @@ export function PWARegistry() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
+    // Inside Telegram WebApp, skip PWA install prompts and iframe service workers
+    const isTelegram = Boolean((window as any).Telegram?.WebApp?.initData);
+    if (isTelegram) return;
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker

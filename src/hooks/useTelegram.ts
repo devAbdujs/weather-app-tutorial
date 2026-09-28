@@ -2,11 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import type WebAppType from '@twa-dev/sdk';
-
-let WebApp: typeof WebAppType;
-if (typeof window !== 'undefined') {
-  WebApp = require('@twa-dev/sdk').default;
-}
+import { safeLocalStorage } from '@/lib/safeStorage';
 
 export interface TelegramUser {
   id: number;
@@ -17,6 +13,17 @@ export interface TelegramUser {
   photo_url?: string;
 }
 
+/**
+ * Safely retrieve the Telegram WebApp object.
+ * In production, the official Telegram SDK is injected globally via
+ * <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+ * or natively by the Telegram mobile client.
+ */
+function getTelegramWebApp(): typeof WebAppType | null {
+  if (typeof window === 'undefined') return null;
+  return (window as any).Telegram?.WebApp || null;
+}
+
 export function useTelegram() {
   const [isTelegram, setIsTelegram] = useState(false);
   const [user, setUser] = useState<TelegramUser | null>(null);
@@ -25,43 +32,58 @@ export function useTelegram() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const tg = (window as any).Telegram?.WebApp || WebApp;
-      const initData = tg?.initData || WebApp?.initData;
-      if (initData) {
-        // 1. We are inside the Telegram Mini App
-        setIsTelegram(true);
-        try { tg?.ready?.(); tg?.expand?.(); } catch (e) {}
-
-        if (tg?.initDataUnsafe?.user) {
-          setUser(tg.initDataUnsafe.user as TelegramUser);
-        }
-        if (tg?.colorScheme) setColorScheme(tg.colorScheme);
-        setIsLoadingAuth(false);
-      } else {
-        // 2. We are on a Web Browser
-        const webUser = localStorage.getItem('tg_web_user');
-        if (webUser) {
+      try {
+        const tg = getTelegramWebApp();
+        const initData = tg?.initData;
+        if (initData) {
+          // 1. We are inside the Telegram Mini App
+          setIsTelegram(true);
           try {
-            setUser(JSON.parse(webUser));
-          } catch(e) {}
+            tg?.ready?.();
+            tg?.expand?.();
+          } catch (e) {}
+
+          if (tg?.initDataUnsafe?.user) {
+            setUser(tg.initDataUnsafe.user as TelegramUser);
+          }
+          if (tg?.colorScheme) {
+            setColorScheme(tg.colorScheme);
+          }
+          setIsLoadingAuth(false);
+        } else {
+          // 2. We are on a Web Browser
+          const webUser = safeLocalStorage.getItem('tg_web_user');
+          if (webUser) {
+            try {
+              setUser(JSON.parse(webUser));
+            } catch (e) {}
+          }
+          setIsLoadingAuth(false);
         }
+      } catch (err) {
+        console.warn('[useTelegram] Initialization error:', err);
         setIsLoadingAuth(false);
       }
     }
   }, []);
 
-  // Haptic Feedback Engine - wrapped in useMemo to prevent recreation
+  // Haptic Feedback Engine - safely guarded against missing methods
   const haptic = useMemo(() => {
-    const getHf = () => ((window as any).Telegram?.WebApp || WebApp)?.HapticFeedback;
     return {
       selection: () => {
-        try { getHf()?.selectionChanged(); } catch (e) {}
+        try {
+          getTelegramWebApp()?.HapticFeedback?.selectionChanged?.();
+        } catch (e) {}
       },
       impact: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft' = 'light') => {
-        try { getHf()?.impactOccurred(style); } catch (e) {}
+        try {
+          getTelegramWebApp()?.HapticFeedback?.impactOccurred?.(style);
+        } catch (e) {}
       },
       notification: (type: 'error' | 'success' | 'warning') => {
-        try { getHf()?.notificationOccurred(type); } catch (e) {}
+        try {
+          getTelegramWebApp()?.HapticFeedback?.notificationOccurred?.(type);
+        } catch (e) {}
       },
     };
   }, []);
@@ -71,21 +93,21 @@ export function useTelegram() {
 
   const setBackButton = useCallback((visible: boolean, onClick?: () => void) => {
     try {
-      const bb = ((window as any).Telegram?.WebApp || WebApp)?.BackButton;
+      const bb = getTelegramWebApp()?.BackButton;
       if (!bb) return;
       // Remove previous handler before adding a new one to prevent stacking
       if (backButtonHandlerRef.current) {
-        bb.offClick(backButtonHandlerRef.current);
+        bb.offClick?.(backButtonHandlerRef.current);
         backButtonHandlerRef.current = null;
       }
       if (visible) {
-        bb.show();
+        bb.show?.();
         if (onClick) {
           backButtonHandlerRef.current = onClick;
-          bb.onClick(onClick);
+          bb.onClick?.(onClick);
         }
       } else {
-        bb.hide();
+        bb.hide?.();
       }
     } catch (e) {}
   }, []);
@@ -93,7 +115,7 @@ export function useTelegram() {
   // API 8.0+ Native Immersion Controls
   const setFullscreen = useCallback((fullscreen: boolean) => {
     try {
-      const tg = ((window as any).Telegram?.WebApp || WebApp);
+      const tg = getTelegramWebApp();
       if (fullscreen) tg?.requestFullscreen?.();
       else tg?.exitFullscreen?.();
     } catch (e) {}
@@ -101,7 +123,7 @@ export function useTelegram() {
 
   const setVerticalSwipes = useCallback((enable: boolean) => {
     try {
-      const tg = ((window as any).Telegram?.WebApp || WebApp);
+      const tg = getTelegramWebApp();
       if (enable) tg?.enableVerticalSwipes?.();
       else tg?.disableVerticalSwipes?.();
     } catch (e) {}
@@ -109,7 +131,7 @@ export function useTelegram() {
 
   const setClosingConfirmation = useCallback((enable: boolean) => {
     try {
-      const tg = ((window as any).Telegram?.WebApp || WebApp);
+      const tg = getTelegramWebApp();
       if (enable) tg?.enableClosingConfirmation?.();
       else tg?.disableClosingConfirmation?.();
     } catch (e) {}
@@ -117,7 +139,8 @@ export function useTelegram() {
 
   const setHeaderColor = useCallback((color: string) => {
     try {
-      WebApp.setHeaderColor?.(color as any);
+      const tg = getTelegramWebApp();
+      tg?.setHeaderColor?.(color as any);
     } catch (e) {}
   }, []);
 
@@ -131,6 +154,6 @@ export function useTelegram() {
     setVerticalSwipes,
     setClosingConfirmation,
     setHeaderColor,
-    twa: WebApp,
+    twa: getTelegramWebApp(),
   };
 }

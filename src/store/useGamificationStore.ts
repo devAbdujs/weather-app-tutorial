@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { sounds } from '@/lib/sounds';
+import { safeLocalStorage } from '@/lib/safeStorage';
 
 export interface LevelInfo {
   level: number;
@@ -53,7 +54,7 @@ const STORAGE_KEY = 'temari_gamification_v1';
 function loadPersistedState() {
   if (typeof window === 'undefined') return { xp: 45, dailyXp: 15, dailyXpGoal: 50 };
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = safeLocalStorage.getItem(STORAGE_KEY);
     if (raw) {
       const data = JSON.parse(raw);
       // Reset daily XP if day changed
@@ -71,7 +72,7 @@ function loadPersistedState() {
 function persistState(xp: number, dailyXp: number, dailyXpGoal: number) {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    safeLocalStorage.setItem(STORAGE_KEY, JSON.stringify({
       xp,
       dailyXp,
       dailyXpGoal,
