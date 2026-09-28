@@ -4,77 +4,76 @@
 
 /* ─── CSS Custom Properties (Bespoke UI Design Tokens) ───────── */
 :root {
-  /* Light mode surfaces: Clean, modern mobile canvas (Duolingo & iOS native standard) */
-  --background:    hsl(216, 20%, 95.5%);  /* #F0F3F7: Clean soft neutral canvas, eliminates muddy yellow */
-  --foreground:    hsl(222, 47%, 11%);    /* #0F172A: Deep charcoal ink readability */
-  --surface:       hsl(0, 0%, 100%);      /* #FFFFFF: Pure crisp white cards that distinctly POP */
-  --surface-2:     hsl(215, 20%, 90%);    /* #E2E7EE: Recessed controls, pills, trays */
-  --border:        hsla(220, 25%, 18%, 0.09); /* Crisp neutral border */
-  --border-strong: hsla(220, 25%, 18%, 0.18); /* Defined 3D card bottom bevel */
+  /* Light mode surfaces: Warm, welcoming mobile canvas (ui_inspiration.png) */
+  --background:    hsl(40, 20%, 97.5%);  /* #FAF9F5: Soft warm ivory/cream canvas */
+  --foreground:    hsl(24, 10%, 10%);    /* #1C1917: Deep espresso ink readability, WCAG AAA */
+  --surface:       hsl(0, 0%, 100%);      /* #FFFFFF: Pure crisp white cards that pop against warm canvas */
+  --surface-2:     hsl(38, 22%, 93%);    /* #F3F0EA: Warm sand/cream recessed trays, inputs, pills */
+  --border:        hsla(24, 15%, 15%, 0.08); /* Crisp warm neutral border */
+  --border-strong: hsla(24, 15%, 15%, 0.16); /* Defined 3D card bottom bevel */
 
-  /* Brand: Bespoke Royal Cobalt — vibrant, high-contrast, authoritative */
-  --primary:               hsl(221, 83%, 52%);  /* #1D5DEF: High contrast, vivid */
-  --primary-foreground:    hsl(0, 0%, 100%);
-  --primary-rgb:           29, 93, 239;
-  --primary-border-bottom: hsl(221, 83%, 35%);  /* #0F3899 */
+  /* Brand Primary: Warm Sunset Orange (ui_inspiration.png Chegg brand CTA & FAB) */
+  --primary:               hsl(24, 94%, 52%);  /* #F96E10: Vibrant, warm, high-contrast CTA */
+  --primary-foreground:    hsl(0, 0%, 100%);   /* Pure white text */
+  --primary-rgb:           249, 110, 16;
+  --primary-border-bottom: hsl(22, 94%, 38%);  /* #BF4D05: Rich burnt terracotta 3D tactile bevel */
   --accent:                hsl(38, 92%, 46%);
 
-  /* Semantic Accents — cohesive, anti-glare, high-contrast palette */
-  --accent-gold:        hsl(38, 92%, 46%);     /* Warm Ethiopian gold: Streaks, badges, tips, XP */
-  --accent-gold-rgb:    225, 138, 10;
-  --accent-emerald:     hsl(145, 55%, 38%);    /* Forest jade: Success, completed, high mastery */
-  --accent-emerald-rgb: 44, 150, 92;
-  --accent-rose:        hsl(350, 68%, 52%);    /* Muted crimson: Needs practice, warnings, errors */
-  --accent-rose-rgb:    223, 42, 72;
-  --accent-blue:        hsl(201, 80%, 46%);    /* Telegram & info blue */
-  --accent-blue-rgb:    23, 142, 212;
-  --accent-purple:      hsl(268, 55%, 52%);    /* Academic violet: Notes, psychology */
-  --accent-purple-rgb:  135, 69, 196;
+  /* Semantic Accents — calibrated from ui_inspiration.png (WCAG AA compliant) */
+  --accent-gold:        hsl(38, 92%, 48%);     /* Warm golden amber: Streaks, ratings, tips, XP */
+  --accent-gold-rgb:    245, 158, 11;
+  --accent-emerald:     hsl(152, 55%, 42%);    /* Mint emerald: Biology, completed, high mastery */
+  --accent-emerald-rgb: 48, 166, 112;
+  --accent-rose:        hsl(350, 78%, 54%);    /* Coral rose: Needs practice, warnings, errors */
+  --accent-rose-rgb:    225, 29, 72;
+  --accent-blue:        hsl(199, 89%, 46%);    /* Chegg blue/cyan: Questions, Telegram & info */
+  --accent-blue-rgb:    2, 132, 199;
+  --accent-purple:      hsl(268, 65%, 54%);    /* Academic lilac/violet: Mathematics, study notes */
+  --accent-purple-rgb:  139, 92, 246;
 
-  /* Text hierarchy — avoids pure #000/#fff halation */
-  --text-primary:  hsl(222, 47%, 11%);
-  --text-secondary:hsl(215, 16%, 47%);
-  --text-tertiary: hsl(215, 20%, 65%);
+  /* Text hierarchy — warm espresso undertones */
+  --text-primary:  hsl(24, 10%, 10%);
+  --text-secondary:hsl(215, 14%, 44%);
+  --text-tertiary: hsl(215, 12%, 62%);
 
-  /* Neutral shadow tokens — no colored shadows */
-  --shadow-sm:     0 1px 2px hsla(222, 20%, 15%, 0.06);
-  --shadow-md:     0 4px 12px hsla(222, 20%, 15%, 0.08);
+  /* Neutral shadow tokens */
+  --shadow-sm:     0 1px 2px hsla(24, 15%, 15%, 0.05);
+  --shadow-md:     0 4px 12px hsla(24, 15%, 15%, 0.07);
 }
 
 .dark {
-  /* Anti-Halation Dark Mode: Rich midnight slate — deeply desaturated */
-  /* Colors feel more intense on dark backgrounds — desaturate accordingly */
-  --background:    hsl(224, 26%, 7%);
-  --foreground:    hsl(213, 31%, 95%);  /* Off-white — prevents eye vibration */
-  --surface:       hsl(222, 26%, 12%);  /* Elevation via lightness, not shadows */
-  --surface-2:     hsl(222, 24%, 18%);  /* Further elevated controls */
+  /* Anti-Halation Dark Mode: Midnight slate with warm undertones */
+  --background:    hsl(220, 24%, 6.5%);  /* #0C0F14: Deep midnight slate */
+  --foreground:    hsl(213, 31%, 95%);   /* Off-white — prevents eye vibration */
+  --surface:       hsl(220, 20%, 11%);   /* #151A22: Elevated dark card surface */
+  --surface-2:     hsl(220, 18%, 15.5%); /* #1E2530: Recessed controls & trays */
   --border:        hsla(0, 0%, 100%, 0.08);
-  --border-strong: hsla(0, 0%, 100%, 0.14);
+  --border-strong: hsla(0, 0%, 100%, 0.15);
 
-  /* Dark mode primary: radiant cobalt — high contrast against midnight slate */
-  --primary:               hsl(217, 85%, 54%);
+  /* Dark mode primary: luminous warm sunset orange — high contrast against slate */
+  --primary:               hsl(24, 94%, 56%);   /* #FA7B25: Radiant warm orange */
   --primary-foreground:    hsl(0, 0%, 100%);
-  --primary-rgb:           54, 126, 238;
-  --primary-border-bottom: hsl(217, 85%, 38%);
+  --primary-rgb:           250, 123, 37;
+  --primary-border-bottom: hsl(22, 85%, 40%);   /* #BF4D05 */
   --accent:                hsl(40, 92%, 62%);
 
-  /* Dark mode semantic accents: softened & anti-halation desaturated */
-  --accent-gold:        hsl(40, 92%, 62%);
+  /* Dark mode semantic accents: softened & anti-glare */
+  --accent-gold:        hsl(40, 95%, 62%);
   --accent-gold-rgb:    246, 185, 70;
-  --accent-emerald:     hsl(145, 48%, 56%);
-  --accent-emerald-rgb: 77, 209, 137;
-  --accent-rose:        hsl(350, 65%, 66%);
-  --accent-rose-rgb:    232, 105, 126;
-  --accent-blue:        hsl(201, 75%, 62%);
-  --accent-blue-rgb:    86, 184, 230;
-  --accent-purple:      hsl(268, 60%, 70%);
-  --accent-purple-rgb:  186, 142, 232;
+  --accent-emerald:     hsl(152, 60%, 54%);
+  --accent-emerald-rgb: 68, 207, 138;
+  --accent-rose:        hsl(350, 75%, 66%);
+  --accent-rose-rgb:    235, 102, 126;
+  --accent-blue:        hsl(199, 85%, 62%);
+  --accent-blue-rgb:    77, 188, 239;
+  --accent-purple:      hsl(268, 70%, 72%);
+  --accent-purple-rgb:  192, 146, 245;
 
   --text-primary:  hsl(213, 31%, 95%);
   --text-secondary:hsl(215, 14%, 63%);
   --text-tertiary: hsl(215, 12%, 46%);
 
-  /* Dark mode: no shadows — use surface lightness for depth */
+  /* Dark mode: no shadows — elevation via surface lightness */
   --shadow-sm:     none;
   --shadow-md:     none;
 }

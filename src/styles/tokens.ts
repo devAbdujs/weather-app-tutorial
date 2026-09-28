@@ -11,7 +11,7 @@ export const tokens = {
     card: 'var(--surface)',
     panel: 'var(--surface-2)',
 
-    // Brand Primary (Royal Cobalt)
+    // Brand Primary (Warm Sunset Orange)
     primary: 'rgb(var(--primary-rgb) / <alpha-value>)',
     'primary-foreground': 'var(--primary-foreground, #ffffff)',
     'primary-border': 'var(--primary-border-bottom)',
@@ -102,12 +102,12 @@ export const tailwindTokens = {
 
 // Raw hex palette for environments requiring raw color strings (e.g. Telegram WebApp setHeaderColor)
 export const surfaceHex = {
-  groundLight: '#F0F3F7',
-  groundDark: '#0D1118',
-  panelLight: '#E2E7EE',
-  panelDark: '#1E2532',
+  groundLight: '#FAF9F5',
+  groundDark: '#0C0F14',
+  panelLight: '#F3F0EA',
+  panelDark: '#1E2530',
   cardLight: '#FFFFFF',
-  cardDark: '#161D2A',
+  cardDark: '#151A22',
 } as const;
 
 // Mascot illustration color constants (centralized vector color palette)
