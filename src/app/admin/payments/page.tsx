@@ -21,7 +21,7 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
         </div>
       </header>
 
-      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl shadow-bespoke-sm overflow-hidden flex flex-col">
+      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden flex flex-col">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -58,7 +58,7 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
                       href={payment.receipt_url} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-lg text-xs font-bold hover:bg-primary/20 transition-colors shadow-bespoke-sm"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-lg text-xs font-bold hover:bg-primary/20 transition-colors shadow-tactile-sm"
                     >
                       <ImageIcon className="w-3.5 h-3.5" /> View Receipt <ExternalLink className="w-3 h-3" />
                     </a>

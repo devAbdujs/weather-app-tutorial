@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { tailwindTokens } from "./src/styles/tokens";
 
 const config: Config = {
   content: [
@@ -10,38 +11,31 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        /* ── Semantic surfaces (CSS vars — auto dark/light) ── */
-        ground:  "var(--background)",
-        panel:   "var(--surface-2)",
-        card:    "var(--surface)",
-
-        /* ── Brand — one accent, used sparingly ── */
-        primary: "rgb(var(--primary-rgb) / <alpha-value>)",
-        "primary-foreground": "var(--primary-foreground, #ffffff)",
-        accent:  "rgb(var(--accent-gold-rgb) / <alpha-value>)",
-
-        /* ── Semantic accent palette — automatic dark/light adaptive with full opacity support ── */
-        "accent-gold":    "rgb(var(--accent-gold-rgb) / <alpha-value>)",
-        "accent-amber":   "rgb(var(--accent-gold-rgb) / <alpha-value>)",
-        "accent-emerald": "rgb(var(--accent-emerald-rgb) / <alpha-value>)",
-        "accent-rose":    "rgb(var(--accent-rose-rgb) / <alpha-value>)",
-        "accent-blue":    "rgb(var(--accent-blue-rgb) / <alpha-value>)",
-        "accent-purple":  "rgb(var(--accent-purple-rgb) / <alpha-value>)",
-
-        /* ── Utility ── */
-        error:            "rgb(var(--accent-rose-rgb) / <alpha-value>)",
-        "sticky-yellow":  "hsl(48, 100%, 96%)",   /* Warm parchment for sticky notes */
+        ...tailwindTokens.colors,
+        accent: "rgb(var(--accent-gold-rgb) / <alpha-value>)",
+        "accent-amber": "rgb(var(--accent-gold-rgb) / <alpha-value>)",
+      },
+      fontSize: {
+        ...tailwindTokens.fontSize,
+      },
+      spacing: {
+        ...tailwindTokens.spacing,
+      },
+      borderWidth: {
+        ...tailwindTokens.borderWidth,
       },
       boxShadow: {
-        /* Crisp tactile shadows for elevated cards against the cool slate canvas */
-        "bespoke-sm": "0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05)",
-        "bespoke-md": "0 4px 16px -2px rgba(15, 23, 42, 0.07), 0 2px 6px -1px rgba(15, 23, 42, 0.04)",
-        "bespoke-lg": "0 12px 32px -4px rgba(15, 23, 42, 0.10), 0 4px 12px -2px rgba(15, 23, 42, 0.05)",
-        "bespoke-nav": "0 -2px 14px 0 rgba(15, 23, 42, 0.04)",
-        "bespoke-card": "0 1px 4px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.03)",
+        ...tailwindTokens.boxShadow,
+        /* Backward compatibility aliases */
+        "bespoke-sm": tailwindTokens.boxShadow["tactile-sm"],
+        "bespoke-md": tailwindTokens.boxShadow["tactile-md"],
+        "bespoke-lg": tailwindTokens.boxShadow["tactile-lg"],
+        "bespoke-nav": tailwindTokens.boxShadow["tactile-nav"],
+        "bespoke-card": tailwindTokens.boxShadow["tactile-xs"],
       },
       borderRadius: {
-        /* 4px base grid system */
+        ...tailwindTokens.borderRadius,
+        /* Base grid backward compatibility */
         "4":  "4px",
         "8":  "8px",
         "12": "12px",

@@ -20,7 +20,7 @@ export default async function ManagersPage() {
         {/* Admin List */}
         <div className="md:col-span-2 space-y-4">
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Active Accounts</h2>
-          <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl shadow-bespoke-sm overflow-hidden">
+          <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-ground/50 border-b border-black/[0.06] dark:border-white/[0.08]">

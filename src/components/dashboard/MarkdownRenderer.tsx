@@ -106,7 +106,7 @@ function sliceTextIntoSegments(
         <mark
           key={`mark-${r.highlight.id}-${offset + localStart}`}
           data-highlight-id={r.highlight.id}
-          className={`${colorClass} px-1 py-0.5 rounded-[4px] font-inherit cursor-pointer transition-all hover:opacity-90 active:scale-[0.99] border-b border-black/10 dark:border-white/10 select-text inline`}
+          className={`${colorClass} px-1 py-0.5 rounded font-inherit cursor-pointer transition-all hover:opacity-90 active:scale-[0.99] border-b border-black/10 dark:border-white/10 select-text inline`}
           onClick={(e) => {
             e.stopPropagation();
             onHighlightClick?.(r.highlight);
@@ -222,9 +222,9 @@ export default function MarkdownRenderer({
         h1: ({ children }) => <h1 className="text-2xl font-black mt-8 mb-4 text-gray-900 dark:text-gray-100 leading-tight tracking-tight">{wrap(children)}</h1>,
         h2: ({ children }) => <h2 className="text-xl font-black mt-8 mb-3 text-gray-900 dark:text-gray-100 tracking-tight">{wrap(children)}</h2>,
         h3: ({ children }) => <h3 className="text-lg font-bold mt-6 mb-3 text-gray-900 dark:text-gray-100">{wrap(children)}</h3>,
-        p: ({ children }) => <p className="mb-4 text-[15px] leading-relaxed text-gray-600 dark:text-gray-400 font-medium">{wrap(children)}</p>,
-        ul: ({ children }) => <ul className="list-disc pl-5 mb-5 space-y-2 text-[15px] text-gray-600 dark:text-gray-400 font-medium">{wrap(children)}</ul>,
-        ol: ({ children }) => <ol className="list-decimal pl-5 mb-5 space-y-2 text-[15px] text-gray-600 dark:text-gray-400 font-medium">{wrap(children)}</ol>,
+        p: ({ children }) => <p className="mb-4 text-regular leading-relaxed text-gray-600 dark:text-gray-400 font-medium">{wrap(children)}</p>,
+        ul: ({ children }) => <ul className="list-disc pl-5 mb-5 space-y-2 text-regular text-gray-600 dark:text-gray-400 font-medium">{wrap(children)}</ul>,
+        ol: ({ children }) => <ol className="list-decimal pl-5 mb-5 space-y-2 text-regular text-gray-600 dark:text-gray-400 font-medium">{wrap(children)}</ol>,
         li: ({ children }) => <li className="pl-1">{wrap(children)}</li>,
         strong: ({ children }) => <strong className="font-bold text-gray-900 dark:text-gray-100">{children}</strong>,
         em: ({ children }) => <em className="italic">{children}</em>,

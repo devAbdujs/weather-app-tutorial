@@ -170,19 +170,19 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm animate-fade-in transition-all duration-300">
-      <div className="w-full max-w-lg bg-card border-t border-black/[0.06] dark:border-white/[0.08] rounded-t-[28px] p-5 max-h-[90vh] h-[90vh] flex flex-col shadow-2xl animate-drawer-up">
+      <div className="w-full max-w-lg bg-card border-t border-black/[0.06] dark:border-white/[0.08] rounded-t-modal p-5 max-h-[90vh] h-[90vh] flex flex-col shadow-2xl animate-drawer-up">
         {/* Premium Header */}
         <div className="flex items-center justify-between pb-3.5 border-b border-black/[0.06] dark:border-white/[0.08] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="relative p-2 rounded-[12px] bg-primary/10 text-primary border border-primary/20 shadow-sm">
+            <div className="relative p-2 rounded-control bg-primary/10 text-primary border border-primary/20 shadow-sm">
               <User className="w-5 h-5" />
               <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-accent-emerald rounded-full border-2 border-card" />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 dark:text-gray-100 text-[16px] flex items-center gap-1.5 tracking-tight">
+              <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base flex items-center gap-1.5 tracking-tight">
                 Temari AI
               </h3>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1">
+              <p className="text-caption text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1">
                 <GraduationCap className="w-3 h-3 text-primary" /> Study Companion
               </p>
             </div>
@@ -192,7 +192,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
               haptic.selection();
               onClose();
             }}
-            className="w-8.5 h-8.5 flex items-center justify-center rounded-[10px] bg-ground border border-black/[0.06] dark:border-white/[0.08] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 active:scale-95 transition-all"
+            className="w-8.5 h-8.5 flex items-center justify-center rounded-control bg-ground border border-black/[0.06] dark:border-white/[0.08] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 active:scale-95 transition-all"
           >
             <X className="w-4.5 h-4.5" />
           </button>
@@ -203,7 +203,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           <button
             onClick={() => sendMessage(studentAnswer ? 'explain' : 'hint')}
             disabled={isLoading}
-            className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-[12px] font-bold border transition-all whitespace-nowrap bg-ground border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:border-black/20 dark:hover:border-white/20 active:scale-[0.98] shadow-sm"
+            className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-control font-bold border transition-all whitespace-nowrap bg-ground border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:border-black/20 dark:hover:border-white/20 active:scale-[0.98] shadow-sm"
           >
             <Lightbulb className="w-3.5 h-3.5 text-accent-gold" />
             {mode === 'exam' 
@@ -214,7 +214,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           <button
             onClick={() => sendMessage('amharic')}
             disabled={isLoading}
-            className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-[12px] font-bold border transition-all whitespace-nowrap bg-ground border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:border-black/20 dark:hover:border-white/20 active:scale-[0.98] shadow-sm"
+            className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-control font-bold border transition-all whitespace-nowrap bg-ground border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:border-black/20 dark:hover:border-white/20 active:scale-[0.98] shadow-sm"
           >
             <Globe className="w-3.5 h-3.5 text-accent-blue" />
             በአማርኛ አስረዳኝ
@@ -232,14 +232,14 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           {messages.map((msg) => (
             <div key={msg.id} className={`flex w-full animate-fade-up ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               {msg.role === 'assistant' && (
-                <div className="w-7 h-7 rounded-[8px] bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mr-2 shrink-0 self-end mb-1">
+                <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mr-2 shrink-0 self-end mb-1">
                   <User className="w-3.5 h-3.5" />
                 </div>
               )}
-              <div className={`p-3.5 rounded-[18px] max-w-[85%] font-sans shadow-bespoke-sm ${
+              <div className={`p-3.5 rounded-card-sm max-w-[85%] font-sans shadow-tactile-sm ${
                 msg.role === 'user' 
-                  ? 'bg-primary text-white rounded-br-[4px] font-medium whitespace-pre-line' 
-                  : 'bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-bl-[4px] text-gray-900 dark:text-gray-100'
+                  ? 'bg-primary text-white rounded-br font-medium whitespace-pre-line' 
+                  : 'bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-bl text-gray-900 dark:text-gray-100'
               }`}>
                 {msg.role === 'assistant' ? (
                   msg.content ? (
@@ -271,12 +271,12 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask Temari AI..."
             disabled={isLoading}
-            className="flex-1 bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-[16px] px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
+            className="flex-1 bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-card-sm px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="w-12 h-12 rounded-[16px] flex items-center justify-center bg-primary hover:bg-primary/90 disabled:bg-black/5 dark:disabled:bg-white/5 disabled:text-gray-400 text-white transition-all duration-200 ease-bespoke shrink-0 shadow-bespoke-sm disabled:shadow-none active:scale-[0.98]"
+            className="w-12 h-12 rounded-card-sm flex items-center justify-center bg-primary hover:bg-primary/90 disabled:bg-black/5 dark:disabled:bg-white/5 disabled:text-gray-400 text-white transition-all duration-200 ease-bespoke shrink-0 shadow-tactile-sm disabled:shadow-none active:scale-[0.98]"
           >
             <Send className="w-4 h-4 ml-0.5" />
           </button>

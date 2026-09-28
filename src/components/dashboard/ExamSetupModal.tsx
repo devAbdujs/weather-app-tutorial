@@ -141,7 +141,7 @@ export const ExamSetupModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in bg-black/40 backdrop-blur-sm">
-      <div className="bg-card w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 shadow-bespoke-lg border border-black/[0.06] dark:border-white/[0.08] animate-sheet-up flex flex-col max-h-[90vh]">
+      <div className="bg-card w-full max-w-md rounded-t-modal sm:rounded-modal p-6 shadow-tactile-lg border border-black/[0.06] dark:border-white/[0.08] animate-sheet-up flex flex-col max-h-[90vh]">
         <div className="flex justify-between items-center mb-5 shrink-0">
           <div className="flex items-center gap-3">
             <TemariMascot mood="happy" size={46} />
@@ -161,7 +161,7 @@ export const ExamSetupModal: React.FC = () => {
               <div className="space-y-2">
                 <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Target Exam</label>
                 <div className="grid grid-cols-1 gap-2">
-                  <div className="px-4 py-3 rounded-[14px] bg-primary text-white font-black text-sm shadow-xs border border-primary/30 border-b-[3px] border-b-black/25">
+                  <div className="px-4 py-3 rounded-btn bg-primary text-white font-black text-sm shadow-tactile-xs border border-primary/30 border-b-bevel border-b-black/25">
                     {resolveExamType()}
                   </div>
                 </div>
@@ -174,7 +174,7 @@ export const ExamSetupModal: React.FC = () => {
                   <div className="grid grid-cols-2 gap-2">
                     {g12Subjects.map((s) => (
                       <button key={s.id} type="button" onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
-                        className={`px-3 py-2.5 rounded-[14px] border text-xs font-black transition-all text-left ${subject === s.id ? 'bg-primary text-white border-primary border-b-[3px] border-b-black/25 shadow-xs' : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px]'}`}
+                        className={`px-3 py-2.5 rounded-btn border text-xs font-black transition-all text-left ${subject === s.id ? 'bg-primary text-white border-primary border-b-bevel border-b-black/25 shadow-tactile-xs' : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px]'}`}
                       >{s.label}</button>
                     ))}
                   </div>
@@ -187,7 +187,7 @@ export const ExamSetupModal: React.FC = () => {
                   <div className="grid grid-cols-2 gap-2">
                     {freshmanSubjects.map((s) => (
                       <button key={s.id} type="button" onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
-                        className={`px-3 py-2.5 rounded-[14px] border text-xs font-black transition-all text-left ${subject === s.id ? 'bg-primary text-white border-primary border-b-[3px] border-b-black/25 shadow-xs' : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px]'}`}
+                        className={`px-3 py-2.5 rounded-btn border text-xs font-black transition-all text-left ${subject === s.id ? 'bg-primary text-white border-primary border-b-bevel border-b-black/25 shadow-tactile-xs' : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px]'}`}
                       >{s.label}</button>
                     ))}
                   </div>
@@ -197,7 +197,7 @@ export const ExamSetupModal: React.FC = () => {
               {isExit && profileStream && (
                 <div className="space-y-2">
                   <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Discipline</label>
-                  <div className="px-4 py-3 rounded-[16px] bg-primary/10 border-2 border-primary/20 font-black text-gray-900 dark:text-gray-100 text-sm">
+                  <div className="px-4 py-3 rounded-card-sm bg-primary/10 border-2 border-primary/20 font-black text-gray-900 dark:text-gray-100 text-sm">
                     {profileStream}
                   </div>
                 </div>
@@ -210,18 +210,18 @@ export const ExamSetupModal: React.FC = () => {
                       <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Session Type</label>
                       <div className="grid grid-cols-2 gap-3">
                         <button type="button" onClick={() => { sounds.playTap(); haptic.selection(); setMixType('quick'); setMode('practice'); }}
-                          className={`p-3.5 rounded-[18px] border text-xs font-black transition-all flex flex-col items-center text-center ${mixType === 'quick' ? 'bg-primary text-white border-primary border-b-[3px] border-b-black/25 shadow-xs' : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px]'}`}
+                          className={`p-3.5 rounded-card-sm border text-xs font-black transition-all flex flex-col items-center text-center ${mixType === 'quick' ? 'bg-primary text-white border-primary border-b-bevel border-b-black/25 shadow-tactile-xs' : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px]'}`}
                         >
                           <div className="text-2xl mb-1">⚡</div>
-                          <span className="text-[13px] font-black leading-tight">Quick Drill</span>
-                          <span className={`mt-1 inline-flex items-center text-[10px] font-black px-2 py-0.5 rounded-full ${mixType === 'quick' ? 'bg-white/20 text-white border border-white/25' : 'bg-accent-gold/15 text-accent-gold border border-accent-gold/30'}`}>+10 XP</span>
+                          <span className="text-compact font-black leading-tight">Quick Drill</span>
+                          <span className={`mt-1 inline-flex items-center text-micro font-black px-2 py-0.5 rounded-full ${mixType === 'quick' ? 'bg-white/20 text-white border border-white/25' : 'bg-accent-gold/15 text-accent-gold border border-accent-gold/30'}`}>+10 XP</span>
                         </button>
                         <button type="button" onClick={() => { sounds.playTap(); haptic.selection(); setMixType('past_paper'); setMode('simulator'); }}
-                          className={`p-3.5 rounded-[18px] border text-xs font-black transition-all flex flex-col items-center text-center ${mixType === 'past_paper' ? 'bg-primary text-white border-primary border-b-[3px] border-b-black/25 shadow-xs' : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px]'}`}
+                          className={`p-3.5 rounded-card-sm border text-xs font-black transition-all flex flex-col items-center text-center ${mixType === 'past_paper' ? 'bg-primary text-white border-primary border-b-bevel border-b-black/25 shadow-tactile-xs' : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px]'}`}
                         >
                           <div className="text-2xl mb-1">🏛️</div>
-                          <span className="text-[13px] font-black leading-tight">Past Paper</span>
-                          <span className={`mt-1 inline-flex items-center text-[10px] font-black px-2 py-0.5 rounded-full ${mixType === 'past_paper' ? 'bg-white/20 text-white border border-white/25' : 'bg-accent-gold/15 text-accent-gold border border-accent-gold/30'}`}>+50 XP</span>
+                          <span className="text-compact font-black leading-tight">Past Paper</span>
+                          <span className={`mt-1 inline-flex items-center text-micro font-black px-2 py-0.5 rounded-full ${mixType === 'past_paper' ? 'bg-white/20 text-white border border-white/25' : 'bg-accent-gold/15 text-accent-gold border border-accent-gold/30'}`}>+50 XP</span>
                         </button>
                       </div>
                     </div>
@@ -232,7 +232,7 @@ export const ExamSetupModal: React.FC = () => {
                         <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar px-1">
                           {[2015, 2014, 2013, 2012, 2011, 2010].map((yr) => (
                             <button key={yr} type="button" onClick={() => { haptic.selection(); setSelectedYear(yr); }}
-                              className={`shrink-0 px-4 py-2.5 rounded-[12px] border text-sm font-bold transition-all duration-200 ease-bespoke ${selectedYear === yr ? 'bg-primary text-white border-primary shadow-bespoke-sm' : 'bg-ground text-gray-700 dark:text-gray-300 border-black/[0.06] dark:border-white/[0.08] hover:border-black/20 dark:hover:border-white/20'}`}
+                              className={`shrink-0 px-4 py-2.5 rounded-control border text-sm font-bold transition-all duration-200 ease-bespoke ${selectedYear === yr ? 'bg-primary text-white border-primary shadow-tactile-sm' : 'bg-ground text-gray-700 dark:text-gray-300 border-black/[0.06] dark:border-white/[0.08] hover:border-black/20 dark:hover:border-white/20'}`}
                             >{yr}</button>
                           ))}
                         </div>
@@ -262,9 +262,9 @@ export const ExamSetupModal: React.FC = () => {
                       key={s.id}
                       type="button"
                       onClick={() => { haptic.selection(); setSubject(s.id); }}
-                      className={`px-3 py-3 rounded-[14px] border text-sm font-bold transition-all duration-200 ease-bespoke text-left active:scale-[0.98] ${
+                      className={`px-3 py-3 rounded-btn border text-sm font-bold transition-all duration-200 ease-bespoke text-left active:scale-[0.98] ${
                         subject === s.id
-                          ? 'bg-primary text-white border-primary shadow-bespoke-sm'
+                          ? 'bg-primary text-white border-primary shadow-tactile-sm'
                           : 'bg-ground text-gray-700 dark:text-gray-300 border-black/[0.06] dark:border-white/[0.08] hover:border-black/20 dark:hover:border-white/20'
                       }`}
                     >
@@ -273,7 +273,7 @@ export const ExamSetupModal: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <div className="p-4 rounded-[20px] bg-accent-gold/10 border border-accent-gold/20 flex items-center gap-3">
+              <div className="p-4 rounded-card bg-accent-gold/10 border border-accent-gold/20 flex items-center gap-3">
                 <Zap className="w-5 h-5 text-accent-gold shrink-0" />
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-relaxed">Swipe through rapid-fire question cards to master key concepts.</p>
               </div>
@@ -288,7 +288,7 @@ export const ExamSetupModal: React.FC = () => {
                   <div className="grid grid-cols-2 gap-2">
                     {g12Subjects.map((s) => (
                       <button key={s.id} type="button" onClick={() => { haptic.selection(); setSubject(s.id); }}
-                        className={`px-3 py-2.5 rounded-[12px] border text-sm font-bold transition-all duration-200 ease-bespoke text-left ${subject === s.id ? 'bg-primary text-white border-primary shadow-bespoke-sm' : 'bg-ground text-gray-700 dark:text-gray-300 border-black/[0.06] dark:border-white/[0.08] hover:border-black/20 dark:hover:border-white/20'}`}
+                        className={`px-3 py-2.5 rounded-control border text-sm font-bold transition-all duration-200 ease-bespoke text-left ${subject === s.id ? 'bg-primary text-white border-primary shadow-tactile-sm' : 'bg-ground text-gray-700 dark:text-gray-300 border-black/[0.06] dark:border-white/[0.08] hover:border-black/20 dark:hover:border-white/20'}`}
                       >{s.label}</button>
                     ))}
                   </div>
@@ -300,7 +300,7 @@ export const ExamSetupModal: React.FC = () => {
                   <div className="grid grid-cols-2 gap-2">
                     {freshmanSubjects.map((s) => (
                       <button key={s.id} type="button" onClick={() => { haptic.selection(); setSubject(s.id); }}
-                        className={`px-3 py-2.5 rounded-[12px] border text-sm font-bold transition-all duration-200 ease-bespoke text-left ${subject === s.id ? 'bg-primary text-white border-primary shadow-bespoke-sm' : 'bg-ground text-gray-700 dark:text-gray-300 border-black/[0.06] dark:border-white/[0.08] hover:border-black/20 dark:hover:border-white/20'}`}
+                        className={`px-3 py-2.5 rounded-control border text-sm font-bold transition-all duration-200 ease-bespoke text-left ${subject === s.id ? 'bg-primary text-white border-primary shadow-tactile-sm' : 'bg-ground text-gray-700 dark:text-gray-300 border-black/[0.06] dark:border-white/[0.08] hover:border-black/20 dark:hover:border-white/20'}`}
                       >{s.label}</button>
                     ))}
                   </div>
@@ -309,7 +309,7 @@ export const ExamSetupModal: React.FC = () => {
               {isExit && profileStream && (
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Discipline Notes</label>
-                  <div className="px-4 py-3 rounded-[14px] bg-primary/5 border border-primary/10 font-bold text-gray-900 dark:text-gray-100 text-sm">
+                  <div className="px-4 py-3 rounded-btn bg-primary/5 border border-primary/10 font-bold text-gray-900 dark:text-gray-100 text-sm">
                     {profileStream}
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export const ExamSetupModal: React.FC = () => {
 
         <button 
           onClick={() => { sounds.playTap(); handleStart(); }} 
-          className="btn-3d-primary shrink-0 w-full py-4 rounded-[20px] font-black text-base flex items-center justify-center gap-2"
+          className="btn-3d-primary shrink-0 w-full py-4 rounded-card font-black text-base flex items-center justify-center gap-2"
         >
           <Play className="w-5 h-5 fill-white" /> Start Session
         </button>

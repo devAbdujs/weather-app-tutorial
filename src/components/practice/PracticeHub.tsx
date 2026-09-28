@@ -188,13 +188,13 @@ export const PracticeHub = () => {
 
       {devMode && (
         <div className="px-5 mb-5">
-          <div className="flex p-1 bg-panel border border-black/[0.08] dark:border-white/[0.08] rounded-[18px]">
+          <div className="flex p-1 bg-panel border border-black/[0.08] dark:border-white/[0.08] rounded-card-sm">
             {['entrance', 'freshman', 'exit'].map(tab => (
               <button
                 key={tab}
                 onClick={() => { sounds.playTap(); haptic.selection(); setActiveTab(tab); }}
-                className={`flex-1 py-2 text-xs font-black capitalize rounded-[14px] transition-all ${
-                  activeTab === tab ? 'bg-primary text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                className={`flex-1 py-2 text-xs font-black capitalize rounded-btn transition-all ${
+                  activeTab === tab ? 'bg-primary text-white shadow-tactile-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                 }`}
               >
                 {tab}
@@ -209,25 +209,25 @@ export const PracticeHub = () => {
         {/* ── FRESHMAN: course grid ── */}
         {targetExam === 'freshman' && (
           <div className="animate-fade-in">
-            <p className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 px-1">Select a course</p>
+            <p className="text-caption font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 px-1">Select a course</p>
             <div className="grid grid-cols-2 gap-3">
               {(FRESHMAN_COURSES[profileStream] || FRESHMAN_COURSES['Natural Science']).map(c => (
                 <button
                   key={c.id}
                   onClick={() => navigate('freshman', { subject: c.id })}
-                  className="group relative p-3.5 rounded-[20px] bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px] transition-all text-left flex flex-col justify-between h-32 shadow-xs"
+                  className="group relative p-3.5 rounded-card bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px] transition-all text-left flex flex-col justify-between h-32 shadow-tactile-xs"
                 >
                   <div className="flex items-center justify-between w-full">
-                    <div className={`w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 ${getSubjectTheme(c.id)} shadow-xs`}>
+                    <div className={`w-9 h-9 rounded-control flex items-center justify-center shrink-0 ${getSubjectTheme(c.id)} shadow-tactile-xs`}>
                       <c.Icon className="w-4.5 h-4.5" strokeWidth={2.2} />
                     </div>
-                    <span className="inline-flex items-center gap-0.5 text-[10px] font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
+                    <span className="inline-flex items-center gap-0.5 text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
                       <Zap className="w-2.5 h-2.5 fill-current" />
                       +10 XP
                     </span>
                   </div>
                   <div className="flex items-end justify-between mt-auto">
-                    <span className="text-[13px] font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 flex-1 pr-1">{c.id}</span>
+                    <span className="text-compact font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 flex-1 pr-1">{c.id}</span>
                     <div className="w-6 h-6 rounded-full bg-ground flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
                       <ChevronRight className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300 group-hover:text-white transition-colors" />
                     </div>
@@ -241,25 +241,25 @@ export const PracticeHub = () => {
         {/* ── ENTRANCE: subject picker ── */}
         {targetExam === 'entrance' && (
           <div className="animate-fade-in">
-            <p className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 px-1">Select subject</p>
+            <p className="text-caption font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 px-1">Select subject</p>
             <div className="grid grid-cols-2 gap-3">
               {(EUEE_SUBJECTS[profileStream] || EUEE_SUBJECTS['Natural Science']).map(c => (
                 <button
                   key={c.id}
                   onClick={() => navigate('entrance', { subject: c.id })}
-                  className="group relative p-3.5 rounded-[20px] bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px] transition-all text-left flex flex-col justify-between h-32 shadow-xs"
+                  className="group relative p-3.5 rounded-card bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px] transition-all text-left flex flex-col justify-between h-32 shadow-tactile-xs"
                 >
                   <div className="flex items-center justify-between w-full">
-                    <div className={`w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 ${getSubjectTheme(c.id)} shadow-xs`}>
+                    <div className={`w-9 h-9 rounded-control flex items-center justify-center shrink-0 ${getSubjectTheme(c.id)} shadow-tactile-xs`}>
                       <c.Icon className="w-4.5 h-4.5" strokeWidth={2.2} />
                     </div>
-                    <span className="inline-flex items-center gap-0.5 text-[10px] font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
+                    <span className="inline-flex items-center gap-0.5 text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
                       <Zap className="w-2.5 h-2.5 fill-current" />
                       +10 XP
                     </span>
                   </div>
                   <div className="flex items-end justify-between mt-auto">
-                    <span className="text-[13px] font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 flex-1 pr-1">{c.id}</span>
+                    <span className="text-compact font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 flex-1 pr-1">{c.id}</span>
                     <div className="w-6 h-6 rounded-full bg-ground flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
                       <ChevronRight className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300 group-hover:text-white transition-colors" />
                     </div>
@@ -273,19 +273,19 @@ export const PracticeHub = () => {
         {/* ── EXIT: department list ── */}
         {targetExam === 'exit' && (
           <div className="animate-fade-in">
-            <p className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 px-1">Select department</p>
+            <p className="text-caption font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 px-1">Select department</p>
             <div className="flex flex-col gap-2.5 mb-10">
               {EXIT_DEPARTMENTS.map((d) => (
                 <button
                   key={d.id}
                   onClick={() => navigate('exit', { subject: d.id })}
-                  className="w-full group bg-card p-3.5 rounded-[18px] border border-black/[0.08] dark:border-white/[0.08] border-b-2 border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px] transition-all flex items-center gap-3.5 text-left shadow-xs"
+                  className="w-full group bg-card p-3.5 rounded-card-sm border border-black/[0.08] dark:border-white/[0.08] border-b-2 border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px] transition-all flex items-center gap-3.5 text-left shadow-tactile-xs"
                 >
-                  <div className={`w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 ${getSubjectTheme(d.id)} shadow-xs`}>
+                  <div className={`w-9 h-9 rounded-control flex items-center justify-center shrink-0 ${getSubjectTheme(d.id)} shadow-tactile-xs`}>
                     <d.Icon className="w-4.5 h-4.5" strokeWidth={2.2} />
                   </div>
-                  <span className="flex-1 text-[14px] font-black text-gray-900 dark:text-gray-100">{d.id}</span>
-                  <span className="inline-flex items-center gap-0.5 text-[10px] font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 mr-1">
+                  <span className="flex-1 text-sm font-black text-gray-900 dark:text-gray-100">{d.id}</span>
+                  <span className="inline-flex items-center gap-0.5 text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 mr-1">
                     <Zap className="w-2.5 h-2.5 fill-current" />
                     +10 XP
                   </span>

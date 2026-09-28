@@ -64,7 +64,7 @@ function CallbackContent() {
         <p className="text-sm text-muted text-center max-w-sm mb-6 font-medium">{error}</p>
         <button 
           onClick={() => window.location.replace('/')}
-          className="px-6 py-2.5 bg-primary text-primary-foreground font-semibold text-sm rounded-xl shadow-bespoke-sm hover:bg-primary/95 active:scale-[0.99] transition-all duration-200 ease-bespoke"
+          className="px-6 py-2.5 bg-primary text-primary-foreground font-semibold text-sm rounded-xl shadow-tactile-sm hover:bg-primary/95 active:scale-[0.99] transition-all duration-200 ease-bespoke"
         >
           Return Home
         </button>
@@ -74,7 +74,7 @@ function CallbackContent() {
 
   return (
     <div className="min-h-screen bg-ground flex flex-col items-center justify-center animate-fade-in p-6">
-      <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-bespoke-md mb-6">
+      <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-tactile-md mb-6">
          <span className="text-primary-foreground font-black text-2xl tracking-tighter">Te</span>
       </div>
       <div className="flex flex-col items-center gap-3">

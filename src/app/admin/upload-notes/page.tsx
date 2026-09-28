@@ -52,7 +52,7 @@ export default function AdminUploadNotes() {
         <p className="text-sm text-muted font-medium mt-1">Paste raw markdown generated from NotebookLM to insert directly into the database.</p>
       </div>
       
-      <div className="bg-card border border-border/80 rounded-2xl p-6 sm:p-8 shadow-bespoke-sm max-w-4xl">
+      <div className="bg-card border border-border/80 rounded-2xl p-6 sm:p-8 shadow-tactile-sm max-w-4xl">
         <div className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -96,7 +96,7 @@ export default function AdminUploadNotes() {
 
           <button 
             onClick={handleUpload} disabled={loading}
-            className="w-full py-3 bg-primary text-primary-foreground font-semibold text-sm rounded-xl hover:bg-primary/95 shadow-bespoke-sm active:scale-[0.99] transition-all duration-200 ease-bespoke disabled:opacity-50"
+            className="w-full py-3 bg-primary text-primary-foreground font-semibold text-sm rounded-xl hover:bg-primary/95 shadow-tactile-sm active:scale-[0.99] transition-all duration-200 ease-bespoke disabled:opacity-50"
           >
             {loading ? 'Uploading...' : 'Save to Database'}
           </button>

@@ -36,7 +36,7 @@ export function CreateAdminForm() {
   };
 
   return (
-    <div className="bg-card border border-border/80 rounded-2xl p-6 shadow-bespoke-sm">
+    <div className="bg-card border border-border/80 rounded-2xl p-6 shadow-tactile-sm">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
           <ShieldPlus className="w-5 h-5" />
@@ -87,7 +87,7 @@ export function CreateAdminForm() {
         <button 
           type="submit" 
           disabled={loading || !username || !passcode}
-          className="w-full py-2.5 mt-2 bg-primary text-primary-foreground font-semibold text-sm rounded-xl hover:bg-primary/95 shadow-bespoke-sm active:scale-[0.99] transition-all duration-200 ease-bespoke disabled:opacity-50"
+          className="w-full py-2.5 mt-2 bg-primary text-primary-foreground font-semibold text-sm rounded-xl hover:bg-primary/95 shadow-tactile-sm active:scale-[0.99] transition-all duration-200 ease-bespoke disabled:opacity-50"
         >
           {loading ? 'Creating...' : 'Create Account'}
         </button>

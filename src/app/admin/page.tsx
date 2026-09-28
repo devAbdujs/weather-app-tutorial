@@ -61,7 +61,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Gemini AI Engine Spotlight */}
-      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-bespoke-sm mb-8">
+      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-tactile-sm mb-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-black/[0.06] dark:border-white/[0.08]">
           <div>
             <div className="flex items-center gap-2">
@@ -76,7 +76,7 @@ export default async function AdminDashboard() {
           </div>
           <Link
             href="/admin/ai"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-bespoke-sm shrink-0"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-tactile-sm shrink-0"
           >
             <span>Open AI Telemetry</span>
             <ArrowRight className="w-4 h-4" />
@@ -92,7 +92,7 @@ export default async function AdminDashboard() {
             <p className="text-2xl font-black text-gray-900 dark:text-gray-100 tabular-nums">
               {aiStats?.keyDetails.activeKeys ?? 0} / {aiStats?.keyDetails.totalKeys ?? 0}
             </p>
-            <p className="text-[11px] font-semibold text-accent-emerald mt-1 flex items-center gap-1">
+            <p className="text-caption font-semibold text-accent-emerald mt-1 flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
               All configured keys active
             </p>
@@ -106,7 +106,7 @@ export default async function AdminDashboard() {
             <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
               {aiStats?.usage.totalWeeklyInquiries.toLocaleString() ?? '0'}
             </p>
-            <p className="text-[11px] font-semibold text-gray-400 mt-1">
+            <p className="text-caption font-semibold text-gray-400 mt-1">
               {aiStats?.usage.activeAiUsersCount ?? 0} students used AI this cycle
             </p>
           </div>
@@ -119,7 +119,7 @@ export default async function AdminDashboard() {
             <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
               {aiStats?.cache.totalCached.toLocaleString() ?? '0'}
             </p>
-            <p className="text-[11px] font-semibold text-accent-emerald mt-1">
+            <p className="text-caption font-semibold text-accent-emerald mt-1">
               ~{((aiStats?.cache.estimatedTokensSaved ?? 0) / 1000).toFixed(1)}k tokens served free
             </p>
           </div>

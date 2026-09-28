@@ -293,7 +293,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
     return (
       <div className="min-h-screen bg-ground text-gray-900 dark:text-gray-100 p-5 flex flex-col justify-center items-center max-w-md mx-auto animate-fade-in font-sans">
-        <div className="w-full bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[24px] p-6 text-center shadow-bespoke-md space-y-5">
+        <div className="w-full bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-hero p-6 text-center shadow-tactile-md space-y-5">
           
           <div className="flex flex-col items-center">
             <TemariMascot expression={percentage >= 70 ? 'celebrating' : isPassing ? 'happy' : 'studying'} size={110} />
@@ -310,28 +310,28 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
             <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1">{title}</p>
           </div>
 
-          <div className="py-5 px-4 bg-ground rounded-[18px] border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-around">
+          <div className="py-5 px-4 bg-ground rounded-card-sm border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-around">
             <div className="text-center">
               <div className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight tabular-nums">{percentage}%</div>
-              <p className="text-[11px] font-black text-slate-400 uppercase tracking-wider mt-0.5">Accuracy</p>
+              <p className="text-caption font-black text-slate-400 uppercase tracking-wider mt-0.5">Accuracy</p>
             </div>
             <div className="h-10 w-[2px] bg-black/10 dark:bg-white/10" />
             <div className="text-center">
               <div className="text-3xl font-black text-accent-emerald tracking-tight tabular-nums">{score} <span className="text-base text-slate-400 font-bold">/ {questions.length}</span></div>
-              <p className="text-[11px] font-black text-slate-400 uppercase tracking-wider mt-0.5">Correct</p>
+              <p className="text-caption font-black text-slate-400 uppercase tracking-wider mt-0.5">Correct</p>
             </div>
           </div>
 
           <div className="space-y-3 pt-2">
             <button 
               onClick={() => { sounds.playTap(); haptic.impact('medium'); setIsFinished(false); setIsReviewMode(true); setCurrentIndex(0); }} 
-              className="btn-3d-primary w-full py-3.5 rounded-[18px] font-black text-sm flex items-center justify-center gap-2"
+              className="btn-3d-primary w-full py-3.5 rounded-card-sm font-black text-sm flex items-center justify-center gap-2"
             >
               Review Answers
             </button>
             <button 
               onClick={() => { sounds.playTap(); haptic.impact('medium'); setIsFinished(false); setIsReviewMode(false); setCurrentIndex(0); setSelectedAnswers({}); setFlagged(new Set()); startTimeRef.current = Date.now(); setHasRecordedCompletion(false); }} 
-              className="btn-3d-card w-full py-3.5 rounded-[18px] font-black text-sm text-gray-800 dark:text-gray-200"
+              className="btn-3d-card w-full py-3.5 rounded-card-sm font-black text-sm text-gray-800 dark:text-gray-200"
             >
               Retake Exam
             </button>
@@ -359,9 +359,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     <div className="min-h-screen bg-ground text-gray-900 dark:text-gray-100 flex flex-col justify-between max-w-md mx-auto pb-24 font-sans select-none relative">
       <header className="sticky top-0 z-30 bg-ground/90 backdrop-blur-xl pt-safe border-b border-black/[0.06] dark:border-white/[0.08] pb-3">
         <div className="px-5 pt-3 pb-2 flex justify-between items-center mb-1">
-          <button onClick={onExit} className="w-10 h-10 flex items-center justify-center rounded-[14px] bg-card border border-black/[0.06] dark:border-white/[0.08] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 active:scale-[0.98] transition-transform"><X className="w-5 h-5" /></button>
+          <button onClick={onExit} className="w-10 h-10 flex items-center justify-center rounded-btn bg-card border border-black/[0.06] dark:border-white/[0.08] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 active:scale-[0.98] transition-transform"><X className="w-5 h-5" /></button>
           <div className="flex flex-col items-center">
-            <span className="text-[10px] uppercase tracking-widest font-bold text-gray-500 dark:text-gray-400">{title}</span>
+            <span className="text-micro uppercase tracking-widest font-bold text-gray-500 dark:text-gray-400">{title}</span>
             <div className="flex items-center gap-1.5 mt-0.5">
                {isSimulator && !isReviewMode ? (
                   <ExamTimer 
@@ -387,7 +387,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
               else next.add(currentIndex);
               return next;
             });
-          }} className={`w-10 h-10 flex items-center justify-center rounded-[14px] border transition-all active:scale-[0.98] ${flagged.has(currentIndex) ? 'bg-error/10 border-error/30 text-error' : 'bg-card border-black/[0.06] dark:border-white/[0.08] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}><Flag className="w-4 h-4" fill={flagged.has(currentIndex) ? 'currentColor' : 'none'} /></button>
+          }} className={`w-10 h-10 flex items-center justify-center rounded-btn border transition-all active:scale-[0.98] ${flagged.has(currentIndex) ? 'bg-error/10 border-error/30 text-error' : 'bg-card border-black/[0.06] dark:border-white/[0.08] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}><Flag className="w-4 h-4" fill={flagged.has(currentIndex) ? 'currentColor' : 'none'} /></button>
         </div>
         
         {/* Chunky Duolingo Progress Bar */}
@@ -404,7 +404,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
       </header>
 
       <main className="flex-1 px-5 py-5 space-y-5 relative">
-        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] rounded-[22px] p-5 md:p-6 shadow-xs relative mb-2">
+        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] rounded-card-lg p-5 md:p-6 shadow-tactile-xs relative mb-2">
           <button onClick={toggleBookmark} className={`absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full transition-all active:scale-[0.98] ${isSaved ? 'bg-accent-gold/15 text-accent-gold border border-accent-gold/30' : 'bg-black/5 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-gray-100'}`}><Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} /></button>
           
           <div className="pr-8 text-base md:text-lg leading-relaxed font-bold text-gray-900 dark:text-gray-100 relative whitespace-pre-wrap">
@@ -412,7 +412,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           </div>
 
           {currentQ.image_url && (
-            <button onClick={() => { haptic.selection(); setZoomImage(currentQ.image_url || null); }} className="w-full mt-4 rounded-[16px] border border-black/5 dark:border-white/10 overflow-hidden bg-white dark:bg-card relative group active:scale-[0.98] transition-transform block focus-ring">
+            <button onClick={() => { haptic.selection(); setZoomImage(currentQ.image_url || null); }} className="w-full mt-4 rounded-card-sm border border-black/5 dark:border-white/10 overflow-hidden bg-white dark:bg-card relative group active:scale-[0.98] transition-transform block focus-ring">
               <Image priority={currentIndex === 0} width={800} height={400} src={getImageUrl(currentQ.image_url)} alt="Question diagram" className="w-full h-auto max-h-64 object-contain" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-center">
                 <Maximize2 className="w-6 h-6 text-black/50 opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />
@@ -434,17 +434,17 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
             const isCorrect = isRevealed && normalizedAns ? letter === normalizedAns : false;
             const isWrongSelected = isRevealed && isSelected && normalizedAns ? letter !== normalizedAns : false;
 
-            let cls = 'bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] text-gray-800 dark:text-gray-200 hover:border-primary/40 active:translate-y-[1px] shadow-xs';
+            let cls = 'bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] text-gray-800 dark:text-gray-200 hover:border-primary/40 active:translate-y-[1px] shadow-tactile-xs';
             
-            if (isSelected) cls = 'bg-primary/10 border border-primary border-b-[3px] border-b-primary text-gray-900 dark:text-gray-100 font-bold active:translate-y-[1px] shadow-xs';
+            if (isSelected) cls = 'bg-primary/10 border border-primary border-b-bevel border-b-primary text-gray-900 dark:text-gray-100 font-bold active:translate-y-[1px] shadow-tactile-xs';
             
             if (isRevealed) {
               if (isCorrect) {
-                cls = 'bg-accent-emerald/15 border border-accent-emerald border-b-[3px] border-b-emerald-600 text-accent-emerald font-black shadow-xs';
+                cls = 'bg-accent-emerald/15 border border-accent-emerald border-b-bevel border-b-emerald-600 text-accent-emerald font-black shadow-tactile-xs';
               } else if (isWrongSelected) {
-                cls = 'bg-accent-rose/15 border border-accent-rose border-b-[3px] border-b-rose-600 text-accent-rose font-black shadow-xs';
+                cls = 'bg-accent-rose/15 border border-accent-rose border-b-bevel border-b-rose-600 text-accent-rose font-black shadow-tactile-xs';
               } else if (isSelected && !normalizedAns) {
-                cls = 'bg-primary/10 border border-primary border-b-[3px] border-b-primary text-gray-900 dark:text-gray-100 shadow-xs font-bold';
+                cls = 'bg-primary/10 border border-primary border-b-bevel border-b-primary text-gray-900 dark:text-gray-100 shadow-tactile-xs font-bold';
               } else {
                 cls = 'bg-card/40 border border-black/[0.04] dark:border-white/[0.04] text-gray-400 dark:text-gray-500 opacity-40';
               }
@@ -455,16 +455,16 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                 key={letter}
                 onClick={() => (!isReviewMode && (isSimulator || !isAnswered)) && handleSelectOption(letter as any)}
                 disabled={isReviewMode || (!isSimulator && isAnswered)}
-                className={`w-full flex items-center justify-between gap-3.5 p-3.5 rounded-[18px] transition-all duration-150 text-left ${cls}`}
+                className={`w-full flex items-center justify-between gap-3.5 p-3.5 rounded-card-sm transition-all duration-150 text-left ${cls}`}
               >
                 <div className="flex items-start gap-3.5 flex-1 min-w-0">
-                  <div className={`w-8 h-8 rounded-[11px] flex items-center justify-center shrink-0 text-sm font-black transition-colors duration-200 ${
+                  <div className={`w-8 h-8 rounded-control flex items-center justify-center shrink-0 text-sm font-black transition-colors duration-200 ${
                     isRevealed && isCorrect 
                       ? 'bg-accent-emerald text-white' 
                       : isRevealed && isWrongSelected 
                       ? 'bg-accent-rose text-white' 
                       : isSelected 
-                      ? 'bg-primary text-white shadow-xs' 
+                      ? 'bg-primary text-white shadow-tactile-xs' 
                       : 'bg-black/5 dark:bg-white/[0.06] text-gray-700 dark:text-gray-300'
                   }`}>
                     {letter}
@@ -474,7 +474,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
                 {isRevealed && isCorrect && (
                   <div className="flex items-center gap-1.5 shrink-0 self-center">
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-accent-emerald/20 text-accent-emerald">+10 XP</span>
+                    <span className="text-micro font-black px-2 py-0.5 rounded-full bg-accent-emerald/20 text-accent-emerald">+10 XP</span>
                     <CheckCircle2 className="w-5 h-5 text-accent-emerald" />
                   </div>
                 )}
@@ -489,25 +489,25 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
         {(!isSimulator || isReviewMode) && (isAnswered || isReviewMode) && (
           <div className="pt-2 pb-4 animate-fade-up">
-            <div className="bg-accent-gold/[0.06] border border-accent-gold/20 rounded-[20px] p-4.5">
+            <div className="bg-accent-gold/[0.06] border border-accent-gold/20 rounded-card p-4.5">
               <div className="flex items-start gap-3 mb-3">
                 {currentQ?.answer?.trim() ? (
                   <>
-                    <div className="bg-accent-emerald/15 text-accent-emerald rounded-xl p-1.5 shrink-0 mt-0.5">
+                    <div className="bg-accent-emerald/15 text-accent-emerald rounded-control p-1.5 shrink-0 mt-0.5">
                       <CheckCircle2 className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-accent-gold uppercase tracking-widest block mb-0.5">Correct Answer</span>
+                      <span className="text-micro font-bold text-accent-gold uppercase tracking-widest block mb-0.5">Correct Answer</span>
                       <p className="text-base font-black text-gray-900 dark:text-gray-100">{currentQ.answer.trim().toUpperCase()}</p>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="bg-accent-gold/15 text-accent-gold rounded-xl p-1.5 shrink-0 mt-0.5">
+                    <div className="bg-accent-gold/15 text-accent-gold rounded-control p-1.5 shrink-0 mt-0.5">
                       <Sparkles className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-accent-gold uppercase tracking-widest block mb-0.5">No Key Provided</span>
+                      <span className="text-micro font-bold text-accent-gold uppercase tracking-widest block mb-0.5">No Key Provided</span>
                       <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Tap <strong className="text-gray-900 dark:text-gray-100">Ask AI</strong> below for a step-by-step solution.</p>
                     </div>
                   </>
@@ -516,7 +516,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
               {currentQ.explanation ? (
                 <div className="pl-9 mt-3 border-t border-accent-gold/15 pt-3">
-                  <span className="text-[10px] font-bold text-accent-gold uppercase tracking-widest block mb-1.5">Explanation</span>
+                  <span className="text-micro font-bold text-accent-gold uppercase tracking-widest block mb-1.5">Explanation</span>
                   <div className="text-sm text-gray-800 dark:text-gray-200 font-medium leading-relaxed whitespace-pre-wrap">
                     <MathText content={currentQ.explanation} />
                   </div>
@@ -539,7 +539,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
               haptic.notification('error');
             }
           }} 
-          className={`px-4 h-11 rounded-[16px] text-xs font-black flex items-center gap-1.5 transition-all border border-b-2 active:translate-y-[1px] ${
+          className={`px-4 h-11 rounded-card-sm text-xs font-black flex items-center gap-1.5 transition-all border border-b-2 active:translate-y-[1px] ${
             canUseAI 
               ? 'bg-accent-gold/15 text-accent-gold border-accent-gold/30 border-b-accent-gold/50 hover:bg-accent-gold/20' 
               : 'bg-black/5 dark:bg-white/5 text-gray-400 dark:text-gray-500 border-black/5 dark:border-white/5 opacity-60'
@@ -556,28 +556,28 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           {currentIndex > 0 && (
             <button 
               onClick={() => { sounds.playTap(); haptic.selection(); setCurrentIndex(prev => prev - 1); }} 
-              className="w-11 h-11 rounded-[16px] bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 border-b-black/[0.14] dark:border-b-white/[0.14] flex items-center justify-center text-gray-900 dark:text-gray-100 active:translate-y-[1px] hover:border-black/20 dark:hover:border-white/20 transition-all shadow-xs"
+              className="w-11 h-11 rounded-card-sm bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 border-b-black/[0.14] dark:border-b-white/[0.14] flex items-center justify-center text-gray-900 dark:text-gray-100 active:translate-y-[1px] hover:border-black/20 dark:hover:border-white/20 transition-all shadow-tactile-xs"
             >
               <ChevronLeft className="w-5 h-5"/>
             </button>
           )}
           <button 
             onClick={() => { sounds.playTap(); haptic.selection(); setShowGrid(true); }} 
-            className="w-11 h-11 rounded-[16px] bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 border-b-black/[0.14] dark:border-b-white/[0.14] flex items-center justify-center text-gray-900 dark:text-gray-100 active:translate-y-[1px] hover:border-black/20 dark:hover:border-white/20 transition-all shadow-xs"
+            className="w-11 h-11 rounded-card-sm bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 border-b-black/[0.14] dark:border-b-white/[0.14] flex items-center justify-center text-gray-900 dark:text-gray-100 active:translate-y-[1px] hover:border-black/20 dark:hover:border-white/20 transition-all shadow-tactile-xs"
           >
             <Grid className="w-5 h-5"/>
           </button>
           {currentIndex < questions.length - 1 ? (
             <button 
               onClick={() => { sounds.playTap(); haptic.selection(); setCurrentIndex(prev => prev + 1); }} 
-              className="btn-3d-primary px-5 h-11 rounded-[16px] text-xs font-black flex items-center gap-1.5"
+              className="btn-3d-primary px-5 h-11 rounded-card-sm text-xs font-black flex items-center gap-1.5"
             >
               Next <ChevronRight className="w-4 h-4"/>
             </button>
           ) : (
             <button 
               onClick={isReviewMode ? () => { sounds.playTap(); setIsFinished(true); } : handleFinish} 
-              className="btn-3d-primary px-5 h-11 rounded-[16px] text-xs font-black flex items-center gap-1.5"
+              className="btn-3d-primary px-5 h-11 rounded-card-sm text-xs font-black flex items-center gap-1.5"
             >
               {isReviewMode ? 'Finish' : 'Submit'}
             </button>
@@ -587,7 +587,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
       {showGrid && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center p-4 animate-fade-in" onClick={() => setShowGrid(false)}>
-          <div className="w-full max-w-sm bg-card rounded-[32px] p-6 shadow-bespoke-lg animate-scale-bounce" onClick={e => e.stopPropagation()}>
+          <div className="w-full max-w-sm bg-card rounded-modal p-6 shadow-tactile-lg animate-scale-bounce" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center pb-4 mb-4 border-b border-black/5 dark:border-white/10">
               <h3 className="font-bold tracking-tight text-xl text-gray-900 dark:text-gray-100">Question Grid</h3>
               <button onClick={() => setShowGrid(false)} className="w-10 h-10 flex justify-center items-center rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-gray-900 dark:text-gray-100 active:scale-[0.98] active:opacity-80 transition-all"><X className="w-5 h-5"/></button>
@@ -599,7 +599,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                 const isFlg = flagged.has(i);
                 
                 return (
-                  <button key={i} onClick={() => { setCurrentIndex(i); setShowGrid(false); }} className={`relative h-12 rounded-[16px] border text-sm font-bold tabular-nums transition-all active:scale-[0.98] ${currentIndex === i ? 'bg-primary border-primary text-white font-black shadow-xs -translate-y-0.5' : isFlg ? 'bg-accent-rose/10 border-accent-rose/30 text-accent-rose shadow-xs' : selectedAnswers[i] ? 'bg-black/5 dark:bg-white/5 border-transparent text-gray-900 dark:text-gray-100 font-bold' : 'bg-card border-black/[0.08] dark:border-white/[0.08] text-slate-600 dark:text-slate-400 hover:border-primary/50'}`}>
+                  <button key={i} onClick={() => { setCurrentIndex(i); setShowGrid(false); }} className={`relative h-12 rounded-card-sm border text-sm font-bold tabular-nums transition-all active:scale-[0.98] ${currentIndex === i ? 'bg-primary border-primary text-white font-black shadow-tactile-xs -translate-y-0.5' : isFlg ? 'bg-accent-rose/10 border-accent-rose/30 text-accent-rose shadow-tactile-xs' : selectedAnswers[i] ? 'bg-black/5 dark:bg-white/5 border-transparent text-gray-900 dark:text-gray-100 font-bold' : 'bg-card border-black/[0.08] dark:border-white/[0.08] text-slate-600 dark:text-slate-400 hover:border-primary/50'}`}>
                     {i + 1}
                     {isBkmrk && <div className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-accent-gold rounded-full border-2 border-card" />}
                   </button>
@@ -619,7 +619,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         />
       )}
 
-      {/* Full-screen Image Lightbox Overlay */}
       {zoomImage && (
         <div 
           className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 animate-fade-in"
@@ -634,8 +633,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           </div>
 
           {/* Floating Context Panel */}
-          <div className="absolute bottom-8 left-4 right-4 bg-black/60 backdrop-blur-2xl border border-white/20 p-5 rounded-[24px] shadow-2xl max-h-[25vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <p className="text-white text-[15px] font-medium leading-relaxed">
+          <div className="absolute bottom-8 left-4 right-4 bg-black/60 backdrop-blur-2xl border border-white/20 p-5 rounded-hero shadow-2xl max-h-[25vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <p className="text-white text-regular font-medium leading-relaxed">
               {questions[currentIndex]?.question}
             </p>
           </div>

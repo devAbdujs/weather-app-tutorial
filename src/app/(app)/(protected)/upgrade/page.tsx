@@ -317,14 +317,14 @@ export default function UpgradePage() {
         </p>
 
         {/* Feature Highlights Card */}
-        <div className="w-full max-w-sm bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-2xl p-4 mb-6 text-left space-y-3 shadow-bespoke-sm">
+        <div className="w-full max-w-sm bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-2xl p-4 mb-6 text-left space-y-3 shadow-tactile-sm">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-accent-emerald/15 text-accent-emerald flex items-center justify-center">
               <Zap className="w-4 h-4" />
             </div>
             <div>
               <p className="text-xs font-black text-gray-900 dark:text-gray-100">Infinite AI Tutor Explanations</p>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">Ask any question at any time</p>
+              <p className="text-caption text-gray-500 dark:text-gray-400">Ask any question at any time</p>
             </div>
           </div>
 
@@ -334,7 +334,7 @@ export default function UpgradePage() {
             </div>
             <div>
               <p className="text-xs font-black text-gray-900 dark:text-gray-100">All Past Exam Archives</p>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">Entrance, Freshman, & Exit exams</p>
+              <p className="text-caption text-gray-500 dark:text-gray-400">Entrance, Freshman, & Exit exams</p>
             </div>
           </div>
 
@@ -344,7 +344,7 @@ export default function UpgradePage() {
             </div>
             <div>
               <p className="text-xs font-black text-gray-900 dark:text-gray-100">Mastery & Streaks Tracking</p>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">Track your Scholar Tree growth</p>
+              <p className="text-caption text-gray-500 dark:text-gray-400">Track your Scholar Tree growth</p>
             </div>
           </div>
         </div>
@@ -398,7 +398,7 @@ export default function UpgradePage() {
           </p>
 
           {/* Large Countdown Badge */}
-          <div className="bg-card border border-primary/25 border-b-[3px] rounded-2xl p-6 mb-6 shadow-bespoke-sm w-full relative overflow-hidden">
+          <div className="bg-card border border-primary/25 border-b-bevel rounded-2xl p-6 mb-6 shadow-tactile-sm w-full relative overflow-hidden">
             <div className="text-xs font-black uppercase tracking-widest text-primary mb-1">
               Estimated Approval In
             </div>
@@ -423,14 +423,14 @@ export default function UpgradePage() {
           </div>
 
           {/* 3 Step Interactive Progress */}
-          <div className="w-full bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-2xl p-4 mb-6 text-left space-y-3 shadow-bespoke-sm">
+          <div className="w-full bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-2xl p-4 mb-6 text-left space-y-3 shadow-tactile-sm">
             <div className="flex items-center gap-3">
               <div className="w-6 h-6 rounded-full bg-accent-emerald text-white flex items-center justify-center text-xs font-black">
                 <Check className="w-3.5 h-3.5" />
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">1. Receipt Uploaded</p>
-                <p className="text-[11px] text-gray-500">Image submitted to database</p>
+                <p className="text-caption text-gray-500">Image submitted to database</p>
               </div>
             </div>
 
@@ -440,7 +440,7 @@ export default function UpgradePage() {
               </div>
               <div>
                 <p className="text-xs font-bold text-primary">2. AI &amp; Bank Verification</p>
-                <p className="text-[11px] text-gray-500">Extracting transaction reference</p>
+                <p className="text-caption text-gray-500">Extracting transaction reference</p>
               </div>
             </div>
 
@@ -450,7 +450,7 @@ export default function UpgradePage() {
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-700 dark:text-gray-300">3. Instant Premium Upgrade</p>
-                <p className="text-[11px] text-gray-500">Auto-unlocks all exams &amp; AI tutor</p>
+                <p className="text-caption text-gray-500">Auto-unlocks all exams &amp; AI tutor</p>
               </div>
             </div>
           </div>
@@ -490,7 +490,7 @@ export default function UpgradePage() {
             setPhase('form');
             handleRemoveFile();
           }}
-          className="w-full max-w-xs h-14 rounded-2xl bg-primary text-white font-black shadow-bespoke-md active:scale-[0.98] transition-all duration-200 ease-bespoke"
+          className="w-full max-w-xs h-14 rounded-2xl bg-primary text-white font-black shadow-tactile-md active:scale-[0.98] transition-all duration-200 ease-bespoke"
         >
           Try Uploading Again
         </button>
@@ -514,7 +514,7 @@ export default function UpgradePage() {
         </p>
 
         {/* Mascot Encouragement */}
-        <div className="flex items-center gap-3 mb-5 bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[22px] p-4 shadow-bespoke-sm">
+        <div className="flex items-center gap-3 mb-5 bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-card-lg p-4 shadow-tactile-sm">
           <TemariMascot mood="happy" size={56} className="shrink-0" />
           <p className="text-xs font-bold text-gray-800 dark:text-gray-200 leading-snug">
             &ldquo;Unlock everything once, study with zero limits! 31,000+ past questions and unlimited AI explanations.&rdquo;
@@ -522,7 +522,7 @@ export default function UpgradePage() {
         </div>
 
         {/* Pricing Card */}
-        <div className="bg-gradient-to-br from-primary to-primary/85 p-6 rounded-[22px] border border-primary/40 border-b-[4px] border-b-black/30 shadow-bespoke-md text-white mb-8 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-primary to-primary/85 p-6 rounded-card-lg border border-primary/40 border-b-bevel-lg border-b-black/30 shadow-tactile-md text-white mb-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.06] rounded-full blur-2xl -mr-10 -mt-10" />
           <h2 className="text-lg font-bold text-white/85 mb-1">Premium Pass</h2>
           <div className="flex items-baseline gap-2 mb-4">
@@ -551,7 +551,7 @@ export default function UpgradePage() {
           {/* CBE */}
           <div className="bg-card border border-black/5 dark:border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-sm">
             <div>
-              <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+              <p className="text-caption font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
                 Commercial Bank of Ethiopia (CBE)
               </p>
               <p className="font-black text-lg text-gray-900 dark:text-gray-100 font-mono tracking-tight">
@@ -571,7 +571,7 @@ export default function UpgradePage() {
           {/* Telebirr */}
           <div className="bg-card border border-black/5 dark:border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-sm">
             <div>
-              <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+              <p className="text-caption font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
                 Telebirr
               </p>
               <p className="font-black text-lg text-gray-900 dark:text-gray-100 font-mono tracking-tight">
@@ -590,7 +590,7 @@ export default function UpgradePage() {
         </div>
 
         {/* Step 2: Upload Form */}
-        <form onSubmit={handleSubmit} className="bg-card border border-black/5 dark:border-white/10 p-5 rounded-[24px] shadow-sm">
+        <form onSubmit={handleSubmit} className="bg-card border border-black/5 dark:border-white/10 p-5 rounded-hero shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-black text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-black">
@@ -598,7 +598,7 @@ export default function UpgradePage() {
               </span>
               Upload Payment Receipt
             </h3>
-            <span className="text-[11px] font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full uppercase tracking-wider">
+            <span className="text-caption font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full uppercase tracking-wider">
               Instant AI OCR
             </span>
           </div>
@@ -658,7 +658,7 @@ export default function UpgradePage() {
                   <p className="text-xs font-semibold text-gray-900 dark:text-gray-100 truncate">
                     {file.name}
                   </p>
-                  <p className="text-[11px] text-gray-400">
+                  <p className="text-caption text-gray-400">
                     {formatFileSize(file.size)}
                   </p>
                 </div>
@@ -699,7 +699,7 @@ export default function UpgradePage() {
             )}
           </button>
 
-          <p className="text-center text-[11px] text-gray-400 font-medium mt-3 flex items-center justify-center gap-1.5">
+          <p className="text-center text-caption text-gray-400 font-medium mt-3 flex items-center justify-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-accent-emerald" />
             Auto-approved in ~5 minutes • Instant access unlocked
           </p>

@@ -41,7 +41,7 @@ export function PWARegistry() {
 
       setTimeout(() => {
         toast.custom((t) => (
-          <div className="bg-card dark:bg-card border border-black/5 dark:border-white/10 shadow-xl p-3 rounded-[16px] flex flex-col w-[320px] pointer-events-auto">
+          <div className="bg-card dark:bg-card border border-black/5 dark:border-white/10 shadow-xl p-3 rounded-card-sm flex flex-col w-[320px] pointer-events-auto">
              <div className="flex justify-between items-start mb-2">
                <div className="flex items-center gap-3 pl-1">
                   <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
@@ -49,7 +49,7 @@ export function PWARegistry() {
                   </div>
                   <div className="flex flex-col">
                      <span className="font-bold text-sm text-gray-900 dark:text-gray-100">Install Temari</span>
-                     <span className="text-[11px] text-gray-500 font-medium">Faster & Offline</span>
+                     <span className="text-caption text-gray-500 font-medium">Faster & Offline</span>
                   </div>
                </div>
                <button 
@@ -80,14 +80,14 @@ export function PWARegistry() {
         
         setTimeout(() => {
           toast.custom((t) => (
-            <div className="bg-card dark:bg-card border border-black/5 dark:border-white/10 shadow-xl p-2.5 rounded-[16px] flex items-center justify-between w-[320px] pointer-events-auto">
+            <div className="bg-card dark:bg-card border border-black/5 dark:border-white/10 shadow-xl p-2.5 rounded-card-sm flex items-center justify-between w-[320px] pointer-events-auto">
                <div className="flex items-center gap-3 pl-1">
                   <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                     <Download className="w-4 h-4 text-primary" />
                   </div>
                   <div className="flex flex-col">
                      <span className="font-bold text-sm text-gray-900 dark:text-gray-100">Install Temari</span>
-                     <span className="text-[11px] text-gray-500 font-medium">Faster & Offline</span>
+                     <span className="text-caption text-gray-500 font-medium">Faster & Offline</span>
                   </div>
                </div>
                <div className="flex items-center gap-1.5 pr-1">
@@ -101,7 +101,7 @@ export function PWARegistry() {
                         }
                       });
                     }} 
-                    className="bg-primary text-white text-xs font-bold px-4 py-2 rounded-xl active:scale-95 transition-all shadow-bespoke-sm"
+                    className="bg-primary text-white text-xs font-bold px-4 py-2 rounded-xl active:scale-95 transition-all shadow-tactile-sm"
                   >
                     Install
                   </button>

@@ -20,7 +20,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
         </div>
       </header>
 
-      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl shadow-bespoke-sm overflow-hidden flex flex-col">
+      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden flex flex-col">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -84,7 +84,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
             </span>
             <div className="flex gap-2">
               {currentPage > 1 ? (
-                <Link href={`/admin/users?page=${currentPage - 1}`} className="p-2 bg-card rounded-lg border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/5 dark:hover:bg-white/5 transition-colors shadow-bespoke-sm">
+                <Link href={`/admin/users?page=${currentPage - 1}`} className="p-2 bg-card rounded-lg border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/5 dark:hover:bg-white/5 transition-colors shadow-tactile-sm">
                   <ChevronLeft className="w-5 h-5 text-gray-900 dark:text-gray-100" />
                 </Link>
               ) : (
@@ -94,7 +94,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
               )}
               
               {currentPage < totalPages ? (
-                <Link href={`/admin/users?page=${currentPage + 1}`} className="p-2 bg-card rounded-lg border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/5 dark:hover:bg-white/5 transition-colors shadow-bespoke-sm">
+                <Link href={`/admin/users?page=${currentPage + 1}`} className="p-2 bg-card rounded-lg border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/5 dark:hover:bg-white/5 transition-colors shadow-tactile-sm">
                   <ChevronRight className="w-5 h-5 text-gray-900 dark:text-gray-100" />
                 </Link>
               ) : (

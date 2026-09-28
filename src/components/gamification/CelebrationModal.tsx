@@ -5,6 +5,7 @@ import { useGamificationStore } from '@/store/useGamificationStore';
 import { TemariMascot } from '@/components/mascot/TemariMascot';
 import { Zap, Target, Flame, ArrowRight, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { celebrationConfettiPalette } from '@/styles/tokens';
 
 export const CelebrationModal: React.FC = () => {
   const { activeCelebration, dismissCelebration } = useGamificationStore();
@@ -16,7 +17,7 @@ export const CelebrationModal: React.FC = () => {
           particleCount: 80,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#F59E0B', '#10B981', '#1E3B8A', '#8B5CF6', '#EF4444'],
+          colors: [...celebrationConfettiPalette],
         });
       } catch {}
     }
@@ -30,7 +31,7 @@ export const CelebrationModal: React.FC = () => {
       onClick={dismissCelebration}
     >
       <div 
-        className="w-full max-w-sm bg-card rounded-[24px] border border-black/[0.12] dark:border-white/[0.12] border-b-[4px] p-6 shadow-2xl animate-scale-bounce text-center relative overflow-hidden"
+        className="w-full max-w-sm bg-card rounded-hero border border-black/[0.12] dark:border-white/[0.12] border-b-bevel-lg p-6 shadow-2xl animate-scale-bounce text-center relative overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         {/* Subtle decorative background bursts */}
@@ -63,21 +64,21 @@ export const CelebrationModal: React.FC = () => {
         {/* Stats Pill Row */}
         <div className="flex items-center justify-center gap-2 mb-6">
           {activeCelebration.xpEarned > 0 && (
-            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-gold/15 border border-accent-gold/30 border-b-2 text-accent-gold font-black text-sm shadow-xs">
+            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-gold/15 border border-accent-gold/30 border-b-2 text-accent-gold font-black text-sm shadow-tactile-xs">
               <Zap className="w-4 h-4 fill-current" />
               <span>+{activeCelebration.xpEarned} XP</span>
             </div>
           )}
 
           {typeof activeCelebration.accuracy === 'number' && (
-            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-emerald/15 border border-accent-emerald/30 border-b-2 text-accent-emerald font-black text-sm shadow-xs">
+            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-emerald/15 border border-accent-emerald/30 border-b-2 text-accent-emerald font-black text-sm shadow-tactile-xs">
               <Target className="w-4 h-4" />
               <span>{activeCelebration.accuracy}%</span>
             </div>
           )}
 
           {typeof activeCelebration.streakCount === 'number' && (
-            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-rose/15 border border-accent-rose/30 border-b-2 text-accent-rose font-black text-sm shadow-xs">
+            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-accent-rose/15 border border-accent-rose/30 border-b-2 text-accent-rose font-black text-sm shadow-tactile-xs">
               <Flame className="w-4 h-4 fill-current" />
               <span>{activeCelebration.streakCount}d</span>
             </div>
@@ -87,7 +88,7 @@ export const CelebrationModal: React.FC = () => {
         {/* Chunky Tactile 3D Action Button */}
         <button
           onClick={dismissCelebration}
-          className="btn-3d-primary w-full py-3.5 rounded-[18px] text-sm flex items-center justify-center gap-2"
+          className="btn-3d-primary w-full py-3.5 rounded-card-sm text-sm flex items-center justify-center gap-2"
         >
           <span>Continue (ቀጥል)</span>
           <ArrowRight className="w-4 h-4" />

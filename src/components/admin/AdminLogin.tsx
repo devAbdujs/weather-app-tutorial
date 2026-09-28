@@ -31,7 +31,7 @@ export const AdminLogin = () => {
 
   return (
     <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-sm bg-card border border-border/80 rounded-2xl p-7 shadow-bespoke-lg">
+      <div className="w-full max-w-sm bg-card border border-border/80 rounded-2xl p-7 shadow-tactile-lg">
         <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-5 mx-auto text-primary">
           <Lock className="w-5 h-5" />
         </div>
@@ -67,7 +67,7 @@ export const AdminLogin = () => {
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full py-2.5 bg-primary text-primary-foreground font-semibold text-sm rounded-xl hover:bg-primary/95 shadow-bespoke-sm active:scale-[0.99] transition-all duration-200 ease-bespoke disabled:opacity-50 mt-2"
+            className="w-full py-2.5 bg-primary text-primary-foreground font-semibold text-sm rounded-xl hover:bg-primary/95 shadow-tactile-sm active:scale-[0.99] transition-all duration-200 ease-bespoke disabled:opacity-50 mt-2"
           >
             {loading ? 'Verifying...' : 'Sign In'}
           </button>

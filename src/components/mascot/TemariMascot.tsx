@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { mascotPalette } from '@/styles/tokens';
 
 export type MascotMood = 
   | 'happy' 
@@ -297,15 +298,17 @@ export const MascotBubble: React.FC<MascotBubbleProps> = ({
 }) => {
   const activeMood = expression || mood || 'happy';
   return (
-    <div className={`flex items-start gap-3.5 p-3.5 rounded-[26px] bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] shadow-bespoke-sm relative ${className}`}>
+    <div className={`flex items-start gap-3.5 p-3.5 rounded-hero bg-card border-2 border-b-bevel-lg border-black/[0.08] dark:border-white/[0.08] shadow-tactile-sm relative ${className}`}>
       <div className="shrink-0 mt-0.5">
         <TemariMascot mood={activeMood} size={mascotSize} />
       </div>
 
       <div className="flex-1 min-w-0 pt-0.5">
-        <div className="relative bg-ground/80 dark:bg-panel p-3 rounded-[18px] border border-black/[0.06] dark:border-white/[0.08]">
+        <div className="relative bg-ground/80 dark:bg-panel p-3 rounded-card-sm border border-black/[0.06] dark:border-white/[0.08]">
           {/* Speech bubble arrow pointer */}
-          <div className="absolute -left-2 top-3 w-0 h-0 border-t-[6px] border-t-transparent border-r-[8px] border-r-ground/80 dark:border-r-panel border-b-[6px] border-b-transparent" />
+          <svg className="absolute -left-2 top-3 w-2 h-3 text-ground/80 dark:text-panel fill-current pointer-events-none" viewBox="0 0 8 12">
+            <polygon points="8,0 0,6 8,12" />
+          </svg>
 
           {message ? (
             <div className="text-sm font-black text-gray-900 dark:text-gray-100 leading-snug">
@@ -322,7 +325,7 @@ export const MascotBubble: React.FC<MascotBubbleProps> = ({
           {action && (
             <button
               onClick={action.onClick}
-              className="mt-2.5 px-3 py-1.5 rounded-xl btn-3d-primary text-xs font-black active:translate-y-[1px] transition-all inline-flex items-center gap-1.5 shadow-sm"
+              className="mt-2.5 px-3 py-1.5 rounded-control btn-3d-primary text-xs font-black active:translate-y-[1px] transition-all inline-flex items-center gap-1.5 shadow-tactile-xs"
             >
               <span>{action.label}</span>
             </button>

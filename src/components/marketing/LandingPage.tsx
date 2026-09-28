@@ -76,8 +76,8 @@ export const LandingPage = () => {
       <div className="min-h-screen bg-ground flex flex-col items-center justify-center animate-fade-in p-6">
         <TemariMascot mood="studying" size={100} className="mb-4" />
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-[3px] border-black/5 dark:border-white/10 border-t-primary animate-spin" />
-          <p className="text-[11px] font-black text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">Authenticating Scholar</p>
+          <div className="w-8 h-8 rounded-full border-bevel border-black/5 dark:border-white/10 border-t-primary animate-spin" />
+          <p className="text-caption font-black text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">Authenticating Scholar</p>
         </div>
       </div>
     );
@@ -90,7 +90,7 @@ export const LandingPage = () => {
       <nav className="fixed top-0 w-full z-50 bg-ground/85 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06]">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-             <div className="w-9 h-9 rounded-2xl bg-primary flex items-center justify-center shadow-bespoke-sm">
+             <div className="w-9 h-9 rounded-2xl bg-primary flex items-center justify-center shadow-tactile-sm">
                <span className="text-white font-black text-base tracking-tighter">Te</span>
              </div>
              <span className="font-black text-lg tracking-tight">Temari</span>
@@ -127,7 +127,7 @@ export const LandingPage = () => {
 
         <button
           onClick={handleTelegramOIDCLogin}
-          className="btn-3d-primary w-full max-w-[320px] py-4 rounded-2xl flex items-center justify-center gap-2.5 shadow-bespoke-md text-sm font-black tracking-wide animate-fade-up z-10"
+          className="btn-3d-primary w-full max-w-[320px] py-4 rounded-2xl flex items-center justify-center gap-2.5 shadow-tactile-md text-sm font-black tracking-wide animate-fade-up z-10"
           style={{ animationDelay: '0.3s' }}
         >
           <Send className="w-4.5 h-4.5 text-white" />
@@ -162,8 +162,8 @@ export const LandingPage = () => {
           </div>
           
           <div className="grid sm:grid-cols-3 gap-5">
-            <div className="flex flex-col justify-between p-6 rounded-[22px] bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] shadow-bespoke-sm">
-              <div className="w-12 h-12 rounded-[16px] bg-accent-blue/15 flex items-center justify-center mb-4">
+            <div className="flex flex-col justify-between p-6 rounded-card-lg bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-bevel shadow-tactile-sm">
+              <div className="w-12 h-12 rounded-card-sm bg-accent-blue/15 flex items-center justify-center mb-4">
                 <Target className="w-6 h-6 text-accent-blue" />
               </div>
               <div>
@@ -172,8 +172,8 @@ export const LandingPage = () => {
               </div>
             </div>
 
-            <div className="flex flex-col justify-between p-6 rounded-[22px] bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] shadow-bespoke-sm">
-              <div className="w-12 h-12 rounded-[16px] bg-accent-purple/15 flex items-center justify-center mb-4">
+            <div className="flex flex-col justify-between p-6 rounded-card-lg bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-bevel shadow-tactile-sm">
+              <div className="w-12 h-12 rounded-card-sm bg-accent-purple/15 flex items-center justify-center mb-4">
                 <Bot className="w-6 h-6 text-accent-purple" />
               </div>
               <div>
@@ -182,8 +182,8 @@ export const LandingPage = () => {
               </div>
             </div>
 
-            <div className="flex flex-col justify-between p-6 rounded-[22px] bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] shadow-bespoke-sm">
-              <div className="w-12 h-12 rounded-[16px] bg-accent-gold/15 flex items-center justify-center mb-4">
+            <div className="flex flex-col justify-between p-6 rounded-card-lg bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-bevel shadow-tactile-sm">
+              <div className="w-12 h-12 rounded-card-sm bg-accent-gold/15 flex items-center justify-center mb-4">
                 <Zap className="w-6 h-6 text-accent-gold" />
               </div>
               <div>
@@ -207,7 +207,7 @@ export const LandingPage = () => {
                 <ShieldCheck className="w-8 h-8 text-accent-emerald" />
                 <div className="text-left flex flex-col">
                    <span className="font-black text-base leading-none text-gray-900 dark:text-white">MoE</span>
-                   <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Curriculum Aligned</span>
+                   <span className="text-micro font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Curriculum Aligned</span>
                 </div>
              </div>
 
@@ -215,7 +215,7 @@ export const LandingPage = () => {
                 <Building2 className="w-8 h-8 text-accent-blue" />
                 <div className="text-left flex flex-col">
                    <span className="font-black text-base leading-none text-gray-900 dark:text-white">EUEE</span>
-                   <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">National Standards</span>
+                   <span className="text-micro font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">National Standards</span>
                 </div>
              </div>
 
@@ -223,7 +223,7 @@ export const LandingPage = () => {
                 <GraduationCap className="w-8 h-8 text-accent-purple" />
                 <div className="text-left flex flex-col">
                    <span className="font-black text-base leading-none text-gray-900 dark:text-white">Freshman</span>
-                   <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">University Track</span>
+                   <span className="text-micro font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">University Track</span>
                 </div>
              </div>
           </div>
@@ -248,7 +248,7 @@ export const LandingPage = () => {
       <footer className="w-full bg-ground border-t border-black/[0.06] dark:border-white/[0.06] py-8 px-6">
          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-               <div className="w-6 h-6 rounded-lg bg-primary flex items-center justify-center"><span className="text-white font-black text-[10px]">Te</span></div>
+               <div className="w-6 h-6 rounded-lg bg-primary flex items-center justify-center"><span className="text-white font-black text-micro">Te</span></div>
                <span className="font-black text-sm text-gray-900 dark:text-white">Temari</span>
             </div>
             <p className="text-xs font-semibold text-gray-400">© {new Date().getFullYear()} Temari. Built for Ethiopian scholars.</p>

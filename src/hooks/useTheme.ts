@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { surfaceHex } from '@/styles/tokens';
 
 type Theme = 'light' | 'dark' | 'system';
 
@@ -21,7 +22,7 @@ export function useTheme() {
       
       try {
         const WebApp = require('@twa-dev/sdk').default;
-        WebApp.setHeaderColor?.(isDark ? '#1a1f2e' : '#f8fafc');
+        WebApp.setHeaderColor?.(isDark ? surfaceHex.groundDark : surfaceHex.groundLight);
       } catch (e) {}
     };
 
@@ -49,7 +50,7 @@ export function useTheme() {
     // Sync with Telegram Native Header
     try {
       const WebApp = require('@twa-dev/sdk').default;
-      WebApp.setHeaderColor?.(isDark ? '#0D1118' : '#F0F3F7'); // Match bg-ground colors
+      WebApp.setHeaderColor?.(isDark ? surfaceHex.groundDark : surfaceHex.groundLight);
     } catch (e) {}
   };
 

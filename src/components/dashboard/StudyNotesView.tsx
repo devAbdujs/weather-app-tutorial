@@ -346,7 +346,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               left: `clamp(110px, ${selectionCoords.left}px, calc(100vw - 110px))`,
             }}
           >
-            <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-bespoke-lg">
+            <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-tactile-lg">
               <div className="flex items-center pl-1.5 pr-1 text-slate-400">
                 <PenLine className="w-3.5 h-3.5" />
               </div>
@@ -390,7 +390,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               left: `clamp(120px, ${highlightModalCoords.left}px, calc(100vw - 120px))`,
             }}
           >
-            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-bespoke-lg">
+            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-tactile-lg">
               <div className="flex items-center gap-1 pl-1">
                 {HIGHLIGHT_PALETTE.map(col => (
                   <button
@@ -438,7 +438,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             aria-label="Active Highlighter Pen Toolbar"
             className="fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-scale-bounce pointer-events-auto select-none"
           >
-            <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-bespoke-lg">
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-tactile-lg">
               <div className="flex items-center gap-1.5 pl-1 pr-1 text-xs font-bold text-foreground">
                 <PenLine className="w-4 h-4 text-primary animate-pulse" />
                 <span className="hidden sm:inline">Pen Mode:</span>
@@ -490,24 +490,24 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             <button
               onClick={handleBackFromNote}
               aria-label="Back to chapters"
-              className="w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 border border-black/[0.06] dark:border-white/[0.08] bg-card hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all text-gray-700 dark:text-gray-300"
+              className="w-9 h-9 rounded-control flex items-center justify-center shrink-0 border border-black/[0.06] dark:border-white/[0.08] bg-card hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all text-gray-700 dark:text-gray-300"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <span className={`w-9 h-9 rounded-[12px] flex items-center justify-center text-lg shrink-0 ${themeClass}`}>
+            <span className={`w-9 h-9 rounded-control flex items-center justify-center text-lg shrink-0 ${themeClass}`}>
               {emoji}
             </span>
             <div className="flex-1 min-w-0">
-              <h1 className="text-[15px] font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-1 tracking-tight">
+              <h1 className="text-regular font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-1 tracking-tight">
                 {selectedNote.title}
               </h1>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-primary">
+                <span className="text-caption font-bold uppercase tracking-widest text-primary">
                   {selectedNote.department}
                 </span>
-                <span className="text-gray-400 dark:text-gray-500 text-[11px]">·</span>
+                <span className="text-gray-400 dark:text-gray-500 text-caption">·</span>
                 <Clock className="w-3 h-3 text-gray-400 dark:text-gray-500" />
-                <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">{readMins} min read</span>
+                <span className="text-caption font-semibold text-gray-500 dark:text-gray-400">{readMins} min read</span>
               </div>
             </div>
 
@@ -519,7 +519,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                 setSelectionCoords(null);
                 setSelectedText('');
               }}
-              className={`h-9 px-3 rounded-[12px] flex items-center gap-1.5 text-xs font-bold border transition-all duration-200 ease-bespoke ${
+              className={`h-9 px-3 rounded-control flex items-center gap-1.5 text-xs font-bold border transition-all duration-200 ease-bespoke ${
                 penModeActive
                   ? 'bg-primary text-white border-primary shadow-sm'
                   : 'bg-card text-slate-700 dark:text-slate-300 border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5'
@@ -541,7 +541,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
           ref={scrollRef}
           className="flex flex-col px-2.5 sm:px-4 pt-4 animate-fade-in"
         >
-          <div id="note-content" className="w-full ruled-paper rounded-[20px] sm:rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] shadow-sm overflow-hidden pt-4 pb-12 mb-4 note-reading-canvas select-text">
+          <div id="note-content" className="w-full ruled-paper rounded-card sm:rounded-hero border border-black/[0.06] dark:border-white/[0.08] shadow-sm overflow-hidden pt-4 pb-12 mb-4 note-reading-canvas select-text">
             <MarkdownRenderer 
               content={selectedNote.content || ''} 
               accentBg={accentBg} 
@@ -556,14 +556,14 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-ground/90 backdrop-blur-xl border-t border-black/[0.06] dark:border-white/[0.08] p-3.5 z-30 flex gap-2.5 pb-safe">
           <button
             onClick={() => { haptic.impact('light'); setShowTutor(true); }}
-            className="flex-1 h-13 rounded-[18px] font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] border border-black/[0.06] dark:border-white/[0.08] bg-card text-gray-900 dark:text-gray-100 hover:bg-black/5 dark:hover:bg-white/5 shadow-sm"
+            className="flex-1 h-13 rounded-card-sm font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] border border-black/[0.06] dark:border-white/[0.08] bg-card text-gray-900 dark:text-gray-100 hover:bg-black/5 dark:hover:bg-white/5 shadow-sm"
           >
             <Sparkles className="w-4 h-4 text-accent-gold" />
             Ask AI Tutor
           </button>
           <button
             onClick={handleBackFromNote}
-            className="flex-1 h-13 bg-primary text-white rounded-[18px] font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 ease-bespoke active:scale-[0.98] shadow-bespoke-sm"
+            className="flex-1 h-13 bg-primary text-white rounded-card-sm font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 ease-bespoke active:scale-[0.98] shadow-tactile-sm"
           >
             <List className="w-4 h-4" />
             Chapters
@@ -594,26 +594,26 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               router.push('/practice');
             }
           }}
-          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[14px] text-[13px] font-bold text-gray-700 dark:text-gray-300 border border-black/[0.06] dark:border-white/[0.08] bg-card hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all shadow-sm"
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-btn text-compact font-bold text-gray-700 dark:text-gray-300 border border-black/[0.06] dark:border-white/[0.08] bg-card hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all shadow-sm"
         >
           <ChevronLeft className="w-4 h-4" />
           <span>Back</span>
         </button>
       </div>
 
-      <div className="bg-card px-5 pt-6 pb-5 rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] shadow-sm mb-3">
+      <div className="bg-card px-5 pt-6 pb-5 rounded-hero border border-black/[0.06] dark:border-white/[0.08] shadow-sm mb-3">
         <div className="flex items-start gap-4">
-          <div className={`w-14 h-14 rounded-[18px] flex items-center justify-center text-3xl shadow-sm ${themeClass}`}>
+          <div className={`w-14 h-14 rounded-card-sm flex items-center justify-center text-3xl shadow-sm ${themeClass}`}>
             {emoji}
           </div>
           <div className="flex-1">
-            <p className="text-[11px] font-bold uppercase tracking-widest text-primary mb-1">
+            <p className="text-caption font-bold uppercase tracking-widest text-primary mb-1">
               Study Notes
             </p>
-            <h1 className="text-[22px] font-black text-gray-900 dark:text-gray-100 leading-tight tracking-tight">
+            <h1 className="text-display-md font-black text-gray-900 dark:text-gray-100 leading-tight tracking-tight">
               {courseDisplayName}
             </h1>
-            <p className="text-[13px] font-semibold text-gray-500 dark:text-gray-400 mt-0.5">
+            <p className="text-compact font-semibold text-gray-500 dark:text-gray-400 mt-0.5">
               {examType} · {initialNotes.length > 0 ? `${initialNotes.length} chapters` : 'Loading…'}
             </p>
           </div>
@@ -631,11 +631,11 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
       {initialNotes.length > 0 && (
         <div className="px-5 py-2.5 flex gap-4 border-b border-black/[0.06] dark:border-white/[0.08] mb-3">
-          <div className="flex items-center gap-1.5 text-[12px] font-black text-slate-600 dark:text-slate-400">
+          <div className="flex items-center gap-1.5 text-xs font-black text-slate-600 dark:text-slate-400">
             <Layers className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
             {initialNotes.length} Chapters
           </div>
-          <div className="flex items-center gap-1.5 text-[12px] font-black text-slate-600 dark:text-slate-400">
+          <div className="flex items-center gap-1.5 text-xs font-black text-slate-600 dark:text-slate-400">
             <Clock className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
             {initialNotes.reduce((sum, n) => sum + calculateReadTime(n.content || ''), 0)} min total read
           </div>
@@ -645,7 +645,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
       <div className="flex-1 space-y-2.5">
         {initialNotes.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center px-6">
-            <div className={`w-20 h-20 ${themeClass} rounded-[24px] flex items-center justify-center mb-5 text-4xl`}>
+            <div className={`w-20 h-20 ${themeClass} rounded-hero flex items-center justify-center mb-5 text-4xl`}>
               {emoji}
             </div>
             <h3 className="text-xl font-black text-gray-900 dark:text-gray-100 mb-2">No notes yet</h3>
@@ -665,30 +665,30 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                   useGamificationStore.getState().addXp(15, 'Read Study Note');
                   setSelectedNote(note);
                 }}
-                className="w-full bg-card rounded-[22px] border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px] shadow-sm transition-all text-left group overflow-hidden animate-fade-up"
+                className="w-full bg-card rounded-card-lg border border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px] shadow-sm transition-all text-left group overflow-hidden animate-fade-up"
                 style={{ animationDelay: `${idx * 0.04}s` }}
               >
                 <div className="flex items-center gap-3.5 p-3.5">
-                  <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center font-black text-sm shrink-0 ${themeClass} shadow-xs`}>
+                  <div className={`w-10 h-10 rounded-btn flex items-center justify-center font-black text-sm shrink-0 ${themeClass} shadow-tactile-xs`}>
                     {idx + 1}
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-black text-gray-900 dark:text-gray-100 text-[14px] leading-snug line-clamp-2 tracking-tight">
+                    <h3 className="font-black text-gray-900 dark:text-gray-100 text-sm leading-snug line-clamp-2 tracking-tight">
                       {note.title}
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-lg ${themeClass}`}>
+                      <span className={`text-micro font-black uppercase tracking-wider px-2 py-0.5 rounded-lg ${themeClass}`}>
                         {note.department}
                       </span>
-                      <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                      <span className="text-caption font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
                         <Clock className="w-3 h-3 text-slate-400 dark:text-slate-500" /> {mins} min
                       </span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="inline-flex items-center gap-0.5 text-[10px] font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
+                    <span className="inline-flex items-center gap-0.5 text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
                       <Zap className="w-2.5 h-2.5 fill-current" />
                       +15 XP
                     </span>

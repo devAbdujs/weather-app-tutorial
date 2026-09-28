@@ -140,7 +140,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
           )}
 
           {/* Chunky Step Indicator */}
-          <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-black uppercase tracking-wider flex items-center gap-1">
+          <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-caption font-black uppercase tracking-wider flex items-center gap-1">
             <Sparkles className="w-3 h-3 text-accent-gold" /> Step {step} of {target === 'freshman' ? 2 : target === 'entrance' ? 2 : 2}
           </div>
         </div>
@@ -182,8 +182,8 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                   onClick={() => select(opt.id, setTarget)}
                   className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-100 text-left ${
                     isSelected
-                      ? 'border-primary bg-primary/10 border-b-[3px] border-b-primary shadow-xs'
-                      : 'border-black/[0.08] dark:border-white/[0.08] bg-card border-b-[3px] hover:border-black/20 dark:hover:border-white/20 active:translate-y-[1px]'
+                      ? 'border-primary bg-primary/10 border-b-bevel border-b-primary shadow-tactile-xs'
+                      : 'border-black/[0.08] dark:border-white/[0.08] bg-card border-b-bevel hover:border-black/20 dark:hover:border-white/20 active:translate-y-[1px]'
                   }`}
                 >
                   <div className="flex items-center gap-3.5">
@@ -195,7 +195,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                         <span className={`font-black text-sm ${isSelected ? 'text-primary' : 'text-gray-900 dark:text-gray-100'}`}>
                           {opt.title}
                         </span>
-                        <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-black/[0.05] dark:bg-white/[0.08] text-slate-500 dark:text-slate-400">
+                        <span className="text-micro font-black px-2 py-0.5 rounded-md bg-black/[0.05] dark:bg-white/[0.08] text-slate-500 dark:text-slate-400">
                           {opt.tag}
                         </span>
                       </div>
@@ -229,8 +229,8 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                   onClick={() => select(s.id, setStream)}
                   className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-100 text-left ${
                     isSelected
-                      ? 'border-primary bg-primary/10 border-b-[3px] border-b-primary shadow-xs'
-                      : 'border-black/[0.08] dark:border-white/[0.08] bg-card border-b-[3px] hover:border-black/20 active:translate-y-[1px]'
+                      ? 'border-primary bg-primary/10 border-b-bevel border-b-primary shadow-tactile-xs'
+                      : 'border-black/[0.08] dark:border-white/[0.08] bg-card border-b-bevel hover:border-black/20 active:translate-y-[1px]'
                   }`}
                 >
                   <div className="flex items-center gap-3.5">
@@ -268,7 +268,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                 placeholder="Search your department..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-2xl text-sm font-bold focus:border-primary focus:ring-0 outline-none transition-all shadow-sm"
+                className="w-full pl-12 pr-4 py-3.5 bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-2xl text-sm font-bold focus:border-primary focus:ring-0 outline-none transition-all shadow-sm"
               />
             </div>
             <div className="flex-1 max-h-[300px] overflow-y-auto rounded-2xl border border-black/[0.08] dark:border-white/[0.08] p-2 space-y-1.5 bg-card">
@@ -280,7 +280,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                     onClick={() => select(d.id, setStream)}
                     className={`w-full text-left px-4 py-3 rounded-xl text-xs font-black transition-all duration-100 border ${
                       isSelected 
-                        ? 'border-primary bg-primary/10 text-primary border-b-[3px]' 
+                        ? 'border-primary bg-primary/10 text-primary border-b-bevel' 
                         : 'border-transparent hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 active:translate-y-[1px]'
                     }`}
                   >
@@ -301,7 +301,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
           disabled={!canProceed || isSaving}
           className={`w-full py-4 rounded-2xl font-black text-base flex items-center justify-center gap-2 mt-auto transition-all duration-100 ${
             canProceed && !isSaving
-              ? 'btn-3d-primary shadow-bespoke-md cursor-pointer'
+              ? 'btn-3d-primary shadow-tactile-md cursor-pointer'
               : 'bg-ground border border-black/[0.08] dark:border-white/[0.08] text-slate-400 dark:text-slate-600 cursor-not-allowed'
           }`}
         >

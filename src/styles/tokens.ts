@@ -1,0 +1,142 @@
+/**
+ * Temari Centralized Design Token System
+ * Single source of truth for colors, typography scale, radii, spacing, and shadows.
+ * Imported directly into tailwind.config.ts and consumed across all components.
+ */
+
+export const tokens = {
+  colors: {
+    // Semantic surfaces (CSS variables adapt automatically between light/dark mode)
+    ground: 'var(--background)',
+    card: 'var(--surface)',
+    panel: 'var(--surface-2)',
+
+    // Brand Primary (Royal Cobalt)
+    primary: 'rgb(var(--primary-rgb) / <alpha-value>)',
+    'primary-foreground': 'var(--primary-foreground, #ffffff)',
+    'primary-border': 'var(--primary-border-bottom)',
+
+    // Semantic Accents
+    'accent-gold': 'rgb(var(--accent-gold-rgb) / <alpha-value>)',
+    'accent-emerald': 'rgb(var(--accent-emerald-rgb) / <alpha-value>)',
+    'accent-rose': 'rgb(var(--accent-rose-rgb) / <alpha-value>)',
+    'accent-blue': 'rgb(var(--accent-blue-rgb) / <alpha-value>)',
+    'accent-purple': 'rgb(var(--accent-purple-rgb) / <alpha-value>)',
+
+    // Semantic Status Aliases
+    success: 'rgb(var(--accent-emerald-rgb) / <alpha-value>)',
+    warning: 'rgb(var(--accent-gold-rgb) / <alpha-value>)',
+    info: 'rgb(var(--accent-blue-rgb) / <alpha-value>)',
+    danger: 'rgb(var(--accent-rose-rgb) / <alpha-value>)',
+    error: 'rgb(var(--accent-rose-rgb) / <alpha-value>)',
+    'sticky-yellow': 'hsl(48, 100%, 96%)',
+
+    // Semantic Borders
+    'border-subtle': 'var(--border)',
+    'border-default': 'var(--border)',
+    'border-strong': 'var(--border-strong)',
+  },
+
+  spacing: {
+    'touch': '44px',
+    'safe-bottom': 'env(safe-area-inset-bottom, 16px)',
+    'safe-top': 'env(safe-area-inset-top, 0px)',
+  },
+
+  fontSize: {
+    // Micro badge, streak day tag, XP pill counter (10px / 14px)
+    micro: ['0.625rem', { lineHeight: '0.875rem' }],
+    // Section overlines, metadata, timestamps (11px / 16px)
+    caption: ['0.6875rem', { lineHeight: '1rem' }],
+    // Secondary card labels, compact body text (13px / 18px)
+    compact: ['0.8125rem', { lineHeight: '1.125rem' }],
+    // Primary card titles, question option text (15px / 22px)
+    regular: ['0.9375rem', { lineHeight: '1.375rem' }],
+    // Modal titles, subsection headers (17px / 24px)
+    'display-sm': ['1.0625rem', { lineHeight: '1.5rem' }],
+    // Page headers, prominent stat counters (22px / 28px)
+    'display-md': ['1.375rem', { lineHeight: '1.75rem' }],
+  },
+
+  borderRadius: {
+    // Sub-controls, small badges, thumbnail icons (12px)
+    control: '12px',
+    // Compact buttons, header toggles, inputs (14px)
+    btn: '14px',
+    // Grid question tiles, bento tiles (16px)
+    'card-sm': '16px',
+    // Standard interactive cards & list items (20px)
+    card: '20px',
+    // Chunky cards, mascot bubbles, profile identity cards (22px)
+    'card-lg': '22px',
+    // Hero launchpads, featured exam cards (24px)
+    hero: '24px',
+    // Bottom sheets, action modals (32px)
+    modal: '32px',
+  },
+
+  borderWidth: {
+    // 3D tactile button and card bottom bevel
+    bevel: '3px',
+    // Prominent hero card bottom bevel
+    'bevel-lg': '4px',
+  },
+
+  boxShadow: {
+    // Tactile micro-shadows
+    'tactile-xs': '0 1px 2px rgba(15, 23, 42, 0.04)',
+    'tactile-sm': '0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04)',
+    'tactile-md': '0 4px 16px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.05)',
+    'tactile-lg': '0 12px 32px -4px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.06)',
+    'tactile-nav': '0 -2px 14px 0 rgba(15, 23, 42, 0.04)',
+  },
+} as const;
+
+export type DesignTokens = typeof tokens;
+
+// Type helper for Tailwind config compatibility
+export const tailwindTokens = {
+  ...tokens,
+  fontSize: tokens.fontSize as unknown as Record<string, [string, { lineHeight: string }]>,
+};
+
+// Raw hex palette for environments requiring raw color strings (e.g. Telegram WebApp setHeaderColor)
+export const surfaceHex = {
+  groundLight: '#F0F3F7',
+  groundDark: '#0D1118',
+  panelLight: '#E2E7EE',
+  panelDark: '#1E2532',
+  cardLight: '#FFFFFF',
+  cardDark: '#161D2A',
+} as const;
+
+// Mascot illustration color constants (centralized vector color palette)
+export const mascotPalette = {
+  lionFur: '#D97706',
+  lionManeLight: '#B45309',
+  lionManeDark: '#78350F',
+  snout: '#FEF3C7',
+  innerEar: '#FED7AA',
+  blush: '#F43F5E',
+  pupil: '#1E293B',
+  sparkleGold: '#F59E0B',
+  sparkleEmerald: '#10B981',
+  sparkleIndigo: '#6366F1',
+  sparklePink: '#EC4899',
+  tear: '#38BDF8',
+  bookCover: '#047857',
+  bookBorder: '#065F46',
+  bookPages: '#F8FAFC',
+  torchFlameOuter: '#EF4444',
+  torchFlameInner: '#FBBF24',
+} as const;
+
+// Gamification celebration confetti particle palette
+export const celebrationConfettiPalette = [
+  '#F59E0B',
+  '#10B981',
+  '#1E3B8A',
+  '#8B5CF6',
+  '#EF4444',
+] as const;
+

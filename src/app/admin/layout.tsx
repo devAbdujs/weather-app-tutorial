@@ -17,11 +17,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="h-screen bg-ground flex flex-col md:flex-row overflow-hidden">
-      <aside className="w-full md:w-64 bg-primary text-white flex flex-col h-auto md:h-full shrink-0 shadow-bespoke-md z-10">
+      <aside className="w-full md:w-64 bg-primary text-white flex flex-col h-auto md:h-full shrink-0 shadow-tactile-md z-10">
         <div className="p-6">
           <h2 className="text-2xl font-black tracking-tight text-accent">Temari Admin</h2>
           <div className="flex items-center gap-2 mt-2">
-            <span className="px-2 py-0.5 bg-white/10 rounded-md text-[10px] font-bold uppercase tracking-wider text-white/70">
+            <span className="px-2 py-0.5 bg-white/10 rounded-md text-micro font-bold uppercase tracking-wider text-white/70">
               {admin.role}
             </span>
             <span className="text-xs font-medium text-white/50">@{admin.username}</span>

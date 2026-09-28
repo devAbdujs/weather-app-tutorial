@@ -175,44 +175,44 @@ function SessionsContent() {
       <div className="sticky top-0 z-10 bg-ground/90 dark:bg-ground/95 backdrop-blur-xl border-b border-black/5 dark:border-white/8 px-5 pt-safe pt-5 pb-3 mb-4 flex items-center gap-3">
         <button
           onClick={() => { haptic.selection(); router.back(); }}
-          className="w-10 h-10 flex items-center justify-center rounded-[14px] bg-card border border-black/5 dark:border-white/8 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 active:scale-[0.98] active:opacity-80 transition-all shadow-sm shrink-0"
+          className="w-10 h-10 flex items-center justify-center rounded-btn bg-card border border-black/5 dark:border-white/8 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 dark:text-gray-100 active:scale-[0.98] active:opacity-80 transition-all shadow-sm shrink-0"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
         <div className="min-w-0 flex-1">
-          <h1 className="text-[22px] font-black text-gray-900 dark:text-gray-100 tracking-tight leading-tight truncate">{title}</h1>
-          <p className="text-[12px] font-bold text-gray-500 dark:text-gray-400 mt-0.5">{subtitle}</p>
+          <h1 className="text-display-md font-black text-gray-900 dark:text-gray-100 tracking-tight leading-tight truncate">{title}</h1>
+          <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-0.5">{subtitle}</p>
         </div>
       </div>
 
       {/* ── TABS ── */}
       {isFreshman && (
         <div className="px-5 pt-2 pb-4">
-          <div className="bg-black/5 dark:bg-white/5 p-1 rounded-[16px] flex gap-1">
+          <div className="bg-black/5 dark:bg-white/5 p-1 rounded-card-sm flex gap-1">
             <button
               onClick={() => { haptic.selection(); setActiveTab('midterm'); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[12px] text-sm font-bold transition-all duration-200 ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-control text-sm font-bold transition-all duration-200 ${
                 activeTab === 'midterm' ? 'bg-card text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400'
               }`}
             >
               <Clock className="w-3.5 h-3.5" />
               Midterm
               {!loading && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${activeTab === 'midterm' ? 'bg-primary/10 text-gray-900 dark:text-gray-100' : 'bg-black/10 dark:bg-white/10 text-gray-500 dark:text-gray-400'}`}>
+                <span className={`text-micro px-1.5 py-0.5 rounded-full font-black ${activeTab === 'midterm' ? 'bg-primary/10 text-gray-900 dark:text-gray-100' : 'bg-black/10 dark:bg-white/10 text-gray-500 dark:text-gray-400'}`}>
                   {midtermSessions.length}
                 </span>
               )}
             </button>
             <button
               onClick={() => { haptic.selection(); setActiveTab('final'); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[12px] text-sm font-bold transition-all duration-200 ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-control text-sm font-bold transition-all duration-200 ${
                 activeTab === 'final' ? 'bg-card text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
               Final
               {!loading && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${activeTab === 'final' ? 'bg-primary/10 text-gray-900 dark:text-gray-100' : 'bg-black/10 dark:bg-white/10 text-gray-500 dark:text-gray-400'}`}>
+                <span className={`text-micro px-1.5 py-0.5 rounded-full font-black ${activeTab === 'final' ? 'bg-primary/10 text-gray-900 dark:text-gray-100' : 'bg-black/10 dark:bg-white/10 text-gray-500 dark:text-gray-400'}`}>
                   {finalSessions.length}
                 </span>
               )}
@@ -223,7 +223,7 @@ function SessionsContent() {
 
         {/* Hint about question count */}
         {!loading && (
-          <p className="text-center text-[11px] font-medium text-gray-500 dark:text-gray-400 mt-2">
+          <p className="text-center text-caption font-medium text-gray-500 dark:text-gray-400 mt-2">
             {isFreshman 
               ? (activeTab === 'midterm' 
                 ? `${MIDTERM_SIZE} questions per exam · ${midtermCount} total`
@@ -254,15 +254,15 @@ function SessionsContent() {
               <button
                 key={s.id}
                 onClick={() => { haptic.selection(); setSelectedSession(s); }}
-                className="w-full group bg-card p-4 rounded-[22px] border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] border-b-black/[0.14] dark:border-b-white/[0.14] shadow-xs hover:border-primary/40 active:translate-y-[1px] transition-all flex items-center gap-4"
+                className="w-full group bg-card p-4 rounded-card-lg border border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] shadow-tactile-xs hover:border-primary/40 active:translate-y-[1px] transition-all flex items-center gap-4"
               >
-                <div className={`w-12 h-12 rounded-[14px] flex items-center justify-center font-black text-base shrink-0 shadow-xs border ${
+                <div className={`w-12 h-12 rounded-btn flex items-center justify-center font-black text-base shrink-0 shadow-tactile-xs border ${
                   isFreshman && activeTab === 'midterm' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-accent-purple/10 text-accent-purple border-accent-purple/20'
                 }`}>
                   {s.id}
                 </div>
                 <div className="text-left flex-1 min-w-0">
-                  <h3 className="font-black text-gray-900 dark:text-gray-100 text-[15px]">{s.label}</h3>
+                  <h3 className="font-black text-gray-900 dark:text-gray-100 text-regular">{s.label}</h3>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 mt-0.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-accent-emerald" />
                     <span>{s.count} questions</span>
@@ -284,12 +284,12 @@ function SessionsContent() {
           onClick={() => setSelectedSession(null)}
         >
           <div
-            className="bg-card w-full max-w-sm rounded-[32px] shadow-bespoke-lg animate-scale-bounce overflow-hidden border border-black/[0.08] dark:border-white/[0.10]"
+            className="bg-card w-full max-w-sm rounded-modal shadow-tactile-lg animate-scale-bounce overflow-hidden border border-black/[0.08] dark:border-white/[0.10]"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
             <div className="px-6 pt-6 pb-4 border-b border-black/[0.06] dark:border-white/[0.08]">
-              <span className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest block mb-1">
+              <span className="text-caption font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest block mb-1">
                 {selectedSession.count} Questions • Choose Mode
               </span>
               <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">{selectedSession.label}</h3>
@@ -300,15 +300,15 @@ function SessionsContent() {
               {/* Practice */}
               <button
                 onClick={() => handleStart(selectedSession, 'practice')}
-                className="w-full group text-left p-4 rounded-[22px] bg-card border-2 border-accent-emerald/40 dark:border-accent-emerald/30 border-b-[4px] border-b-accent-emerald/60 hover:border-accent-emerald active:translate-y-[1px] transition-all flex items-center gap-4 shadow-xs"
+                className="w-full group text-left p-4 rounded-card-lg bg-card border-2 border-accent-emerald/40 dark:border-accent-emerald/30 border-b-bevel-lg border-b-accent-emerald/60 hover:border-accent-emerald active:translate-y-[1px] transition-all flex items-center gap-4 shadow-tactile-xs"
               >
-                <div className="w-13 h-13 rounded-[16px] bg-accent-emerald text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                <div className="w-13 h-13 rounded-card-sm bg-accent-emerald text-white flex items-center justify-center shrink-0 shadow-tactile-xs group-hover:scale-105 transition-transform">
                   <BookOpen className="w-6 h-6" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <h4 className="font-black text-gray-900 dark:text-gray-100 text-base leading-tight">Practice Mode</h4>
-                    <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-accent-emerald/15 text-accent-emerald border border-accent-emerald/25">Untimed</span>
+                    <span className="text-micro font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-accent-emerald/15 text-accent-emerald border border-accent-emerald/25">Untimed</span>
                   </div>
                   <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Instant answer reveal &amp; AI explanations</p>
                 </div>
@@ -320,15 +320,15 @@ function SessionsContent() {
               {/* Exam */}
               <button
                 onClick={() => handleStart(selectedSession, 'exam')}
-                className="w-full group text-left p-4 rounded-[22px] bg-card border-2 border-primary/40 dark:border-primary/30 border-b-[4px] border-b-primary/60 hover:border-primary active:translate-y-[1px] transition-all flex items-center gap-4 shadow-xs"
+                className="w-full group text-left p-4 rounded-card-lg bg-card border-2 border-primary/40 dark:border-primary/30 border-b-bevel-lg border-b-primary/60 hover:border-primary active:translate-y-[1px] transition-all flex items-center gap-4 shadow-tactile-xs"
               >
-                <div className="w-13 h-13 rounded-[16px] bg-primary text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                <div className="w-13 h-13 rounded-card-sm bg-primary text-white flex items-center justify-center shrink-0 shadow-tactile-xs group-hover:scale-105 transition-transform">
                   <Layers className="w-6 h-6" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <h4 className="font-black text-gray-900 dark:text-gray-100 text-base leading-tight">Exam Simulator</h4>
-                    <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/25">Timed</span>
+                    <span className="text-micro font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/25">Timed</span>
                   </div>
                   <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Timed countdown &amp; score at the end</p>
                 </div>
@@ -342,7 +342,7 @@ function SessionsContent() {
             <div className="px-4 pb-4">
               <button
                 onClick={() => setSelectedSession(null)}
-                className="w-full py-3.5 rounded-[16px] bg-black/5 dark:bg-white/5 hover:bg-black/8 text-sm font-bold text-gray-600 dark:text-gray-400 active:scale-[0.98] transition-all"
+                className="w-full py-3.5 rounded-card-sm bg-black/5 dark:bg-white/5 hover:bg-black/8 text-sm font-bold text-gray-600 dark:text-gray-400 active:scale-[0.98] transition-all"
               >
                 Cancel
               </button>

@@ -147,10 +147,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 1. CLEAN STUDENT IDENTITY CARD ─────────────────────────── */}
         <section 
           aria-label="Student Identity"
-          className="relative bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[22px] p-5 shadow-bespoke-sm"
+          className="relative bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-card-lg p-5 shadow-tactile-sm"
         >
           {devMode && (
-            <div className="absolute top-4 right-4 text-[10px] font-black text-accent-gold uppercase tracking-widest bg-accent-gold/10 border border-accent-gold/20 px-2 py-0.5 rounded-full">
+            <div className="absolute top-4 right-4 text-micro font-black text-accent-gold uppercase tracking-widest bg-accent-gold/10 border border-accent-gold/20 px-2 py-0.5 rounded-full">
               Dev
             </div>
           )}
@@ -162,8 +162,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
               className="relative w-16 h-16 shrink-0 cursor-pointer active:scale-95 transition-transform"
               title="Student avatar (tap 5 times for dev tools)"
             >
-              <div className="w-full h-full rounded-[20px] bg-primary/10 dark:bg-primary/20 p-0.5 border border-primary/25 shadow-xs">
-                <div className="w-full h-full bg-ground rounded-[18px] overflow-hidden flex items-center justify-center">
+              <div className="w-full h-full rounded-card bg-primary/10 dark:bg-primary/20 p-0.5 border border-primary/25 shadow-tactile-xs">
+                <div className="w-full h-full bg-ground rounded-card-sm overflow-hidden flex items-center justify-center">
                   {profile.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img 
@@ -192,11 +192,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                   {profile.full_name || 'Scholar'}
                 </h1>
                 {isPremium ? (
-                  <span className="px-2 py-0.5 rounded-full bg-accent-gold/15 border border-accent-gold/30 text-accent-gold text-[10px] font-black uppercase tracking-wider shrink-0">
+                  <span className="px-2 py-0.5 rounded-full bg-accent-gold/15 border border-accent-gold/30 text-accent-gold text-micro font-black uppercase tracking-wider shrink-0">
                     PRO
                   </span>
                 ) : (
-                  <span className="px-2 py-0.5 rounded-full bg-panel border border-black/[0.08] dark:border-white/[0.08] text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-wider shrink-0">
+                  <span className="px-2 py-0.5 rounded-full bg-panel border border-black/[0.08] dark:border-white/[0.08] text-slate-500 dark:text-slate-400 text-micro font-black uppercase tracking-wider shrink-0">
                     Free
                   </span>
                 )}
@@ -224,7 +224,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         </section>
 
         {/* ── 2. GAMIFICATION SCHOLAR TIER CARD ─────────────────────── */}
-        <section className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[22px] p-4 shadow-bespoke-sm flex items-center justify-between">
+        <section className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-card-lg p-4 shadow-tactile-sm flex items-center justify-between">
           <div className="flex items-center gap-3">
             <TemariMascot mood="happy" size={54} />
             <div>
@@ -234,7 +234,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                   Level {currentLevel.level}: {currentLevel.title}
                 </span>
               </div>
-              <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+              <p className="text-caption font-bold text-slate-500 dark:text-slate-400">
                 {currentLevel.titleAmharic} • <span className="text-primary font-black">{xp} XP Earned</span>
               </p>
             </div>
@@ -253,8 +253,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           aria-label="Quick Stats"
           className="grid grid-cols-3 gap-3"
         >
-          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-[18px] p-3 text-center shadow-bespoke-sm">
-            <div className="flex items-center justify-center gap-1 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-card-sm p-3 text-center shadow-tactile-sm">
+            <div className="flex items-center justify-center gap-1 text-micro font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               <Flame className="w-3.5 h-3.5 text-accent-gold" />
               <span>Streak</span>
             </div>
@@ -263,8 +263,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             </span>
           </div>
 
-          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-[18px] p-3 text-center shadow-bespoke-sm">
-            <div className="flex items-center justify-center gap-1 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-card-sm p-3 text-center shadow-tactile-sm">
+            <div className="flex items-center justify-center gap-1 text-micro font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               <Target className="w-3.5 h-3.5 text-primary" />
               <span>Solved</span>
             </div>
@@ -273,8 +273,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             </span>
           </div>
 
-          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-[18px] p-3 text-center shadow-bespoke-sm">
-            <div className="flex items-center justify-center gap-1 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-card-sm p-3 text-center shadow-tactile-sm">
+            <div className="flex items-center justify-center gap-1 text-micro font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
               <TrendingUp className="w-3.5 h-3.5 text-accent-emerald" />
               <span>Accuracy</span>
             </div>
@@ -287,14 +287,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 4. AI QUOTA (CLEAN & COMPACT) ────────────────────────────── */}
         <section 
           aria-label="AI Quota"
-          className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[22px] p-4 shadow-bespoke-sm space-y-2.5"
+          className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-card-lg p-4 shadow-tactile-sm space-y-2.5"
         >
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-1.5 font-black text-gray-900 dark:text-gray-100">
               <Sparkles className="w-3.5 h-3.5 text-primary" />
               <span>AI Tutor Quota</span>
             </div>
-            <div className="flex items-center gap-2 font-mono text-[11px] text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-2 font-mono text-caption text-slate-500 dark:text-slate-400">
               <span className="font-bold text-gray-900 dark:text-gray-100">{usageClamped}/{weeklyCap}</span>
               <span>•</span>
               <span>Resets in {daysUntilReset}d</span>
@@ -333,7 +333,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 5. SETTINGS & APP PREFERENCES ───────────────────────────── */}
         <section 
           aria-label="Account Settings"
-          className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-[3px] rounded-[22px] shadow-bespoke-sm divide-y divide-black/[0.05] dark:divide-white/[0.05] overflow-hidden"
+          className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-card-lg shadow-tactile-sm divide-y divide-black/[0.05] dark:divide-white/[0.05] overflow-hidden"
         >
           {/* Sound Effects Toggle */}
           <div 

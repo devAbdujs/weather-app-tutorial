@@ -23,14 +23,14 @@ export const SkeletonScreen = ({ message = "Loading..." }: { message?: string })
       </div>
 
       {/* Main Stats Card Skeleton */}
-      <div className="w-full h-36 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] animate-pulse mt-4" />
+      <div className="w-full h-36 bg-black/5 dark:bg-white/5 rounded-hero border border-black/[0.06] dark:border-white/[0.08] animate-pulse mt-4" />
 
       {/* Grid Skeleton */}
       <div className="grid grid-cols-2 gap-4 mt-6">
-        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] animate-pulse" />
-        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] animate-pulse" />
-        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] animate-pulse" />
-        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-[24px] border border-black/[0.06] dark:border-white/[0.08] animate-pulse" />
+        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-hero border border-black/[0.06] dark:border-white/[0.08] animate-pulse" />
+        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-hero border border-black/[0.06] dark:border-white/[0.08] animate-pulse" />
+        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-hero border border-black/[0.06] dark:border-white/[0.08] animate-pulse" />
+        <div className="h-32 bg-black/5 dark:bg-white/5 rounded-hero border border-black/[0.06] dark:border-white/[0.08] animate-pulse" />
       </div>
 
     </div>

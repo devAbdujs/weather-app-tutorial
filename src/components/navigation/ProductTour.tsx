@@ -70,7 +70,7 @@ export const ProductTour: React.FC = () => {
       {/* Bottom Sheet for Mobile, Centered Modal for Desktop */}
       <div className="fixed inset-0 z-[9999] flex flex-col justify-end md:justify-center items-center pointer-events-none sm:p-6">
         <div 
-          className="w-full max-w-[400px] bg-card md:rounded-[32px] rounded-t-[32px] border border-black/[0.06] dark:border-white/[0.08] shadow-bespoke-lg pointer-events-auto relative overflow-hidden transition-transform duration-500 ease-spring transform translate-y-0 animate-sheet-up"
+          className="w-full max-w-[400px] bg-card md:rounded-modal rounded-t-modal border border-black/[0.06] dark:border-white/[0.08] shadow-tactile-lg pointer-events-auto relative overflow-hidden transition-transform duration-500 ease-spring transform translate-y-0 animate-sheet-up"
         >
           {/* Subtle drag handle indicator for mobile feel */}
           <div className="w-full flex justify-center pt-3 pb-1 md:hidden">
@@ -96,7 +96,7 @@ export const ProductTour: React.FC = () => {
               <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight transition-opacity duration-300">
                 {TOUR_STEPS[step].title}
               </h3>
-              <p className="text-[15px] font-medium text-gray-600 dark:text-gray-400 leading-relaxed transition-opacity duration-300">
+              <p className="text-regular font-medium text-gray-600 dark:text-gray-400 leading-relaxed transition-opacity duration-300">
                 {TOUR_STEPS[step].description}
               </p>
             </div>
@@ -116,7 +116,7 @@ export const ProductTour: React.FC = () => {
 
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-3.5 bg-primary text-white rounded-[16px] font-bold text-[15px] shadow-bespoke-md hover:bg-primary/90 transition-all duration-200 ease-bespoke active:scale-[0.98]"
+                className="flex items-center gap-2 px-6 py-3.5 bg-primary text-white rounded-card-sm font-bold text-regular shadow-tactile-md hover:bg-primary/90 transition-all duration-200 ease-bespoke active:scale-[0.98]"
               >
                 {step === TOUR_STEPS.length - 1 ? (
                   <>Start Practicing <Check className="w-5 h-5" /></>
