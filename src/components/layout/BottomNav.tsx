@@ -32,7 +32,7 @@ export const BottomNav = () => {
       aria-label="Bottom Navigation"
       className="
         fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto pb-safe
-        bg-card/95 dark:bg-card/95
+        bg-ground/90 dark:bg-ground/90
         backdrop-blur-xl
         border-t border-black/[0.08] dark:border-white/[0.08]
         shadow-bespoke-nav

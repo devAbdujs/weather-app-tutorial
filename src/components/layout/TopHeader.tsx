@@ -42,10 +42,9 @@ export const TopHeader = () => {
     <header
       className="
         w-full h-15 shrink-0 z-40
-        bg-card/95 dark:bg-card/95
+        bg-ground/90 dark:bg-ground/90
         backdrop-blur-xl
         border-b border-black/[0.08] dark:border-white/[0.08]
-        shadow-sm
         flex items-center justify-between px-3.5 gap-2
       "
     >

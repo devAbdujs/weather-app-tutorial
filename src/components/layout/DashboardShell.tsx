@@ -14,9 +14,9 @@ export const DashboardShell = ({ children }: { children: React.ReactNode }) => {
     pathname.startsWith('/practice/sessions');
 
   return (
-    <div className="flex h-[100dvh] w-full bg-slate-200/80 dark:bg-[hsl(224,30%,4%)] justify-center overflow-hidden">
+    <div className="flex h-[100dvh] w-full bg-slate-100 dark:bg-black/90 justify-center overflow-hidden">
       {/* Mobile emulator wrapper for desktop, fills screen on mobile */}
-      <main className="w-full h-full max-w-md bg-ground dark:bg-ground relative shadow-[0_20px_60px_-15px_rgba(15,23,42,0.18)] flex flex-col overflow-hidden sm:border-x sm:border-black/[0.08] dark:border-white/[0.08]">
+      <main className="w-full h-full max-w-md bg-ground dark:bg-ground relative shadow-[0_20px_60px_-15px_rgba(15,23,42,0.12)] flex flex-col overflow-hidden sm:border-x sm:border-black/[0.08] dark:border-white/[0.08]">
 
         {/* Native Top Header — fixed at top, context-aware */}
         <TopHeader />

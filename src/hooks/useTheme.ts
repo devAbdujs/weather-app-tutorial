@@ -49,7 +49,7 @@ export function useTheme() {
     // Sync with Telegram Native Header
     try {
       const WebApp = require('@twa-dev/sdk').default;
-      WebApp.setHeaderColor?.(isDark ? '#1a1f2e' : '#f8fafc'); // Match bg-ground colors
+      WebApp.setHeaderColor?.(isDark ? '#0D1118' : '#F0F3F7'); // Match bg-ground colors
     } catch (e) {}
   };
 
