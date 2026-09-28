@@ -21,10 +21,10 @@ export const BottomNav = () => {
   if (isFocusMode) return null;
 
   const navItems = [
-    { name: 'Home',     href: '/dashboard', icon: Home,      color: 'text-primary bg-primary/15 border-primary/30' },
-    { name: 'Practice', href: '/practice',  icon: BookOpen,  color: 'text-accent-emerald bg-accent-emerald/15 border-accent-emerald/30' },
-    { name: 'Progress', href: '/mastery',   icon: BarChart2, color: 'text-accent-gold bg-accent-gold/15 border-accent-gold/30' },
-    { name: 'Profile',  href: '/profile',   icon: User,      color: 'text-accent-purple bg-accent-purple/15 border-accent-purple/30' },
+    { name: 'Home',     href: '/dashboard', icon: Home },
+    { name: 'Practice', href: '/practice',  icon: BookOpen },
+    { name: 'Progress', href: '/mastery',   icon: BarChart2 },
+    { name: 'Profile',  href: '/profile',   icon: User },
   ];
 
   return (
@@ -62,21 +62,21 @@ export const BottomNav = () => {
                   className={`
                     relative flex items-center justify-center w-12 h-7 rounded-[13px] transition-all duration-150 ease-spring
                     ${isActive
-                      ? `${item.color} border border-current/25 shadow-xs`
-                      : 'bg-transparent text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}
+                      ? 'bg-primary text-white shadow-xs border border-primary/40'
+                      : 'bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}
                   `}
                 >
                   <Icon
                     className="w-[18px] h-[18px] transition-transform duration-150"
-                    strokeWidth={isActive ? 2.4 : 1.8}
+                    strokeWidth={isActive ? 2.5 : 2}
                   />
                 </div>
                 <span
                   className={`
                     text-[10px] tracking-tight transition-colors duration-150
                     ${isActive
-                      ? 'font-black text-gray-900 dark:text-gray-100'
-                      : 'font-semibold text-gray-400 dark:text-gray-500'}
+                      ? 'font-black text-primary'
+                      : 'font-semibold text-slate-500 dark:text-slate-400'}
                   `}
                 >
                   {item.name}

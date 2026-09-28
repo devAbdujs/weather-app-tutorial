@@ -234,7 +234,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                   Level {currentLevel.level}: {currentLevel.title}
                 </span>
               </div>
-              <p className="text-[11px] font-bold text-slate-400">
+              <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
                 {currentLevel.titleAmharic} • <span className="text-primary font-black">{xp} XP Earned</span>
               </p>
             </div>
@@ -352,7 +352,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-400">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
                 {soundEnabled ? 'On' : 'Muted'}
               </span>
               <div className={`w-9 h-5 rounded-full p-0.5 transition-colors ${soundEnabled ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-700'}`}>
@@ -379,7 +379,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                 Exam Progress &amp; Scores
               </span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <span className="font-mono font-bold">{overallAccuracy}% avg</span>
               <ChevronRight className="w-4 h-4" />
             </div>
@@ -399,7 +399,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                 Curriculum Track
               </span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <span className="truncate max-w-[140px] font-bold">{profile.stream || 'Natural'}</span>
               <ChevronRight className="w-4 h-4" />
             </div>
@@ -423,7 +423,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                 Subscription Plan
               </span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <span className="font-bold">{isPremium ? 'PRO Active' : 'Free (199 ETB)'}</span>
               <ChevronRight className="w-4 h-4" />
             </div>
@@ -445,7 +445,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                 Support &amp; Community
               </span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <span className="font-bold">@ethio_exam_bot</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </div>

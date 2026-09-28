@@ -188,13 +188,13 @@ export const PracticeHub = () => {
 
       {devMode && (
         <div className="px-5 mb-5">
-          <div className="flex p-1 bg-panel border-2 border-black/[0.08] dark:border-white/[0.08] rounded-[18px]">
+          <div className="flex p-1 bg-panel border border-black/[0.08] dark:border-white/[0.08] rounded-[18px]">
             {['entrance', 'freshman', 'exit'].map(tab => (
               <button
                 key={tab}
                 onClick={() => { sounds.playTap(); haptic.selection(); setActiveTab(tab); }}
                 className={`flex-1 py-2 text-xs font-black capitalize rounded-[14px] transition-all ${
-                  activeTab === tab ? 'bg-card text-gray-900 dark:text-gray-100 shadow-bespoke-sm border-b-2 border-black/10' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
+                  activeTab === tab ? 'bg-primary text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                 }`}
               >
                 {tab}
@@ -209,7 +209,7 @@ export const PracticeHub = () => {
         {/* ── FRESHMAN: course grid ── */}
         {targetExam === 'freshman' && (
           <div className="animate-fade-in">
-            <p className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 px-1">Select a course</p>
+            <p className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 px-1">Select a course</p>
             <div className="grid grid-cols-2 gap-3">
               {(FRESHMAN_COURSES[profileStream] || FRESHMAN_COURSES['Natural Science']).map(c => (
                 <button
@@ -229,7 +229,7 @@ export const PracticeHub = () => {
                   <div className="flex items-end justify-between mt-auto">
                     <span className="text-[13px] font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 flex-1 pr-1">{c.id}</span>
                     <div className="w-6 h-6 rounded-full bg-ground flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300 group-hover:text-white transition-colors" />
                     </div>
                   </div>
                 </button>
@@ -241,7 +241,7 @@ export const PracticeHub = () => {
         {/* ── ENTRANCE: subject picker ── */}
         {targetExam === 'entrance' && (
           <div className="animate-fade-in">
-            <p className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 px-1">Select subject</p>
+            <p className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 px-1">Select subject</p>
             <div className="grid grid-cols-2 gap-3">
               {(EUEE_SUBJECTS[profileStream] || EUEE_SUBJECTS['Natural Science']).map(c => (
                 <button
@@ -261,7 +261,7 @@ export const PracticeHub = () => {
                   <div className="flex items-end justify-between mt-auto">
                     <span className="text-[13px] font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 flex-1 pr-1">{c.id}</span>
                     <div className="w-6 h-6 rounded-full bg-ground flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300 group-hover:text-white transition-colors" />
                     </div>
                   </div>
                 </button>
@@ -273,7 +273,7 @@ export const PracticeHub = () => {
         {/* ── EXIT: department list ── */}
         {targetExam === 'exit' && (
           <div className="animate-fade-in">
-            <p className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 px-1">Select department</p>
+            <p className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 px-1">Select department</p>
             <div className="flex flex-col gap-2.5 mb-10">
               {EXIT_DEPARTMENTS.map((d) => (
                 <button
@@ -290,7 +290,7 @@ export const PracticeHub = () => {
                     +10 XP
                   </span>
                   <div className="w-6 h-6 rounded-full bg-ground flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300 group-hover:text-white transition-colors" />
                   </div>
                 </button>
               ))}

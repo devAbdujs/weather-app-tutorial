@@ -631,12 +631,12 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
       {initialNotes.length > 0 && (
         <div className="px-5 py-2.5 flex gap-4 border-b border-black/[0.06] dark:border-white/[0.08] mb-3">
-          <div className="flex items-center gap-1.5 text-[12px] font-black text-gray-500 dark:text-gray-400">
-            <Layers className="w-3.5 h-3.5 text-gray-400" />
+          <div className="flex items-center gap-1.5 text-[12px] font-black text-slate-600 dark:text-slate-400">
+            <Layers className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
             {initialNotes.length} Chapters
           </div>
-          <div className="flex items-center gap-1.5 text-[12px] font-black text-gray-500 dark:text-gray-400">
-            <Clock className="w-3.5 h-3.5 text-gray-400" />
+          <div className="flex items-center gap-1.5 text-[12px] font-black text-slate-600 dark:text-slate-400">
+            <Clock className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
             {initialNotes.reduce((sum, n) => sum + calculateReadTime(n.content || ''), 0)} min total read
           </div>
         </div>
@@ -681,8 +681,8 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                       <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-lg ${themeClass}`}>
                         {note.department}
                       </span>
-                      <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-gray-400" /> {mins} min
+                      <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-slate-400 dark:text-slate-500" /> {mins} min
                       </span>
                     </div>
                   </div>
@@ -692,7 +692,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                       <Zap className="w-2.5 h-2.5 fill-current" />
                       +15 XP
                     </span>
-                    <ChevronRight className="w-4 h-4 text-gray-400 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                   </div>
                 </div>
               </button>

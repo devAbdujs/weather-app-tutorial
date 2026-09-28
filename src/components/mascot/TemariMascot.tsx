@@ -322,7 +322,7 @@ export const MascotBubble: React.FC<MascotBubbleProps> = ({
           {action && (
             <button
               onClick={action.onClick}
-              className="mt-2.5 px-3 py-1.5 rounded-xl bg-primary text-white text-xs font-black border-b-[3px] border-primary-hover active:translate-y-[1px] active:border-b-0 transition-all inline-flex items-center gap-1.5 shadow-sm"
+              className="mt-2.5 px-3 py-1.5 rounded-xl btn-3d-primary text-xs font-black active:translate-y-[1px] transition-all inline-flex items-center gap-1.5 shadow-sm"
             >
               <span>{action.label}</span>
             </button>

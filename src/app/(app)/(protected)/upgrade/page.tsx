@@ -522,7 +522,7 @@ export default function UpgradePage() {
         </div>
 
         {/* Pricing Card */}
-        <div className="bg-gradient-to-br from-primary to-primary-hover p-6 rounded-[22px] border border-primary-hover border-b-[4px] shadow-bespoke-md text-white mb-8 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-primary to-primary/85 p-6 rounded-[22px] border border-primary/40 border-b-[4px] border-b-black/30 shadow-bespoke-md text-white mb-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.06] rounded-full blur-2xl -mr-10 -mt-10" />
           <h2 className="text-lg font-bold text-white/85 mb-1">Premium Pass</h2>
           <div className="flex items-baseline gap-2 mb-4">
@@ -544,7 +544,7 @@ export default function UpgradePage() {
             </span>
             Transfer 199 ETB
           </h3>
-          <span className="text-xs text-gray-400 font-medium">Choose payment method</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Choose payment method</span>
         </div>
         
         <div className="space-y-3 mb-6">

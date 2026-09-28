@@ -103,10 +103,10 @@ export const TopHeader = () => {
         <button
           onClick={() => { sounds.playCorrect(); router.push('/profile'); }}
           title={`${xp} Total XP`}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/12 border border-primary/25 border-b-2 border-b-primary/40 text-primary font-black text-xs active:translate-y-[1px] transition-all shadow-xs"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-gold/15 border border-accent-gold/30 border-b-2 border-b-accent-gold/50 text-accent-gold font-black text-xs active:translate-y-[1px] transition-all shadow-xs"
         >
-          <Zap className="w-3.5 h-3.5 fill-primary text-primary" />
-          <span className="font-mono tabular-nums">{xp}</span>
+          <Zap className="w-3.5 h-3.5 fill-accent-gold text-accent-gold" />
+          <span className="font-mono tabular-nums">{xp} XP</span>
         </button>
       </div>
 
@@ -121,7 +121,7 @@ export const TopHeader = () => {
             w-9 h-9 flex items-center justify-center
             rounded-[13px]
             bg-card border border-black/[0.08] dark:border-white/[0.12] border-b-2 border-b-black/[0.15] dark:border-b-white/[0.18]
-            text-gray-600 dark:text-gray-300
+            text-gray-700 dark:text-gray-200
             hover:text-primary dark:hover:text-primary
             active:translate-y-[1px] transition-all shadow-xs
           "
@@ -129,7 +129,7 @@ export const TopHeader = () => {
           {soundEnabled ? (
             <Volume2 className="w-4 h-4 text-primary" />
           ) : (
-            <VolumeX className="w-4 h-4 text-slate-400" />
+            <VolumeX className="w-4 h-4 text-slate-500 dark:text-slate-400" />
           )}
         </button>
 
@@ -141,12 +141,12 @@ export const TopHeader = () => {
             w-9 h-9 flex items-center justify-center
             rounded-[13px]
             bg-card border border-black/[0.08] dark:border-white/[0.12] border-b-2 border-b-black/[0.15] dark:border-b-white/[0.18]
-            text-gray-600 dark:text-gray-300
+            text-gray-700 dark:text-gray-200
             hover:text-gray-900 dark:hover:text-gray-100
             active:translate-y-[1px] transition-all shadow-xs
           "
         >
-          {resolvedTheme === 'dark' ? <Sun className="w-4 h-4 text-accent-gold" /> : <Moon className="w-4 h-4" />}
+          {resolvedTheme === 'dark' ? <Sun className="w-4 h-4 text-accent-gold" /> : <Moon className="w-4 h-4 text-gray-700" />}
         </button>
       </div>
     </header>

@@ -252,7 +252,7 @@ export const HomeHub: React.FC = () => {
         {/* ── 4. TACTILE HERO LAUNCHPAD ── */}
         <button
           onClick={() => { sounds.playTap(); haptic.impact('heavy'); router.push('/practice'); }}
-          className="w-full text-left p-5 rounded-[24px] bg-primary text-white border border-primary/20 border-b-[4px] border-b-[hsl(224,75%,22%)] active:translate-y-[1px] transition-all relative overflow-hidden group shadow-md"
+          className="w-full text-left p-5 rounded-[24px] bg-primary text-white border border-primary/20 border-b-[4px] border-b-[var(--primary-border-bottom)] active:translate-y-[1px] transition-all relative overflow-hidden group shadow-md"
         >
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/[0.08] rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500" />
           <div className="relative z-10">
@@ -337,12 +337,12 @@ export const HomeHub: React.FC = () => {
                 <span className="text-[11px] font-black text-accent-gold uppercase tracking-widest block">
                   Teme&apos;s Daily Study Tip
                 </span>
-                <span className="text-[10px] font-bold text-slate-400">High-Yield Exam Strategy</span>
+                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">High-Yield Exam Strategy</span>
               </div>
             </div>
             <button
               onClick={() => { sounds.playTap(); haptic.selection(); fetchTip(true); }}
-              className="w-8 h-8 flex items-center justify-center rounded-[12px] bg-ground/80 border border-black/[0.08] hover:bg-black/5 dark:hover:bg-white/10 active:translate-y-[1px] transition-all text-slate-500"
+              className="w-8 h-8 flex items-center justify-center rounded-[12px] bg-ground/80 border border-black/[0.08] dark:border-white/[0.08] hover:bg-black/5 dark:hover:bg-white/10 active:translate-y-[1px] transition-all text-slate-600 dark:text-slate-300"
               title="Get a new tip"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${tipLoading ? 'animate-spin' : ''}`} />

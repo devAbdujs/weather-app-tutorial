@@ -12,23 +12,24 @@
   --border:        hsla(30, 25%, 15%, 0.09); /* Crisp warm contour */
   --border-strong: hsla(30, 25%, 15%, 0.16);
 
-  /* Brand: Bespoke Deep Indigo — single accent, used sparingly */
-  --primary:            hsl(224, 64%, 33%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --primary-rgb:        30, 59, 138;
-  --accent:             hsl(36, 58%, 42%);
+  /* Brand: Bespoke Royal Cobalt — vibrant, high-contrast, authoritative */
+  --primary:               hsl(221, 83%, 46%);
+  --primary-foreground:    hsl(0, 0%, 100%);
+  --primary-rgb:           20, 83, 214;
+  --primary-border-bottom: hsl(221, 83%, 30%);
+  --accent:                hsl(38, 92%, 46%);
 
-  /* Semantic Accents — cohesive, anti-glare, desaturated palette */
-  --accent-gold:        hsl(36, 58%, 42%);     /* Warm Ethiopian gold: Streaks, badges, tips */
-  --accent-gold-rgb:    169, 120, 45;
-  --accent-emerald:     hsl(145, 42%, 38%);    /* Forest jade: Success, completed, high mastery */
-  --accent-emerald-rgb: 56, 138, 90;
-  --accent-rose:        hsl(350, 48%, 48%);    /* Muted crimson: Needs practice, warnings, errors */
-  --accent-rose-rgb:    181, 64, 83;
-  --accent-blue:        hsl(199, 65%, 44%);    /* Telegram & info blue */
-  --accent-blue-rgb:    39, 139, 185;
-  --accent-purple:      hsl(268, 45%, 48%);    /* Academic violet: Notes, psychology */
-  --accent-purple-rgb:  119, 67, 177;
+  /* Semantic Accents — cohesive, anti-glare, high-contrast palette */
+  --accent-gold:        hsl(38, 92%, 46%);     /* Warm Ethiopian gold: Streaks, badges, tips, XP */
+  --accent-gold-rgb:    225, 138, 10;
+  --accent-emerald:     hsl(145, 55%, 38%);    /* Forest jade: Success, completed, high mastery */
+  --accent-emerald-rgb: 44, 150, 92;
+  --accent-rose:        hsl(350, 68%, 52%);    /* Muted crimson: Needs practice, warnings, errors */
+  --accent-rose-rgb:    223, 42, 72;
+  --accent-blue:        hsl(201, 80%, 46%);    /* Telegram & info blue */
+  --accent-blue-rgb:    23, 142, 212;
+  --accent-purple:      hsl(268, 55%, 52%);    /* Academic violet: Notes, psychology */
+  --accent-purple-rgb:  135, 69, 196;
 
   /* Text hierarchy — avoids pure #000/#fff halation */
   --text-primary:  hsl(222, 47%, 11%);
@@ -50,23 +51,24 @@
   --border:        hsla(0, 0%, 100%, 0.08);
   --border-strong: hsla(0, 0%, 100%, 0.14);
 
-  /* Dark mode primary: desaturated — colors feel more intense on dark bg */
-  --primary:            hsl(213, 60%, 58%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --primary-rgb:        84, 141, 212;
-  --accent:             hsl(36, 50%, 65%);
+  /* Dark mode primary: radiant cobalt — high contrast against midnight slate */
+  --primary:               hsl(217, 85%, 54%);
+  --primary-foreground:    hsl(0, 0%, 100%);
+  --primary-rgb:           54, 126, 238;
+  --primary-border-bottom: hsl(217, 85%, 38%);
+  --accent:                hsl(40, 92%, 62%);
 
   /* Dark mode semantic accents: softened & anti-halation desaturated */
-  --accent-gold:        hsl(36, 50%, 65%);
-  --accent-gold-rgb:    210, 175, 121;
-  --accent-emerald:     hsl(145, 35%, 62%);
-  --accent-emerald-rgb: 124, 192, 152;
-  --accent-rose:        hsl(350, 40%, 68%);
-  --accent-rose-rgb:    206, 141, 152;
-  --accent-blue:        hsl(199, 55%, 62%);
-  --accent-blue-rgb:    105, 178, 211;
-  --accent-purple:      hsl(268, 40%, 70%);
-  --accent-purple-rgb:  176, 148, 209;
+  --accent-gold:        hsl(40, 92%, 62%);
+  --accent-gold-rgb:    246, 185, 70;
+  --accent-emerald:     hsl(145, 48%, 56%);
+  --accent-emerald-rgb: 77, 209, 137;
+  --accent-rose:        hsl(350, 65%, 66%);
+  --accent-rose-rgb:    232, 105, 126;
+  --accent-blue:        hsl(201, 75%, 62%);
+  --accent-blue-rgb:    86, 184, 230;
+  --accent-purple:      hsl(268, 60%, 70%);
+  --accent-purple-rgb:  186, 142, 232;
 
   --text-primary:  hsl(213, 31%, 95%);
   --text-secondary:hsl(215, 14%, 63%);
@@ -212,7 +214,7 @@ body {
   background-color: var(--primary);
   color: #ffffff;
   border: 1px solid var(--primary);
-  border-bottom: 3px solid hsl(224, 75%, 22%);
+  border-bottom: 3px solid var(--primary-border-bottom);
   transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
