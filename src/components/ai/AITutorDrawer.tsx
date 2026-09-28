@@ -11,6 +11,8 @@ import 'katex/dist/katex.min.css';
 import { MathText } from '@/components/MathText';
 import { Question } from '@/types';
 import { useTelegram } from '@/hooks/useTelegram';
+import { TemariMascot } from '@/components/mascot/TemariMascot';
+import { sounds } from '@/lib/sounds';
 
 interface AITutorDrawerProps {
   mode?: 'exam' | 'notes';
@@ -174,21 +176,22 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
         {/* Premium Header */}
         <div className="flex items-center justify-between pb-3.5 border-b border-black/[0.06] dark:border-white/[0.08] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="relative p-2 rounded-control bg-primary/10 text-primary border border-primary/20 shadow-sm">
-              <User className="w-5 h-5" />
+            <div className="relative p-1 rounded-2xl bg-tint-cream border border-tint-cream-border shadow-xs">
+              <TemariMascot mood="happy" size={36} animate={false} />
               <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-accent-emerald rounded-full border-2 border-card" />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base flex items-center gap-1.5 tracking-tight">
-                Temari AI
+              <h3 className="font-black text-gray-900 dark:text-gray-100 text-base flex items-center gap-1.5 tracking-tight">
+                Temari AI <span className="text-primary">Tutor</span>
               </h3>
-              <p className="text-caption text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1">
-                <GraduationCap className="w-3 h-3 text-primary" /> Study Companion
+              <p className="text-caption text-gray-500 dark:text-gray-400 font-semibold flex items-center gap-1">
+                <GraduationCap className="w-3 h-3 text-primary" /> Ethiopian Exam Companion
               </p>
             </div>
           </div>
           <button
             onClick={() => {
+              sounds.playTap();
               haptic.selection();
               onClose();
             }}
@@ -198,48 +201,59 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           </button>
         </div>
 
-        {/* Floating Quick Action Chips */}
+        {/* Floating Quick Action Chips (Inspiration Pastel Tints) */}
         <div className="flex gap-2 py-3 overflow-x-auto no-scrollbar shrink-0 -mx-5 px-5">
           <button
-            onClick={() => sendMessage(studentAnswer ? 'explain' : 'hint')}
+            onClick={() => { sounds.playTap(); sendMessage(studentAnswer ? 'explain' : 'hint'); }}
             disabled={isLoading}
-            className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-control font-bold border transition-all whitespace-nowrap bg-ground border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:border-black/20 dark:hover:border-white/20 active:scale-[0.98] shadow-sm"
+            className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-full font-black border transition-all whitespace-nowrap bg-tint-peach text-tint-peach-fg border-tint-peach-border hover:shadow-xs active:scale-95"
           >
-            <Lightbulb className="w-3.5 h-3.5 text-accent-gold" />
+            <Lightbulb className="w-3.5 h-3.5 fill-current" />
             {mode === 'exam' 
-              ? (studentAnswer ? 'Explain Solution' : 'Guiding Hint') 
+              ? (studentAnswer ? 'Explain Solution' : '💡 Guiding Hint') 
               : 'Summarize Chapter'}
           </button>
 
           <button
-            onClick={() => sendMessage('amharic')}
+            onClick={() => { sounds.playTap(); sendMessage('amharic'); }}
             disabled={isLoading}
-            className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-control font-bold border transition-all whitespace-nowrap bg-ground border-black/[0.06] dark:border-white/[0.08] text-gray-700 dark:text-gray-300 hover:border-black/20 dark:hover:border-white/20 active:scale-[0.98] shadow-sm"
+            className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-full font-black border transition-all whitespace-nowrap bg-tint-sky text-tint-sky-fg border-tint-sky-border hover:shadow-xs active:scale-95"
           >
-            <Globe className="w-3.5 h-3.5 text-accent-blue" />
-            በአማርኛ አስረዳኝ
+            <Globe className="w-3.5 h-3.5" />
+            🇪🇹 በአማርኛ አስረዳኝ
           </button>
+
+          {mode === 'exam' && !studentAnswer && (
+            <button
+              onClick={() => { sounds.playTap(); sendMessage('explain'); }}
+              disabled={isLoading}
+              className="flex items-center gap-1.5 text-xs px-3.5 py-2 rounded-full font-black border transition-all whitespace-nowrap bg-tint-purple text-tint-purple-fg border-tint-purple-border hover:shadow-xs active:scale-95"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              Detailed Breakdown
+            </button>
+          )}
         </div>
 
         {/* Chat Messages Area */}
         <div className="flex-1 overflow-y-auto py-2 space-y-4 text-sm leading-relaxed text-gray-800 dark:text-gray-200 custom-scrollbar pr-1">
           {messages.length === 1 && !isLoading && (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-2 opacity-50 animate-fade-up">
-              <User className="w-10 h-10 text-gray-400" />
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Ask any question or tap a suggestion above</p>
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-2 opacity-60 animate-fade-up">
+              <TemariMascot mood="studying" size={56} />
+              <p className="text-xs font-bold text-gray-600 dark:text-gray-400">Ask any question or tap a prompt above!</p>
             </div>
           )}
           {messages.map((msg) => (
             <div key={msg.id} className={`flex w-full animate-fade-up ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               {msg.role === 'assistant' && (
-                <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mr-2 shrink-0 self-end mb-1">
-                  <User className="w-3.5 h-3.5" />
+                <div className="w-7 h-7 rounded-full bg-tint-cream border border-tint-cream-border flex items-center justify-center mr-2 shrink-0 self-end mb-1 shadow-2xs">
+                  <TemariMascot mood="happy" size={24} animate={false} />
                 </div>
               )}
-              <div className={`p-3.5 rounded-card-sm max-w-[85%] font-sans shadow-tactile-sm ${
+              <div className={`p-4 rounded-3xl max-w-[85%] font-sans shadow-tactile-xs ${
                 msg.role === 'user' 
-                  ? 'bg-primary text-white rounded-br font-medium whitespace-pre-line' 
-                  : 'bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-bl text-gray-900 dark:text-gray-100'
+                  ? 'bg-primary text-white rounded-br-xs font-semibold whitespace-pre-line shadow-md shadow-orange-500/20' 
+                  : 'bg-white dark:bg-[#1A222D] border border-black/[0.06] dark:border-white/[0.08] rounded-bl-xs text-gray-900 dark:text-gray-100'
               }`}>
                 {msg.role === 'assistant' ? (
                   msg.content ? (
@@ -249,9 +263,13 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
                       </ReactMarkdown>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 text-gray-400 py-1">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
-                      <span className="text-xs font-medium text-primary">Thinking...</span>
+                    <div className="flex items-center gap-2 text-primary py-1">
+                      <div className="flex gap-1.5 items-center">
+                        <span className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <span className="w-2 h-2 rounded-full bg-accent-gold animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <span className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </div>
+                      <span className="text-xs font-black text-primary ml-1">Teme is thinking...</span>
                     </div>
                   )
                 ) : (
@@ -263,20 +281,21 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           <div ref={messagesEndRef} className="h-1" />
         </div>
         
-        {/* Floating Input Box */}
+        {/* Floating Input Box with Chegg Orange Send Button */}
         <form onSubmit={handleFormSubmit} className="pt-3 border-t border-black/[0.06] dark:border-white/[0.08] shrink-0 flex gap-2 relative">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask Temari AI..."
+            placeholder="Ask Temari AI about this topic..."
             disabled={isLoading}
-            className="flex-1 bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-card-sm px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
+            className="flex-1 bg-white dark:bg-black/40 border border-black/[0.08] dark:border-white/[0.08] rounded-full px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-xs"
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="w-12 h-12 rounded-card-sm flex items-center justify-center bg-primary hover:bg-primary/90 disabled:bg-black/5 dark:disabled:bg-white/5 disabled:text-gray-400 text-white transition-all duration-200 ease-bespoke shrink-0 shadow-tactile-sm disabled:shadow-none active:scale-[0.98]"
+            onClick={() => sounds.playTap()}
+            className="w-11 h-11 rounded-full flex items-center justify-center bg-primary hover:bg-orange-600 disabled:opacity-40 disabled:hover:bg-primary text-white transition-all duration-150 ease-bespoke shrink-0 shadow-md shadow-orange-500/30 active:scale-95"
           >
             <Send className="w-4 h-4 ml-0.5" />
           </button>

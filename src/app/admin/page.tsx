@@ -37,46 +37,52 @@ export default async function AdminDashboard() {
         <StatCard 
           title="Total Users" 
           value={stats.totalUsers.toLocaleString()} 
-          icon={<Users className="w-7 h-7 text-primary" />} 
-          color="bg-primary/10"
+          icon={<Users className="w-7 h-7 text-tint-purple-fg" />} 
+          cardClass="bg-tint-purple text-tint-purple-fg border-tint-purple-border"
+          badge="Active Students"
         />
         <StatCard 
           title="Study Notes" 
           value={stats.totalNotes.toLocaleString()} 
-          icon={<FileText className="w-7 h-7 text-accent-emerald" />} 
-          color="bg-accent-emerald/10"
+          icon={<FileText className="w-7 h-7 text-tint-green-fg" />} 
+          cardClass="bg-tint-green text-tint-green-fg border-tint-green-border"
+          badge="Curated Library"
         />
         <StatCard 
           title="Exam Questions" 
           value={stats.totalQuestions.toLocaleString()} 
-          icon={<BrainCircuit className="w-7 h-7 text-accent-gold" />} 
-          color="bg-accent-gold/10"
+          icon={<BrainCircuit className="w-7 h-7 text-tint-peach-fg" />} 
+          cardClass="bg-tint-peach text-tint-peach-fg border-tint-peach-border"
+          badge="EUEE & Freshman"
         />
         <StatCard 
           title="Premium Users" 
           value={stats.totalPremium.toLocaleString()} 
-          icon={<Zap className="w-7 h-7 text-accent-purple" />} 
-          color="bg-accent-purple/10"
+          icon={<Zap className="w-7 h-7 text-tint-sky-fg" />} 
+          cardClass="bg-tint-sky text-tint-sky-fg border-tint-sky-border"
+          badge="VIP Subscribers"
         />
       </div>
 
       {/* Gemini AI Engine Spotlight */}
-      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-tactile-sm mb-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-black/[0.06] dark:border-white/[0.08]">
+      <div className="bg-tint-cream text-tint-cream-fg border-2 border-b-[4px] border-tint-cream-border rounded-3xl p-6 md:p-8 shadow-tactile-sm mb-8 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-tint-cream-border/50">
           <div>
             <div className="flex items-center gap-2">
-              <Bot className="w-5 h-5 text-accent" />
-              <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
+              <div className="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center shadow-xs">
+                <Bot className="w-4 h-4" />
+              </div>
+              <h2 className="text-xl font-black tracking-tight">
                 Gemini &amp; AI Operations Engine
               </h2>
             </div>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm font-semibold opacity-80 mt-1">
               Live telemetry for Gemini 3.6 Flash key rotation, student inquiry quotas, and cache savings.
             </p>
           </div>
           <Link
             href="/admin/ai"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-tactile-sm shrink-0"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary hover:bg-orange-600 active:translate-y-0.5 active:border-b-2 text-white font-black text-xs uppercase tracking-wider transition-all border-2 border-b-[4px] border-orange-700 shadow-md shadow-orange-500/20 shrink-0"
           >
             <span>Open AI Telemetry</span>
             <ArrowRight className="w-4 h-4" />
@@ -84,42 +90,42 @@ export default async function AdminDashboard() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-4 rounded-2xl bg-ground/50 border border-black/[0.06] dark:border-white/[0.08]">
-            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-              <Key className="w-4 h-4 text-accent" />
+          <div className="p-5 rounded-2xl bg-white/80 dark:bg-black/30 border-2 border-b-[4px] border-tint-cream-border/60 shadow-2xs">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider opacity-75 mb-1.5">
+              <Key className="w-4 h-4 text-primary" />
               <span>Key Pool Health</span>
             </div>
-            <p className="text-2xl font-black text-gray-900 dark:text-gray-100 tabular-nums">
+            <p className="text-3xl font-black tabular-nums">
               {aiStats?.keyDetails.activeKeys ?? 0} / {aiStats?.keyDetails.totalKeys ?? 0}
             </p>
-            <p className="text-caption font-semibold text-accent-emerald mt-1 flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
+            <p className="text-caption font-black text-emerald-600 dark:text-emerald-400 mt-1.5 flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
               All configured keys active
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-ground/50 border border-primary/10">
-            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+          <div className="p-5 rounded-2xl bg-white/80 dark:bg-black/30 border-2 border-b-[4px] border-tint-cream-border/60 shadow-2xs">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider opacity-75 mb-1.5">
               <Sparkles className="w-4 h-4 text-primary" />
               <span>Weekly Inquiries</span>
             </div>
-            <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
+            <p className="text-3xl font-black tabular-nums">
               {aiStats?.usage.totalWeeklyInquiries.toLocaleString() ?? '0'}
             </p>
-            <p className="text-caption font-semibold text-gray-400 mt-1">
-              {aiStats?.usage.activeAiUsersCount ?? 0} students used AI this cycle
+            <p className="text-caption font-semibold opacity-70 mt-1.5">
+              {aiStats?.usage.activeAiUsersCount ?? 0} students queried Teme
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-ground/50 border border-primary/10">
-            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-              <Database className="w-4 h-4 text-accent-emerald" />
+          <div className="p-5 rounded-2xl bg-white/80 dark:bg-black/30 border-2 border-b-[4px] border-tint-cream-border/60 shadow-2xs">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider opacity-75 mb-1.5">
+              <Database className="w-4 h-4 text-emerald-600" />
               <span>Cache Savings</span>
             </div>
-            <p className="text-2xl font-black text-gray-900 dark:text-gray-100">
+            <p className="text-3xl font-black tabular-nums">
               {aiStats?.cache.totalCached.toLocaleString() ?? '0'}
             </p>
-            <p className="text-caption font-semibold text-accent-emerald mt-1">
+            <p className="text-caption font-black text-emerald-600 dark:text-emerald-400 mt-1.5">
               ~{((aiStats?.cache.estimatedTokensSaved ?? 0) / 1000).toFixed(1)}k tokens served free
             </p>
           </div>
@@ -129,15 +135,32 @@ export default async function AdminDashboard() {
   );
 }
 
-function StatCard({ title, value, icon, color }: { title: string, value: string, icon: React.ReactNode, color: string }) {
+function StatCard({ 
+  title, 
+  value, 
+  icon, 
+  cardClass, 
+  badge 
+}: { 
+  title: string; 
+  value: string; 
+  icon: React.ReactNode; 
+  cardClass: string; 
+  badge: string;
+}) {
   return (
-    <div className="bg-card border-2 border-primary/10 rounded-3xl p-6 flex items-center gap-6 shadow-sm hover:shadow-md transition-shadow">
-      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 ${color}`}>
-        {icon}
+    <div className={`border-2 border-b-[4px] rounded-3xl p-6 flex flex-col justify-between shadow-tactile-xs hover:-translate-y-0.5 active:translate-y-0 transition-all ${cardClass}`}>
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <div className="w-13 h-13 rounded-2xl bg-white/80 dark:bg-black/30 border border-white/60 dark:border-white/10 flex items-center justify-center shrink-0 shadow-2xs">
+          {icon}
+        </div>
+        <span className="text-micro font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/60 dark:bg-black/20 border border-current/10">
+          {badge}
+        </span>
       </div>
       <div>
-        <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">{title}</p>
-        <p className="text-4xl font-black text-gray-900 dark:text-gray-100 leading-none">{value}</p>
+        <p className="text-xs font-black uppercase tracking-wider opacity-75 mb-1">{title}</p>
+        <p className="text-3xl md:text-4xl font-black tracking-tight leading-none">{value}</p>
       </div>
     </div>
   );

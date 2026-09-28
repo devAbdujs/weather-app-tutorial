@@ -12,13 +12,13 @@ export default async function AdminQuestionsPage() {
           <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Question Bank</h1>
           <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">Showing the latest 100 questions from the database.</p>
         </div>
-        <div className="bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 px-4 py-2 rounded-xl font-bold flex items-center gap-2">
+        <div className="bg-tint-green text-tint-green-fg border-2 border-b-[3px] border-tint-green-border px-4 py-2 rounded-2xl font-black flex items-center gap-2 shadow-2xs">
           <BookOpen className="w-5 h-5" />
           <span className="tabular-nums">{questions.length} Questions</span>
         </div>
       </header>
 
-      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden">
+      <div className="bg-white dark:bg-[#1A222D] border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -40,7 +40,7 @@ export default async function AdminQuestionsPage() {
                     {q.subject}
                   </td>
                   <td className="p-4">
-                    <span className="px-2 py-1 bg-primary/5 text-gray-900 dark:text-gray-100 rounded-lg text-xs font-bold border border-primary/10 uppercase tracking-wider">
+                    <span className="px-2.5 py-1 bg-tint-peach text-tint-peach-fg rounded-xl text-xs font-black border border-tint-peach-border uppercase tracking-wider">
                       {q.exam_type}
                     </span>
                   </td>

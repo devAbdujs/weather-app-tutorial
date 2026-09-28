@@ -434,17 +434,17 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
             const isCorrect = isRevealed && normalizedAns ? letter === normalizedAns : false;
             const isWrongSelected = isRevealed && isSelected && normalizedAns ? letter !== normalizedAns : false;
 
-            let cls = 'bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] text-gray-800 dark:text-gray-200 hover:border-primary/40 active:translate-y-[1px] shadow-tactile-xs';
+            let cls = 'bg-card border-2 border-black/[0.08] dark:border-white/[0.08] border-b-[4px] border-b-black/[0.14] dark:border-b-white/[0.16] text-gray-800 dark:text-gray-200 hover:border-primary/50 active:translate-y-[2px] transition-all shadow-tactile-xs';
             
-            if (isSelected) cls = 'bg-primary/10 border border-primary border-b-bevel border-b-primary text-gray-900 dark:text-gray-100 font-bold active:translate-y-[1px] shadow-tactile-xs';
+            if (isSelected) cls = 'bg-orange-500/10 dark:bg-orange-950/30 border-2 border-primary border-b-[4px] border-b-orange-600 text-gray-900 dark:text-gray-100 font-bold active:translate-y-[2px] shadow-tactile-xs';
             
             if (isRevealed) {
               if (isCorrect) {
-                cls = 'bg-accent-emerald/15 border border-accent-emerald border-b-bevel border-b-emerald-600 text-accent-emerald font-black shadow-tactile-xs';
+                cls = 'bg-tint-green text-tint-green-fg border-2 border-emerald-500 border-b-[4px] border-b-emerald-700 font-black shadow-tactile-xs';
               } else if (isWrongSelected) {
-                cls = 'bg-accent-rose/15 border border-accent-rose border-b-bevel border-b-rose-600 text-accent-rose font-black shadow-tactile-xs';
+                cls = 'bg-tint-rose text-tint-rose-fg border-2 border-rose-500 border-b-[4px] border-b-rose-700 font-black shadow-tactile-xs';
               } else if (isSelected && !normalizedAns) {
-                cls = 'bg-primary/10 border border-primary border-b-bevel border-b-primary text-gray-900 dark:text-gray-100 shadow-tactile-xs font-bold';
+                cls = 'bg-orange-500/10 border-2 border-primary border-b-[4px] border-b-primary text-gray-900 dark:text-gray-100 shadow-tactile-xs font-bold';
               } else {
                 cls = 'bg-card/40 border border-black/[0.04] dark:border-white/[0.04] text-gray-400 dark:text-gray-500 opacity-40';
               }
@@ -453,34 +453,39 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
             return (
               <button
                 key={letter}
-                onClick={() => (!isReviewMode && (isSimulator || !isAnswered)) && handleSelectOption(letter as any)}
+                onClick={() => {
+                  if (!isReviewMode && (isSimulator || !isAnswered)) {
+                    sounds.playTap();
+                    handleSelectOption(letter as any);
+                  }
+                }}
                 disabled={isReviewMode || (!isSimulator && isAnswered)}
-                className={`w-full flex items-center justify-between gap-3.5 p-3.5 rounded-card-sm transition-all duration-150 text-left ${cls}`}
+                className={`w-full flex items-center justify-between gap-3.5 p-4 rounded-2xl transition-all duration-150 text-left ${cls}`}
               >
                 <div className="flex items-start gap-3.5 flex-1 min-w-0">
-                  <div className={`w-8 h-8 rounded-control flex items-center justify-center shrink-0 text-sm font-black transition-colors duration-200 ${
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-sm font-black transition-colors duration-150 shadow-2xs ${
                     isRevealed && isCorrect 
-                      ? 'bg-accent-emerald text-white' 
+                      ? 'bg-emerald-600 text-white' 
                       : isRevealed && isWrongSelected 
-                      ? 'bg-accent-rose text-white' 
+                      ? 'bg-rose-600 text-white' 
                       : isSelected 
                       ? 'bg-primary text-white shadow-tactile-xs' 
-                      : 'bg-black/5 dark:bg-white/[0.06] text-gray-700 dark:text-gray-300'
+                      : 'bg-[#F3F0EA] dark:bg-white/[0.08] text-gray-800 dark:text-gray-200'
                   }`}>
                     {letter}
                   </div>
-                  <span className="text-sm leading-relaxed flex-1 font-medium whitespace-pre-wrap self-center"><MathText content={opt} /></span>
+                  <span className="text-sm leading-relaxed flex-1 font-semibold whitespace-pre-wrap self-center"><MathText content={opt} /></span>
                 </div>
 
                 {isRevealed && isCorrect && (
                   <div className="flex items-center gap-1.5 shrink-0 self-center">
-                    <span className="text-micro font-black px-2 py-0.5 rounded-full bg-accent-emerald/20 text-accent-emerald">+10 XP</span>
-                    <CheckCircle2 className="w-5 h-5 text-accent-emerald" />
+                    <span className="text-micro font-black px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300">+10 XP</span>
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
                 )}
 
                 {isRevealed && isWrongSelected && (
-                  <XCircle className="w-5 h-5 text-accent-rose shrink-0 self-center" />
+                  <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 self-center" />
                 )}
               </button>
             );
@@ -489,35 +494,35 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
         {(!isSimulator || isReviewMode) && (isAnswered || isReviewMode) && (
           <div className="pt-2 pb-4 animate-fade-up">
-            <div className="bg-accent-gold/[0.06] border border-accent-gold/20 rounded-card p-4.5">
+            <div className="bg-tint-cream text-tint-cream-fg border border-tint-cream-border rounded-3xl p-5 shadow-xs relative overflow-hidden">
               <div className="flex items-start gap-3 mb-3">
                 {currentQ?.answer?.trim() ? (
                   <>
-                    <div className="bg-accent-emerald/15 text-accent-emerald rounded-control p-1.5 shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4" />
+                    <div className="bg-white/80 dark:bg-black/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50 rounded-2xl p-2 shrink-0 shadow-2xs">
+                      <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <div>
-                      <span className="text-micro font-bold text-accent-gold uppercase tracking-widest block mb-0.5">Correct Answer</span>
-                      <p className="text-base font-black text-gray-900 dark:text-gray-100">{currentQ.answer.trim().toUpperCase()}</p>
+                      <span className="text-micro font-bold uppercase tracking-widest block opacity-75 mb-0.5">Verified Correct Key</span>
+                      <p className="text-lg font-black">{currentQ.answer.trim().toUpperCase()}</p>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="bg-accent-gold/15 text-accent-gold rounded-control p-1.5 shrink-0 mt-0.5">
-                      <Sparkles className="w-4 h-4" />
+                    <div className="bg-white/80 dark:bg-black/30 text-primary border border-orange-200/50 rounded-2xl p-2 shrink-0 shadow-2xs">
+                      <Sparkles className="w-5 h-5" />
                     </div>
                     <div>
-                      <span className="text-micro font-bold text-accent-gold uppercase tracking-widest block mb-0.5">No Key Provided</span>
-                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Tap <strong className="text-gray-900 dark:text-gray-100">Ask AI</strong> below for a step-by-step solution.</p>
+                      <span className="text-micro font-bold uppercase tracking-widest block opacity-75 mb-0.5">No Key Provided</span>
+                      <p className="text-xs font-semibold">Tap <strong className="text-primary font-black">Ask AI</strong> below for step-by-step guidance.</p>
                     </div>
                   </>
                 )}
               </div>
 
               {currentQ.explanation ? (
-                <div className="pl-9 mt-3 border-t border-accent-gold/15 pt-3">
-                  <span className="text-micro font-bold text-accent-gold uppercase tracking-widest block mb-1.5">Explanation</span>
-                  <div className="text-sm text-gray-800 dark:text-gray-200 font-medium leading-relaxed whitespace-pre-wrap">
+                <div className="mt-3 border-t border-black/[0.06] dark:border-white/[0.08] pt-3">
+                  <span className="text-micro font-black uppercase tracking-widest block opacity-75 mb-1.5">Official Explanation</span>
+                  <div className="text-sm font-medium leading-relaxed whitespace-pre-wrap">
                     <MathText content={currentQ.explanation} />
                   </div>
                 </div>

@@ -14,13 +14,13 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
           <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">User Management</h1>
           <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">View and manage all registered students.</p>
         </div>
-        <div className="bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-xl font-bold flex items-center gap-2">
+        <div className="bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-tint-sky-border px-4 py-2 rounded-2xl font-black flex items-center gap-2 shadow-2xs">
           <Users className="w-5 h-5" />
           <span className="tabular-nums">{total} Total</span>
         </div>
       </header>
 
-      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden flex flex-col">
+      <div className="bg-white dark:bg-[#1A222D] border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden flex flex-col">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -36,7 +36,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
                 <tr key={user.id} className="border-b border-black/[0.04] dark:border-white/[0.04] hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                      <div className="w-10 h-10 rounded-2xl bg-tint-peach text-tint-peach-fg font-black text-sm flex items-center justify-center shadow-2xs">
                         {user.full_name?.charAt(0).toUpperCase() || '?'}
                       </div>
                       <div>
@@ -47,7 +47,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
                   </td>
                   <td className="p-4">
                     {user.target_exam ? (
-                      <span className="px-2 py-1 bg-primary/5 text-gray-900 dark:text-gray-100 rounded-lg text-xs font-bold border border-primary/10">
+                      <span className="px-2.5 py-1 bg-tint-green text-tint-green-fg rounded-xl text-xs font-black border border-tint-green-border">
                         {user.target_exam}
                       </span>
                     ) : (

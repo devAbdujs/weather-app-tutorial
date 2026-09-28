@@ -142,99 +142,99 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
         </div>
       </header>
 
-      {/* Top Metric Cards */}
+      {/* Top Metric Cards with Centralized Pastel Tokens */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 shadow-tactile-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+        <div className="bg-tint-peach text-tint-peach-fg border-2 border-b-[4px] border-tint-peach-border rounded-3xl p-6 shadow-tactile-xs flex items-center gap-5 hover:-translate-y-0.5 transition-all">
+          <div className="w-14 h-14 rounded-2xl bg-white/80 dark:bg-black/30 border border-white/60 dark:border-white/10 text-tint-peach-fg flex items-center justify-center shrink-0 shadow-2xs">
             <Bot className="w-7 h-7" />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-              Weekly AI Inquiries
+            <p className="text-xs font-black uppercase tracking-wider opacity-75 mb-1">
+              Weekly Inquiries
             </p>
-            <p className="text-3xl font-black text-gray-900 dark:text-gray-100 leading-none tabular-nums">
+            <p className="text-3xl font-black leading-none tabular-nums">
               {stats.usage.totalWeeklyInquiries.toLocaleString()}
             </p>
-            <p className="text-caption font-semibold text-gray-400 mt-1">
+            <p className="text-caption font-semibold opacity-70 mt-1">
               Across {stats.usage.activeAiUsersCount} active students
             </p>
           </div>
         </div>
 
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 shadow-tactile-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-accent-emerald/10 text-accent-emerald flex items-center justify-center shrink-0">
+        <div className="bg-tint-green text-tint-green-fg border-2 border-b-[4px] border-tint-green-border rounded-3xl p-6 shadow-tactile-xs flex items-center gap-5 hover:-translate-y-0.5 transition-all">
+          <div className="w-14 h-14 rounded-2xl bg-white/80 dark:bg-black/30 border border-white/60 dark:border-white/10 text-tint-green-fg flex items-center justify-center shrink-0 shadow-2xs">
             <Database className="w-7 h-7" />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+            <p className="text-xs font-black uppercase tracking-wider opacity-75 mb-1">
               Cached Answers
             </p>
-            <p className="text-3xl font-black text-gray-900 dark:text-gray-100 leading-none tabular-nums">
+            <p className="text-3xl font-black leading-none tabular-nums">
               {stats.cache.totalCached.toLocaleString()}
             </p>
-            <p className="text-caption font-semibold text-accent-emerald mt-1">
-              ~{(stats.cache.estimatedTokensSaved / 1000).toFixed(1)}k tokens saved (0 Cost)
+            <p className="text-caption font-black text-emerald-700 dark:text-emerald-300 mt-1">
+              ~{(stats.cache.estimatedTokensSaved / 1000).toFixed(1)}k tokens (0 Cost)
             </p>
           </div>
         </div>
 
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 shadow-tactile-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-accent-purple/10 text-accent-purple flex items-center justify-center shrink-0">
+        <div className="bg-tint-rose text-tint-rose-fg border-2 border-b-[4px] border-tint-rose-border rounded-3xl p-6 shadow-tactile-xs flex items-center gap-5 hover:-translate-y-0.5 transition-all">
+          <div className="w-14 h-14 rounded-2xl bg-white/80 dark:bg-black/30 border border-white/60 dark:border-white/10 text-tint-rose-fg flex items-center justify-center shrink-0 shadow-2xs">
             <Camera className="w-7 h-7" />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+            <p className="text-xs font-black uppercase tracking-wider opacity-75 mb-1">
               Receipts Scanned
             </p>
-            <p className="text-3xl font-black text-gray-900 dark:text-gray-100 leading-none tabular-nums">
+            <p className="text-3xl font-black leading-none tabular-nums">
               {stats.vision.totalScanned.toLocaleString()}
             </p>
-            <p className="text-caption font-semibold text-error mt-1">
+            <p className="text-caption font-black text-rose-700 dark:text-rose-300 mt-1">
               {stats.vision.flaggedCount} flagged suspicious
             </p>
           </div>
         </div>
 
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 shadow-tactile-sm flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-accent/15 text-accent flex items-center justify-center shrink-0">
+        <div className="bg-tint-sky text-tint-sky-fg border-2 border-b-[4px] border-tint-sky-border rounded-3xl p-6 shadow-tactile-xs flex items-center gap-5 hover:-translate-y-0.5 transition-all">
+          <div className="w-14 h-14 rounded-2xl bg-white/80 dark:bg-black/30 border border-white/60 dark:border-white/10 text-tint-sky-fg flex items-center justify-center shrink-0 shadow-2xs">
             <Key className="w-7 h-7" />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+            <p className="text-xs font-black uppercase tracking-wider opacity-75 mb-1">
               Pool Throughput
             </p>
-            <p className="text-3xl font-black text-gray-900 dark:text-gray-100 leading-none tabular-nums">
-              {rpmCapacity} <span className="text-lg font-bold text-gray-400">RPM</span>
+            <p className="text-3xl font-black leading-none tabular-nums">
+              {rpmCapacity} <span className="text-lg font-bold opacity-60">RPM</span>
             </p>
-            <p className="text-caption font-semibold text-gray-400 mt-1">
-              ~{dailyCapacity.toLocaleString()} requests/day capacity
+            <p className="text-caption font-semibold opacity-70 mt-1">
+              ~{dailyCapacity.toLocaleString()} requests/day
             </p>
           </div>
         </div>
       </div>
 
       {/* Gemini Key Pool Telemetry */}
-      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 md:p-8 shadow-tactile-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-black/[0.06] dark:border-white/[0.08]">
+      <div className="bg-tint-cream text-tint-cream-fg border-2 border-b-[4px] border-tint-cream-border rounded-3xl p-6 md:p-8 shadow-tactile-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-tint-cream-border/50">
           <div>
             <div className="flex items-center gap-2">
-              <Key className="w-5 h-5 text-accent" />
-              <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
+              <Key className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-black tracking-tight">
                 Gemini Key Rotation Pool ({stats.keyDetails.totalKeys} Keys Configured)
               </h2>
             </div>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm font-semibold opacity-80 mt-1">
               Round-robin load balancer dynamically distributes AI Tutor requests with automatic 60s 429 backoff.
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-accent-emerald">
-              <span className="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse" />
+            <div className="flex items-center gap-1.5 text-xs font-black text-emerald-700 dark:text-emerald-300 bg-white/70 dark:bg-black/30 px-3 py-1.5 rounded-full border border-emerald-500/20">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
               {stats.keyDetails.activeKeys} Ready
             </div>
             {stats.keyDetails.coolingDownKeys > 0 && (
-              <div className="flex items-center gap-1.5 text-xs font-bold text-accent-gold">
-                <span className="w-2.5 h-2.5 rounded-full bg-accent-gold animate-ping" />
+              <div className="flex items-center gap-1.5 text-xs font-black text-amber-700 dark:text-amber-300 bg-white/70 dark:bg-black/30 px-3 py-1.5 rounded-full border border-amber-500/20">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping" />
                 {stats.keyDetails.coolingDownKeys} Cooling Down
               </div>
             )}
@@ -245,27 +245,27 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
           {stats.keyDetails.keys.map(k => (
             <div 
               key={k.index} 
-              className={`p-4 rounded-2xl border transition-all ${
+              className={`p-4 rounded-2xl border-2 border-b-[3px] transition-all shadow-2xs ${
                 k.status === 'ready' 
-                  ? 'border-accent-emerald/20 bg-accent-emerald/5 hover:border-accent-emerald/40' 
-                  : 'border-accent-gold/30 bg-accent-gold/5'
+                  ? 'border-emerald-500/40 bg-white/85 dark:bg-black/30 text-gray-900 dark:text-gray-100 hover:border-emerald-500' 
+                  : 'border-amber-500/40 bg-tint-peach text-tint-peach-fg'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                <span className="text-xs font-black uppercase tracking-wider">
                   Key #{k.index}
                 </span>
                 {k.status === 'ready' ? (
-                  <span className="inline-flex items-center gap-1 text-caption font-bold text-accent-emerald bg-accent-emerald/10 px-2 py-0.5 rounded-md">
+                  <span className="inline-flex items-center gap-1 text-micro font-black text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full">
                     <CheckCircle2 className="w-3 h-3" /> Ready
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-caption font-bold text-accent-gold bg-accent-gold/10 px-2 py-0.5 rounded-md">
+                  <span className="inline-flex items-center gap-1 text-micro font-black text-amber-700 dark:text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full">
                     <Clock className="w-3 h-3" /> Cooldown ({k.cooldownRemainingSeconds}s)
                   </span>
                 )}
               </div>
-              <p className="font-mono text-xs text-gray-500 dark:text-gray-400 truncate">
+              <p className="font-mono text-xs opacity-75 truncate">
                 {k.maskedKey}
               </p>
             </div>
@@ -392,38 +392,38 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
       {/* Two Column Grid: Recent Vision Scans & Cache Samples */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gemini Vision Scans */}
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 shadow-tactile-sm">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-black/[0.06] dark:border-white/[0.08]">
-            <h3 className="font-black text-base text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Camera className="w-4 h-4 text-accent-purple" />
-              Recent Gemini Vision Verifications
+        <div className="bg-tint-purple text-tint-purple-fg border-2 border-b-[4px] border-tint-purple-border rounded-3xl p-6 shadow-tactile-sm">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-tint-purple-border/50">
+            <h3 className="font-black text-base flex items-center gap-2">
+              <Camera className="w-4 h-4 text-tint-purple-fg" />
+              Recent Vision Verifications
             </h3>
-            <span className="text-xs font-bold text-gray-400">Latest {stats.vision.recentScans.length}</span>
+            <span className="text-xs font-black uppercase tracking-wider opacity-70">Latest {stats.vision.recentScans.length}</span>
           </div>
 
           <div className="space-y-3">
             {stats.vision.recentScans.length === 0 ? (
-              <p className="text-xs text-gray-400 py-6 text-center">No receipts processed with Gemini Vision yet.</p>
+              <p className="text-xs font-semibold opacity-70 py-6 text-center">No receipts processed with Gemini Vision yet.</p>
             ) : (
               stats.vision.recentScans.slice(0, 5).map(s => (
-                <div key={s.id} className="p-3.5 rounded-2xl bg-ground/60 border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between gap-3">
+                <div key={s.id} className="p-3.5 rounded-2xl bg-white/80 dark:bg-black/30 border-2 border-b-[3px] border-tint-purple-border/50 flex items-center justify-between gap-3 shadow-2xs">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-black text-gray-900 dark:text-gray-100">
+                      <span className="text-xs font-black">
                         {s.gemini_amount || 'Unrecognized amount'}
                       </span>
                       {s.gemini_flagged && (
-                        <span className="text-micro font-bold px-1.5 py-0.5 rounded bg-error/10 text-error border border-error/20">
+                        <span className="text-micro font-black px-1.5 py-0.5 rounded-full bg-rose-500/20 text-rose-800 dark:text-rose-300 border border-rose-500/30">
                           Suspicious
                         </span>
                       )}
                     </div>
-                    <p className="text-caption text-gray-500 mt-0.5">
+                    <p className="text-caption opacity-70 mt-0.5 font-medium">
                       Sender: {s.gemini_sender || 'Unknown'} · {new Date(s.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <span className={`text-micro font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                    s.status === 'approved' ? 'bg-accent-emerald/10 text-accent-emerald' : 'bg-accent-gold/10 text-accent-gold'
+                  <span className={`text-micro font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${
+                    s.status === 'approved' ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30'
                   }`}>
                     {s.status}
                   </span>
@@ -434,30 +434,30 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
         </div>
 
         {/* AI Cache Entries */}
-        <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl p-6 shadow-tactile-sm">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-black/[0.06] dark:border-white/[0.08]">
-            <h3 className="font-black text-base text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Database className="w-4 h-4 text-accent-emerald" />
+        <div className="bg-tint-sky text-tint-sky-fg border-2 border-b-[4px] border-tint-sky-border rounded-3xl p-6 shadow-tactile-sm">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-tint-sky-border/50">
+            <h3 className="font-black text-base flex items-center gap-2">
+              <Database className="w-4 h-4 text-tint-sky-fg" />
               Cached Question Explanations
             </h3>
-            <span className="text-xs font-bold text-gray-400">Total: {stats.cache.totalCached}</span>
+            <span className="text-xs font-black uppercase tracking-wider opacity-70">Total: {stats.cache.totalCached}</span>
           </div>
 
           <div className="space-y-3">
             {stats.cache.recentEntries.length === 0 ? (
-              <p className="text-xs text-gray-400 py-6 text-center">No AI explanations cached yet.</p>
+              <p className="text-xs font-semibold opacity-70 py-6 text-center">No AI explanations cached yet.</p>
             ) : (
               stats.cache.recentEntries.slice(0, 5).map((c, idx) => (
-                <div key={idx} className="p-3.5 rounded-2xl bg-ground/60 border border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between gap-3">
+                <div key={idx} className="p-3.5 rounded-2xl bg-white/80 dark:bg-black/30 border-2 border-b-[3px] border-tint-sky-border/50 flex items-center justify-between gap-3 shadow-2xs">
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">
+                    <p className="text-xs font-bold truncate">
                       Q: {c.question_id}
                     </p>
-                    <p className="text-caption text-gray-500 mt-0.5">
-                      Type: <span className="font-mono text-primary font-bold">{c.prompt_type}</span> · Cached: {new Date(c.created_at).toLocaleDateString()}
+                    <p className="text-caption opacity-70 mt-0.5 font-medium">
+                      Type: <span className="font-mono font-black text-primary">{c.prompt_type}</span> · Cached: {new Date(c.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <span className="text-micro font-black uppercase tracking-wider px-2 py-0.5 rounded bg-accent-emerald/10 text-accent-emerald shrink-0">
+                  <span className="text-micro font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 shrink-0">
                     0 Tokens
                   </span>
                 </div>

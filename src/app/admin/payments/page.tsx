@@ -15,13 +15,13 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
           <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Payments Queue</h1>
           <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">Review and approve manual payment receipts.</p>
         </div>
-        <div className="bg-accent-purple/10 text-accent-purple px-4 py-2 rounded-xl font-bold flex items-center gap-2 border border-accent-purple/20">
+        <div className="bg-tint-purple text-tint-purple-fg px-4 py-2 rounded-2xl font-black flex items-center gap-2 border-2 border-b-[3px] border-tint-purple-border shadow-2xs">
           <CreditCard className="w-5 h-5" />
           <span className="tabular-nums">{total} Pending</span>
         </div>
       </header>
 
-      <div className="bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden flex flex-col">
+      <div className="bg-white dark:bg-[#1A222D] border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden flex flex-col">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -58,7 +58,7 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
                       href={payment.receipt_url} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-lg text-xs font-bold hover:bg-primary/20 transition-colors shadow-tactile-sm"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-tint-peach text-tint-peach-fg border-2 border-b-[3px] border-tint-peach-border rounded-xl text-xs font-black hover:opacity-90 active:translate-y-0.5 active:border-b transition-all shadow-2xs"
                     >
                       <ImageIcon className="w-3.5 h-3.5" /> View Receipt <ExternalLink className="w-3 h-3" />
                     </a>
