@@ -12,7 +12,7 @@ import {
   Landmark, Users, HeartHandshake, Terminal, Settings2, 
   Server, Database, Building2, Wrench, Zap, Coins, 
   Briefcase, Scale, Stethoscope, Pill, FlaskConical,
-  Atom, Dna, ArrowUpRight, Star, Bookmark, Download, ScrollText
+  Atom, Dna, ArrowUpRight, ArrowRight, Star, Bookmark, Download, ScrollText
 } from 'lucide-react';
 
 export const getSubjectTheme = (name: string) => {
@@ -211,81 +211,84 @@ export const PracticeHub = () => {
 
   const subjects = getSubjectList();
 
+  const [savedSubjects, setSavedSubjects] = useState<string[]>([]);
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('temari_saved_subjects');
+      if (stored) setSavedSubjects(JSON.parse(stored));
+    } catch {}
+  }, []);
+
+  const toggleSave = (subjectId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    sounds.playTap();
+    haptic.selection();
+    setSavedSubjects(prev => {
+      const next = prev.includes(subjectId) ? prev.filter(s => s !== subjectId) : [...prev, subjectId];
+      try { localStorage.setItem('temari_saved_subjects', JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  const displayedSubjects = filterMode === 'saved' 
+    ? subjects.filter(s => savedSubjects.includes(s.id))
+    : subjects;
+
   return (
     <div className="flex flex-col pt-safe pb-28 animate-fade-in max-w-lg mx-auto w-full">
 
-      {/* ── 1. HEADER (ui_inspiration1.png) ── */}
+      {/* ── 1. CLEAN HEADER ── */}
       <div className="px-5 pt-3 pb-2 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none">
-            My <span className="text-primary">Library</span>
+            Practice
           </h1>
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-            Track your questions and saved solutions
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
+            <span>{profileStream}</span>
           </p>
         </div>
       </div>
 
-      {/* ── 2. TOP STAT BOXES (ui_inspiration1.png) ── */}
-      <div className="px-5 grid grid-cols-2 gap-3 mt-2 mb-4">
-        {/* Questions Asked Box (Cyan Pastel) */}
-        <div className="bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-tint-sky-border rounded-2xl p-4 flex items-center gap-4 shadow-2xs">
-          <div className="text-3xl font-black font-mono leading-none">
-            32
-          </div>
-          <div className="text-xs font-black uppercase tracking-wider leading-tight">
-            Questions<br />Asked
-          </div>
-        </div>
-
-        {/* Solutions Saved Box (Peach/Amber Pastel) */}
-        <div className="bg-tint-peach text-tint-peach-fg border-2 border-b-[3px] border-tint-peach-border rounded-2xl p-4 flex items-center gap-4 shadow-2xs">
-          <div className="text-3xl font-black font-mono leading-none">
-            18
-          </div>
-          <div className="text-xs font-black uppercase tracking-wider leading-tight">
-            Solutions<br />Saved
-          </div>
-        </div>
-      </div>
-
-      {/* ── 3. SEGMENTED TOGGLE (ui_inspiration1.png: "My Questions" / "Saved") ── */}
-      <div className="px-5 mb-4">
+      {/* ── 2. SEGMENTED TABS (ui_inspiration1.png) ── */}
+      <div className="px-5 mb-3.5">
         <div className="p-1 bg-[#F0EBE5] dark:bg-[#18202C] border-2 border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center shadow-inner">
           <button
             onClick={() => { sounds.playTap(); haptic.selection(); setFilterMode('all'); }}
             className={`
-              flex-1 py-2.5 rounded-full text-xs font-black transition-all duration-150
+              flex-1 py-2 rounded-full text-xs font-black transition-all duration-150 flex items-center justify-center gap-1.5
               ${filterMode === 'all'
                 ? 'bg-white dark:bg-[#10141D] text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
                 : 'text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white font-bold'}
             `}
           >
-            All Subjects
+            <span>All Subjects</span>
+            <span className="text-micro font-mono px-1.5 py-0.5 rounded-full bg-black/5 dark:bg-white/10">{subjects.length}</span>
           </button>
           <button
             onClick={() => { sounds.playTap(); haptic.selection(); setFilterMode('saved'); }}
             className={`
-              flex-1 py-2.5 rounded-full text-xs font-black transition-all duration-150
+              flex-1 py-2 rounded-full text-xs font-black transition-all duration-150 flex items-center justify-center gap-1.5
               ${filterMode === 'saved'
                 ? 'bg-white dark:bg-[#10141D] text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
                 : 'text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white font-bold'}
             `}
           >
-            Saved &amp; Starred
+            <Star className={`w-3.5 h-3.5 ${savedSubjects.length > 0 ? 'fill-amber-400 text-amber-400' : ''}`} />
+            <span>Saved ({savedSubjects.length})</span>
           </button>
         </div>
       </div>
 
       {/* Dev Mode Curriculum Override */}
       {devMode && (
-        <div className="px-5 mb-4">
+        <div className="px-5 mb-3.5">
           <div className="flex p-1 bg-panel border-2 border-black/[0.08] dark:border-white/[0.08] rounded-card-sm">
             {['entrance', 'freshman', 'exit'].map(tab => (
               <button
                 key={tab}
                 onClick={() => { sounds.playTap(); haptic.selection(); setActiveTab(tab); }}
-                className={`flex-1 py-2 text-xs font-black capitalize rounded-btn transition-all ${
+                className={`flex-1 py-1.5 text-xs font-black capitalize rounded-btn transition-all ${
                   activeTab === tab 
                     ? 'bg-white dark:bg-[#10141D] text-gray-950 dark:text-white shadow-tactile-xs border border-black/10' 
                     : 'text-gray-700 dark:text-gray-300 font-bold'
@@ -298,74 +301,74 @@ export const PracticeHub = () => {
         </div>
       )}
 
-      {/* ── 4. COLORFUL PASTEL SUBJECT CARDS (ui_inspiration1.png) ── */}
-      <div className="px-5 space-y-3.5">
-        {subjects.map((c) => {
-          const style = getSubjectCardStyle(c.id);
-
-          return (
-            <div
-              key={c.id}
-              onClick={() => navigate(targetExam || 'entrance', { subject: c.id })}
-              className={`
-                group relative p-5 rounded-3xl border-2 border-b-[4px] ${style.card}
-                shadow-tactile-xs hover:-translate-y-0.5
-                transition-all duration-150 cursor-pointer
-                active:translate-y-0 active:border-b-2
-                flex flex-col justify-between
-              `}
+      {/* ── 3. ICON-FIRST SUBJECT CARDS ── */}
+      <div className="px-5 space-y-2.5">
+        {displayedSubjects.length === 0 ? (
+          <div className="card-chunky p-8 text-center space-y-2">
+            <span className="text-3xl">⭐</span>
+            <h3 className="text-sm font-black text-gray-900 dark:text-gray-100">No saved subjects yet</h3>
+            <p className="text-xs font-bold text-gray-600 dark:text-gray-400">Tap the star on any subject to pin it here for quick access.</p>
+            <button
+              onClick={() => setFilterMode('all')}
+              className="text-xs font-black text-primary hover:underline pt-1 block mx-auto"
             >
-              {/* Top Row: White Pill Badge + Star Rating */}
-              <div className="flex items-center justify-between mb-2.5">
-                <span className={`px-3.5 py-1 rounded-full text-xs font-black shadow-2xs border ${style.badge}`}>
-                  {c.id}
-                </span>
+              Browse all subjects
+            </button>
+          </div>
+        ) : (
+          displayedSubjects.map((c) => {
+            const style = getSubjectCardStyle(c.id);
+            const IconComponent = c.Icon || BookOpen;
+            const isSaved = savedSubjects.includes(c.id);
 
-                <div className="flex items-center gap-1 bg-white/85 dark:bg-black/40 backdrop-blur-xs px-2.5 py-0.5 rounded-full text-xs font-black text-amber-700 dark:text-amber-300 border border-amber-400/30 shadow-2xs">
-                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                  <span>{style.star}</span>
+            return (
+              <div
+                key={c.id}
+                onClick={() => navigate(targetExam || 'entrance', { subject: c.id })}
+                className={`
+                  group relative p-4 rounded-3xl border-2 border-b-[4px] ${style.card}
+                  shadow-tactile-xs hover:-translate-y-0.5
+                  transition-all duration-150 cursor-pointer
+                  active:translate-y-0 active:border-b-2
+                  flex items-center justify-between gap-3.5
+                `}
+              >
+                {/* Left: Prominent Subject Icon */}
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs ${style.icon} border border-current/10`}>
+                    <IconComponent className="w-6 h-6 stroke-[2.4]" />
+                  </div>
+
+                  <div className="min-w-0">
+                    <h3 className="text-base font-black tracking-tight leading-snug truncate">
+                      {c.id}
+                    </h3>
+                    <p className="text-xs font-bold opacity-80 truncate mt-0.5">
+                      {style.topics}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right: Star Bookmark & Tactile Arrow */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={(e) => toggleSave(c.id, e)}
+                    aria-label={isSaved ? "Remove star" : "Star subject"}
+                    title={isSaved ? "Saved" : "Save subject"}
+                    className="w-9 h-9 rounded-2xl bg-white/80 dark:bg-black/40 border border-current/10 flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-2xs"
+                  >
+                    <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400 text-amber-400' : 'text-gray-400 dark:text-gray-500'}`} />
+                  </button>
+
+                  <div className="w-10 h-10 rounded-full bg-gray-950 text-white dark:bg-white dark:text-gray-950 border border-black/15 dark:border-white/15 flex items-center justify-center shrink-0 shadow-tactile-xs group-hover:scale-105 active:scale-95 transition-all">
+                    <ArrowRight className="w-4 h-4 stroke-[2.8]" />
+                  </div>
                 </div>
               </div>
-
-              {/* Middle Row: Title & Subtitle (High Contrast) */}
-              <div className="my-1.5 pr-2">
-                <h3 className="text-base font-black tracking-tight leading-snug">
-                  {c.id} — Complete Exam Syllabus
-                </h3>
-                <p className="text-xs font-bold opacity-90 mt-1 line-clamp-1">
-                  {style.topics}
-                </p>
-              </div>
-
-              {/* Bottom Row: Status Indicator & Pure Icon Buttons (ui_inspiration1.png) */}
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-current/10">
-                <span className="flex items-center gap-1.5 text-xs font-black">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Active Syllabus</span>
-                </span>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); sounds.playTap(); haptic.selection(); }}
-                    aria-label="Bookmark subject"
-                    title="Bookmark"
-                    className="w-9 h-9 rounded-2xl bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-800 dark:text-gray-200 hover:text-primary transition-all shadow-2xs active:scale-90"
-                  >
-                    <Bookmark className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); navigate(targetExam || 'entrance', { subject: c.id }); }}
-                    aria-label="Enter practice session"
-                    title="Start Practice"
-                    className="w-9 h-9 rounded-2xl bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 flex items-center justify-center text-primary hover:scale-105 transition-all shadow-2xs active:scale-90"
-                  >
-                    <Download className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </div>
   );

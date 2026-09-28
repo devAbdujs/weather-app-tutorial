@@ -189,24 +189,16 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
   return (
     <div className="flex flex-col pt-3 px-4 sm:px-5 pb-28 animate-fade-in bg-ground max-w-lg mx-auto w-full space-y-4">
       
-      {/* ── 1. HEADER (DISCIPLINED & TYPOGRAPHIC) ────────────────────── */}
+      {/* ── 1. HEADER ────────────────────── */}
       <header className="flex items-center justify-between pt-1">
         <div>
           <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none mb-1">
-            Exam Progress
+            Progress
           </h1>
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
             {examTrackTitle}
           </p>
         </div>
-
-        {profile?.daily_streak ? (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-accent-gold/15 text-accent-gold text-xs font-black border border-accent-gold/30 shadow-xs">
-            <Flame className="w-3.5 h-3.5 fill-current" />
-            <span className="font-mono">{profile.daily_streak}</span>
-            <span className="text-micro uppercase tracking-wider">days</span>
-          </div>
-        ) : null}
       </header>
 
       {/* ── 2. SCHOLAR LEVEL TIER CARD (DUOLINGO PROGRESSION) ───────── */}
@@ -249,18 +241,18 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         </div>
       </section>
 
-      {/* ── 3. TEME STUDY BUDDY GUIDANCE ───────────────────────────── */}
+      {/* ── 3. TEME GUIDANCE ───────────────────────────── */}
       <section>
         <MascotBubble
           mood={overallAccuracy >= 75 ? 'celebrating' : weakestSubject ? 'studying' : 'happy'}
-          mascotSize={60}
+          mascotSize={52}
           message={
             overallAccuracy >= 75 ? (
-              <span>🦁 Outstanding mastery! Your accuracy is sitting high at <strong>{overallAccuracy}%</strong>. Keep pushing to retain the knowledge!</span>
+              <span>High accuracy at <strong>{overallAccuracy}%</strong>! Keep the streak alive 🔥</span>
             ) : weakestSubject ? (
-              <span>🎯 Focus target: Practicing <strong>{weakestSubject.subject}</strong> will give you the fastest exam score boost right now!</span>
+              <span>Focus tip: Practicing <strong>{weakestSubject.subject}</strong> will boost your score fastest!</span>
             ) : (
-              <span>📚 Ready to level up? Solve your first set of past questions to begin your mastery journey!</span>
+              <span>Solve your first questions to unlock topic analytics!</span>
             )
           }
         />
@@ -272,84 +264,72 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         className="grid grid-cols-2 gap-3"
       >
         {/* Accuracy */}
-        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-card-sm p-3.5 shadow-tactile-sm flex flex-col justify-between space-y-2">
+        <div className="bg-tint-green text-tint-green-fg border-2 border-b-[3px] border-tint-green-border rounded-2xl p-3.5 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-micro font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-              <div className="w-6 h-6 rounded-lg bg-accent-emerald/15 text-accent-emerald flex items-center justify-center">
-                <Target className="w-3.5 h-3.5" />
-              </div>
-              Accuracy
-            </span>
-            <span className="text-micro font-bold text-slate-400 dark:text-slate-500 font-mono">
+            <div className="w-8 h-8 rounded-xl bg-white/80 dark:bg-black/40 flex items-center justify-center text-emerald-600 dark:text-emerald-300 shadow-2xs">
+              <Target className="w-4 h-4 stroke-[2.5]" />
+            </div>
+            <span className="text-micro font-black uppercase tracking-wider opacity-80 font-mono">
               {totalCorrect}/{totalAttempted}
             </span>
           </div>
-          <div>
-            <span className="text-2xl font-black font-mono tracking-tight text-gray-900 dark:text-gray-100 tabular-nums">
+          <div className="mt-2">
+            <span className="text-2xl font-black font-mono tracking-tight tabular-nums block">
               {overallAccuracy}%
             </span>
-            <p className="text-caption font-bold text-slate-500 dark:text-slate-400 mt-0.5">
-              correct answers
-            </p>
+            <span className="text-xs font-bold uppercase tracking-wider opacity-80 block">
+              Accuracy
+            </span>
           </div>
         </div>
 
-        {/* Total Questions */}
-        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-card-sm p-3.5 shadow-tactile-sm flex flex-col justify-between space-y-2">
+        {/* Total Questions Solved */}
+        <div className="bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-tint-sky-border rounded-2xl p-3.5 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-micro font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-              <div className="w-6 h-6 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
-                <BookOpen className="w-3.5 h-3.5" />
-              </div>
-              Solved
-            </span>
-            <span className="text-micro font-bold text-slate-400 dark:text-slate-500 font-mono">
-              {stats.length} sub
+            <div className="w-8 h-8 rounded-xl bg-white/80 dark:bg-black/40 flex items-center justify-center text-sky-600 dark:text-sky-300 shadow-2xs">
+              <BookOpen className="w-4 h-4 stroke-[2.5]" />
+            </div>
+            <span className="text-micro font-black uppercase tracking-wider opacity-80">
+              {stats.length} Subjects
             </span>
           </div>
-          <div>
-            <span className="text-2xl font-black font-mono tracking-tight text-gray-900 dark:text-gray-100 tabular-nums">
+          <div className="mt-2">
+            <span className="text-2xl font-black font-mono tracking-tight tabular-nums block">
               {totalAttempted}
             </span>
-            <p className="text-caption font-bold text-slate-500 dark:text-slate-400 mt-0.5">
-              questions practiced
-            </p>
+            <span className="text-xs font-bold uppercase tracking-wider opacity-80 block">
+              Solved
+            </span>
           </div>
         </div>
 
         {/* Study Time */}
-        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-card-sm p-3.5 shadow-tactile-sm flex flex-col justify-between space-y-2">
-          <span className="text-micro font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-            <div className="w-6 h-6 rounded-lg bg-accent-purple/15 text-accent-purple flex items-center justify-center">
-              <Clock className="w-3.5 h-3.5" />
-            </div>
-            Focus Time
-          </span>
-          <div>
-            <span className="text-2xl font-black font-mono tracking-tight text-gray-900 dark:text-gray-100 tabular-nums">
+        <div className="bg-tint-purple text-tint-purple-fg border-2 border-b-[3px] border-tint-purple-border rounded-2xl p-3.5 shadow-2xs flex flex-col justify-between">
+          <div className="w-8 h-8 rounded-xl bg-white/80 dark:bg-black/40 flex items-center justify-center text-purple-600 dark:text-purple-300 shadow-2xs">
+            <Clock className="w-4 h-4 stroke-[2.5]" />
+          </div>
+          <div className="mt-2">
+            <span className="text-2xl font-black font-mono tracking-tight tabular-nums block">
               {formatSeconds(totalTimeSeconds)}
             </span>
-            <p className="text-caption font-bold text-slate-500 dark:text-slate-400 mt-0.5">
-              in practice sessions
-            </p>
+            <span className="text-xs font-bold uppercase tracking-wider opacity-80 block">
+              Focus Time
+            </span>
           </div>
         </div>
 
-        {/* Exam Pace Velocity */}
-        <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-card-sm p-3.5 shadow-tactile-sm flex flex-col justify-between space-y-2">
-          <span className="text-micro font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-            <div className="w-6 h-6 rounded-lg bg-accent-gold/15 text-accent-gold flex items-center justify-center">
-              <Zap className="w-3.5 h-3.5" />
-            </div>
-            Speed
-          </span>
-          <div>
-            <span className="text-2xl font-black font-mono tracking-tight text-gray-900 dark:text-gray-100 tabular-nums">
+        {/* Speed / Pace */}
+        <div className="bg-tint-peach text-tint-peach-fg border-2 border-b-[3px] border-tint-peach-border rounded-2xl p-3.5 shadow-2xs flex flex-col justify-between">
+          <div className="w-8 h-8 rounded-xl bg-white/80 dark:bg-black/40 flex items-center justify-center text-amber-600 dark:text-amber-300 shadow-2xs">
+            <Zap className="w-4 h-4 stroke-[2.5]" />
+          </div>
+          <div className="mt-2">
+            <span className="text-2xl font-black font-mono tracking-tight tabular-nums block">
               {avgPaceSeconds > 0 ? `${avgPaceSeconds}s` : '—'}
             </span>
-            <p className="text-caption font-bold text-slate-500 dark:text-slate-400 mt-0.5">
-              {avgPaceSeconds > 0 && avgPaceSeconds <= 85 ? 'Within 90s exam limit' : 'avg per question'}
-            </p>
+            <span className="text-xs font-bold uppercase tracking-wider opacity-80 block">
+              Pace / Q
+            </span>
           </div>
         </div>
       </section>

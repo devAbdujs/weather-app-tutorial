@@ -18,7 +18,9 @@ import {
   Award,
   Bell,
   Headphones,
-  Settings
+  Settings,
+  CheckCircle2,
+  FileQuestion
 } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useRouter } from 'next/navigation';
@@ -251,68 +253,71 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           </button>
         </section>
 
-        {/* ── 3. ACADEMIC HIGHLIGHTS (ui_inspiration3.png: 3 COLORFUL PASTEL STAT CARDS) ── */}
+        {/* ── 3. ACADEMIC HIGHLIGHTS (Icon-first pastel stat cards) ── */}
         <section 
           aria-label="Quick Stats"
-          className="grid grid-cols-3 gap-3"
+          className="grid grid-cols-3 gap-2.5"
         >
-          {/* Questions (Pastel Lavender) */}
-          <div className="bg-tint-purple text-tint-purple-fg border-2 border-b-[3px] border-tint-purple-border rounded-2xl p-3.5 text-center shadow-2xs">
-            <span className="text-2xl font-black font-mono tabular-nums block text-gray-950 dark:text-white">
+          {/* Attempted (Pastel Lavender) */}
+          <div className="bg-tint-purple text-tint-purple-fg border-2 border-b-[3px] border-tint-purple-border rounded-2xl p-3 text-center shadow-2xs">
+            <FileQuestion className="w-5 h-5 mx-auto mb-1 stroke-[2.5] text-purple-600 dark:text-purple-400" />
+            <span className="text-xl font-black font-mono tabular-nums block text-gray-950 dark:text-white leading-tight">
               {totalQuestions}
             </span>
-            <span className="text-xs font-black uppercase tracking-wider text-gray-800 dark:text-gray-200 mt-1 block">
-              Questions
+            <span className="text-micro font-black uppercase tracking-wider text-gray-700 dark:text-gray-300 mt-0.5 block">
+              Attempted
             </span>
           </div>
 
           {/* Solved (Pastel Mint) */}
-          <div className="bg-tint-green text-tint-green-fg border-2 border-b-[3px] border-tint-green-border rounded-2xl p-3.5 text-center shadow-2xs">
-            <span className="text-2xl font-black font-mono tabular-nums block text-gray-950 dark:text-white">
+          <div className="bg-tint-green text-tint-green-fg border-2 border-b-[3px] border-tint-green-border rounded-2xl p-3 text-center shadow-2xs">
+            <CheckCircle2 className="w-5 h-5 mx-auto mb-1 stroke-[2.5] text-emerald-600 dark:text-emerald-400" />
+            <span className="text-xl font-black font-mono tabular-nums block text-gray-950 dark:text-white leading-tight">
               {totalCorrect}
             </span>
-            <span className="text-xs font-black uppercase tracking-wider text-gray-800 dark:text-gray-200 mt-1 block">
+            <span className="text-micro font-black uppercase tracking-wider text-gray-700 dark:text-gray-300 mt-0.5 block">
               Solved
             </span>
           </div>
 
-          {/* Saved / Accuracy (Pastel Sky) */}
-          <div className="bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-tint-sky-border rounded-2xl p-3.5 text-center shadow-2xs">
-            <span className="text-2xl font-black font-mono tabular-nums block text-gray-950 dark:text-white">
+          {/* Accuracy (Pastel Sky) */}
+          <div className="bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-tint-sky-border rounded-2xl p-3 text-center shadow-2xs">
+            <Target className="w-5 h-5 mx-auto mb-1 stroke-[2.5] text-sky-600 dark:text-sky-400" />
+            <span className="text-xl font-black font-mono tabular-nums block text-gray-950 dark:text-white leading-tight">
               {overallAccuracy}%
             </span>
-            <span className="text-xs font-black uppercase tracking-wider text-gray-800 dark:text-gray-200 mt-1 block">
+            <span className="text-micro font-black uppercase tracking-wider text-gray-700 dark:text-gray-300 mt-0.5 block">
               Accuracy
             </span>
           </div>
         </section>
 
-        {/* ── 4. "UPGRADE TO PREMIUM" BANNER (ui_inspiration3.png) ── */}
+        {/* ── 4. "UPGRADE TO PRO" BANNER ── */}
         <section 
           onClick={() => {
             sounds.playCelebration();
             haptic.impact('heavy');
             router.push('/upgrade');
           }}
-          className="bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white rounded-3xl p-5 shadow-lg shadow-orange-500/25 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all relative overflow-hidden"
+          className="bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white rounded-2xl p-4 shadow-lg shadow-orange-500/25 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all relative overflow-hidden"
         >
-          <div className="flex items-center gap-3.5">
-            <div className="w-13 h-13 rounded-2xl bg-amber-300/40 backdrop-blur-xs flex items-center justify-center text-stone-900 shadow-2xs shrink-0 text-2xl font-black border border-white/20">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-amber-300/40 backdrop-blur-xs flex items-center justify-center text-stone-900 shadow-2xs shrink-0 text-xl font-black border border-white/20">
               👑
             </div>
             <div>
-              <h2 className="text-base font-black text-white tracking-tight leading-tight">
-                Upgrade To Premium
+              <h2 className="text-sm font-black text-white tracking-tight leading-tight">
+                Temari Pro
               </h2>
-              <p className="text-xs font-bold text-white/95 mt-0.5 line-clamp-1 max-w-[200px]">
-                Unlock Unlimited AI Tutor &amp; Past Exams
+              <p className="text-caption font-bold text-white/95 mt-0.5">
+                199 ETB • Unlimited AI Tutor
               </p>
             </div>
           </div>
 
           <button
             type="button"
-            className="bg-stone-950 text-white px-4 py-2.5 rounded-full text-xs font-black shadow-md shrink-0 flex items-center gap-1.5 hover:bg-black transition-all"
+            className="bg-stone-950 text-white px-3.5 py-2 rounded-full text-xs font-black shadow-md shrink-0 flex items-center gap-1 hover:bg-black transition-all"
           >
             <span>Upgrade</span>
             <span className="text-amber-400 text-sm">↗</span>
@@ -322,21 +327,21 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 5. AI QUOTA STATUS BAR ── */}
         <section 
           aria-label="AI Quota"
-          className="bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 shadow-2xs space-y-2.5"
+          className="bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 shadow-2xs space-y-2"
         >
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2 font-black text-gray-900 dark:text-gray-100">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span>Weekly AI Quota</span>
+              <Sparkles className="w-4 h-4 text-primary shrink-0" />
+              <span>AI Quota</span>
             </div>
             <div className="flex items-center gap-2 font-mono text-xs font-bold text-gray-700 dark:text-gray-300">
               <span className="font-black text-gray-900 dark:text-gray-100">{usageClamped}/{weeklyCap}</span>
-              <span>•</span>
-              <span>Resets in {daysUntilReset}d</span>
+              <span className="text-slate-400">•</span>
+              <span>{daysUntilReset}d left</span>
             </div>
           </div>
 
-          <div className="w-full bg-ground border border-black/[0.08] dark:border-white/[0.08] h-3 rounded-full overflow-hidden p-0.5">
+          <div className="w-full bg-ground border border-black/[0.08] dark:border-white/[0.08] h-2.5 rounded-full overflow-hidden p-0.5">
             <div 
               className={`h-full rounded-full transition-all duration-500 ease-bespoke ${getProgressColor()}`}
               style={{ width: `${Math.max(4, usagePercent)}%` }}
@@ -344,26 +349,26 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           </div>
         </section>
 
-        {/* ── 6. SETTINGS & APP PREFERENCES (ui_inspiration3.png SEPARATE CARDS) ── */}
-        <section aria-label="Account Settings" className="space-y-3">
-          {/* Notifications (ui_inspiration3.png) */}
+        {/* ── 6. SETTINGS & APP PREFERENCES ── */}
+        <section aria-label="Account Settings" className="space-y-2.5">
+          {/* Notifications / Sound */}
           <div 
             onClick={() => {
               toggleSound();
               haptic.selection();
             }}
-            className="bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors cursor-pointer select-none active:scale-[0.99]"
+            className="bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors cursor-pointer select-none active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 border border-amber-200/50 flex items-center justify-center shadow-2xs">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 border border-amber-200/50 flex items-center justify-center shadow-2xs shrink-0">
                 <Bell className="w-5 h-5 stroke-[2.4]" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-gray-900 dark:text-gray-100">
-                  Notifications &amp; Audio
+                <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-tight">
+                  Sound Effects
                 </h3>
-                <p className="text-xs font-bold text-gray-600 dark:text-gray-300">
-                  Sound Effects {soundEnabled ? 'Enabled' : 'Muted'}
+                <p className="text-caption font-bold text-gray-500 dark:text-gray-400 mt-0.5">
+                  {soundEnabled ? 'Enabled' : 'Muted'}
                 </p>
               </div>
             </div>
@@ -372,46 +377,46 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             </div>
           </div>
 
-          {/* Help & Support (ui_inspiration3.png) */}
+          {/* Help & Support */}
           <a
             href="https://t.me/ethio_exam_bot" 
             target="_blank" 
             rel="noopener noreferrer"
             onClick={() => { sounds.playTap(); haptic.selection(); }}
-            className="bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors cursor-pointer active:scale-[0.99]"
+            className="bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors cursor-pointer active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-2xl bg-sky-50 dark:bg-sky-950/40 text-sky-600 border border-sky-200/50 flex items-center justify-center shadow-2xs">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/40 text-sky-600 border border-sky-200/50 flex items-center justify-center shadow-2xs shrink-0">
                 <Headphones className="w-5 h-5 stroke-[2.4]" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-gray-900 dark:text-gray-100">
-                  Help &amp; Support
+                <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-tight">
+                  Help &amp; Community
                 </h3>
-                <p className="text-xs font-bold text-gray-600 dark:text-gray-300">
-                  Telegram Bot, FAQ &amp; Community Support
+                <p className="text-caption font-bold text-gray-500 dark:text-gray-400 mt-0.5">
+                  Telegram &amp; Support
                 </p>
               </div>
             </div>
             <ChevronRight className="w-5 h-5 text-gray-500 dark:text-gray-400 stroke-[2.5]" />
           </a>
 
-          {/* Settings / Preferences (ui_inspiration3.png) */}
+          {/* Settings / Preferences */}
           <button 
             type="button"
             onClick={handleRetakeOnboarding}
-            className="w-full bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors text-left active:scale-[0.99]"
+            className="w-full bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors text-left active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-2xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 border border-purple-200/50 flex items-center justify-center shadow-2xs">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 border border-purple-200/50 flex items-center justify-center shadow-2xs shrink-0">
                 <Settings className="w-5 h-5 stroke-[2.4]" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-gray-900 dark:text-gray-100">
-                  Settings &amp; Preferences
+                <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-tight">
+                  Curriculum Track
                 </h3>
-                <p className="text-xs font-bold text-gray-600 dark:text-gray-300">
-                  Curriculum: {profile.stream || 'Natural Science'}
+                <p className="text-caption font-bold text-gray-500 dark:text-gray-400 mt-0.5">
+                  {profile.stream || 'Natural Science'}
                 </p>
               </div>
             </div>
