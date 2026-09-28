@@ -62,12 +62,12 @@ export const BottomNav = () => {
                   className={`
                     relative flex items-center justify-center w-12 h-7 rounded-control transition-all duration-150 ease-spring
                     ${isActive
-                      ? 'bg-primary text-white shadow-tactile-xs border border-primary/40'
+                      ? 'bg-primary text-white shadow-tactile-xs border border-primary/40 border-b-2 border-b-primary-border'
                       : 'bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}
                   `}
                 >
                   <Icon
-                    className="w-4.5 h-4.5 transition-transform duration-150"
+                    className="w-5 h-5 transition-transform duration-150"
                     strokeWidth={isActive ? 2.5 : 2}
                   />
                 </div>

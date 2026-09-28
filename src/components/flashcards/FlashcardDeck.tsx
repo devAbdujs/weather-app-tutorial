@@ -310,7 +310,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
               {!isFlipped ? (
                 <button 
                   onClick={handleFlip} 
-                  className="btn-3d-primary w-full absolute inset-0 h-13 rounded-card-sm font-black uppercase tracking-wider text-xs animate-fade-in flex items-center justify-center gap-2"
+                  className="btn-3d-primary w-full absolute inset-0 h-12 rounded-card-sm font-black uppercase tracking-wider text-xs animate-fade-in flex items-center justify-center gap-2"
                 >
                   Tap to Reveal Answer
                 </button>
@@ -318,13 +318,13 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
                 <div className="flex gap-3 w-full absolute inset-0 animate-fade-in">
                   <button 
                     onClick={() => nextCard('hard')} 
-                    className="flex-1 h-13 rounded-card-sm bg-accent-rose/10 text-accent-rose font-black uppercase tracking-wider text-xs border-2 border-b-bevel-lg border-accent-rose/40 hover:bg-accent-rose/15 active:border-b-2 active:translate-y-[2px] transition-all shadow-sm flex items-center justify-center"
+                    className="btn-3d-rose flex-1 h-12 rounded-card-sm font-black uppercase tracking-wider text-xs flex items-center justify-center"
                   >
                     Forgot
                   </button>
                   <button 
                     onClick={() => nextCard('easy')} 
-                    className="btn-3d-emerald flex-1 h-13 rounded-card-sm font-black uppercase tracking-wider text-xs flex items-center justify-center"
+                    className="btn-3d-emerald flex-1 h-12 rounded-card-sm font-black uppercase tracking-wider text-xs flex items-center justify-center"
                   >
                     Knew It
                   </button>

@@ -215,11 +215,12 @@ body {
   color: #ffffff;
   border: 1px solid var(--primary);
   border-bottom: 3px solid var(--primary-border-bottom);
-  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.1s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .btn-3d-primary:active {
-  transform: translateY(1px);
+  transform: translateY(2px);
+  border-bottom-width: 1px;
   filter: brightness(0.96);
 }
 
@@ -228,11 +229,12 @@ body {
   color: #ffffff;
   border: 1px solid rgb(var(--accent-gold-rgb));
   border-bottom: 3px solid hsl(36, 68%, 28%);
-  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.1s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .btn-3d-gold:active {
-  transform: translateY(1px);
+  transform: translateY(2px);
+  border-bottom-width: 1px;
   filter: brightness(0.96);
 }
 
@@ -241,11 +243,40 @@ body {
   color: #ffffff;
   border: 1px solid rgb(var(--accent-emerald-rgb));
   border-bottom: 3px solid hsl(145, 52%, 25%);
-  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.1s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .btn-3d-emerald:active {
-  transform: translateY(1px);
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+  filter: brightness(0.96);
+}
+
+.btn-3d-rose {
+  background-color: rgb(var(--accent-rose-rgb));
+  color: #ffffff;
+  border: 1px solid rgb(var(--accent-rose-rgb));
+  border-bottom: 3px solid hsl(350, 68%, 34%);
+  transition: all 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.btn-3d-rose:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+  filter: brightness(0.96);
+}
+
+.btn-3d-purple {
+  background-color: rgb(var(--accent-purple-rgb));
+  color: #ffffff;
+  border: 1px solid rgb(var(--accent-purple-rgb));
+  border-bottom: 3px solid hsl(268, 55%, 34%);
+  transition: all 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.btn-3d-purple:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
   filter: brightness(0.96);
 }
 
@@ -253,17 +284,32 @@ body {
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-bottom: 3px solid var(--border-strong);
-  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.1s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 .btn-3d-card:active {
-  transform: translateY(1px);
+  transform: translateY(2px);
+  border-bottom-width: 1px;
   filter: brightness(0.98);
 }
 .dark .btn-3d-card {
   border-color: hsla(0, 0%, 100%, 0.08);
   border-bottom-color: hsla(0, 0%, 100%, 0.18);
   box-shadow: none;
+}
+
+.btn-3d-subtle {
+  background-color: var(--surface-2);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-bottom: 3px solid var(--border-strong);
+  transition: all 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.btn-3d-subtle:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+  filter: brightness(0.97);
 }
 
 .card-chunky {

@@ -41,7 +41,7 @@ export const TopHeader = () => {
   return (
     <header
       className="
-        w-full h-15 shrink-0 z-40
+        w-full h-14 shrink-0 z-40
         bg-ground/90 dark:bg-ground/90
         backdrop-blur-xl
         border-b border-black/[0.08] dark:border-white/[0.08]
@@ -54,14 +54,7 @@ export const TopHeader = () => {
           <button
             onClick={() => { sounds.playTap(); router.back(); }}
             aria-label="Go back"
-            className="
-              w-9 h-9 flex items-center justify-center
-              rounded-control
-              bg-card border border-black/[0.08] dark:border-white/[0.12] border-b-bevel border-b-black/[0.15] dark:border-b-white/[0.18]
-              text-gray-700 dark:text-gray-300
-              hover:text-gray-900 dark:hover:text-gray-100
-              active:translate-y-[1px] transition-all shadow-tactile-xs
-            "
+            className="w-9 h-9 flex items-center justify-center rounded-control btn-3d-card text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -70,7 +63,7 @@ export const TopHeader = () => {
             onClick={() => { sounds.playTap(); router.push('/dashboard'); }}
             className="flex items-center gap-2 cursor-pointer active:scale-95 transition-transform"
           >
-            <div className="w-9 h-9 rounded-control overflow-hidden shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.12] border-b-bevel border-b-black/[0.15] dark:border-b-white/[0.18] shrink-0 bg-primary/10 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-control overflow-hidden shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.12] border-b-bevel shrink-0 bg-primary/10 flex items-center justify-center">
               <Image
                 src="/assets/temari logo.png"
                 alt="Temari"
@@ -88,23 +81,23 @@ export const TopHeader = () => {
 
       {/* Center: Live Gamification Telemetry (Streak & XP) */}
       <div className="flex items-center gap-1.5 sm:gap-2">
-        {/* Streak Pill */}
+        {/* Streak Pill - Warm Gold Flame */}
         <button
           onClick={() => { sounds.playStreak(); router.push('/mastery'); }}
           title={`${streak} Day Streak`}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-gold/12 border border-accent-gold/25 border-b-bevel border-b-accent-gold/40 text-accent-gold font-black text-xs active:translate-y-[1px] transition-all shadow-tactile-xs"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-gold/15 border border-accent-gold/30 border-b-bevel border-b-accent-gold/50 text-accent-gold font-black text-xs active:translate-y-[2px] transition-all shadow-tactile-xs"
         >
           <Flame className="w-3.5 h-3.5 fill-accent-gold text-accent-gold" />
           <span className="font-mono tabular-nums">{streak}</span>
         </button>
 
-        {/* XP Counter Pill */}
+        {/* XP Counter Pill - Vibrant Royal Cobalt */}
         <button
           onClick={() => { sounds.playCorrect(); router.push('/profile'); }}
           title={`${xp} Total XP`}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-gold/15 border border-accent-gold/30 border-b-bevel border-b-accent-gold/50 text-accent-gold font-black text-xs active:translate-y-[1px] transition-all shadow-tactile-xs"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/12 border border-primary/25 border-b-bevel border-b-primary/45 text-primary font-black text-xs active:translate-y-[2px] transition-all shadow-tactile-xs"
         >
-          <Zap className="w-3.5 h-3.5 fill-accent-gold text-accent-gold" />
+          <Zap className="w-3.5 h-3.5 fill-primary text-primary" />
           <span className="font-mono tabular-nums">{xp} XP</span>
         </button>
       </div>
@@ -116,14 +109,7 @@ export const TopHeader = () => {
           onClick={toggleSound}
           aria-label={soundEnabled ? 'Mute sound effects' : 'Unmute sound effects'}
           title={soundEnabled ? 'Sound FX On' : 'Sound FX Muted'}
-          className="
-            w-9 h-9 flex items-center justify-center
-            rounded-control
-            bg-card border border-black/[0.08] dark:border-white/[0.12] border-b-bevel border-b-black/[0.15] dark:border-b-white/[0.18]
-            text-gray-700 dark:text-gray-200
-            hover:text-primary dark:hover:text-primary
-            active:translate-y-[1px] transition-all shadow-tactile-xs
-          "
+          className="w-9 h-9 flex items-center justify-center rounded-control btn-3d-card text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary"
         >
           {soundEnabled ? (
             <Volume2 className="w-4 h-4 text-primary" />
@@ -136,14 +122,7 @@ export const TopHeader = () => {
         <button
           onClick={toggle}
           aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="
-            w-9 h-9 flex items-center justify-center
-            rounded-control
-            bg-card border border-black/[0.08] dark:border-white/[0.12] border-b-bevel border-b-black/[0.15] dark:border-b-white/[0.18]
-            text-gray-700 dark:text-gray-200
-            hover:text-gray-900 dark:hover:text-gray-100
-            active:translate-y-[1px] transition-all shadow-tactile-xs
-          "
+          className="w-9 h-9 flex items-center justify-center rounded-control btn-3d-card text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100"
         >
           {resolvedTheme === 'dark' ? <Sun className="w-4 h-4 text-accent-gold" /> : <Moon className="w-4 h-4 text-gray-700" />}
         </button>

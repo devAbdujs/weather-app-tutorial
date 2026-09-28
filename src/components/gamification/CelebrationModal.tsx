@@ -6,12 +6,14 @@ import { TemariMascot } from '@/components/mascot/TemariMascot';
 import { Zap, Target, Flame, ArrowRight, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { celebrationConfettiPalette } from '@/styles/tokens';
+import { sounds } from '@/lib/sounds';
 
 export const CelebrationModal: React.FC = () => {
   const { activeCelebration, dismissCelebration } = useGamificationStore();
 
   React.useEffect(() => {
     if (activeCelebration) {
+      sounds.playCelebration();
       try {
         confetti({
           particleCount: 80,
@@ -28,19 +30,15 @@ export const CelebrationModal: React.FC = () => {
   return (
     <div 
       className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
-      onClick={dismissCelebration}
+      onClick={() => { sounds.playTap(); dismissCelebration(); }}
     >
       <div 
         className="w-full max-w-sm bg-card rounded-hero border border-black/[0.12] dark:border-white/[0.12] border-b-bevel-lg p-6 shadow-2xl animate-scale-bounce text-center relative overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        {/* Subtle decorative background bursts */}
-        <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-accent-gold/15 blur-2xl pointer-events-none" />
-        <div className="absolute -bottom-12 -left-12 w-32 h-32 rounded-full bg-accent-emerald/15 blur-2xl pointer-events-none" />
-
         <button 
-          onClick={dismissCelebration}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-ground border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+          onClick={() => { sounds.playTap(); dismissCelebration(); }}
+          className="absolute top-4 right-4 w-8 h-8 rounded-full btn-3d-card flex items-center justify-center text-slate-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
         >
           <X className="w-4 h-4" />
         </button>

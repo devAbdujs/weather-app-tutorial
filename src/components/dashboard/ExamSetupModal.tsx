@@ -150,8 +150,8 @@ export const ExamSetupModal: React.FC = () => {
               <p className="text-xs font-bold text-gray-500 dark:text-gray-400">Configure your study session</p>
             </div>
           </div>
-          <button onClick={() => { sounds.playTap(); onClose(); }} className="w-9 h-9 flex items-center justify-center rounded-full bg-ground border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all text-gray-600 dark:text-gray-400">
-            <X className="w-4.5 h-4.5" />
+          <button onClick={() => { sounds.playTap(); onClose(); }} className="w-9 h-9 flex items-center justify-center rounded-full btn-3d-card text-gray-600 dark:text-gray-400">
+            <X className="w-4 h-4" />
           </button>
         </div>
 

@@ -215,11 +215,11 @@ export const PracticeHub = () => {
                 <button
                   key={c.id}
                   onClick={() => navigate('freshman', { subject: c.id })}
-                  className="group relative p-3.5 rounded-card bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px] transition-all text-left flex flex-col justify-between h-32 shadow-tactile-xs"
+                  className="group relative p-3.5 rounded-card btn-3d-card hover:border-primary/40 text-left flex flex-col justify-between h-32"
                 >
                   <div className="flex items-center justify-between w-full">
                     <div className={`w-9 h-9 rounded-control flex items-center justify-center shrink-0 ${getSubjectTheme(c.id)} shadow-tactile-xs`}>
-                      <c.Icon className="w-4.5 h-4.5" strokeWidth={2.2} />
+                      <c.Icon className="w-5 h-5" strokeWidth={2.2} />
                     </div>
                     <span className="inline-flex items-center gap-0.5 text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
                       <Zap className="w-2.5 h-2.5 fill-current" />
@@ -247,11 +247,11 @@ export const PracticeHub = () => {
                 <button
                   key={c.id}
                   onClick={() => navigate('entrance', { subject: c.id })}
-                  className="group relative p-3.5 rounded-card bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px] transition-all text-left flex flex-col justify-between h-32 shadow-tactile-xs"
+                  className="group relative p-3.5 rounded-card btn-3d-card hover:border-primary/40 text-left flex flex-col justify-between h-32"
                 >
                   <div className="flex items-center justify-between w-full">
                     <div className={`w-9 h-9 rounded-control flex items-center justify-center shrink-0 ${getSubjectTheme(c.id)} shadow-tactile-xs`}>
-                      <c.Icon className="w-4.5 h-4.5" strokeWidth={2.2} />
+                      <c.Icon className="w-5 h-5" strokeWidth={2.2} />
                     </div>
                     <span className="inline-flex items-center gap-0.5 text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
                       <Zap className="w-2.5 h-2.5 fill-current" />
@@ -279,10 +279,10 @@ export const PracticeHub = () => {
                 <button
                   key={d.id}
                   onClick={() => navigate('exit', { subject: d.id })}
-                  className="w-full group bg-card p-3.5 rounded-card-sm border border-black/[0.08] dark:border-white/[0.08] border-b-2 border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px] transition-all flex items-center gap-3.5 text-left shadow-tactile-xs"
+                  className="w-full group p-3.5 rounded-card-sm btn-3d-card hover:border-primary/40 flex items-center gap-3.5 text-left"
                 >
                   <div className={`w-9 h-9 rounded-control flex items-center justify-center shrink-0 ${getSubjectTheme(d.id)} shadow-tactile-xs`}>
-                    <d.Icon className="w-4.5 h-4.5" strokeWidth={2.2} />
+                    <d.Icon className="w-5 h-5" strokeWidth={2.2} />
                   </div>
                   <span className="flex-1 text-sm font-black text-gray-900 dark:text-gray-100">{d.id}</span>
                   <span className="inline-flex items-center gap-0.5 text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 mr-1">

@@ -116,7 +116,7 @@ export const ProductTour: React.FC = () => {
 
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-3.5 bg-primary text-white rounded-card-sm font-bold text-regular shadow-tactile-md hover:bg-primary/90 transition-all duration-200 ease-bespoke active:scale-[0.98]"
+                className="btn-3d-primary flex items-center gap-2 px-6 py-3.5 rounded-card-sm font-bold text-regular"
               >
                 {step === TOUR_STEPS.length - 1 ? (
                   <>Start Practicing <Check className="w-5 h-5" /></>

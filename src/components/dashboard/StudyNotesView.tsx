@@ -555,15 +555,15 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         {/* Footer Action Bar */}
         <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-ground/90 backdrop-blur-xl border-t border-black/[0.06] dark:border-white/[0.08] p-3.5 z-30 flex gap-2.5 pb-safe">
           <button
-            onClick={() => { haptic.impact('light'); setShowTutor(true); }}
-            className="flex-1 h-13 rounded-card-sm font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] border border-black/[0.06] dark:border-white/[0.08] bg-card text-gray-900 dark:text-gray-100 hover:bg-black/5 dark:hover:bg-white/5 shadow-sm"
+            onClick={() => { sounds.playTap(); haptic.impact('light'); setShowTutor(true); }}
+            className="btn-3d-card flex-1 h-12 rounded-card-sm font-black text-xs flex items-center justify-center gap-2 text-gray-900 dark:text-gray-100"
           >
             <Sparkles className="w-4 h-4 text-accent-gold" />
             Ask AI Tutor
           </button>
           <button
-            onClick={handleBackFromNote}
-            className="flex-1 h-13 bg-primary text-white rounded-card-sm font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 ease-bespoke active:scale-[0.98] shadow-tactile-sm"
+            onClick={() => { sounds.playTap(); handleBackFromNote(); }}
+            className="btn-3d-primary flex-1 h-12 rounded-card-sm font-black text-xs flex items-center justify-center gap-2"
           >
             <List className="w-4 h-4" />
             Chapters
@@ -587,6 +587,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
       <div className="flex items-center justify-between pb-2">
         <button
           onClick={() => {
+            sounds.playTap();
             haptic.impact('light');
             if (typeof window !== 'undefined' && window.history.length > 1) {
               router.back();
@@ -594,7 +595,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               router.push('/practice');
             }
           }}
-          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-btn text-compact font-bold text-gray-700 dark:text-gray-300 border border-black/[0.06] dark:border-white/[0.08] bg-card hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all shadow-sm"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-btn text-compact font-bold text-gray-700 dark:text-gray-300 btn-3d-card"
         >
           <ChevronLeft className="w-4 h-4" />
           <span>Back</span>

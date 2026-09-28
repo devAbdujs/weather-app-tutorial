@@ -412,7 +412,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
           className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-card p-4.5 shadow-tactile-sm space-y-3"
         >
           <div className="flex items-center gap-2">
-            <GraduationCap className="w-4.5 h-4.5 text-primary" />
+            <GraduationCap className="w-5 h-5 text-primary" />
             <h3 className="text-xs font-black uppercase tracking-wider text-gray-900 dark:text-gray-100">
               Exam Subjects Not Yet Practiced ({unpracticedSubjects.length})
             </h3>

@@ -192,9 +192,9 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
               haptic.selection();
               onClose();
             }}
-            className="w-8.5 h-8.5 flex items-center justify-center rounded-control bg-ground border border-black/[0.06] dark:border-white/[0.08] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 active:scale-95 transition-all"
+            className="w-8 h-8 flex items-center justify-center rounded-control btn-3d-card text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
           >
-            <X className="w-4.5 h-4.5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 

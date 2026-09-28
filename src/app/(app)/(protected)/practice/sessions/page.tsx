@@ -300,9 +300,9 @@ function SessionsContent() {
               {/* Practice */}
               <button
                 onClick={() => handleStart(selectedSession, 'practice')}
-                className="w-full group text-left p-4 rounded-card-lg bg-card border-2 border-accent-emerald/40 dark:border-accent-emerald/30 border-b-bevel-lg border-b-accent-emerald/60 hover:border-accent-emerald active:translate-y-[1px] transition-all flex items-center gap-4 shadow-tactile-xs"
+                className="w-full group text-left p-4 rounded-card-lg bg-card border-2 border-accent-emerald/40 dark:border-accent-emerald/30 border-b-bevel-lg border-b-accent-emerald/60 hover:border-accent-emerald active:translate-y-[2px] transition-all flex items-center gap-4 shadow-tactile-xs"
               >
-                <div className="w-13 h-13 rounded-card-sm bg-accent-emerald text-white flex items-center justify-center shrink-0 shadow-tactile-xs group-hover:scale-105 transition-transform">
+                <div className="w-12 h-12 rounded-card-sm bg-accent-emerald text-white flex items-center justify-center shrink-0 shadow-tactile-xs group-hover:scale-105 transition-transform">
                   <BookOpen className="w-6 h-6" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -320,9 +320,9 @@ function SessionsContent() {
               {/* Exam */}
               <button
                 onClick={() => handleStart(selectedSession, 'exam')}
-                className="w-full group text-left p-4 rounded-card-lg bg-card border-2 border-primary/40 dark:border-primary/30 border-b-bevel-lg border-b-primary/60 hover:border-primary active:translate-y-[1px] transition-all flex items-center gap-4 shadow-tactile-xs"
+                className="w-full group text-left p-4 rounded-card-lg bg-card border-2 border-primary/40 dark:border-primary/30 border-b-bevel-lg border-b-primary/60 hover:border-primary active:translate-y-[2px] transition-all flex items-center gap-4 shadow-tactile-xs"
               >
-                <div className="w-13 h-13 rounded-card-sm bg-primary text-white flex items-center justify-center shrink-0 shadow-tactile-xs group-hover:scale-105 transition-transform">
+                <div className="w-12 h-12 rounded-card-sm bg-primary text-white flex items-center justify-center shrink-0 shadow-tactile-xs group-hover:scale-105 transition-transform">
                   <Layers className="w-6 h-6" />
                 </div>
                 <div className="flex-1 min-w-0">
