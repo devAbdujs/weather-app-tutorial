@@ -127,8 +127,11 @@ export const mascotPalette = {
   bookCover: '#047857',
   bookBorder: '#065F46',
   bookPages: '#F8FAFC',
+  furGradientStart: '#FBBF24',
   torchFlameOuter: '#EF4444',
   torchFlameInner: '#FBBF24',
+  collarBorder: '#E2E8F0',
+  white: '#FFFFFF',
 } as const;
 
 // Gamification celebration confetti particle palette
