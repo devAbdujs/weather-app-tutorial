@@ -56,13 +56,13 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
   // Native Immersion: Protect the exam session
   useEffect(() => {
-    setFullscreen(true);
-    setVerticalSwipes(false);
-    setClosingConfirmation(true);
+    setFullscreen?.(true);
+    setVerticalSwipes?.(false);
+    setClosingConfirmation?.(true);
     return () => {
-      setFullscreen(false);
-      setVerticalSwipes(true);
-      setClosingConfirmation(false);
+      setFullscreen?.(false);
+      setVerticalSwipes?.(true);
+      setClosingConfirmation?.(false);
     };
   }, [setFullscreen, setVerticalSwipes, setClosingConfirmation]);
 
@@ -502,7 +502,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <div>
-                      <span className="text-micro font-black uppercase tracking-widest block text-emerald-950 dark:text-emerald-200 mb-0.5">Verified Correct Key</span>
+                      <span className="text-micro font-black uppercase tracking-widest block text-emerald-950 dark:text-emerald-200 mb-0.5">Verified Correct Answer Key</span>
                       <p className="text-lg font-black text-gray-950 dark:text-white">{currentQ.answer.trim().toUpperCase()}</p>
                     </div>
                   </>

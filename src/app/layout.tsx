@@ -71,7 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Telegram WebApp SDK */}
         <Script
           src="https://telegram.org/js/telegram-web-app.js"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
         />
       </head>
       <body className={`${geistSans.variable} font-sans bg-ground text-gray-900 dark:text-gray-100 min-h-screen antialiased overscroll-none`}>

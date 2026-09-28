@@ -9,26 +9,38 @@ export const LandingPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isWebApp, setIsWebApp] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  const authenticateWithTelegram = async (initData: string) => {
+    setIsAuthenticating(true);
+    setAuthError(null);
+    try {
+      const res = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ initData })
+      });
+      if (res.ok) { 
+        window.location.replace('/dashboard'); 
+      } else { 
+        const errJson = await res.json().catch(() => ({}));
+        setAuthError(errJson.error || 'Authentication error. Please retry.');
+        setIsAuthenticating(false); 
+      }
+    } catch { 
+      setAuthError('Connection lost during authentication. Tap retry below.');
+      setIsAuthenticating(false); 
+    }
+  };
 
   useEffect(() => {
     let attempts = 0;
-    const authenticateWithTelegram = async (initData: string) => {
-      setIsAuthenticating(true);
-      try {
-        const res = await fetch('/api/auth/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ initData })
-        });
-        if (res.ok) { window.location.replace('/dashboard'); } 
-        else { setIsAuthenticating(false); }
-      } catch { setIsAuthenticating(false); }
-    };
 
     const checkTelegram = () => {
-      const tg = typeof window !== 'undefined' ? window.Telegram?.WebApp : null;
+      const tg = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp : null;
       if (tg && tg.initData) {
         setIsWebApp(true);
+        try { tg.ready?.(); tg.expand?.(); } catch (e) {}
         authenticateWithTelegram(tg.initData);
         return;
       }
@@ -36,9 +48,9 @@ export const LandingPage = () => {
       if (searchParams.get('code') && searchParams.get('state')) {
         window.history.replaceState({}, '', window.location.pathname);
       }
-      if (attempts < 10) {
+      if (attempts < 35) {
         attempts++;
-        setTimeout(checkTelegram, 50);
+        setTimeout(checkTelegram, 100);
       }
     };
     checkTelegram();
@@ -71,13 +83,36 @@ export const LandingPage = () => {
     }
   };
 
+  if (authError) {
+    return (
+      <div className="min-h-screen bg-ground flex flex-col items-center justify-center animate-fade-in p-6 text-center">
+        <TemariMascot mood="worried" size={100} className="mb-4" />
+        <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight mb-2">Connection Issue</h2>
+        <p className="text-sm font-semibold text-gray-600 dark:text-gray-400 max-w-xs mb-6">{authError}</p>
+        <button
+          onClick={() => {
+            const tg = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp : null;
+            if (tg?.initData) {
+              authenticateWithTelegram(tg.initData);
+            } else {
+              window.location.reload();
+            }
+          }}
+          className="btn-3d-primary px-8 py-3.5 rounded-2xl font-black text-sm active:translate-y-0.5 shadow-tactile-sm"
+        >
+          Retry Connection
+        </button>
+      </div>
+    );
+  }
+
   if (isWebApp || isAuthenticating) {
     return (
       <div className="min-h-screen bg-ground flex flex-col items-center justify-center animate-fade-in p-6">
         <TemariMascot mood="studying" size={100} className="mb-4" />
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 rounded-full border-bevel border-black/5 dark:border-white/10 border-t-primary animate-spin" />
-          <p className="text-caption font-black text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">Authenticating Scholar</p>
+          <p className="text-caption font-black text-gray-700 dark:text-gray-300 tracking-[0.2em] uppercase">Authenticating Scholar</p>
         </div>
       </div>
     );

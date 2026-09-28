@@ -25,16 +25,17 @@ export function useTelegram() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // @twa-dev/sdk's WebApp.initData is populated only inside the Telegram Mini App
-      if (WebApp.initData) {
+      const tg = (window as any).Telegram?.WebApp || WebApp;
+      const initData = tg?.initData || WebApp?.initData;
+      if (initData) {
         // 1. We are inside the Telegram Mini App
         setIsTelegram(true);
-        try { WebApp.ready(); WebApp.expand(); } catch (e) {}
+        try { tg?.ready?.(); tg?.expand?.(); } catch (e) {}
 
-        if (WebApp.initDataUnsafe?.user) {
-          setUser(WebApp.initDataUnsafe.user as TelegramUser);
+        if (tg?.initDataUnsafe?.user) {
+          setUser(tg.initDataUnsafe.user as TelegramUser);
         }
-        if (WebApp.colorScheme) setColorScheme(WebApp.colorScheme);
+        if (tg?.colorScheme) setColorScheme(tg.colorScheme);
         setIsLoadingAuth(false);
       } else {
         // 2. We are on a Web Browser
@@ -50,24 +51,28 @@ export function useTelegram() {
   }, []);
 
   // Haptic Feedback Engine - wrapped in useMemo to prevent recreation
-  const haptic = useMemo(() => ({
-    selection: () => {
-      try { WebApp.HapticFeedback.selectionChanged(); } catch (e) {}
-    },
-    impact: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft' = 'light') => {
-      try { WebApp.HapticFeedback.impactOccurred(style); } catch (e) {}
-    },
-    notification: (type: 'error' | 'success' | 'warning') => {
-      try { WebApp.HapticFeedback.notificationOccurred(type); } catch (e) {}
-    },
-  }), []);
+  const haptic = useMemo(() => {
+    const getHf = () => ((window as any).Telegram?.WebApp || WebApp)?.HapticFeedback;
+    return {
+      selection: () => {
+        try { getHf()?.selectionChanged(); } catch (e) {}
+      },
+      impact: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft' = 'light') => {
+        try { getHf()?.impactOccurred(style); } catch (e) {}
+      },
+      notification: (type: 'error' | 'success' | 'warning') => {
+        try { getHf()?.notificationOccurred(type); } catch (e) {}
+      },
+    };
+  }, []);
 
   // Native Back Button Control
   const backButtonHandlerRef = useRef<(() => void) | null>(null);
 
   const setBackButton = useCallback((visible: boolean, onClick?: () => void) => {
     try {
-      const bb = WebApp.BackButton;
+      const bb = ((window as any).Telegram?.WebApp || WebApp)?.BackButton;
+      if (!bb) return;
       // Remove previous handler before adding a new one to prevent stacking
       if (backButtonHandlerRef.current) {
         bb.offClick(backButtonHandlerRef.current);
@@ -88,22 +93,25 @@ export function useTelegram() {
   // API 8.0+ Native Immersion Controls
   const setFullscreen = useCallback((fullscreen: boolean) => {
     try {
-      if (fullscreen) WebApp.requestFullscreen?.();
-      else WebApp.exitFullscreen?.();
+      const tg = ((window as any).Telegram?.WebApp || WebApp);
+      if (fullscreen) tg?.requestFullscreen?.();
+      else tg?.exitFullscreen?.();
     } catch (e) {}
   }, []);
 
   const setVerticalSwipes = useCallback((enable: boolean) => {
     try {
-      if (enable) WebApp.enableVerticalSwipes?.();
-      else WebApp.disableVerticalSwipes?.();
+      const tg = ((window as any).Telegram?.WebApp || WebApp);
+      if (enable) tg?.enableVerticalSwipes?.();
+      else tg?.disableVerticalSwipes?.();
     } catch (e) {}
   }, []);
 
   const setClosingConfirmation = useCallback((enable: boolean) => {
     try {
-      if (enable) WebApp.enableClosingConfirmation?.();
-      else WebApp.disableClosingConfirmation?.();
+      const tg = ((window as any).Telegram?.WebApp || WebApp);
+      if (enable) tg?.enableClosingConfirmation?.();
+      else tg?.disableClosingConfirmation?.();
     } catch (e) {}
   }, []);
 

@@ -16,6 +16,7 @@ const nextConfig = {
       { protocol: 'https', hostname: '**.supabase.co' },
       { protocol: 'https', hostname: 't.me' },
       { protocol: 'https', hostname: '**.telegram.org' },
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
     ],
   },
 };

@@ -25,6 +25,9 @@ jest.mock('@/hooks/useTelegram', () => ({
       notification: jest.fn(),
     },
     setBackButton: jest.fn(),
+    setFullscreen: jest.fn(),
+    setVerticalSwipes: jest.fn(),
+    setClosingConfirmation: jest.fn(),
   }),
 }));
 
