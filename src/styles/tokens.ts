@@ -35,6 +35,31 @@ export const tokens = {
     'border-subtle': 'var(--border)',
     'border-default': 'var(--border)',
     'border-strong': 'var(--border-strong)',
+
+    // Colorful Card & Pill Tints (Inspiration: Lavender, Mint, Peach, Sky, Rose, Cream)
+    'tint-purple': 'var(--tint-purple)',
+    'tint-purple-fg': 'var(--tint-purple-fg)',
+    'tint-purple-border': 'var(--tint-purple-border)',
+
+    'tint-green': 'var(--tint-green)',
+    'tint-green-fg': 'var(--tint-green-fg)',
+    'tint-green-border': 'var(--tint-green-border)',
+
+    'tint-peach': 'var(--tint-peach)',
+    'tint-peach-fg': 'var(--tint-peach-fg)',
+    'tint-peach-border': 'var(--tint-peach-border)',
+
+    'tint-sky': 'var(--tint-sky)',
+    'tint-sky-fg': 'var(--tint-sky-fg)',
+    'tint-sky-border': 'var(--tint-sky-border)',
+
+    'tint-rose': 'var(--tint-rose)',
+    'tint-rose-fg': 'var(--tint-rose-fg)',
+    'tint-rose-border': 'var(--tint-rose-border)',
+
+    'tint-cream': 'var(--tint-cream)',
+    'tint-cream-fg': 'var(--tint-cream-fg)',
+    'tint-cream-border': 'var(--tint-cream-border)',
   },
 
   spacing: {

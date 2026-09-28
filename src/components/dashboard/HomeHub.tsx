@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from 'react';
-import { BookOpen, Flame, FileText, ArrowRight, Target, Sparkles, RefreshCw, Zap, BarChart2, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Flame, FileText, ArrowRight, Target, Sparkles, RefreshCw, Zap, BarChart2, CheckCircle2, ChevronRight } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { WelcomeOnboarding } from './WelcomeOnboarding';
 import { updateDailyStreak } from '@/app/actions/user';
@@ -10,6 +10,10 @@ import { toast } from 'sonner';
 import { TemariMascot, MascotBubble } from '@/components/mascot/TemariMascot';
 import { useGamificationStore, getLevelForXp } from '@/store/useGamificationStore';
 import { sounds } from '@/lib/sounds';
+
+import dynamic from 'next/dynamic';
+
+const AITutorDrawer = dynamic(() => import('@/components/ai/AITutorDrawer').then(m => m.AITutorDrawer), { ssr: false });
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -52,6 +56,7 @@ export const HomeHub: React.FC = () => {
   const setUserProfile = useAppStore(s => s.setUserProfile);
   const setSetupModalType = useAppStore(s => s.setSetupModalType);
 
+  const [showAI, setShowAI]             = useState(false);
   const [lastSession, setLastSession]   = useState<LastSession | null>(null);
   const [tip, setTip]                   = useState<string | null>(null);
   const [tipLoading, setTipLoading]     = useState(false);
@@ -195,28 +200,51 @@ export const HomeHub: React.FC = () => {
 
       <div className="px-5 space-y-4 mt-2">
 
-        {/* ── 2. MASCOT STUDY BUDDY GREETING (TEME SPEECH BUBBLE) ── */}
-        <MascotBubble
-          mood={streak > 0 ? 'streak_fire' : 'happy'}
-          message={
-            streak > 0 
-              ? `You're on a ${streak}-day streak, ${firstName}! 🔥` 
-              : `ሰላም ${firstName}! Let's build your study habit!`
-          }
-          subtext={
-            streak > 0 
-              ? `Complete today's practice set to protect your flame and earn +20 XP!` 
-              : `Pick a subject below to take your first test and earn your daily badge.`
-          }
-          action={{
-            label: streak > 0 ? 'Practice Now ⚡' : 'Start Goal 🎯',
-            onClick: () => {
-              sounds.playTap();
-              haptic.impact('heavy');
-              router.push('/practice');
-            }
-          }}
-        />
+        {/* ── 2. AI BUDDY HERO BANNER (ui_inspiration2.png: "Start With Chegg") ── */}
+        <div className="bg-tint-cream text-tint-cream-fg border border-tint-cream-border rounded-3xl p-4.5 shadow-xs relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl overflow-hidden bg-white/80 dark:bg-black/30 border border-orange-200/50 dark:border-orange-900/40 p-0.5 shadow-2xs shrink-0 flex items-center justify-center">
+                <TemariMascot mood="happy" size={38} animate={false} />
+              </div>
+              <div>
+                <span className="text-micro font-bold opacity-75 uppercase tracking-wider block">
+                  Your A.I Study Buddy
+                </span>
+                <h2 className="text-base font-black tracking-tight leading-tight">
+                  Start With <span className="text-primary font-black">Teme</span>
+                </h2>
+              </div>
+            </div>
+
+            {/* Mascot Buddy illustration */}
+            <div className="shrink-0 -mr-1">
+              <TemariMascot mood="studying" size={52} />
+            </div>
+          </div>
+
+          {/* Quick Question Input Search Bar (ui_inspiration2.png style) */}
+          <div 
+            onClick={() => { sounds.playTap(); haptic.selection(); setShowAI(true); }}
+            className="mt-3.5 flex items-center justify-between bg-white dark:bg-black/40 border border-black/[0.06] dark:border-white/[0.08] rounded-full pl-3 pr-1.5 py-1.5 shadow-xs cursor-pointer active:scale-[0.99] transition-transform"
+          >
+            <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 select-none">
+                Ask an expert question...
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                aria-label="Ask AI"
+                className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-md shadow-orange-500/30 hover:scale-105 active:scale-95 transition-all"
+              >
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* ── 3. DAILY QUEST XP GOAL METER ── */}
         <div className="card-chunky p-4 space-y-2.5">
@@ -249,30 +277,50 @@ export const HomeHub: React.FC = () => {
           </div>
         </div>
 
-        {/* ── 4. TACTILE HERO LAUNCHPAD ── */}
-        <button
-          onClick={() => { sounds.playTap(); haptic.impact('heavy'); router.push('/practice'); }}
-          className="w-full text-left p-5 rounded-hero bg-primary text-white border border-primary/40 border-b-bevel-lg border-b-primary-border active:translate-y-[2px] transition-all relative overflow-hidden group shadow-tactile-md"
-        >
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-caption font-black uppercase tracking-wider mb-2.5 border border-white/25">
-              <Zap className="w-3.5 h-3.5 fill-accent-gold text-accent-gold" />
-              <span>31,000+ Past Exam Papers</span>
-            </div>
-            <h2 className="text-xl font-black text-white tracking-tight mb-4">
-              Practice &amp; Exam Simulator
+        {/* ── 4. "LIBRARY" FEATURED CARD (ui_inspiration2.png: "See Chegg Solutions In Action") ── */}
+        <div>
+          <div className="flex items-center justify-between mb-2.5 px-1">
+            <h2 className="text-base font-black text-gray-900 dark:text-gray-100 tracking-tight">
+              Library
             </h2>
+            <button
+              onClick={() => { sounds.playTap(); router.push('/practice'); }}
+              className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-primary flex items-center gap-0.5 transition-colors"
+            >
+              <span>See All</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
-          <div className="flex items-center justify-between relative z-10">
-            <div className="bg-white text-primary px-4 py-2.5 rounded-btn font-black text-xs shadow-tactile-xs border-b-2 border-b-slate-200 flex items-center gap-1.5 group-hover:scale-[1.02] transition-transform duration-150">
-              <span>Start Practicing</span>
-              <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+
+          <div
+            onClick={() => { sounds.playTap(); haptic.impact('heavy'); router.push('/practice'); }}
+            className="group relative bg-tint-green text-tint-green-fg border border-tint-green-border rounded-3xl p-5 shadow-xs cursor-pointer active:scale-[0.99] transition-all overflow-hidden"
+          >
+            {/* 3D Visual Icon / Graduation Illustration */}
+            <div className="w-16 h-16 rounded-2xl bg-white/80 dark:bg-black/30 backdrop-blur-xs flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-2xs mb-4 border border-emerald-200/50 dark:border-emerald-900/40">
+              <BookOpen className="w-8 h-8 stroke-[2.2]" />
             </div>
-            <div className="w-10 h-10 bg-white/15 rounded-btn flex items-center justify-center group-hover:bg-white/25 transition-colors duration-150 border border-white/20">
-              <BookOpen className="w-5 h-5 text-white" />
+
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <span className="text-micro font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300 bg-white/70 dark:bg-black/30 px-2 py-0.5 rounded-full inline-block mb-1.5">
+                  31,000+ Past Papers
+                </span>
+                <h3 className="text-lg font-black tracking-tight leading-snug">
+                  See <span className="text-primary font-black">Temari Solutions</span> In Action
+                </h3>
+                <p className="text-caption font-medium opacity-80 mt-1 max-w-[240px]">
+                  Real national entrance and university exams with detailed explanations.
+                </p>
+              </div>
+
+              {/* Large Round Orange Action Button (ui_inspiration2.png) */}
+              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/35 group-hover:scale-105 active:scale-95 transition-all">
+                <ArrowRight className="w-5 h-5 stroke-[2.5]" />
+              </div>
             </div>
           </div>
-        </button>
+        </div>
 
         {/* ── 5. RESUME STUDY SESSION (IF ACTIVE) ── */}
         {lastSession && (
@@ -294,37 +342,52 @@ export const HomeHub: React.FC = () => {
           </button>
         )}
 
-        {/* ── 6. BENTO QUICK TOOLS ── */}
-        <div className="grid grid-cols-2 gap-3">
-          {/* Short Notes */}
-          <button
-            onClick={() => { sounds.playTap(); haptic.impact('medium'); router.push('/practice?mode=notes'); }}
-            className="btn-3d-card p-4 rounded-card text-left group"
-          >
-            <div className="w-10 h-10 bg-accent-purple/12 text-accent-purple border border-accent-purple/25 border-b-2 border-b-accent-purple/40 rounded-control flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
-              <FileText className="w-5 h-5" />
-            </div>
-            <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-tight">Short Notes</h3>
-            <p className="text-caption font-semibold text-slate-500 dark:text-slate-400 mt-0.5 truncate">Summaries &amp; Concepts</p>
-            <div className="mt-2 text-micro font-black text-accent-purple inline-flex items-center bg-accent-purple/10 border border-accent-purple/20 px-2 py-0.5 rounded-full">
-              +20 XP / unit
-            </div>
-          </button>
+        {/* ── 6. "MADE JUST FOR YOU" (ui_inspiration2.png) ── */}
+        <div>
+          <div className="flex items-center justify-between mb-2.5 px-1">
+            <h2 className="text-base font-black text-gray-900 dark:text-gray-100 tracking-tight">
+              Made just for you
+            </h2>
+            <button
+              onClick={() => { sounds.playTap(); router.push('/practice'); }}
+              className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-primary flex items-center gap-0.5 transition-colors"
+            >
+              <span>See All</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
 
-          {/* Flashcards */}
-          <button
-            onClick={() => { sounds.playTap(); haptic.impact('medium'); router.push('/practice?mode=flashcards'); }}
-            className="btn-3d-card p-4 rounded-card text-left group"
-          >
-            <div className="w-10 h-10 bg-accent-gold/12 text-accent-gold border border-accent-gold/25 border-b-2 border-b-accent-gold/40 rounded-control flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
-              <Zap className="w-5 h-5" />
-            </div>
-            <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-tight">Flashcards</h3>
-            <p className="text-caption font-semibold text-slate-500 dark:text-slate-400 mt-0.5 truncate">Rapid-Fire Drills</p>
-            <div className="mt-2 text-micro font-black text-accent-gold inline-flex items-center bg-accent-gold/10 border border-accent-gold/20 px-2 py-0.5 rounded-full">
-              +15 XP / deck
-            </div>
-          </button>
+          <div className="grid grid-cols-2 gap-3">
+            {/* Short Notes Card (Pastel Lavender) */}
+            <button
+              onClick={() => { sounds.playTap(); haptic.impact('medium'); router.push('/practice?mode=notes'); }}
+              className="bg-tint-purple text-tint-purple-fg border border-tint-purple-border p-4 rounded-3xl text-left group shadow-xs hover:shadow-md transition-all active:scale-[0.98]"
+            >
+              <div className="w-10 h-10 bg-white/80 dark:bg-black/30 text-purple-700 dark:text-purple-300 border border-purple-200/40 rounded-2xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform shadow-2xs">
+                <FileText className="w-5 h-5 stroke-[2.2]" />
+              </div>
+              <h3 className="text-sm font-black leading-tight">Short Notes</h3>
+              <p className="text-caption font-medium opacity-80 mt-0.5 truncate">Summaries &amp; Concepts</p>
+              <div className="mt-2.5 text-micro font-black px-2 py-0.5 rounded-full bg-white/70 dark:bg-black/30 inline-flex items-center">
+                +20 XP / unit
+              </div>
+            </button>
+
+            {/* Flashcards Card (Pastel Peach) */}
+            <button
+              onClick={() => { sounds.playTap(); haptic.impact('medium'); router.push('/practice?mode=flashcards'); }}
+              className="bg-tint-peach text-tint-peach-fg border border-tint-peach-border p-4 rounded-3xl text-left group shadow-xs hover:shadow-md transition-all active:scale-[0.98]"
+            >
+              <div className="w-10 h-10 bg-white/80 dark:bg-black/30 text-amber-700 dark:text-amber-300 border border-amber-200/40 rounded-2xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform shadow-2xs">
+                <Zap className="w-5 h-5 stroke-[2.2]" />
+              </div>
+              <h3 className="text-sm font-black leading-tight">Flashcards</h3>
+              <p className="text-caption font-medium opacity-80 mt-0.5 truncate">Rapid-Fire Drills</p>
+              <div className="mt-2.5 text-micro font-black px-2 py-0.5 rounded-full bg-white/70 dark:bg-black/30 inline-flex items-center">
+                +15 XP / deck
+              </div>
+            </button>
+          </div>
         </div>
 
         {/* ── 7. TEMARI AI DAILY SPARK WITH MASCOT ── */}
@@ -361,6 +424,14 @@ export const HomeHub: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Dynamic AI Tutor Drawer for Quick Questions */}
+      {showAI && (
+        <AITutorDrawer
+          isOpen={showAI}
+          onClose={() => setShowAI(false)}
+        />
+      )}
     </div>
   );
 };

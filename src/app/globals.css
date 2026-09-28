@@ -36,6 +36,31 @@
   --text-secondary:hsl(215, 14%, 44%);
   --text-tertiary: hsl(215, 12%, 62%);
 
+  /* Colorful Inspiration Card Tints (Light Mode) */
+  --tint-purple:        hsl(274, 55%, 94%);   /* #F1E5F8 soft lavender */
+  --tint-purple-fg:     hsl(274, 50%, 25%);   /* #4A1E6D deep violet text */
+  --tint-purple-border: hsl(274, 45%, 86%);   /* #E2CFF2 */
+
+  --tint-green:         hsl(142, 45%, 92%);   /* #E3F3DE soft sage mint */
+  --tint-green-fg:      hsl(142, 55%, 22%);   /* #1B5829 deep forest green */
+  --tint-green-border:  hsl(142, 40%, 82%);   /* #C4E4BD */
+
+  --tint-peach:         hsl(34, 90%, 93%);    /* #FFF0DA soft warm peach */
+  --tint-peach-fg:      hsl(25, 75%, 25%);    /* #70330E deep terracotta */
+  --tint-peach-border:  hsl(34, 70%, 84%);    /* #FEDBB0 */
+
+  --tint-sky:           hsl(192, 65%, 92%);   /* #DDF4F8 soft baby cyan */
+  --tint-sky-fg:        hsl(194, 75%, 22%);   /* #0E4E5E deep ocean teal */
+  --tint-sky-border:    hsl(192, 50%, 82%);   /* #BEE5ED */
+
+  --tint-rose:          hsl(350, 70%, 94%);   /* #FDE8ED soft blush rose */
+  --tint-rose-fg:       hsl(350, 65%, 25%);   /* #6B1525 deep wine rose */
+  --tint-rose-border:   hsl(350, 50%, 85%);   /* #F7C0CD */
+
+  --tint-cream:         hsl(42, 65%, 93%);    /* #FDF4E7 soft warm honey cream */
+  --tint-cream-fg:      hsl(32, 60%, 22%);    /* #5C3A14 deep bronze text */
+  --tint-cream-border:  hsl(42, 50%, 84%);    /* #F5E0C2 */
+
   /* Neutral shadow tokens */
   --shadow-sm:     0 1px 2px hsla(24, 15%, 15%, 0.05);
   --shadow-md:     0 4px 12px hsla(24, 15%, 15%, 0.07);
@@ -73,6 +98,31 @@
   --text-secondary:hsl(215, 14%, 63%);
   --text-tertiary: hsl(215, 12%, 46%);
 
+  /* Colorful Inspiration Card Tints (Dark Mode - Anti-Halation) */
+  --tint-purple:        hsl(274, 35%, 15%);
+  --tint-purple-fg:     hsl(274, 65%, 85%);
+  --tint-purple-border: hsl(274, 30%, 26%);
+
+  --tint-green:         hsl(142, 30%, 14%);
+  --tint-green-fg:      hsl(142, 60%, 82%);
+  --tint-green-border:  hsl(142, 25%, 24%);
+
+  --tint-peach:         hsl(30, 35%, 15%);
+  --tint-peach-fg:      hsl(30, 70%, 82%);
+  --tint-peach-border:  hsl(30, 30%, 25%);
+
+  --tint-sky:           hsl(192, 40%, 15%);
+  --tint-sky-fg:        hsl(192, 70%, 82%);
+  --tint-sky-border:    hsl(192, 30%, 24%);
+
+  --tint-rose:          hsl(350, 35%, 15%);
+  --tint-rose-fg:       hsl(350, 65%, 85%);
+  --tint-rose-border:   hsl(350, 25%, 25%);
+
+  --tint-cream:         hsl(38, 30%, 15%);
+  --tint-cream-fg:      hsl(38, 65%, 82%);
+  --tint-cream-border:  hsl(38, 25%, 24%);
+
   /* Dark mode: no shadows — elevation via surface lightness */
   --shadow-sm:     none;
   --shadow-md:     none;
@@ -94,6 +144,16 @@ body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  background-image: 
+    radial-gradient(ellipse at 15% 10%, hsla(38, 75%, 92%, 0.45), transparent 45%),
+    radial-gradient(ellipse at 85% 25%, hsla(28, 80%, 93%, 0.35), transparent 50%),
+    radial-gradient(ellipse at 45% 75%, hsla(45, 70%, 93%, 0.40), transparent 55%);
+}
+.dark body {
+  background-image: 
+    radial-gradient(ellipse at 15% 10%, hsla(220, 25%, 11%, 0.6), transparent 45%),
+    radial-gradient(ellipse at 85% 25%, hsla(24, 30%, 9%, 0.4), transparent 50%),
+    radial-gradient(ellipse at 45% 75%, hsla(220, 20%, 10%, 0.5), transparent 55%);
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────────── */

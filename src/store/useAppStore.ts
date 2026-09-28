@@ -13,6 +13,7 @@ export interface UserProfile {
   target_exam: string | null;
   stream: string;
   daily_streak: number;
+  subscription_status?: string;
 }
 
 interface AppState {

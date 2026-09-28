@@ -248,51 +248,83 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           </button>
         </section>
 
-        {/* ── 3. ACADEMIC HIGHLIGHTS (CLEAN 3-PILLAR BAR) ─────────────── */}
+        {/* ── 3. ACADEMIC HIGHLIGHTS (ui_inspiration3.png: 3 COLORFUL PASTEL STAT CARDS) ── */}
         <section 
           aria-label="Quick Stats"
           className="grid grid-cols-3 gap-3"
         >
-          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-card-sm p-3 text-center shadow-tactile-sm">
-            <div className="flex items-center justify-center gap-1 text-micro font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-              <Flame className="w-3.5 h-3.5 text-accent-gold" />
-              <span>Streak</span>
-            </div>
-            <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono tabular-nums">
-              {profile.daily_streak || 0}d
-            </span>
-          </div>
-
-          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-card-sm p-3 text-center shadow-tactile-sm">
-            <div className="flex items-center justify-center gap-1 text-micro font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-              <Target className="w-3.5 h-3.5 text-primary" />
-              <span>Solved</span>
-            </div>
-            <span className="text-xl font-black text-gray-900 dark:text-gray-100 font-mono tabular-nums">
+          {/* Questions (Pastel Lavender) */}
+          <div className="bg-tint-purple text-tint-purple-fg border border-tint-purple-border rounded-2xl p-3 text-center shadow-xs">
+            <span className="text-xl font-black font-mono tabular-nums block">
               {totalQuestions}
             </span>
+            <span className="text-micro font-black uppercase tracking-wider opacity-80 mt-0.5 block">
+              Questions
+            </span>
           </div>
 
-          <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-card-sm p-3 text-center shadow-tactile-sm">
-            <div className="flex items-center justify-center gap-1 text-micro font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-              <TrendingUp className="w-3.5 h-3.5 text-accent-emerald" />
-              <span>Accuracy</span>
-            </div>
-            <span className="text-xl font-black text-accent-emerald font-mono tabular-nums">
+          {/* Solved (Pastel Mint) */}
+          <div className="bg-tint-green text-tint-green-fg border border-tint-green-border rounded-2xl p-3 text-center shadow-xs">
+            <span className="text-xl font-black font-mono tabular-nums block">
+              {totalCorrect}
+            </span>
+            <span className="text-micro font-black uppercase tracking-wider opacity-80 mt-0.5 block">
+              Solved
+            </span>
+          </div>
+
+          {/* Saved / Accuracy (Pastel Sky) */}
+          <div className="bg-tint-sky text-tint-sky-fg border border-tint-sky-border rounded-2xl p-3 text-center shadow-xs">
+            <span className="text-xl font-black font-mono tabular-nums block">
               {overallAccuracy}%
+            </span>
+            <span className="text-micro font-black uppercase tracking-wider opacity-80 mt-0.5 block">
+              Accuracy
             </span>
           </div>
         </section>
 
-        {/* ── 4. AI QUOTA (CLEAN & COMPACT) ────────────────────────────── */}
+        {/* ── 4. "UPGRADE TO PREMIUM" BANNER (ui_inspiration3.png) ── */}
+        <section 
+          onClick={() => {
+            sounds.playCelebration();
+            haptic.impact('heavy');
+            router.push('/upgrade');
+          }}
+          className="bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white rounded-3xl p-4.5 shadow-lg shadow-orange-500/25 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all relative overflow-hidden"
+        >
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-amber-300/40 backdrop-blur-xs flex items-center justify-center text-stone-900 shadow-2xs shrink-0 text-xl font-black border border-white/20">
+              👑
+            </div>
+            <div>
+              <h2 className="text-sm font-black text-white tracking-tight leading-tight">
+                Upgrade To Premium
+              </h2>
+              <p className="text-caption font-medium text-white/90 mt-0.5 line-clamp-1 max-w-[190px]">
+                Unlock Unlimited AI Tutor &amp; Past Exams
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="bg-stone-950 text-white px-3.5 py-2 rounded-full text-xs font-black shadow-md shrink-0 flex items-center gap-1 hover:bg-black transition-all"
+          >
+            <span>Upgrade</span>
+            <span className="text-amber-400">↗</span>
+          </button>
+        </section>
+
+        {/* ── 5. AI QUOTA STATUS BAR ── */}
         <section 
           aria-label="AI Quota"
-          className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-card-lg p-4 shadow-tactile-sm space-y-2.5"
+          className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 shadow-xs space-y-2"
         >
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-1.5 font-black text-gray-900 dark:text-gray-100">
               <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span>AI Tutor Quota</span>
+              <span>Weekly AI Quota</span>
             </div>
             <div className="flex items-center gap-2 font-mono text-caption text-slate-500 dark:text-slate-400">
               <span className="font-bold text-gray-900 dark:text-gray-100">{usageClamped}/{weeklyCap}</span>
@@ -301,169 +333,101 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             </div>
           </div>
 
-          {/* Progress Bar */}
           <div className="w-full bg-ground border border-black/[0.06] dark:border-white/[0.08] h-2.5 rounded-full overflow-hidden p-0.5">
             <div 
               className={`h-full rounded-full transition-all duration-500 ease-bespoke ${getProgressColor()}`}
               style={{ width: `${Math.max(4, usagePercent)}%` }}
             />
           </div>
-
-          {!isPremium && (
-            <div className="flex items-center justify-between pt-1">
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                Upgrade for 150 inquiries/wk &amp; past exams
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  sounds.playTap();
-                  haptic.selection();
-                  router.push('/upgrade');
-                }}
-                className="text-xs font-black text-primary hover:underline flex items-center gap-0.5"
-              >
-                <span>Upgrade</span>
-                <ChevronRight className="w-3 h-3" />
-              </button>
-            </div>
-          )}
         </section>
 
-        {/* ── 5. SETTINGS & APP PREFERENCES ───────────────────────────── */}
-        <section 
-          aria-label="Account Settings"
-          className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-card-lg shadow-tactile-sm divide-y divide-black/[0.05] dark:divide-white/[0.05] overflow-hidden"
-        >
-          {/* Sound Effects Toggle */}
+        {/* ── 6. SETTINGS & APP PREFERENCES (ui_inspiration3.png SEPARATE CARDS) ── */}
+        <section aria-label="Account Settings" className="space-y-2.5">
+          {/* Sound & Notifications */}
           <div 
             onClick={() => {
               toggleSound();
               haptic.selection();
             }}
-            className="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors cursor-pointer select-none"
+            className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-xs hover:border-primary/40 transition-colors cursor-pointer select-none active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${soundEnabled ? 'bg-primary/10 text-primary' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
-                {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-primary border border-orange-200/40 flex items-center justify-center">
+                {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5 text-slate-400" />}
               </div>
-              <span className="text-xs font-black text-gray-900 dark:text-gray-100">
-                Sound Effects
-              </span>
+              <div>
+                <h3 className="text-xs font-black text-gray-900 dark:text-gray-100">
+                  Sound &amp; Notifications
+                </h3>
+                <p className="text-caption font-medium text-slate-500 dark:text-slate-400">
+                  Sound Effects {soundEnabled ? 'Enabled' : 'Muted'}
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                {soundEnabled ? 'On' : 'Muted'}
-              </span>
-              <div className={`w-9 h-5 rounded-full p-0.5 transition-colors ${soundEnabled ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-700'}`}>
-                <div className={`w-4 h-4 rounded-full bg-white transition-transform ${soundEnabled ? 'translate-x-4' : 'translate-x-0'}`} />
-              </div>
+            <div className={`w-9 h-5 rounded-full p-0.5 transition-colors ${soundEnabled ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-700'}`}>
+              <div className={`w-4 h-4 rounded-full bg-white transition-transform ${soundEnabled ? 'translate-x-4' : 'translate-x-0'}`} />
             </div>
           </div>
 
-          {/* Progress & Scores */}
-          <button 
-            type="button"
-            onClick={() => {
-              sounds.playTap();
-              haptic.selection();
-              router.push('/mastery');
-            }}
-            className="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors active:scale-[0.99]"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                <BarChart2 className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-black text-gray-900 dark:text-gray-100">
-                Exam Progress &amp; Scores
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-              <span className="font-mono font-bold">{overallAccuracy}% avg</span>
-              <ChevronRight className="w-4 h-4" />
-            </div>
-          </button>
-
-          {/* Switch Exam Track */}
-          <button 
-            type="button"
-            onClick={handleRetakeOnboarding}
-            className="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors active:scale-[0.99]"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                <Target className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-black text-gray-900 dark:text-gray-100">
-                Curriculum Track
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-              <span className="truncate max-w-[140px] font-bold">{profile.stream || 'Natural'}</span>
-              <ChevronRight className="w-4 h-4" />
-            </div>
-          </button>
-
-          {/* Subscription */}
-          <button 
-            type="button"
-            onClick={() => {
-              sounds.playTap();
-              haptic.selection();
-              router.push('/upgrade');
-            }}
-            className="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors active:scale-[0.99]"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-accent-gold/10 text-accent-gold flex items-center justify-center">
-                <Zap className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-black text-gray-900 dark:text-gray-100">
-                Subscription Plan
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-              <span className="font-bold">{isPremium ? 'PRO Active' : 'Free (199 ETB)'}</span>
-              <ChevronRight className="w-4 h-4" />
-            </div>
-          </button>
-
-          {/* Telegram Support */}
-          <a 
+          {/* Help & Support (ui_inspiration3.png) */}
+          <a
             href="https://t.me/ethio_exam_bot" 
             target="_blank" 
             rel="noopener noreferrer"
             onClick={() => { sounds.playTap(); haptic.selection(); }}
-            className="w-full px-4 py-3.5 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors active:scale-[0.99]"
+            className="bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-xs hover:border-primary/40 transition-colors cursor-pointer active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-accent-blue/10 text-accent-blue flex items-center justify-center">
-                <MessageCircle className="w-4 h-4" />
+              <div className="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/40 text-sky-600 border border-sky-200/40 flex items-center justify-center">
+                <MessageCircle className="w-5 h-5" />
               </div>
-              <span className="text-xs font-black text-gray-900 dark:text-gray-100">
-                Support &amp; Community
-              </span>
+              <div>
+                <h3 className="text-xs font-black text-gray-900 dark:text-gray-100">
+                  Help &amp; Support
+                </h3>
+                <p className="text-caption font-medium text-slate-500 dark:text-slate-400">
+                  Telegram Bot, FAQ &amp; Community Support
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-              <span className="font-bold">@ethio_exam_bot</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </div>
+            <ChevronRight className="w-4 h-4 text-slate-400" />
           </a>
+
+          {/* Settings / Curriculum Track (ui_inspiration3.png) */}
+          <button 
+            type="button"
+            onClick={handleRetakeOnboarding}
+            className="w-full bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-xs hover:border-primary/40 transition-colors text-left active:scale-[0.99]"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 border border-purple-200/40 flex items-center justify-center">
+                <Target className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-xs font-black text-gray-900 dark:text-gray-100">
+                  Settings &amp; Preferences
+                </h3>
+                <p className="text-caption font-medium text-slate-500 dark:text-slate-400">
+                  Curriculum: {profile.stream || 'Natural Science'}
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-400" />
+          </button>
         </section>
 
-        {/* ── 6. SIGN OUT (WEB ONLY) ──────────────────────────────────── */}
+        {/* ── 7. SIGN OUT BUTTON (ui_inspiration3.png: FULL WIDTH PILL) ── */}
         {!isTelegram && (
           <div className="pt-2">
             <button 
               disabled={isLoggingOut} 
               onClick={handleLogout} 
-              className="w-full py-3 flex items-center justify-center gap-2 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 rounded-xl font-black text-xs transition-all active:scale-[0.98] disabled:opacity-50"
+              className="w-full py-3.5 bg-card border border-black/[0.08] dark:border-white/[0.08] rounded-2xl flex items-center justify-center gap-2 text-gray-800 dark:text-gray-200 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-300 font-black text-xs shadow-xs transition-all active:scale-[0.98] disabled:opacity-50"
             >
               {isLoggingOut ? (
-                <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
               ) : (
-                <LogOut className="w-3.5 h-3.5" />
+                <LogOut className="w-4 h-4" />
               )}
               <span>{isLoggingOut ? 'Signing out...' : 'Sign Out'}</span>
             </button>

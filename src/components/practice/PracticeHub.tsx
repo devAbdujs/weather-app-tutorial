@@ -5,22 +5,21 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useAppStore } from '@/store/useAppStore';
 import { sounds } from '@/lib/sounds';
-import { TemariMascot, MascotBubble } from '@/components/mascot/TemariMascot';
+import { MascotBubble } from '@/components/mascot/TemariMascot';
 import { 
-  Compass, ChevronRight, BookOpen, Brain, Lightbulb, 
+  ChevronRight, BookOpen, Brain, Lightbulb, 
   Sigma, Globe, Network, TrendingUp, Binary, Rocket, 
   Landmark, Users, HeartHandshake, Terminal, Settings2, 
   Server, Database, Building2, Wrench, Zap, Coins, 
   Briefcase, Scale, Stethoscope, Pill, FlaskConical,
-  Atom, Dna, Calculator, ScrollText, Sparkles
+  Atom, Dna, ArrowUpRight, Star, Bookmark, Download, ScrollText
 } from 'lucide-react';
 
 export const getSubjectTheme = (name: string) => {
-  /* Bespoke semantic subject palette — automatic light/dark adaptive */
   if (/math|applied|sigma/i.test(name))
-    return 'text-primary bg-primary/10 border border-primary/20';
-  if (/physic|atom|logic|psych|brain/i.test(name))
     return 'text-accent-purple bg-accent-purple/10 border border-accent-purple/20';
+  if (/physic|atom|logic|psych|brain/i.test(name))
+    return 'text-accent-gold bg-accent-gold/10 border border-accent-gold/20';
   if (/chem|flask|bio|dna|agri/i.test(name))
     return 'text-accent-emerald bg-accent-emerald/10 border border-accent-emerald/20';
   if (/econ|financ|coin|manage|entrepreneur|hist|civic|law|scale|landmark/i.test(name))
@@ -30,6 +29,61 @@ export const getSubjectTheme = (name: string) => {
   if (/med|nurse|health|steth|pill/i.test(name))
     return 'text-accent-rose bg-accent-rose/10 border border-accent-rose/20';
   return 'text-primary bg-primary/10 border border-primary/20';
+};
+
+export const getSubjectCardStyle = (name: string) => {
+  if (/math|applied|sigma|calculus/i.test(name)) {
+    return {
+      card: 'bg-tint-purple text-tint-purple-fg border-tint-purple-border',
+      badge: 'bg-white/80 dark:bg-black/30 text-purple-900 dark:text-purple-200 border-purple-200/40',
+      icon: 'text-purple-600 bg-white/70 dark:bg-black/25',
+      star: '4.9',
+      topics: 'Algebra, Calculus & Geometry',
+    };
+  }
+  if (/bio|dna|life|chem|flask|agri/i.test(name)) {
+    return {
+      card: 'bg-tint-green text-tint-green-fg border-tint-green-border',
+      badge: 'bg-white/80 dark:bg-black/30 text-emerald-950 dark:text-emerald-200 border-emerald-200/40',
+      icon: 'text-emerald-600 bg-white/70 dark:bg-black/25',
+      star: '4.9',
+      topics: 'Genetics, Ecology & Cellular Biology',
+    };
+  }
+  if (/physic|atom|logic|psych|brain/i.test(name)) {
+    return {
+      card: 'bg-tint-peach text-tint-peach-fg border-tint-peach-border',
+      badge: 'bg-white/80 dark:bg-black/30 text-amber-950 dark:text-amber-200 border-amber-200/40',
+      icon: 'text-amber-600 bg-white/70 dark:bg-black/25',
+      star: '4.8',
+      topics: 'Mechanics, Waves & Thermodynamics',
+    };
+  }
+  if (/eng|book|lit|read|aptitude|sat/i.test(name)) {
+    return {
+      card: 'bg-tint-sky text-tint-sky-fg border-tint-sky-border',
+      badge: 'bg-white/80 dark:bg-black/30 text-sky-950 dark:text-sky-200 border-sky-200/40',
+      icon: 'text-sky-600 bg-white/70 dark:bg-black/25',
+      star: '4.8',
+      topics: 'Reading, Grammar & Vocabulary',
+    };
+  }
+  if (/civic|hist|law|landmark|scroll|econ|financ|coin/i.test(name)) {
+    return {
+      card: 'bg-tint-rose text-tint-rose-fg border-tint-rose-border',
+      badge: 'bg-white/80 dark:bg-black/30 text-rose-950 dark:text-rose-200 border-rose-200/40',
+      icon: 'text-rose-600 bg-white/70 dark:bg-black/25',
+      star: '4.7',
+      topics: 'Constitution, History & Governance',
+    };
+  }
+  return {
+    card: 'bg-tint-cream text-tint-cream-fg border-tint-cream-border',
+    badge: 'bg-white/80 dark:bg-black/30 text-stone-900 dark:text-stone-200 border-orange-200/40',
+    icon: 'text-primary bg-white/70 dark:bg-black/25',
+    star: '4.8',
+    topics: 'Foundational Knowledge & Practice',
+  };
 };
 
 const FRESHMAN_COURSES: Record<string, any[]> = {
@@ -65,9 +119,9 @@ const FRESHMAN_COURSES: Record<string, any[]> = {
 const EUEE_SUBJECTS: Record<string, any[]> = {
   'Natural Science': [
     { id: 'Mathematics', Icon: Sigma },
+    { id: 'Biology', Icon: Dna },
     { id: 'Physics', Icon: Atom },
     { id: 'Chemistry', Icon: FlaskConical },
-    { id: 'Biology', Icon: Dna },
     { id: 'English', Icon: BookOpen },
     { id: 'Scholastic Aptitude (SAT)', Icon: Brain },
     { id: 'Civics & Citizenship', Icon: Landmark },
@@ -116,10 +170,9 @@ export const PracticeHub = () => {
   const profileStream = useAppStore(s => s.userProfile?.stream || 'Natural Science');
   const devMode = useAppStore(s => s.devMode);
 
-  // If devMode is true, we allow overriding. Otherwise lock to profile.
   const [activeTab, setActiveTab] = useState<string>(profileTarget || 'entrance');
+  const [filterMode, setFilterMode] = useState<'all' | 'saved'>('all');
   
-  // Ensure we sync if profileTarget loads late or changes, but don't force it if in devMode
   useEffect(() => {
     if (!devMode && profileTarget) {
       setActiveTab(profileTarget);
@@ -146,55 +199,94 @@ export const PracticeHub = () => {
     }
   };
 
-  const examTypeLabel = () => {
-    if (targetExam === 'entrance') return 'Grade 12 EUEE';
-    if (targetExam === 'freshman') return 'University Freshman';
-    if (targetExam === 'exit') return 'University Exit Exam';
-    return 'Practice';
+  const getSubjectList = () => {
+    if (targetExam === 'freshman') {
+      return FRESHMAN_COURSES[profileStream] || FRESHMAN_COURSES['Natural Science'];
+    }
+    if (targetExam === 'exit') {
+      return EXIT_DEPARTMENTS;
+    }
+    return EUEE_SUBJECTS[profileStream] || EUEE_SUBJECTS['Natural Science'];
   };
 
-  const pageTitle = mode === 'notes' ? 'Short Notes' : mode === 'flashcards' ? 'Flashcards' : 'Practice';
-  const pageSubtitle = mode === 'notes' ? 'Choose a subject to study' : mode === 'flashcards' ? 'Swipeable concept review' : examTypeLabel();
+  const subjects = getSubjectList();
 
   return (
-    <div className="flex flex-col pt-safe pb-10 animate-fade-in max-w-lg mx-auto w-full">
+    <div className="flex flex-col pt-safe pb-28 animate-fade-in max-w-lg mx-auto w-full">
 
-      {/* ── PAGE HEADER ── */}
-      <div className="px-5 pt-3 pb-2 mb-3">
-        <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none">
-          {pageTitle}
-        </h1>
-        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1">
-          {pageSubtitle}
-        </p>
+      {/* ── 1. HEADER (ui_inspiration1.png) ── */}
+      <div className="px-5 pt-3 pb-2 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none">
+            My <span className="text-primary">Library</span>
+          </h1>
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
+            Track your questions and saved solutions
+          </p>
+        </div>
       </div>
 
-      {/* ── MASCOT ENCOURAGEMENT BANNER ── */}
-      <div className="px-5 mb-5">
-        <MascotBubble
-          mood="studying"
-          mascotSize={64}
-          message={
-            mode === 'notes' ? (
-              <span>📖 Read summary notes & unlock mastery! Each set earns <span className="text-primary font-black">+15 XP</span>.</span>
-            ) : mode === 'flashcards' ? (
-              <span>⚡ Flip through key formulas and definitions! Complete a deck for <span className="text-primary font-black">+25 XP</span>.</span>
-            ) : (
-              <span>🎯 Pick a topic! Every 10 questions solved boosts your streak & earns <span className="text-primary font-black">+10 XP</span>!</span>
-            )
-          }
-        />
+      {/* ── 2. TOP STAT BOXES (ui_inspiration1.png) ── */}
+      <div className="px-5 grid grid-cols-2 gap-3 mt-2 mb-4">
+        {/* Questions Asked Box (Cyan Pastel) */}
+        <div className="bg-tint-sky text-tint-sky-fg border border-tint-sky-border rounded-2xl p-3.5 flex items-center gap-3.5 shadow-xs">
+          <div className="text-2xl font-black font-mono leading-none">
+            32
+          </div>
+          <div className="text-caption font-black leading-tight">
+            Questions<br />Asked
+          </div>
+        </div>
+
+        {/* Solutions Saved Box (Peach/Amber Pastel) */}
+        <div className="bg-tint-peach text-tint-peach-fg border border-tint-peach-border rounded-2xl p-3.5 flex items-center gap-3.5 shadow-xs">
+          <div className="text-2xl font-black font-mono leading-none">
+            18
+          </div>
+          <div className="text-caption font-black leading-tight">
+            Solutions<br />Saved
+          </div>
+        </div>
       </div>
 
+      {/* ── 3. SEGMENTED TOGGLE (ui_inspiration1.png: "My Questions" / "Saved") ── */}
+      <div className="px-5 mb-4">
+        <div className="p-1 bg-[#F4EFEA] dark:bg-[#1E2530] border border-black/[0.05] dark:border-white/[0.08] rounded-full flex items-center">
+          <button
+            onClick={() => { sounds.playTap(); haptic.selection(); setFilterMode('all'); }}
+            className={`
+              flex-1 py-2 rounded-full text-xs font-black transition-all duration-150
+              ${filterMode === 'all'
+                ? 'bg-primary text-white shadow-md shadow-orange-500/25'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}
+            `}
+          >
+            All Subjects
+          </button>
+          <button
+            onClick={() => { sounds.playTap(); haptic.selection(); setFilterMode('saved'); }}
+            className={`
+              flex-1 py-2 rounded-full text-xs font-black transition-all duration-150
+              ${filterMode === 'saved'
+                ? 'bg-primary text-white shadow-md shadow-orange-500/25'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}
+            `}
+          >
+            Saved &amp; Starred
+          </button>
+        </div>
+      </div>
+
+      {/* Dev Mode Curriculum Override */}
       {devMode && (
-        <div className="px-5 mb-5">
+        <div className="px-5 mb-4">
           <div className="flex p-1 bg-panel border border-black/[0.08] dark:border-white/[0.08] rounded-card-sm">
             {['entrance', 'freshman', 'exit'].map(tab => (
               <button
                 key={tab}
                 onClick={() => { sounds.playTap(); haptic.selection(); setActiveTab(tab); }}
                 className={`flex-1 py-2 text-xs font-black capitalize rounded-btn transition-all ${
-                  activeTab === tab ? 'bg-primary text-white shadow-tactile-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                  activeTab === tab ? 'bg-primary text-white shadow-tactile-xs' : 'text-slate-600 dark:text-slate-400'
                 }`}
               >
                 {tab}
@@ -204,100 +296,72 @@ export const PracticeHub = () => {
         </div>
       )}
 
-      <div className="px-5">
+      {/* ── 4. COLORFUL PASTEL SUBJECT CARDS (ui_inspiration1.png) ── */}
+      <div className="px-5 space-y-3">
+        {subjects.map((c) => {
+          const style = getSubjectCardStyle(c.id);
+          const Icon = c.Icon;
 
-        {/* ── FRESHMAN: course grid ── */}
-        {targetExam === 'freshman' && (
-          <div className="animate-fade-in">
-            <p className="text-caption font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 px-1">Select a course</p>
-            <div className="grid grid-cols-2 gap-3">
-              {(FRESHMAN_COURSES[profileStream] || FRESHMAN_COURSES['Natural Science']).map(c => (
-                <button
-                  key={c.id}
-                  onClick={() => navigate('freshman', { subject: c.id })}
-                  className="group relative p-3.5 rounded-card btn-3d-card hover:border-primary/40 text-left flex flex-col justify-between h-32"
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <div className={`w-9 h-9 rounded-control flex items-center justify-center shrink-0 ${getSubjectTheme(c.id)} shadow-tactile-xs`}>
-                      <c.Icon className="w-5 h-5" strokeWidth={2.2} />
-                    </div>
-                    <span className="inline-flex items-center gap-0.5 text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
-                      <Zap className="w-2.5 h-2.5 fill-current" />
-                      +10 XP
-                    </span>
-                  </div>
-                  <div className="flex items-end justify-between mt-auto">
-                    <span className="text-compact font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 flex-1 pr-1">{c.id}</span>
-                    <div className="w-6 h-6 rounded-full bg-ground flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300 group-hover:text-white transition-colors" />
-                    </div>
-                  </div>
-                </button>
-              ))}
+          return (
+            <div
+              key={c.id}
+              onClick={() => navigate(targetExam || 'entrance', { subject: c.id })}
+              className={`
+                group relative p-4 rounded-3xl border ${style.card}
+                shadow-xs hover:shadow-md
+                transition-all duration-150 cursor-pointer
+                active:scale-[0.98] active:translate-y-[1px]
+                flex flex-col justify-between
+              `}
+            >
+              {/* Top Row: White Pill Badge + Star Rating */}
+              <div className="flex items-center justify-between mb-2">
+                <span className={`px-3 py-1 rounded-full text-xs font-black shadow-2xs border ${style.badge}`}>
+                  {c.id}
+                </span>
+
+                <div className="flex items-center gap-1 bg-white/70 dark:bg-black/30 backdrop-blur-xs px-2.5 py-0.5 rounded-full text-xs font-black text-amber-600 dark:text-amber-400 shadow-2xs">
+                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                  <span>{style.star}</span>
+                </div>
+              </div>
+
+              {/* Middle Row: Title & Subtitle */}
+              <div className="my-1.5 pr-2">
+                <h3 className="text-sm font-black tracking-tight leading-snug">
+                  {c.id} — Complete Exam Syllabus
+                </h3>
+                <p className="text-caption font-medium opacity-80 mt-0.5 line-clamp-1">
+                  {style.topics}
+                </p>
+              </div>
+
+              {/* Bottom Row: XP / Saved indicator & tactile action buttons */}
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-black/[0.06] dark:border-white/[0.06]">
+                <span className="text-micro font-black opacity-75">
+                  Saved past papers • <span className="text-primary font-black">+10 XP</span>
+                </span>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); sounds.playTap(); haptic.selection(); }}
+                    aria-label="Bookmark subject"
+                    className="w-7 h-7 rounded-xl bg-white/70 dark:bg-black/30 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-primary transition-colors shadow-2xs"
+                  >
+                    <Bookmark className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); navigate(targetExam || 'entrance', { subject: c.id }); }}
+                    aria-label="Enter practice session"
+                    className="w-7 h-7 rounded-xl bg-primary text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs"
+                  >
+                    <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
-
-        {/* ── ENTRANCE: subject picker ── */}
-        {targetExam === 'entrance' && (
-          <div className="animate-fade-in">
-            <p className="text-caption font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 px-1">Select subject</p>
-            <div className="grid grid-cols-2 gap-3">
-              {(EUEE_SUBJECTS[profileStream] || EUEE_SUBJECTS['Natural Science']).map(c => (
-                <button
-                  key={c.id}
-                  onClick={() => navigate('entrance', { subject: c.id })}
-                  className="group relative p-3.5 rounded-card btn-3d-card hover:border-primary/40 text-left flex flex-col justify-between h-32"
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <div className={`w-9 h-9 rounded-control flex items-center justify-center shrink-0 ${getSubjectTheme(c.id)} shadow-tactile-xs`}>
-                      <c.Icon className="w-5 h-5" strokeWidth={2.2} />
-                    </div>
-                    <span className="inline-flex items-center gap-0.5 text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
-                      <Zap className="w-2.5 h-2.5 fill-current" />
-                      +10 XP
-                    </span>
-                  </div>
-                  <div className="flex items-end justify-between mt-auto">
-                    <span className="text-compact font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-2 flex-1 pr-1">{c.id}</span>
-                    <div className="w-6 h-6 rounded-full bg-ground flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300 group-hover:text-white transition-colors" />
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── EXIT: department list ── */}
-        {targetExam === 'exit' && (
-          <div className="animate-fade-in">
-            <p className="text-caption font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3 px-1">Select department</p>
-            <div className="flex flex-col gap-2.5 mb-10">
-              {EXIT_DEPARTMENTS.map((d) => (
-                <button
-                  key={d.id}
-                  onClick={() => navigate('exit', { subject: d.id })}
-                  className="w-full group p-3.5 rounded-card-sm btn-3d-card hover:border-primary/40 flex items-center gap-3.5 text-left"
-                >
-                  <div className={`w-9 h-9 rounded-control flex items-center justify-center shrink-0 ${getSubjectTheme(d.id)} shadow-tactile-xs`}>
-                    <d.Icon className="w-5 h-5" strokeWidth={2.2} />
-                  </div>
-                  <span className="flex-1 text-sm font-black text-gray-900 dark:text-gray-100">{d.id}</span>
-                  <span className="inline-flex items-center gap-0.5 text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 mr-1">
-                    <Zap className="w-2.5 h-2.5 fill-current" />
-                    +10 XP
-                  </span>
-                  <div className="w-6 h-6 rounded-full bg-ground flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300 group-hover:text-white transition-colors" />
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
+          );
+        })}
       </div>
     </div>
   );

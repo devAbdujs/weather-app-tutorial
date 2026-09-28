@@ -102,14 +102,26 @@ export const TopHeader = () => {
         </button>
       </div>
 
-      {/* Right: Sound toggle + Theme toggle */}
+      {/* Right: Pro Subscribe Pill + Sound toggle + Theme toggle */}
       <div className="flex items-center gap-1.5 justify-end">
+        {/* Pro Pill (ui_inspiration2.png) */}
+        {userProfile?.subscription_status !== 'premium' && (
+          <button
+            onClick={() => { sounds.playTap(); router.push('/upgrade'); }}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-control bg-amber-400 hover:bg-amber-500 text-stone-900 font-black text-micro sm:text-xs shadow-tactile-xs active:scale-95 transition-all"
+            title="Upgrade to Pro"
+          >
+            <span>👑</span>
+            <span>PRO</span>
+          </button>
+        )}
+
         {/* Sound FX Toggle */}
         <button
           onClick={toggleSound}
           aria-label={soundEnabled ? 'Mute sound effects' : 'Unmute sound effects'}
           title={soundEnabled ? 'Sound FX On' : 'Sound FX Muted'}
-          className="w-9 h-9 flex items-center justify-center rounded-control btn-3d-card text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary"
+          className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-control btn-3d-card text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary"
         >
           {soundEnabled ? (
             <Volume2 className="w-4 h-4 text-primary" />
@@ -122,7 +134,7 @@ export const TopHeader = () => {
         <button
           onClick={toggle}
           aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="w-9 h-9 flex items-center justify-center rounded-control btn-3d-card text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100"
+          className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-control btn-3d-card text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100"
         >
           {resolvedTheme === 'dark' ? <Sun className="w-4 h-4 text-accent-gold" /> : <Moon className="w-4 h-4 text-gray-700" />}
         </button>
