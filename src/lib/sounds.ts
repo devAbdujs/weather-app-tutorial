@@ -3,17 +3,17 @@
  * Zero external MP3 assets, zero latency, runs offline, pleasant harmonic tones.
  */
 
+import { safeLocalStorage } from '@/lib/safeStorage';
+
 class SoundEffects {
   private ctx: AudioContext | null = null;
   private enabled: boolean = true;
 
   constructor() {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('temari_sound_enabled');
-        if (saved !== null) this.enabled = saved === 'true';
-      } catch {}
-    }
+    try {
+      const saved = safeLocalStorage.getItem('temari_sound_enabled');
+      if (saved !== null) this.enabled = saved === 'true';
+    } catch {}
   }
 
   private initCtx(): AudioContext | null {
@@ -36,11 +36,9 @@ class SoundEffects {
 
   public setEnabled(value: boolean) {
     this.enabled = value;
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('temari_sound_enabled', value.toString());
-      } catch {}
-    }
+    try {
+      safeLocalStorage.setItem('temari_sound_enabled', value.toString());
+    } catch {}
   }
 
   public toggle(): boolean {

@@ -68,16 +68,14 @@ export async function POST(req: NextRequest) {
     try {
       const geminiKey = getNextGeminiKey();
       if (geminiKey) {
-        // Fetch the image and convert to base64 for Gemini inline_data
-        const imageResponse = await fetch(receiptUrl);
-        const imageBuffer = await imageResponse.arrayBuffer();
-        const base64Image = Buffer.from(imageBuffer).toString('base64');
+        // Convert in-memory fileBuffer directly to base64 for Gemini inline_data
+        const base64Image = Buffer.from(fileBuffer).toString('base64');
         const mimeType = file.type || 'image/jpeg';
 
         const google = createGoogleGenerativeAI({ apiKey: geminiKey });
 
         const { text: geminiText } = await generateText({
-          model: google('gemini-3.6-flash'),
+          model: google('gemini-1.5-flash'),
           messages: [
             {
               role: 'user',

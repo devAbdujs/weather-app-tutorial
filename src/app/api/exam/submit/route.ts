@@ -29,32 +29,49 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient();
     const telegramId = session.telegram_id.toString();
 
-    // Fetch existing stats
-    const { data: existing } = await supabase
-      .from('user_subject_stats')
-      .select('*')
-      .eq('telegram_id', telegramId)
-      .eq('subject', subject)
-      .maybeSingle();
+    // Try atomic RPC increment first to prevent offline queue flush race conditions
+    let newAttempted = attempted;
+    let newCorrect = correct;
 
-    const newAttempted = (existing?.questions_attempted || 0) + attempted;
-    const newCorrect = (existing?.questions_correct || 0) + correct;
-    const newTime = (existing?.total_time_spent_seconds || 0) + (timeSpentSeconds || 0);
+    const { data: rpcData, error: rpcError } = await supabase.rpc('increment_user_subject_stats', {
+      p_telegram_id: telegramId,
+      p_subject: subject,
+      p_attempted: attempted,
+      p_correct: correct,
+      p_time: timeSpentSeconds || 0,
+    });
 
-    const { error: upsertError } = await supabase
-      .from('user_subject_stats')
-      .upsert({
-        telegram_id: telegramId,
-        subject,
-        questions_attempted: newAttempted,
-        questions_correct: newCorrect,
-        total_time_spent_seconds: newTime,
-        last_practiced: new Date().toISOString()
-      }, { onConflict: 'telegram_id, subject' });
+    if (!rpcError && rpcData) {
+      newAttempted = (rpcData as any).attempted ?? attempted;
+      newCorrect = (rpcData as any).correct ?? correct;
+    } else {
+      // Fallback if RPC is not yet created in the database
+      const { data: existing } = await supabase
+        .from('user_subject_stats')
+        .select('*')
+        .eq('telegram_id', telegramId)
+        .eq('subject', subject)
+        .maybeSingle();
 
-    if (upsertError) {
-      console.error('Failed to upsert subject stats', upsertError);
-      throw upsertError;
+      newAttempted = (existing?.questions_attempted || 0) + attempted;
+      newCorrect = (existing?.questions_correct || 0) + correct;
+      const newTime = (existing?.total_time_spent_seconds || 0) + (timeSpentSeconds || 0);
+
+      const { error: upsertError } = await supabase
+        .from('user_subject_stats')
+        .upsert({
+          telegram_id: telegramId,
+          subject,
+          questions_attempted: newAttempted,
+          questions_correct: newCorrect,
+          total_time_spent_seconds: newTime,
+          last_practiced: new Date().toISOString()
+        }, { onConflict: 'telegram_id, subject' });
+
+      if (upsertError) {
+        console.error('Failed to upsert subject stats', upsertError);
+        throw upsertError;
+      }
     }
 
     // Level calculation algorithm:

@@ -6,13 +6,22 @@
  * - If a key returns 429 (rate limited), it's cooled down for 60s and skipped
  */
 
-const GEMINI_KEYS: string[] = Object.keys(process.env)
+const rawKeys = Object.keys(process.env)
   .filter(key => {
     const k = key.toLowerCase();
-    return k.startsWith('gemini_api_key') || k.startsWith('gemini_key') || k === 'google_generative_ai_api_key';
+    return (
+      k.startsWith('gemini_api_key') ||
+      k.startsWith('gemini_key') ||
+      k.startsWith('google_api_key') ||
+      k === 'google_generative_ai_api_key' ||
+      k === 'google_api_key'
+    );
   })
   .map(key => process.env[key])
-  .filter((k): k is string => typeof k === 'string' && k.trim().length > 0);
+  .filter((k): k is string => typeof k === 'string' && k.trim().length > 0)
+  .map(k => k.trim());
+
+const GEMINI_KEYS: string[] = Array.from(new Set(rawKeys));
 
 if (GEMINI_KEYS.length === 0) {
   console.warn('[GeminiKeys] ⚠️  No Gemini API keys found. AI Tutor unavailable.');

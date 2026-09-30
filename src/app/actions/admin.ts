@@ -105,7 +105,7 @@ export async function loginAdmin(username: string, passcode: string) {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    path: '/admin',
+    path: '/',
     maxAge: 60 * 60 * 24 // 1 day
   });
 
@@ -135,7 +135,7 @@ export async function logoutAdmin() {
     name: ADMIN_COOKIE_NAME,
     value: '',
     expires: new Date(0),
-    path: '/admin'
+    path: '/'
   });
   return { success: true };
 }
@@ -354,14 +354,14 @@ export async function getAdminAIStats() {
     .order('ai_weekly_usage', { ascending: false })
     .limit(50);
 
-  // 2. Fetch total count of ai_cache
+  // 2. Fetch total count of ai_responses_cache
   const { count: cacheCount } = await supabase
-    .from('ai_cache')
+    .from('ai_responses_cache')
     .select('*', { count: 'exact', head: true });
 
-  // 3. Fetch recent ai_cache entries
+  // 3. Fetch recent ai_responses_cache entries
   const { data: recentCache } = await supabase
-    .from('ai_cache')
+    .from('ai_responses_cache')
     .select('question_id, prompt_type, created_at')
     .order('created_at', { ascending: false })
     .limit(10);

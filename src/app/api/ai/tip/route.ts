@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const ip = req.ip || req.headers.get('x-forwarded-for') || session.telegram_id || 'unknown';
-    const rateLimitInfo = checkRateLimit(ip, 1, 60000); // Max 1 tip per minute
+    const rateLimitKey = `tip:${session.telegram_id || req.ip || 'unknown'}`;
+    const rateLimitInfo = checkRateLimit(rateLimitKey, 1, 60000); // Max 1 tip per minute
     
     if (!rateLimitInfo.allowed) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
@@ -57,7 +57,7 @@ Rules:
     const google = createGoogleGenerativeAI({ apiKey: key });
 
     const { text } = await generateText({
-      model: google('gemini-3.6-flash'),
+      model: google('gemini-1.5-flash'),
       prompt,
     });
 

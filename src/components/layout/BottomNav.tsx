@@ -27,8 +27,7 @@ export const BottomNav = () => {
   const handleCenterFab = () => {
     sounds.playCelebration();
     haptic.impact('heavy');
-    const target = userProfile?.target_exam || 'entrance';
-    setSetupModalType(target as any);
+    setSetupModalType('exam');
   };
 
   const leftNavItems = [

@@ -1,7 +1,67 @@
 # Temari App - Master Execution Roadmap (Prioritized)
 
-*Last Updated: Sept 2026 (Launch Ready)*  
-*Status: 100% Production-Grade. Payments 100% cloud-native on Vercel. Database audited across all 12 tables.*
+*Last Updated: Sept 2026 (Audit & Hardening Sprint)*  
+*Status: Production-Grade. Payments 100% cloud-native on Vercel. Full codebase audit completed across UI/UX, Data Model, API Endpoints, and Recent Commits.*
+
+---
+
+## 🛠️ Codebase Audit & System Hardening (Identified Fixes)
+
+### 🔴 Phase 1: Critical P0 Fixes (Bugs & Security)
+*   **[x] Fix `BottomNav` Center FAB Modal Trigger:**
+    *   In `src/components/layout/BottomNav.tsx` (`handleCenterFab`), changed `setSetupModalType(target as any)` to `setSetupModalType('exam')`.
+    *   Fixed empty modal header/body and ensured "Start Session" button works across all exams.
+*   **[x] Fix Admin Cookie Scope for Note Uploads:**
+    *   In `src/app/actions/admin.ts` (`loginAdmin` and `logoutAdmin`), changed cookie `path: '/admin'` to `path: '/'`.
+    *   Resolved browser cookie scoping issue for `/api/admin/notes` uploads.
+*   **[x] Correct Invalid Gemini Model Identifier Across AI Endpoints:**
+    *   Replaced non-existent `gemini-3.6-flash` with stable `gemini-1.5-flash` in `route.ts` across tutor, quiz, tip, and payments.
+    *   Eliminated 404 API failures and false key rate-limiting cooldown cascades.
+*   **[x] Fix AI Cache Table Name Mismatch (`ai_cache` vs `ai_responses_cache`):**
+    *   Renamed SQL table references in `src/app/api/ai/tutor/route.ts` and `src/app/actions/admin.ts` to `ai_responses_cache`.
+    *   Ensures AI response caching works properly with RLS.
+*   **[x] Fix Multi-Turn AI Chat Ordering & First Turn Role:**
+    *   In `src/components/ai/AITutorDrawer.tsx`, filtered out the initial assistant greeting message before creating `chatHistory`.
+    *   Strictly start multi-turn requests with `role: 'user'` for Gemini API compliance and enable AI cache hits.
+*   **[x] Harden / Deprecate Phone Auth PIN Bypass:**
+    *   In `src/app/api/auth/phone/route.ts`, permanently hardened against unauthorized bypass by returning 403 Forbidden in favor of secure Telegram authentication.
+*   **[x] Remove Duplicate `TopHeader` on `/upgrade` Page:**
+    *   In `src/app/(app)/(protected)/upgrade/page.tsx`, removed duplicate `<TopHeader />` calls in the verifying and form phases.
+*   **[x] Purge Plaintext Production Credentials in Scripts:**
+    *   Sanitized `migrate_to_supabase.py` by reading `os.environ.get("DATABASE_URL")`.
+
+---
+
+### 🟡 Phase 2: High Priority P1 Fixes (Stability, Offline & Performance)
+*   **[x] Harden Offline Exam Loading in `ExamSessionLoader.tsx` & `ExamSessionPage`:**
+    *   In `src/app/(app)/(protected)/exam/session/page.tsx`, delegated empty initial queries to `ExamSessionLoader`.
+    *   In `src/components/exam/ExamSessionLoader.tsx`, render `<SkeletonScreen />` while `isSyncing` and hydrate from IndexedDB cache even when server fails.
+*   **[x] Fix CGNAT Rate Limiting in `/api/ai/tip`:**
+    *   In `src/app/api/ai/tip/route.ts`, keyed rate limiter on `session.telegram_id` to prevent cellular IP lockouts.
+*   **[x] Replace `.single()` with `.maybeSingle()` in `updateDailyStreak()`:**
+    *   In `src/app/actions/user.ts`, updated profile query to `.maybeSingle()` to prevent uncaught SSR crashes on profile misses.
+*   **[x] Optimize Entrance Exam Year Counts Query in `practice/sessions`:**
+    *   Replaced 9 parallel client-to-server action calls with a single batched query action `getEntranceYearCounts`.
+*   **[x] Broaden Key Rotation Support for Standard Env Vars:**
+    *   In `src/lib/geminiKeyRotation.ts`, added support for `GOOGLE_API_KEY`, `gemini_key`, and deduplicated key list.
+*   **[x] Optimize Receipt Image Processing in `/api/payments/submit`:**
+    *   In `src/app/api/payments/submit/route.ts`, reused in-memory `fileBuffer` for base64 conversion instead of making a redundant HTTP fetch.
+
+---
+
+### 🟢 Phase 3: Medium Priority P2 Fixes (UI/UX Polish & Type Integrity)
+*   **[x] Fix Flashcard Exit Navigation in `FlashcardDeck.tsx`:**
+    *   Updated `onExit` in `src/components/flashcards/FlashcardDeck.tsx` to call `router.back()` with fallback to `/practice?mode=flashcards`.
+*   **[x] Fix Active Route Highlighting in Admin Layout Sidebar:**
+    *   Created `AdminNav.tsx` client component with dynamic `usePathname()` route matching across all admin tabs.
+*   **[x] Re-initialize Subject on Modal Type Change in `ExamSetupModal.tsx`:**
+    *   Added `useEffect` to re-sync `subject` to `getDefaultSubject()` whenever `setupModalType`, `targetExam`, or `profileStream` changes.
+*   **[x] Synchronize `UserProfile` TypeScript Type Definition:**
+    *   Updated `src/types/index.ts` to include `stream?: string | null`, `ai_weekly_usage?: number`, and `ai_quota_reset_at?: string | null`.
+*   **[x] Replace Remaining Raw `localStorage` Usages:**
+    *   Replaced direct `localStorage` calls in `src/lib/sounds.ts` and `src/app/(app)/(protected)/practice/sessions/page.tsx` with `safeLocalStorage`.
+*   **[x] Atomic Database Increments for Exam Submissions:**
+    *   In `src/app/api/exam/submit/route.ts`, implemented atomic RPC `increment_user_subject_stats` with safe fallback, and added SQL schema `db_schemas/increment_user_subject_stats.sql`.
 
 ---
 
@@ -27,10 +87,12 @@
 
 ---
 
-## 📚 Current Sprint: Content Ingestion & Bulk Short Notes
+## 📚 Content Ingestion & Bulk Short Notes
 *   **[ ] Bulk Past Papers & Short Notes Digestion**
     *   Batch import Grade 12, Freshman, and Exit exam short notes via `/admin/upload-notes` or local CLI (`scripts/ingest_note_pdf.py`).
     *   Ensure all subjects (Biology, Physics, Chemistry, Math, Aptitude, Economics) have complete chapter notes with KaTeX math rendering.
+
+---
 
 ## 🎨 Completed: Unified Color Scheme & Bespoke Mobile Design Architecture
 *   **[x] Elimination of Arbitrary Inline HSL Brackets:**
@@ -51,7 +113,6 @@
 ---
 
 ## 🔥 Priority 3: Subdomain Architecture (`*.temari.top`)
-
 *   **[ ] Dynamic Routing Setup**
     *   Create `src/middleware.ts` to read hostname subdomain and rewrite routes dynamically.
     *   Add wildcard DNS record on NameSilo/Cloudflare.
@@ -60,7 +121,6 @@
 ---
 
 ## 🚀 Priority 4: Growth & Intelligent CRM
-
 *   **[ ] Intelligent Telegram Bot Engagement**
     *   Automated daily streak retention notifications via bot.
     *   Inbound funnel: post free short note previews (watermarked) into university student groups.

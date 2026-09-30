@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Play, Zap, FileText } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useAppStore } from '@/store/useAppStore';
@@ -91,6 +91,10 @@ export const ExamSetupModal: React.FC = () => {
 
   const [subject, setSubject] = useState(getDefaultSubject());
   const [stream]  = useState(profileStream);
+
+  useEffect(() => {
+    setSubject(getDefaultSubject());
+  }, [setupModalType, targetExam, profileStream]);
 
   const resolveExamType = () => {
     if (isFreshman) return 'University Freshman';

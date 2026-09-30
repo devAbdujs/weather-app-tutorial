@@ -20,7 +20,6 @@ import {
   ImageIcon,
   X
 } from 'lucide-react';
-import { TopHeader } from '@/components/layout/TopHeader';
 import confetti from 'canvas-confetti';
 import { sounds } from '@/lib/sounds';
 import { TemariMascot } from '@/components/mascot/TemariMascot';
@@ -380,8 +379,6 @@ export default function UpgradePage() {
   if (phase === 'verifying') {
     return (
       <div className="min-h-screen bg-ground pb-24 flex flex-col items-center justify-center p-6 text-center animate-fade-in">
-        <TopHeader />
-
         <div className="max-w-sm w-full mx-auto pt-6 flex flex-col items-center">
           {/* Teme Mascot studying/verifying */}
           <div className="relative mb-3">
@@ -503,8 +500,6 @@ export default function UpgradePage() {
   // ─────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-ground pb-24">
-      <TopHeader />
-      
       <div className="px-5 pt-6 max-w-lg mx-auto">
         <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight mb-2">
           Unlock Premium 🚀

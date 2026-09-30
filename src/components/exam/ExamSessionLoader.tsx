@@ -2,6 +2,8 @@
 
 import { SkeletonScreen } from "@/components/ui/SkeletonScreen";
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { BookOpen, ArrowLeft } from 'lucide-react';
 import { ExamWorkspace } from './ExamWorkspace';
 import { Question } from '@/types';
 import { getCachedQuestions, setCachedQuestions } from '@/lib/cache';
@@ -40,20 +42,30 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
       if (initialQuestions.length > 0) {
         // Non-blocking cache update
         setCachedQuestions(cacheKey, initialQuestions).finally(() => setIsSyncing(false));
-      } else if (!serverError) {
-        const cached = await getCachedQuestions(cacheKey);
-        if (cached && cached.length > 0) {
-          setCachedQuestionsState(cached);
-        }
-        setIsSyncing(false);
       } else {
-        setIsSyncing(false);
+        // Fallback to offline IndexedDB cache even if server query returned empty or had error
+        try {
+          const cached = await getCachedQuestions(cacheKey);
+          if (cached && cached.length > 0) {
+            setCachedQuestionsState(cached);
+          }
+        } catch {
+          // Ignore cache read failures
+        } finally {
+          setIsSyncing(false);
+        }
       }
     };
     syncCache();
   }, [examType, sessionSize, sessionOffset, subject, year, period, initialQuestions, serverError]);
 
-  if (serverError) {
+  // While syncing cache and we have no initial questions, display skeleton loading state
+  if (activeQuestions.length === 0 && isSyncing) {
+    return <SkeletonScreen />;
+  }
+
+  // If server returned error and cache has no questions
+  if (activeQuestions.length === 0 && !isSyncing && serverError) {
     return (
       <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6 text-center animate-fade-in">
         <div className="w-16 h-16 bg-error/10 border border-error/20 rounded-full flex items-center justify-center mb-4">
@@ -68,16 +80,34 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
     );
   }
 
-  // If server returned no questions and we are done syncing (meaning cache was also empty)
+  // If questions are empty after syncing finishes
   if (activeQuestions.length === 0 && !isSyncing) {
     return (
       <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6 text-center animate-fade-in">
-        <span className="text-4xl mb-4">📭</span>
-        <h2 className="text-xl font-black text-gray-900 dark:text-gray-100">Session Empty</h2>
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">No questions available for this session slice.</p>
-        <button onClick={() => router.back()} className="mt-8 px-8 h-12 bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 rounded-2xl font-black shadow-tactile-xs border border-black/10 dark:border-white/10 active:scale-95 transition-all">
-          Go Back
-        </button>
+        <div className="w-16 h-16 bg-accent-gold/10 text-accent-gold rounded-full flex items-center justify-center mb-4 border border-accent-gold/20">
+          <BookOpen className="w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight mb-2">
+          No Questions Available Yet
+        </h2>
+        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 max-w-sm mb-8 leading-relaxed">
+          We couldn&apos;t find past exam questions for <strong className="text-gray-900 dark:text-gray-200">{subject || 'All'}</strong> {year ? `(${year} E.C.)` : ''}. Our team is continuously digitizing past papers.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+          <Link 
+            href="/practice"
+            className="w-full h-12 rounded-xl bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 font-black flex items-center justify-center gap-2 shadow-tactile-xs border border-black/10 dark:border-white/10 active:scale-95 transition-transform text-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Pick Another Subject
+          </Link>
+          <Link 
+            href="/dashboard"
+            className="w-full h-12 rounded-xl bg-card border border-black/10 dark:border-white/10 text-gray-700 dark:text-gray-300 font-bold flex items-center justify-center text-sm active:scale-95 transition-transform"
+          >
+            Return to Dashboard
+          </Link>
+        </div>
       </div>
     );
   }

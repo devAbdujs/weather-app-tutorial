@@ -102,7 +102,10 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = result.data;
-    const isFollowUpChat = payload.chatHistory && payload.chatHistory.length > 0;
+    const rawHistory = payload.chatHistory || [];
+    // Ensure chatHistory does not begin with an assistant greeting (Gemini requires starting with 'user')
+    const cleanedHistory = rawHistory.filter((msg, idx) => !(idx === 0 && msg.role === 'assistant'));
+    const isFollowUpChat = cleanedHistory.length > 1;
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -172,7 +175,7 @@ export async function POST(req: NextRequest) {
     if (payload.questionId && !isFollowUpChat) {
       try {
         const { data: cached } = await supabaseAdmin
-          .from('ai_cache')
+          .from('ai_responses_cache')
           .select('response')
           .eq('question_id', payload.questionId)
           .eq('prompt_type', payload.promptType)
@@ -206,7 +209,7 @@ export async function POST(req: NextRequest) {
     const { system, defaultUserPrompt } = buildPrompt(payload, profileContext);
 
     const finalMessages = isFollowUpChat 
-      ? payload.chatHistory! 
+      ? cleanedHistory 
       : [{ role: 'user' as const, content: defaultUserPrompt }];
 
     let attempt = 0;
@@ -220,7 +223,7 @@ export async function POST(req: NextRequest) {
 
       try {
         const google = createGoogleGenerativeAI({ apiKey: geminiKey });
-        const model = google('gemini-3.6-flash');
+        const model = google('gemini-1.5-flash');
 
         const stream = await streamText({
           model,
@@ -243,7 +246,7 @@ export async function POST(req: NextRequest) {
 
             // 2. CACHE POPULATION: Save the generated response for the next student
             if (payload.questionId && !isFollowUpChat) {
-              await supabaseAdmin.from('ai_cache').insert({
+              await supabaseAdmin.from('ai_responses_cache').insert({
                 question_id: payload.questionId,
                 prompt_type: payload.promptType,
                 response: text

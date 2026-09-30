@@ -80,7 +80,7 @@ export async function updateDailyStreak() {
     .from('profiles')
     .select('daily_streak, last_activity_date, full_name, username')
     .eq('telegram_id', session.telegram_id)
-    .single();
+    .maybeSingle();
 
   const today = new Date().toISOString().split('T')[0];
   

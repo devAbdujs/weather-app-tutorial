@@ -57,6 +57,9 @@ export interface UserProfile {
   last_activity_date: string | null;
   subscription_status: 'free' | 'premium';
   target_exam: string | null;
+  stream?: string | null;
+  ai_weekly_usage?: number;
+  ai_quota_reset_at?: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -18,7 +18,13 @@ interface FlashcardDeckProps {
 
 export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ subject }) => {
   const router = useRouter();
-  const onExit = () => router.push('/');
+  const onExit = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/practice?mode=flashcards');
+    }
+  };
   
   const { haptic } = useTelegram();
   const [cards, setCards] = useState<Flashcard[]>([]);

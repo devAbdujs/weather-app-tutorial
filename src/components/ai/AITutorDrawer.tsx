@@ -130,9 +130,10 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
           correctAnswer: question?.answer,
           explanation: question?.explanation,
           promptType: type,
-          studentAnswer,
-          // Only send actual content to the AI, not the UI display text
-          chatHistory: updatedMessages.map(m => ({ role: m.role, content: m.content }))
+          // Only send actual user/assistant conversational turns to the AI, excluding welcome banner
+          chatHistory: updatedMessages
+            .filter(m => m.id !== 'welcome')
+            .map(m => ({ role: m.role, content: m.content }))
         })
       });
 

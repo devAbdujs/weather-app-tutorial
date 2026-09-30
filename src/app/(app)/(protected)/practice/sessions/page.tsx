@@ -3,7 +3,8 @@
 import React, { useEffect, useState, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTelegram } from '@/hooks/useTelegram';
-import { getSessionCounts } from '@/app/actions/practice';
+import { getSessionCounts, getEntranceYearCounts } from '@/app/actions/practice';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import { BookOpen, ChevronLeft, CheckCircle2, ArrowRight, Layers, Clock } from 'lucide-react';
 
 const MIDTERM_SIZE = 25;
@@ -58,15 +59,9 @@ function SessionsContent() {
         setFinalCount(total - half);
         setUntaggedCount(total);
       } else if (isEntrance) {
-        // Fetch counts for all years in parallel
-        const yearCounts = await Promise.all(
-          EUEE_YEARS.map(async y => {
-            const c = await getSessionCounts({ ...base, year: y });
-            return { year: y, count: c };
-          })
-        );
-        setEntranceYears(yearCounts.filter(yc => yc.count > 0));
-        // We still fetch total just for display if needed
+        // Fetch counts for all years in a single batched query
+        const yearCounts = await getEntranceYearCounts({ ...base, years: EUEE_YEARS });
+        setEntranceYears(yearCounts);
         const total = yearCounts.reduce((acc, curr) => acc + curr.count, 0);
         setUntaggedCount(total);
       } else {
@@ -136,7 +131,7 @@ function SessionsContent() {
   const handleStart = (session: SessionItem, mode: 'practice' | 'exam') => {
     haptic.impact('heavy');
     try {
-      localStorage.setItem('temari_last_session', JSON.stringify({
+      safeLocalStorage.setItem('temari_last_session', JSON.stringify({
         subject,
         examType: examType || '',
         sessionId: session.id,
