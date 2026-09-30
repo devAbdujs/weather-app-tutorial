@@ -206,6 +206,20 @@ See [docs/api-routes.md](docs/api-routes.md) for every endpoint.
 
 ---
 
+## 🛠️ Production Debugging & Incident Triage
+
+See [docs/DEBUGGING.md](docs/DEBUGGING.md) for the complete incident response playbook, covering:
+- React Error #310, #418, and hydration crash recovery
+- Telegram Mini App auth & session verification
+- Vercel build & prerender error triage
+- Supabase connection, RLS, and atomic SQL functions
+- Gemini AI quota cooldowns & key rotation
+- Payment OCR payload limits & Telegram webhook triggers
+- One-line pre-flight diagnostic commands
+
+---
+
 ## Maintainer
 
 Built by [@abdusalam](https://t.me/abdusalam). Open an issue or DM on Telegram for questions.
+
