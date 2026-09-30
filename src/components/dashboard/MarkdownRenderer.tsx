@@ -15,10 +15,13 @@ export const HIGHLIGHT_STYLE_MAP: Record<HighlightColor, string> = {
   orange: 'bg-orange-300/85 text-orange-950 dark:bg-orange-400/35 dark:text-orange-100',
 };
 
-const preprocessMath = (text: string) => {
+export const normalizeLaTeX = (text: string): string => {
+  if (!text) return '';
   let p = text;
-  p = p.replace(/\$\$([\s\S]*?)\$\$/g, (_, m) => `\n\`\`\`math\n${m}\n\`\`\`\n`);
-  p = p.replace(/\$([^\$\n]+)\$/g, (_, m) => `\`math-inline:${m}\``);
+  // 1. Convert LaTeX block math \[ ... \] to $$ ... $$
+  p = p.replace(/\\\[([\s\S]*?)\\\]/g, (_, m) => `\n\n$$\n${m.trim()}\n$$\n\n`);
+  // 2. Convert LaTeX inline math \( ... \) to $ ... $
+  p = p.replace(/\\\(([\s\S]*?)\\\)/g, (_, m) => `$${m.trim()}$`);
   return p;
 };
 
@@ -233,30 +236,51 @@ export default function MarkdownRenderer({
             {wrap(children)}
           </blockquote>
         ),
-        code: ({ inline, className, children, ...props }: any) => {
+        pre: ({ node, children, ...props }: any) => {
+          const isMath = (node?.children?.[0] as any)?.properties?.className?.includes?.('language-math');
+          if (isMath) {
+            return <div className="my-4 overflow-x-auto">{children}</div>;
+          }
+          return (
+            <pre className="my-4 p-4 rounded-xl bg-black/5 dark:bg-white/5 overflow-x-auto font-mono text-sm" {...props}>
+              {children}
+            </pre>
+          );
+        },
+        code: ({ className, children, ...props }: any) => {
           const isMathDisplay = className === 'language-math';
-          const isMathInline = className === 'language-math-inline' || (inline && typeof children === 'string' && children.startsWith('math-inline:'));
+          const childrenStr = typeof children === 'string' ? children : String(children ?? '');
+          const isMathInline = className === 'language-math-inline' || childrenStr.startsWith('math-inline:');
           
           if (isMathDisplay) {
-            const mathStr = String(children).replace(/\n$/, '');
-            const html = katex.renderToString(mathStr, {
-              displayMode: true, throwOnError: false,
-            });
-            return (
-              <div className={`my-6 px-4 py-5 rounded-2xl ${accentBg} border border-black/5 dark:border-white/10 overflow-x-auto`}>
-                <div className="flex justify-center items-center" dangerouslySetInnerHTML={{ __html: html }} />
-              </div>
-            );
+            const mathStr = childrenStr.replace(/\n$/, '');
+            try {
+              const html = katex.renderToString(mathStr, {
+                displayMode: true,
+                throwOnError: false,
+              });
+              return (
+                <div className={`my-6 px-4 py-5 rounded-2xl ${accentBg} border border-black/5 dark:border-white/10 overflow-x-auto`}>
+                  <div className="flex justify-center items-center" dangerouslySetInnerHTML={{ __html: html }} />
+                </div>
+              );
+            } catch {
+              return <pre className="font-mono text-sm">{mathStr}</pre>;
+            }
           }
           if (isMathInline) {
-            const mathStr = String(children).replace('math-inline:', '');
-            const html = katex.renderToString(mathStr, { displayMode: false, throwOnError: false });
-            return (
-              <span
-                className={`mx-0.5 px-1 py-0.5 rounded ${accentBg} ${accentText} text-[0.9em]`}
-                dangerouslySetInnerHTML={{ __html: html }}
-              />
-            );
+            const mathStr = childrenStr.replace(/^math-inline:/, '');
+            try {
+              const html = katex.renderToString(mathStr, { displayMode: false, throwOnError: false });
+              return (
+                <span
+                  className={`mx-0.5 px-1 py-0.5 rounded ${accentBg} ${accentText} text-[0.9em]`}
+                  dangerouslySetInnerHTML={{ __html: html }}
+                />
+              );
+            } catch {
+              return <code className="font-mono text-sm">{mathStr}</code>;
+            }
           }
           return (
             <code className="bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md text-[0.88em] font-mono text-purple-700 dark:text-purple-400" {...props}>
@@ -266,7 +290,7 @@ export default function MarkdownRenderer({
         },
       }}
     >
-      {preprocessMath(content)}
+      {normalizeLaTeX(content)}
     </ReactMarkdown>
   );
 }

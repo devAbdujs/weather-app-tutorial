@@ -1,3 +1,5 @@
+@import 'katex/dist/katex.min.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -384,5 +386,26 @@ body {
   border-bottom-color: hsla(0, 0%, 100%, 0.16);
   box-shadow: none;
 }
+
+/* ─── KaTeX Responsive Math Display ────────────────────────── */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.75rem 0.5rem;
+  margin: 1.25rem 0 !important;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.katex-display > .katex {
+  max-width: 100%;
+  text-align: center;
+}
+
+.katex {
+  font-size: 1.05em;
+  text-rendering: auto;
+}
+
 
 

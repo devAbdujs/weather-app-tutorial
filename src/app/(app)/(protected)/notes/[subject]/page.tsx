@@ -44,21 +44,68 @@ export default async function NotesPage({
     .limit(200);
 
   if (subject !== 'All') {
-    query = query.ilike('department', `%${subject}%`);
+    const s = subject.toLowerCase().trim();
+    if (s.includes('applied math')) {
+      // Matches 'Applied Math I', 'Applied Mathematics I', 'Applied Mathematics', etc.
+      query = query.or('department.ilike.%Applied Math%,department.ilike.%Applied Mathematics%');
+    } else if (s === 'mathematics for natural sciences' || s === 'mathematics' || s === 'math') {
+      // Matches 'Mathematics' and 'Mathematics for Natural Sciences'
+      query = query.or('department.eq.Mathematics,department.ilike.%Mathematics for Natural Sciences%');
+    } else if (s.includes('sat') || s.includes('aptitude')) {
+      // Matches 'Aptitude' and 'Scholastic Aptitude (SAT)'
+      query = query.or('department.ilike.%Aptitude%,department.ilike.%SAT%');
+    } else if (s.includes('civic')) {
+      query = query.ilike('department', '%Civic%');
+    } else if (s.includes('english')) {
+      query = query.ilike('department', '%English%');
+    } else if (s.includes('physics')) {
+      query = query.ilike('department', '%Physics%');
+    } else if (s.includes('psychology')) {
+      query = query.ilike('department', '%Psychology%');
+    } else if (s.includes('logic')) {
+      query = query.ilike('department', '%Logic%');
+    } else if (s.includes('geography')) {
+      query = query.ilike('department', '%Geography%');
+    } else if (s.includes('history')) {
+      query = query.ilike('department', '%History%');
+    } else if (s.includes('economics')) {
+      query = query.ilike('department', '%Economic%');
+    } else {
+      query = query.ilike('department', `%${subject}%`);
+    }
   } else {
     // If 'All', filter by the user's specific stream to avoid cross-stream notes
     const stream = profile?.stream || 'Natural Science';
     
     if (examType === 'entrance') {
-      const nat = ['Physics', 'Chemistry', 'Biology', 'Mathematics', 'English', 'Scholastic Aptitude (SAT)', 'Civics & Citizenship', 'Agriculture'];
-      const soc = ['Geography', 'History', 'Economics', 'Mathematics', 'English', 'Scholastic Aptitude (SAT)', 'Civics & Citizenship', 'Agriculture'];
+      const nat = ['Physics', 'Chemistry', 'Biology', 'Mathematics', 'English', 'Aptitude', 'Scholastic Aptitude (SAT)', 'Civics & Citizenship', 'Civics', 'Agriculture'];
+      const soc = ['Geography', 'History', 'Economics', 'Mathematics', 'English', 'Aptitude', 'Scholastic Aptitude (SAT)', 'Civics & Citizenship', 'Civics', 'Agriculture'];
       query = query.in('department', stream === 'Social Science' ? soc : nat);
     } else if (examType === 'freshman') {
-      const nat = ['Logic', 'Communicative English', 'General Psychology', 'Mathematics for Natural Sciences', 'Applied Math I', 'Moral & Civics', 'General Physics', 'Emerging Technology', 'Global Trends', 'Inclusiveness', 'Entrepreneurship'];
-      const soc = ['Logic', 'Communicative English', 'General Psychology', 'Geography of Ethiopia', 'Economics', 'Moral & Civics', 'History of Ethiopia', 'Emerging Technology', 'Global Trends', 'Inclusiveness', 'Entrepreneurship', 'Social Anthropology'];
-      // Try to match DB subject names precisely:
-      const dbNat = ['Logic', 'English', 'Psychology', 'Mathematics for Natural Sciences', 'Applied Math I', 'Civics', 'Physics', 'Emerging Technology', 'Global Trends', 'Inclusiveness', 'Entrepreneurship'];
-      const dbSoc = ['Logic', 'English', 'Psychology', 'Geography', 'Economics', 'Civics', 'History', 'Emerging Technology', 'Global Trends', 'Inclusiveness', 'Entrepreneurship', 'Anthropology'];
+      // Freshman courses in Ethiopian universities:
+      const dbNat = [
+        'Logic', 'English', 'Communicative English',
+        'Psychology', 'General Psychology',
+        'Mathematics', 'Mathematics for Natural Sciences',
+        'Applied Math I', 'Applied Mathematics I',
+        'Civics', 'Moral & Civics',
+        'Physics', 'General Physics',
+        'Economics',
+        'Emerging Technology',
+        'Global Trends', 'Inclusiveness', 'Entrepreneurship'
+      ];
+      const dbSoc = [
+        'Logic', 'English', 'Communicative English',
+        'Psychology', 'General Psychology',
+        'Geography', 'Geography of Ethiopia',
+        'Economics',
+        'Civics', 'Moral & Civics',
+        'History', 'History of Ethiopia',
+        'Emerging Technology',
+        'Global Trends', 'Inclusiveness', 'Entrepreneurship',
+        'Anthropology', 'Social Anthropology',
+        'Mathematics'
+      ];
       query = query.in('department', stream === 'Social Science' ? dbSoc : dbNat);
     } else if (examType === 'exit') {
       query = query.eq('department', stream); // For exit, stream is the department

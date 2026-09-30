@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { Clock, Sparkles, List, ChevronRight, ChevronLeft, Layers, Trash2, X, PenLine, Zap } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { StudyNote, NoteHighlight, HighlightColor } from '@/types';
@@ -37,10 +37,14 @@ interface StudyNotesViewProps {
 
 // Maps subject names to emoji for visual identity on chapter cards
 const SUBJECT_EMOJI: Record<string, string> = {
-  'Mathematics': '📐', 'Physics': '⚛️', 'Chemistry': '🧪', 'Biology': '🧬',
-  'Economics': '📈', 'History': '📜', 'Geography': '🌍', 'English': '📝',
+  'Mathematics': '📐', 'Mathematics for Natural Sciences': '📐', 'Applied Math I': '📐',
+  'Applied Mathematics I': '📐', 'Applied Mathematics': '📐',
+  'Physics': '⚛️', 'Chemistry': '🧪', 'Biology': '🧬',
+  'Economics': '📈', 'Introduction to Economics': '📈',
+  'History': '📜', 'Geography': '🌍', 'English': '📝',
   'Logic': '🧠', 'Civics': '⚖️', 'Psychology': '💡', 'Computer Science': '💻',
-  'Software Engineering': '🖥️', 'Emerging Technology': '🚀', 'Aptitude': '🎯', 'Scholastic Aptitude (SAT)': '🎯', 'GAT (Graduate Admission Test)': '🎯',
+  'Software Engineering': '🖥️', 'Emerging Technology': '🚀', 'Aptitude': '🎯',
+  'Scholastic Aptitude (SAT)': '🎯', 'GAT (Graduate Admission Test)': '🎯',
 };
 
 const ReadingProgress = () => {
@@ -96,6 +100,19 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
   const accentText = 'text-gray-900 dark:text-gray-100';
   const accentBg = 'bg-primary/5';
   const emoji = SUBJECT_EMOJI[dept] ?? '📚';
+
+  // Sort notes naturally by chapter number (Chapter 1, Chapter 2, etc.)
+  const sortedNotes = useMemo(() => {
+    return [...initialNotes].sort((a, b) => {
+      const getNum = (str: string) => {
+        const m = str.match(/chapter\s*(\d+)/i);
+        return m ? parseInt(m[1], 10) : 999;
+      };
+      const diff = getNum(a.title) - getNum(b.title);
+      if (diff !== 0) return diff;
+      return a.title.localeCompare(b.title, undefined, { numeric: true });
+    });
+  }, [initialNotes]);
 
   const getStorageKey = useCallback((chapTitle: string) => {
     return `temari_hl_${subject}_${chapTitle}`;
@@ -656,7 +673,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             </p>
           </div>
         ) : (
-          initialNotes.map((note, idx) => {
+          sortedNotes.map((note, idx) => {
             const mins = calculateReadTime(note.content || '');
             return (
               <button

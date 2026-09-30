@@ -39,6 +39,7 @@ const FRESHMAN_COURSES: Record<string, { id: string; label: string }[]> = {
     { id: 'Applied Math I', label: 'Applied Math I' },
     { id: 'Civics',      label: 'Moral & Civics' },
     { id: 'Physics',     label: 'General Physics' },
+    { id: 'Economics',   label: 'Introduction to Economics' },
     { id: 'Emerging Technology', label: 'Emerging Technology' },
     { id: 'Global Trends', label: 'Global Trends' },
     { id: 'Inclusiveness', label: 'Inclusiveness' },
