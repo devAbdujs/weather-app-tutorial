@@ -50,6 +50,7 @@ export const HomeHub: React.FC = () => {
   const setSetupModalType = useAppStore(s => s.setSetupModalType);
 
   const [lastSession, setLastSession] = useState<LastSession | null>(null);
+  const { xp, dailyXp, dailyXpGoal } = useGamificationStore();
 
   useEffect(() => {
     setBackButton(false);
@@ -102,7 +103,6 @@ export const HomeHub: React.FC = () => {
     router.push(`/exam/session?${params.toString()}`);
   };
 
-  const { xp, dailyXp, dailyXpGoal } = useGamificationStore();
   const currentLevel = getLevelForXp(xp);
   const dailyPercent = Math.min(100, Math.round((dailyXp / dailyXpGoal) * 100));
 
