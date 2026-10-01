@@ -142,6 +142,18 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
 
 ---
 
+### 🎨 Phase 6: Brand Identity, New Logo & Global UI/Color Scheme Refresh (Final Polish)
+*   [ ] **Migrate to New Brand Logo (`public/assets/New_temari_logo.png`) & Harmonize Theme Palette:**
+    *   **Files to Update:**
+        - Header & Brand: [`src/components/layout/TopHeader.tsx#L68`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/TopHeader.tsx#L68) (replace `/assets/temari logo.png` with `/assets/New_temari_logo.png`).
+        - PWA & Favicons: [`public/manifest.json`](file:///home/abdu/scraping/ethio-exam-app/public/manifest.json) and [`src/app/layout.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/app/layout.tsx) (update icon references and theme colors).
+        - Color Tokens & Theme: [`tailwind.config.ts`](file:///home/abdu/scraping/ethio-exam-app/tailwind.config.ts) and [`src/app/globals.css`](file:///home/abdu/scraping/ethio-exam-app/src/app/globals.css) (derive palette accents, borders, and button tints from the new logo colors).
+        - OpenGraph & Metadata: Update social sharing preview cards to feature the new high-resolution logo.
+    *   **Execution Strategy:**
+        - Perform this UI and color scheme pass at the end of the roadmap as requested, ensuring consistent visual polish across all views (Dashboard, Practice, Notes, Exam Workspace, Profile, and Admin).
+
+---
+
 ## 🧠 Temari AI Integration Deep-Dive: Grounding, Context, Logic & UX Audit
 
 A forensic analysis of the AI integration across short notes, questions, exams, prompt grounding, context payloads, and user interface workflows was conducted. Below are the critical logical flaws, grounding gaps, and UX defects identified:
