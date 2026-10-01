@@ -93,6 +93,64 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
 
 ---
 
+## 🧠 Temari AI Integration Deep-Dive: Grounding, Context, Logic & UX Audit
+
+A forensic analysis of the AI integration across short notes, questions, exams, flashcards, prompt grounding, context payloads, and user interface workflows was conducted. Below are the critical logical flaws, grounding gaps, and UX defects identified:
+
+### 🔴 Critical AI Logic & Grounding Flaws
+*   [ ] **Critical User Query Overwrite Bug on First Turn:**
+    *   **Files:** [`src/app/api/ai/tutor/route.ts#L120`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L120), [`#L223-L225`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L223-L225).
+    *   **Flaw:** In `route.ts`, `isFollowUpChat = cleanedHistory.length > 1`. On the very first user message (whether a custom question typed in the box or "✨ Explain Highlighted Text"), `cleanedHistory.length === 1`. Because `1 > 1` is false, `finalMessages` drops the student's actual text and sends `[{ role: 'user', content: defaultUserPrompt }]` (`"Hello! I need help with this."`).
+    *   **Impact:** Any custom query typed into the drawer on turn 1 is silently erased! Gemini responds with a generic *"Hello! What can I help you with?"* instead of answering the student's question.
+    *   **Technical Fix:** If `cleanedHistory.length > 0`, use `cleanedHistory`. Only fall back to `defaultUserPrompt` if `cleanedHistory` is empty.
+
+*   [ ] **Drawer Chat History Not Reset Across Question Navigations:**
+    *   **Files:** [`src/components/ai/AITutorDrawer.tsx#L70-L88`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L70-L88).
+    *   **Flaw:** `useEffect` only resets messages if `messages.length === 0`. When a student finishes asking about Question 1, closes the drawer, moves to Question 2, and taps AI Tutor, `messages` retains Question 1's chat!
+    *   **Impact:** When the student asks a question on Question 2, `chatHistory` from Question 1 is submitted alongside Question 2's context, causing severe model confusion, hallucinated explanations, and mismatched answers.
+    *   **Technical Fix:** Add `question?.id` and `noteId` to a reset `useEffect`: clear `messages` and re-seed the welcome card whenever the active question or note changes.
+
+*   [ ] **Inline Hint Blind to Correct Answer & Official Explanation:**
+    *   **Files:** [`src/components/exam/ExamWorkspace.tsx#L96-L105`](file:///home/abdu/scraping/ethio-exam-app/src/components/exam/ExamWorkspace.tsx#L96-L105).
+    *   **Flaw:** `handleGetHint` sends `questionText` and `options`, but omits `correctAnswer` and `explanation`.
+    *   **Impact:** Gemini is forced to solve the problem completely blind without knowing the answer key. On difficult national exam questions, if Gemini miscalculates, its Socratic hint guides the student directly to an incorrect choice.
+    *   **Technical Fix:** Include `correctAnswer: currentQ.answer` and `explanation: currentQ.explanation` in the `handleGetHint` request payload.
+
+*   [ ] **Diagram-Based Questions Fail AI Explanations (Missing Multimodal Vision):**
+    *   **Files:** [`src/components/exam/ExamWorkspace.tsx#L100`](file:///home/abdu/scraping/ethio-exam-app/src/components/exam/ExamWorkspace.tsx#L100) & [`src/app/api/ai/tutor/route.ts#L62-L68`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L62-L68).
+    *   **Flaw:** Questions featuring diagrams store `currentQ.image_url`, but this URL is never forwarded to `/api/ai/tutor`, and `buildPrompt` only handles text strings.
+    *   **Impact:** In physics (circuit diagrams, pulleys, vectors) and biology (cell structures, anatomy), Gemini cannot see the diagram and responds with *"I cannot see the diagram you are referring to."*
+    *   **Technical Fix:** Forward `imageUrl` to `/api/ai/tutor` and pass the image as a multimodal `image` part to Gemini 1.5 Flash.
+
+*   [ ] **Flashcard Pseudo-Question "null" Options Hallucination:**
+    *   **Files:** [`src/components/flashcards/FlashcardDeck.tsx#L174-L182`](file:///home/abdu/scraping/ethio-exam-app/src/components/flashcards/FlashcardDeck.tsx#L174-L182) & [`src/app/api/ai/tutor/route.ts#L64`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L64).
+    *   **Flaw:** `FlashcardDeck` constructs `pseudoQuestion` with `option_a: null, option_b: null, option_c: null, option_d: null`. In `route.ts#L64`, `options.length` is 4, producing: `Options: A) null B) null C) null D) null`.
+    *   **Impact:** Gemini is instructed to "explain why the correct choice is right and others are wrong" on four null options, generating bizarre and confusing AI responses for flashcards.
+    *   **Technical Fix:** Filter out nulls in `buildPrompt` via `options.filter(Boolean)`, and add a dedicated `mode: 'flashcards'` with concept-deepening prompts.
+
+---
+
+### 🟡 AI UI/UX Defects & Interaction Friction
+*   [ ] **Dead / Placeholder Camera & Microphone Buttons in AI Drawer:**
+    *   **Files:** [`src/components/ai/AITutorDrawer.tsx#L486-L502`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L486-L502).
+    *   **Flaw:** Tapping the Camera or Mic icons in the input bar executes: `toast.info("Photo scan: Upload question image for Gemini analysis")` and `toast.info("Voice query: Speak your question to Teme")`.
+    *   **Impact:** High student frustration when discovering prominent input controls are non-functional mockups.
+    *   **Technical Fix:** Either connect real image upload (OCR via Gemini Vision) and Web Speech API, or hide these buttons until functionality is deployed.
+
+*   [ ] **Socratic Guard Bypass in Timed Exam Simulator:**
+    *   **Files:** [`src/app/api/ai/tutor/route.ts#L70-L75`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L70-L75).
+    *   **Flaw:** The rule forbidding giving away the answer only applies when `promptType === 'hint'`. In follow-up chat, `promptType === 'chat'`.
+    *   **Impact:** During timed exam simulation mode, a student can simply ask *"What is the answer?"* in chat, and Temari AI will reveal the answer immediately.
+    *   **Technical Fix:** Enforce Socratic non-disclosure rules whenever `isSimulator === true` or mode is `'exam'` until the student has submitted the exam.
+
+*   [ ] **Mobile Virtual Keyboard Drawer Occlusion:**
+    *   **Files:** [`src/components/ai/AITutorDrawer.tsx#L315`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L315).
+    *   **Flaw:** Drawer container has fixed `max-h-[92vh] h-[92vh]` without dynamic viewport units (`dvh`) or visual viewport resize handlers.
+    *   **Impact:** On iOS Safari and Android Chrome, opening the software keyboard covers the chat input bar or pushes the drawer header off-screen.
+    *   **Technical Fix:** Use `max-h-[90dvh]` and bind `interactive-widget=resizes-content` with smooth viewport scrolling.
+
+---
+
 ## ⚡ Speed, Latency & Bandwidth Optimization Roadmap (Low-Data Mobile Realities)
 
 A deep-dive profiling audit of network payloads, streaming latencies, database roundtrips, and client bundle sizes was conducted for the Temari platform, focusing specifically on Ethiopian cellular constraints (high RTT to edge servers, 2G/3G/4G bandwidth caps, and lower-end mobile CPU constraints). Below is the prioritized execution roadmap:
