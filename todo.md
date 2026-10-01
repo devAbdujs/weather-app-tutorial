@@ -84,13 +84,44 @@
 *   **[x] Exam Session Empty State:** In-page friendly empty-state card replacing confusing redirect loop when past papers for a specific year are not yet uploaded.
 *   **[x] Zero-Hydration-Flash Streaks:** Real server-side fetch from `profiles.daily_streak` in protected layout.
 *   **[x] Web Admin Short Notes Portal:** Dedicated admin interface at `/admin/upload-notes` with 100% deterministic exam_type, course, and chapter title metadata.
+*   **[x] AI Context Optimization & Model Uniformity Sprint (Oct 2026):**
+    *   Standardized all AI endpoints (`tutor`, `quiz`, `tip`, `submit`, `transform`) to `gemini-1.5-flash`, resolving model name bugs and rate-limiting cascades.
+    *   Eliminated 4,000-character note truncation bug in `/api/ai/tutor`, expanding context window to 100,000 characters so Gemini receives entire chapter notes.
+    *   Implemented "Anchor & Expander" pedagogical grounding prompt: uses study notes as curriculum foundation while drawing on general academic intelligence to explain the *why*, unpack formulas, and provide intuitive analogies.
+    *   Integrated **"✨ Ask AI"** action button directly into the floating text highlighter and existing highlight popovers in `StudyNotesView.tsx`.
+    *   Enabled note-level response caching in `ai_responses_cache` via `note:${noteId}` prefix for instant chapter takeaways and Amharic summaries with zero redundant API calls.
 
 ---
 
-## 📚 Content Ingestion & Bulk Short Notes
-*   **[ ] Bulk Past Papers & Short Notes Digestion**
-    *   Batch import Grade 12, Freshman, and Exit exam short notes via `/admin/upload-notes` or local CLI (`scripts/ingest_note_pdf.py`).
-    *   Ensure all subjects (Biology, Physics, Chemistry, Math, Aptitude, Economics) have complete chapter notes with KaTeX math rendering.
+## 🎯 Next High-Impact Product Initiatives (Immediate Execution)
+
+### 🚀 Priority 1: Multi-Format Document Ingestion Pipeline (The Content Engine)
+*   **[ ] Multi-File Admin Batch Ingestion (`/admin/upload-notes`):**
+    *   Enable drag-and-drop batch upload for PDF, Word (`.doc`, `.docx`), PowerPoint (`.ppt`, `.pptx`), and plain text files.
+    *   Pass raw files directly to Gemini 1.5 Flash File API to automatically extract chapter titles, convert fragmented slide bullets into continuous study notes, format tables in Markdown, and render math equations in LaTeX (`$...$`).
+    *   Batch persist transformed notes directly to the Supabase `study_notes` table under the selected course and exam category.
+    *   Fill missing short note coverage across all 15 freshman university courses and Grade 12 subjects.
+
+### 🧠 Priority 2: "AI Recovery Drill" (Adaptive Practice from Student Mistakes)
+*   **[ ] Post-Exam Error Diagnosis & Personalized Drill:**
+    *   Analyze student exam results to detect specific topic weaknesses (e.g., *"Missed 3 questions on Elasticity of Demand"*).
+    *   Provide one-tap **"Start AI Recovery Drill"**: dynamically generates 3-5 targeted practice questions focusing on the student's exact misconceptions.
+    *   Provide step-by-step guidance after each question with gamified bonus XP for mastering previously failed concepts.
+
+### ⚡ Priority 3: Zero-Wait Payment Auto-Approval Engine (Instant Access Unlock)
+*   **[ ] High-Confidence Automated Upgrade:**
+    *   Enhance `/api/payments/submit` Gemini Vision OCR verification to auto-approve clean, verified receipts:
+        *   Receipt amount >= 199 ETB.
+        *   Valid, non-duplicate CBE / Telebirr transaction ID.
+        *   Screenshot timestamp matches today's date.
+    *   Immediately set `subscription_status = 'premium'` without waiting for manual admin approval.
+    *   Flag ambiguous, edited, or unrecognized receipts for human admin review.
+
+### 📶 Priority 4: Low-Bandwidth Resilience & Offline Note Study Mode
+*   **[ ] IndexedDB Pre-caching for Ethiopian Network Realities:**
+    *   Pre-cache read study notes, chapter takeaways, and user highlights in browser IndexedDB/localStorage.
+    *   Allow offline note reading and highlight creation in campus dorms and libraries with zero data consumption.
+    *   Gracefully synchronize reading progress and XP when internet connection is restored.
 
 ---
 
