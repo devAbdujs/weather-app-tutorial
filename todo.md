@@ -117,6 +117,31 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
 
 ---
 
+### 🤖 Phase 5: Interactive Telegram Bot & Navigation Architecture
+*   [ ] **Multi-Button Telegram Bot Hub & Deep-Link Navigators:**
+    *   **Files:** [`src/app/api/bot/webhook/route.ts#L67-L90`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/bot/webhook/route.ts#L67-L90).
+    *   **Current State:** Bot only responds to `/start` with a single static button: `Launch Temari App 🚀`.
+    *   **Enhancements to Implement:**
+        1. *Direct Deep-Link Navigation Grid (Inline Buttons):*
+           - `[ 🎓 Matric / Grade 12 EUEE ]` → Direct launch to Grade 12 entrance practice.
+           - `[ 🏛️ University Freshman ]` → Direct launch to freshman courses.
+           - `[ 🏆 University Exit Exam ]` → Direct launch to university exit exam departments.
+           - `[ ⚡ My Stats & Streak ]` → Instant in-chat profile card (XP, level, streak, questions solved).
+           - `[ 👑 PRO Upgrade ]` → Quick Telebirr/CBE payment receipt submission flow.
+        2. *Interactive Callback Queries (`callback_query`):*
+           - Handle inline button clicks without leaving the Telegram chat (dynamic menus, quick stats card, changing target exam stream).
+        3. *Daily Question of the Day / Morning Micro-Drill:*
+           - Bot posts a daily exam question with 4 inline choice buttons (`[A]`, `[B]`, `[C]`, `[D]`).
+           - Instant answer key verification + awards 10 XP directly in Telegram.
+           - Includes a `[ 🧠 Ask Temari AI in App ]` deep-link button for full step-by-step reasoning.
+        4. *Rich Slash Commands:*
+           - `/menu` or `/start` → Main interactive navigation grid.
+           - `/quiz` → Fetch and send an instant single question drill.
+           - `/stats` → Display user rank, streak, and scholar tree progress.
+           - `/upgrade` → Display subscription status and Telebirr instructions.
+
+---
+
 ## 🧠 Temari AI Integration Deep-Dive: Grounding, Context, Logic & UX Audit
 
 A forensic analysis of the AI integration across short notes, questions, exams, prompt grounding, context payloads, and user interface workflows was conducted. Below are the critical logical flaws, grounding gaps, and UX defects identified:
