@@ -34,6 +34,21 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
 ---
 
 ### 🟡 Phase 2: High Priority P1 Flaws (Mode Overrides & UI Polish)
+*   [ ] **Fix Jumpy Text Selection, Snippet Highlighting & "Ask AI" Menu in Notes:**
+    *   **Files:** [`src/components/dashboard/StudyNotesView.tsx#L233-L270`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/StudyNotesView.tsx#L233-L270), [`#L272-L281`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/StudyNotesView.tsx#L272-L281), [`#L363`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/StudyNotesView.tsx#L363), and [`tailwind.config.ts#L87-L91`](file:///home/abdu/scraping/ethio-exam-app/tailwind.config.ts#L87-L91).
+    *   **Flaws & Root Causes:**
+        1. *CSS Transform Collision:* The toolbar container pairs `-translate-x-1/2` with `animate-scale-bounce`. The `scale-bounce` keyframe specifies `transform: scale(...)`, which overrides Tailwind's `translateX(-50%)` during animation, causing the toolbar to violently jump horizontally by 50% width on mount.
+        2. *Zero-Hysteresis Flip Boundary (130px Jump):* `const top = rect.top < 130 ? rect.bottom + 10 : rect.top - 54;` creates a harsh flip threshold. Any slight drag of the selection handle or minor scroll near the fold causes the toolbar to violently jump 150px back and forth between above and below the text.
+        3. *Viewport vs Scroll Container Desync:* `#main-scroll-area` is the scrollable container. When scrolling during selection, static `{ top, left }` state does not update with scroll position, freezing the toolbar until the scroll stops and then snapping erratically.
+        4. *Handle Drag Erases Coordinates:* `handlePointerDown` immediately wipes `setSelectionCoords(null)` and `setSelectedText('')` on any touch outside the toolbar, interpreting native mobile selection handle touches as "outside clicks".
+        5. *Native Mobile Callout Menu Occlusion:* Native iOS/Android context menus popup directly above the selection, clashing with Temari's floating menu in the exact same coordinates.
+    *   **Technical Fix:**
+        - Remove conflicting `scale-bounce` transform or isolate centering via a wrapper div (`left: 50%` wrapper).
+        - Add scroll listener to `#main-scroll-area` to sync toolbar position during active scrolling with `requestAnimationFrame`.
+        - Add 40px hysteresis buffer to the flip threshold (flip down when `< 110px`, flip up when `> 160px`).
+        - Don't clear selection on `pointerdown` if the touch is within `#note-content` while selection is active.
+        - Alternatively implement a docked mobile action pill above the bottom footer (`[ 🎨 Colors | ✨ Ask AI | ✕ ]`) when text is selected, matching Kindle/Medium mobile UX for 100% stable, zero-jump interaction.
+
 *   [ ] **Fix ExamSetupModal Dropping `mode` (Practice Drill Overridden to Timed Simulator):**
     *   **Files:** [`src/components/dashboard/ExamSetupModal.tsx#L119-L128`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ExamSetupModal.tsx#L119-L128) vs [`src/app/(app)/(protected)/exam/session/page.tsx#L25`](file:///home/abdu/scraping/ethio-exam-app/src/app/(app)/(protected)/exam/session/page.tsx#L25).
     *   **Flaw:** `ExamSetupModal` holds mode state (`'practice'`), but `mode` is never added to `params` in `handleStart()`.
