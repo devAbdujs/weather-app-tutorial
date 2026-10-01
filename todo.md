@@ -78,6 +78,120 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
 
 ---
 
+## ⚡ Speed, Latency & Bandwidth Optimization Roadmap (Low-Data Mobile Realities)
+
+A deep-dive profiling audit of network payloads, streaming latencies, database roundtrips, and client bundle sizes was conducted for the Temari platform, focusing specifically on Ethiopian cellular constraints (high RTT to edge servers, 2G/3G/4G bandwidth caps, and lower-end mobile CPU constraints). Below is the prioritized execution roadmap:
+
+### 🚀 Track 1: AI Latency, Token Streaming & Bandwidth Reductions
+*   [ ] **Eliminate React Main-Thread Jank During Token Streaming:**
+    *   **Files:** [`src/components/ai/AITutorDrawer.tsx#L200-L207`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L200-L207) and [`#L450-L455`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L450-L455).
+    *   **Root Cause:** Synchronous `setMessages(prev => prev.map(...))` on every stream chunk read forces `AITutorDrawer` to re-render 60-100 times per second. Inside each render, `<ReactMarkdown>` with `remarkMath` and `rehypeKatex` re-parses the entire markdown syntax tree and re-renders KaTeX DOM synchronously.
+    *   **Impact:** 100% CPU lockup and severe UI jank on typical Ethiopian student Android devices (Tecno, Infinix, Samsung A-series) while Temari AI responds.
+    *   **Technical Fix:** Buffer incoming stream chunks and update React state via a throttled animation frame (`requestAnimationFrame` or ~120ms debounce), or render plain text during active streaming and switch to full Markdown/KaTeX upon stream completion.
+
+*   [ ] **Strip 100 KB Payload Overhead on Multi-Turn Note Inquiries:**
+    *   **Files:** [`src/components/ai/AITutorDrawer.tsx#L147-L161`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L147-L161) and [`src/app/api/ai/tutor/route.ts#L44`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L44).
+    *   **Root Cause:** In note mode, the client uploads the entire 100,000-character `noteText` in the JSON request body on **every follow-up question**.
+    *   **Impact:** On 2G/3G connections with <200 kbps upload speeds, uploading ~100 KB takes 2-4 seconds *before* the server can even initiate the Gemini prompt.
+    *   **Technical Fix:** Send `noteText` only on the initial turn. For follow-up turns, pass `noteId` and rely on existing conversational history in `chatHistory`, saving ~100 KB of cellular upload bandwidth per question.
+
+*   [ ] **Parallelize AI Database Overhead & Pre-Gemini Verification:**
+    *   **Files:** [`src/app/api/ai/tutor/route.ts#L126-L219`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L126-L219).
+    *   **Root Cause:** The tutor route executes 3 sequential roundtrips to Supabase before calling Gemini: (1) `profiles` lookup for weekly quota, (2) `profiles` update if reset timestamp expired, (3) `ai_responses_cache` lookup for cache hit.
+    *   **Impact:** Cross-continental RTT between Ethiopian mobile clients, Vercel Edge, and Supabase Postgres is ~150-250ms per roundtrip. 3 sequential queries add 450-750ms of pure latency before the first AI token is requested.
+    *   **Technical Fix:** Run profile quota check and cache check concurrently with `Promise.all([fetchProfile, checkCache])`, or combine into a single PostgreSQL RPC `check_ai_quota_and_cache(telegram_id, question_id, prompt_type)`.
+
+*   [ ] **Cache Generated AI Quizzes & Eliminate Blocking Spinner:**
+    *   **Files:** [`src/app/api/ai/quiz/route.ts#L77-L86`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/quiz/route.ts#L77-L86).
+    *   **Root Cause:** `/api/ai/quiz` uses `generateObject` which blocks for 4-8 seconds while Gemini generates 3 questions in JSON mode. Furthermore, generated quizzes are never stored in `ai_responses_cache`.
+    *   **Impact:** If 50 students open Chapter 1 Quiz, the server pays the 5-second latency and Gemini API tokens 50 times.
+    *   **Technical Fix:** Key AI quizzes by `quiz:note:${noteId}` in `ai_responses_cache`. The first generation saves to cache; subsequent students get instant ~50ms quiz loads with zero Gemini tokens consumed.
+
+*   [ ] **Purge Orphaned `/api/ai/tip` Route:**
+    *   **Files:** [`src/app/api/ai/tip/route.ts`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tip/route.ts).
+    *   **Root Cause:** The UI calling `/api/ai/tip` was deleted from `HomeHub.tsx` in commit `ea3c810`, but the API route, rate limiter, and prompt still exist in the repository.
+    *   **Technical Fix:** Delete or formally archive `src/app/api/ai/tip/route.ts` to reduce cold-start bundles and attack surface.
+
+---
+
+### 📦 Track 2: Bundle Size Splitting & Critical Path Asset Optimization
+*   [ ] **Enable Service Worker for Telegram Mini App Users:**
+    *   **Files:** [`src/components/layout/PWARegistry.tsx#L16-L17`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/PWARegistry.tsx#L16-L17).
+    *   **Root Cause:** `PWARegistry.tsx` contains `if (isTelegram) return;` which prematurely aborts before registering `/sw.js`.
+    *   **Impact:** Telegram Mini App accounts for >90% of students. Because the Service Worker is aborted, Telegram users never cache JavaScript chunks, CSS, or question data offline. Every session re-downloads Next.js static assets over cellular data.
+    *   **Technical Fix:** Separate the install banner prompt from the Service Worker registration so `navigator.serviceWorker.register('/sw.js')` runs regardless of whether the user is inside Telegram or on standalone web.
+
+*   [ ] **Allow Cross-Origin Caching in Service Worker for Cloudinary Diagrams:**
+    *   **Files:** [`public/sw.js#L43`](file:///home/abdu/scraping/ethio-exam-app/public/sw.js#L43).
+    *   **Root Cause:** In `sw.js`, the caching rule checks `networkResponse.type !== 'basic'`. Cross-origin images from Cloudinary (`res.cloudinary.com`) return `type === 'cors'`, causing the service worker to reject caching them.
+    *   **Impact:** Ethiopian students viewing questions with diagrams re-download 50-200 KB images on every single exam attempt.
+    *   **Technical Fix:** Allow `networkResponse.type === 'cors'` (with status 200) for image assets in `sw.js` cache-first strategy.
+
+*   [ ] **Dynamic Import of `AITutorDrawer` in `FlashcardDeck.tsx`:**
+    *   **Files:** [`src/components/flashcards/FlashcardDeck.tsx#L9`](file:///home/abdu/scraping/ethio-exam-app/src/components/flashcards/FlashcardDeck.tsx#L9).
+    *   **Root Cause:** `FlashcardDeck.tsx` statically imports `AITutorDrawer`.
+    *   **Impact:** Statically pulls `react-markdown`, `remark-math`, `rehype-katex`, and the AI drawer into the flashcards route bundle, adding ~350 KB of JavaScript to the initial flashcards page load.
+    *   **Technical Fix:** Replace static import with `const AITutorDrawer = dynamic(() => import('@/components/ai/AITutorDrawer').then(m => m.AITutorDrawer), { ssr: false });`.
+
+*   [ ] **Dynamic Import of `canvas-confetti` from `CelebrationModal.tsx`:**
+    *   **Files:** [`src/components/gamification/CelebrationModal.tsx#L7`](file:///home/abdu/scraping/ethio-exam-app/src/components/gamification/CelebrationModal.tsx#L7).
+    *   **Root Cause:** `CelebrationModal` statically imports `canvas-confetti`, and `CelebrationModal` is mounted in the root `DashboardShell`.
+    *   **Impact:** All protected routes (`/dashboard`, `/practice`, `/mastery`, `/profile`) download the canvas confetti library on initial load, even if no celebration occurs.
+    *   **Technical Fix:** Dynamically import `canvas-confetti` inside `fireConfetti()` only when a celebration is actively triggered.
+
+*   [ ] **Eliminate Global KaTeX CSS Render-Blocking Bloat:**
+    *   **Files:** [`src/app/globals.css#L1`](file:///home/abdu/scraping/ethio-exam-app/src/app/globals.css#L1).
+    *   **Root Cause:** `@import 'katex/dist/katex.min.css';` is placed at the very top of `globals.css`.
+    *   **Impact:** Forces every page (landing page, dashboard, login, settings) to download the 30 KB KaTeX CSS stylesheet and declare web fonts, delaying First Contentful Paint (FCP).
+    *   **Technical Fix:** Remove `@import` from `globals.css` and only load KaTeX styles in math-rendering views (`MathText`, `MarkdownRenderer`, `AITutorDrawer`).
+
+*   [ ] **Enable Next.js Package Import Optimization:**
+    *   **Files:** [`next.config.mjs`](file:///home/abdu/scraping/ethio-exam-app/next.config.mjs).
+    *   **Root Cause:** `next.config.mjs` is missing `experimental.optimizePackageImports: ['lucide-react', 'date-fns']`.
+    *   **Impact:** Hundreds of unused Lucide icons risk being compiled into bundle chunks.
+    *   **Technical Fix:** Add `experimental: { optimizePackageImports: ['lucide-react', 'date-fns'] }` and `compress: true` in `next.config.mjs`.
+
+---
+
+### 🗄️ Track 3: Database Query Optimization & Network Waterfall Elimination
+*   [ ] **Stop Eager-Loading 200 Full Note Markdown Bodies in SSR:**
+    *   **Files:** [`src/app/(app)/(protected)/notes/[subject]/page.tsx#L42`](file:///home/abdu/scraping/ethio-exam-app/src/app/(app)/(protected)/notes/[subject]/page.tsx#L42).
+    *   **Root Cause:** `supabase.from('study_notes').select('*').limit(200)` fetches the entire markdown text of all chapters in the course during initial page SSR.
+    *   **Impact:** If a subject has 15 chapters, up to 1-2 MB of markdown text is serialized into the initial HTML and RSC payload just to show a list of chapter titles!
+    *   **Technical Fix:** Change initial query to `.select('id, title, department, exam_type, created_at')`. Fetch note markdown content only when the student taps a chapter card, or cache on client.
+
+*   [ ] **Replace Aggressive 3.5s Polling with Exponential Backoff:**
+    *   **Files:** [`src/app/(app)/(protected)/upgrade/page.tsx#L131`](file:///home/abdu/scraping/ethio-exam-app/src/app/(app)/(protected)/upgrade/page.tsx#L131).
+    *   **Root Cause:** `setInterval(pollStatus, 3500)` fires every 3.5 seconds unconditionally for up to 5 minutes.
+    *   **Impact:** Up to 85 serverless invocations and 170 database queries per user. Multiple students submitting receipts will cause Supabase connection pool exhaustion.
+    *   **Technical Fix:** Implement exponential backoff: start at 3s, increase to 5s, 8s, 15s after 30s, and provide an explicit "Check Status" button.
+
+*   [ ] **Reuse Supabase Admin Client via Singleton:**
+    *   **Files:** [`src/utils/supabase/admin.ts#L6-L19`](file:///home/abdu/scraping/ethio-exam-app/src/utils/supabase/admin.ts#L6-L19).
+    *   **Root Cause:** `createAdminClient()` calls `createClient()` on every call, instantiating new HTTP connection agents every time.
+    *   **Impact:** Forfeits TCP/TLS connection reuse and HTTP keep-alive, adding 50-150ms handshake latency on every server action.
+    *   **Technical Fix:** Export a persistent singleton `supabaseAdmin` instance.
+
+*   [ ] **Add Missing Composite Indexes for Hot Query Paths:**
+    *   **Files:** Supabase Database Migrations / Schema.
+    *   **Root Cause:** `payment_receipts` is repeatedly queried by `telegram_id` and ordered by `created_at DESC` during verification polling. `otp_codes` is looked up by `code` and `used`. Neither has a composite index in Supabase migrations.
+    *   **Impact:** Full table sequential scans as the tables grow with more student signups and payments.
+    *   **Technical Fix:** Add `CREATE INDEX idx_payment_receipts_user ON payment_receipts(telegram_id, created_at DESC);` and `CREATE INDEX idx_otp_codes_lookup ON otp_codes(code, used);`.
+
+*   [ ] **Memoize KaTeX Formulas in `MathText.tsx`:**
+    *   **Files:** [`src/components/MathText.tsx#L10`](file:///home/abdu/scraping/ethio-exam-app/src/components/MathText.tsx#L10).
+    *   **Root Cause:** `MathText` is an unmemoized functional component that runs KaTeX regex splitting and string compilation on every render.
+    *   **Impact:** During exam sessions, option clicks, flag toggles, or timer updates cause `ExamWorkspace` to re-render, re-running KaTeX for all 5 math formulas (question + 4 options) unnecessarily.
+    *   **Technical Fix:** Wrap `MathText` in `React.memo` with string comparison props.
+
+*   [ ] **Eliminate Redundant Streak Database Action on Every Dashboard Mount:**
+    *   **Files:** [`src/components/dashboard/HomeHub.tsx#L57`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/HomeHub.tsx#L57).
+    *   **Root Cause:** `HomeHub.tsx` invokes `updateDailyStreak()` on every mount, even though `layout.tsx` already resolved the streak from Supabase.
+    *   **Impact:** Triggers a redundant Server Action + Supabase read/write on every internal route navigation back to Home.
+    *   **Technical Fix:** Check if `last_activity_date` in the store is already today before dispatching `updateDailyStreak()`.
+
+---
+
 ## 🛠️ Prior Sprints - System Hardening (Completed Fixes)
 
 ### 🔴 Phase 1: Critical P0 Fixes (Bugs & Security)
