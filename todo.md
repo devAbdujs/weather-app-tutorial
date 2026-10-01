@@ -54,11 +54,18 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
     *   **Flaw:** `ExamSetupModal` holds mode state (`'practice'`), but `mode` is never added to `params` in `handleStart()`.
     *   **Impact:** In `exam/session/page.tsx`, `mode` defaults to `'exam'`. Students selecting "Quick Drill" are forced into timed simulator mode with an active countdown timer and no instant answer explanations.
     *   **Fix:** Append `params.set('mode', mode)` in `ExamSetupModal.tsx#L124`.
-*   [ ] **Fix Flashcards Double Header & Redundant Padding:**
-    *   **Files:** [`src/components/layout/TopHeader.tsx#L29-L33`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/TopHeader.tsx#L29-L33) & [`src/components/layout/DashboardShell.tsx#L11-L15`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/DashboardShell.tsx#L11-L15).
-    *   **Flaw:** `pathname.startsWith('/flashcards/')` is missing from `isFocusMode` in `TopHeader` and `DashboardShell` (though present in `BottomNav.tsx`).
-    *   **Impact:** On `/flashcards/[subject]`, students see two stacked headers (global `TopHeader` + `FlashcardDeck` custom header) plus redundant bottom padding.
-    *   **Fix:** Add `pathname.startsWith('/flashcards/')` to `isFocusMode` in `TopHeader.tsx` and `DashboardShell.tsx`.
+*   [ ] **Purge and Remove Flashcard System Entirely (Routes, Components, Navigation & DB):**
+    *   **Files to Remove/Update:**
+        - Route: [`src/app/(app)/(protected)/flashcards/[subject]/page.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/app/(app)/(protected)/flashcards/[subject]/page.tsx) (delete entire route directory).
+        - Component: [`src/components/flashcards/FlashcardDeck.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/flashcards/FlashcardDeck.tsx) (delete component).
+        - Modal: [`src/components/dashboard/ExamSetupModal.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ExamSetupModal.tsx) (remove `'flashcards'` from `setupModalType`, mode tabs, titles, and routing).
+        - Practice Hub: [`src/components/practice/PracticeHub.tsx#L196-L198`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx#L196-L198) (remove `mode === 'flashcards'` navigation and triggers).
+        - Home Hub: [`src/components/dashboard/HomeHub.tsx#L258`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/HomeHub.tsx#L258) (remove flashcard hero button).
+        - Shells & Nav: [`src/components/layout/BottomNav.tsx#L22`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/BottomNav.tsx#L22) (remove `/flashcards/` focus mode check).
+        - Product Tour: [`src/components/navigation/ProductTour.tsx#L29`](file:///home/abdu/scraping/ethio-exam-app/src/components/navigation/ProductTour.tsx#L29) (remove flashcard tour step).
+        - State & Types: [`src/store/useAppStore.ts#L3`](file:///home/abdu/scraping/ethio-exam-app/src/store/useAppStore.ts#L3) (update `SetupModalType = 'exam' | 'notes' | null`), [`src/types/index.ts`](file:///home/abdu/scraping/ethio-exam-app/src/types/index.ts) (remove `Flashcard` interface), and [`src/store/useGamificationStore.ts#L30`](file:///home/abdu/scraping/ethio-exam-app/src/store/useGamificationStore.ts#L30) (remove `'deck_completed'`).
+        - Bot Webhook: [`src/app/api/bot/webhook/route.ts#L81`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/bot/webhook/route.ts#L81) (clean up copy).
+    *   **Rationale:** Flashcards are being sunset in favor of deep Chapter Note study and Exam Practice questions, eliminating redundant route maintenance and client bundle overhead.
 *   [ ] **Implement Server-Side Highlight Synchronization:**
     *   **Files:** [`src/components/dashboard/StudyNotesView.tsx#L140-L157`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/StudyNotesView.tsx#L140-L157) & [`src/app/api/highlights/route.ts`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/highlights/route.ts).
     *   **Flaw:** `StudyNotesView.tsx` only reads and writes highlights to `localStorage`. The server endpoint `/api/highlights` is never called.
@@ -95,7 +102,7 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
 
 ## 🧠 Temari AI Integration Deep-Dive: Grounding, Context, Logic & UX Audit
 
-A forensic analysis of the AI integration across short notes, questions, exams, flashcards, prompt grounding, context payloads, and user interface workflows was conducted. Below are the critical logical flaws, grounding gaps, and UX defects identified:
+A forensic analysis of the AI integration across short notes, questions, exams, prompt grounding, context payloads, and user interface workflows was conducted. Below are the critical logical flaws, grounding gaps, and UX defects identified:
 
 ### 🔴 Critical AI Logic & Grounding Flaws
 *   [ ] **Critical User Query Overwrite Bug on First Turn:**
@@ -110,23 +117,18 @@ A forensic analysis of the AI integration across short notes, questions, exams, 
     *   **Impact:** When the student asks a question on Question 2, `chatHistory` from Question 1 is submitted alongside Question 2's context, causing severe model confusion, hallucinated explanations, and mismatched answers.
     *   **Technical Fix:** Add `question?.id` and `noteId` to a reset `useEffect`: clear `messages` and re-seed the welcome card whenever the active question or note changes.
 
-*   [ ] **Inline Hint Blind to Correct Answer & Official Explanation:**
-    *   **Files:** [`src/components/exam/ExamWorkspace.tsx#L96-L105`](file:///home/abdu/scraping/ethio-exam-app/src/components/exam/ExamWorkspace.tsx#L96-L105).
-    *   **Flaw:** `handleGetHint` sends `questionText` and `options`, but omits `correctAnswer` and `explanation`.
-    *   **Impact:** Gemini is forced to solve the problem completely blind without knowing the answer key. On difficult national exam questions, if Gemini miscalculates, its Socratic hint guides the student directly to an incorrect choice.
-    *   **Technical Fix:** Include `correctAnswer: currentQ.answer` and `explanation: currentQ.explanation` in the `handleGetHint` request payload.
+*   [ ] **Purge AI "Hint" Functionality Across Codebase (ExamWorkspace, AITutorDrawer, /api/ai/tutor):**
+    *   **Files to Update:**
+        - Exam Workspace: [`src/components/exam/ExamWorkspace.tsx#L88-L133`](file:///home/abdu/scraping/ethio-exam-app/src/components/exam/ExamWorkspace.tsx#L88-L133) (remove `handleGetHint`, `inlineHint`, `isHintLoading`, and the inline hint button/card).
+        - AI Drawer: [`src/components/ai/AITutorDrawer.tsx#L98-L111`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L98-L111) & [`#L224-L233`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L224-L233) (remove `'hint'` from `sendMessage` types and the "Get a Guiding Hint" quick prompt card).
+        - AI Route: [`src/app/api/ai/tutor/route.ts#L21`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L21), [`#L72`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L72), [`#L79`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L79) (remove `'hint'` from `RequestSchema`, `userPrompts.hint`, and related logic).
+    *   **Rationale:** The hint feature adds unnecessary complexity and superficial suggestions. Removing hints streamlines the interface and focuses Temari AI on deep interactive tutoring, full concept explanations, and contextual question assistance.
 
 *   [ ] **Diagram-Based Questions Fail AI Explanations (Missing Multimodal Vision):**
     *   **Files:** [`src/components/exam/ExamWorkspace.tsx#L100`](file:///home/abdu/scraping/ethio-exam-app/src/components/exam/ExamWorkspace.tsx#L100) & [`src/app/api/ai/tutor/route.ts#L62-L68`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L62-L68).
     *   **Flaw:** Questions featuring diagrams store `currentQ.image_url`, but this URL is never forwarded to `/api/ai/tutor`, and `buildPrompt` only handles text strings.
     *   **Impact:** In physics (circuit diagrams, pulleys, vectors) and biology (cell structures, anatomy), Gemini cannot see the diagram and responds with *"I cannot see the diagram you are referring to."*
     *   **Technical Fix:** Forward `imageUrl` to `/api/ai/tutor` and pass the image as a multimodal `image` part to Gemini 1.5 Flash.
-
-*   [ ] **Flashcard Pseudo-Question "null" Options Hallucination:**
-    *   **Files:** [`src/components/flashcards/FlashcardDeck.tsx#L174-L182`](file:///home/abdu/scraping/ethio-exam-app/src/components/flashcards/FlashcardDeck.tsx#L174-L182) & [`src/app/api/ai/tutor/route.ts#L64`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L64).
-    *   **Flaw:** `FlashcardDeck` constructs `pseudoQuestion` with `option_a: null, option_b: null, option_c: null, option_d: null`. In `route.ts#L64`, `options.length` is 4, producing: `Options: A) null B) null C) null D) null`.
-    *   **Impact:** Gemini is instructed to "explain why the correct choice is right and others are wrong" on four null options, generating bizarre and confusing AI responses for flashcards.
-    *   **Technical Fix:** Filter out nulls in `buildPrompt` via `options.filter(Boolean)`, and add a dedicated `mode: 'flashcards'` with concept-deepening prompts.
 
 ---
 
@@ -139,7 +141,7 @@ A forensic analysis of the AI integration across short notes, questions, exams, 
 
 *   [ ] **Socratic Guard Bypass in Timed Exam Simulator:**
     *   **Files:** [`src/app/api/ai/tutor/route.ts#L70-L75`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L70-L75).
-    *   **Flaw:** The rule forbidding giving away the answer only applies when `promptType === 'hint'`. In follow-up chat, `promptType === 'chat'`.
+    *   **Flaw:** During timed simulator sessions, Temari AI lacks an explicit guard against revealing answers to students who ask directly in chat before submitting the exam.
     *   **Impact:** During timed exam simulation mode, a student can simply ask *"What is the answer?"* in chat, and Temari AI will reveal the answer immediately.
     *   **Technical Fix:** Enforce Socratic non-disclosure rules whenever `isSimulator === true` or mode is `'exam'` until the student has submitted the exam.
 
@@ -200,11 +202,6 @@ A deep-dive profiling audit of network payloads, streaming latencies, database r
     *   **Impact:** Ethiopian students viewing questions with diagrams re-download 50-200 KB images on every single exam attempt.
     *   **Technical Fix:** Allow `networkResponse.type === 'cors'` (with status 200) for image assets in `sw.js` cache-first strategy.
 
-*   [ ] **Dynamic Import of `AITutorDrawer` in `FlashcardDeck.tsx`:**
-    *   **Files:** [`src/components/flashcards/FlashcardDeck.tsx#L9`](file:///home/abdu/scraping/ethio-exam-app/src/components/flashcards/FlashcardDeck.tsx#L9).
-    *   **Root Cause:** `FlashcardDeck.tsx` statically imports `AITutorDrawer`.
-    *   **Impact:** Statically pulls `react-markdown`, `remark-math`, `rehype-katex`, and the AI drawer into the flashcards route bundle, adding ~350 KB of JavaScript to the initial flashcards page load.
-    *   **Technical Fix:** Replace static import with `const AITutorDrawer = dynamic(() => import('@/components/ai/AITutorDrawer').then(m => m.AITutorDrawer), { ssr: false });`.
 
 *   [ ] **Dynamic Import of `canvas-confetti` from `CelebrationModal.tsx`:**
     *   **Files:** [`src/components/gamification/CelebrationModal.tsx#L7`](file:///home/abdu/scraping/ethio-exam-app/src/components/gamification/CelebrationModal.tsx#L7).
