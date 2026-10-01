@@ -14,6 +14,7 @@
   "dependencies": {
     "@ai-sdk/google": "^3.0.121",
     "@ai-sdk/react": "^3.0.280",
+    "@google/generative-ai": "^0.24.1",
     "@opentelemetry/api": "^1.9.1",
     "@supabase/ssr": "^0.12.6",
     "@supabase/supabase-js": "^2.109.0",

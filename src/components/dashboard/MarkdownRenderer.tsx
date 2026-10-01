@@ -231,6 +231,29 @@ export default function MarkdownRenderer({
         li: ({ children }) => <li className="pl-1">{wrap(children)}</li>,
         strong: ({ children }) => <strong className="font-bold text-gray-900 dark:text-gray-100">{children}</strong>,
         em: ({ children }) => <em className="italic">{children}</em>,
+        img: ({ src, alt, ...props }: any) => (
+          <figure className="my-6 flex flex-col items-center max-w-full">
+            <div className="relative overflow-hidden rounded-2xl border border-black/10 dark:border-white/10 shadow-sm bg-black/5 dark:bg-white/5 max-w-full p-1 sm:p-2">
+              <img
+                src={src}
+                alt={alt || 'Study diagram'}
+                loading="lazy"
+                className="max-h-[420px] w-auto max-w-full object-contain mx-auto rounded-xl cursor-zoom-in active:scale-95 transition-transform"
+                onClick={() => {
+                  if (typeof window !== 'undefined' && src) {
+                    window.open(src, '_blank');
+                  }
+                }}
+                {...props}
+              />
+            </div>
+            {alt && (
+              <figcaption className="mt-2 text-xs font-semibold text-gray-500 dark:text-gray-400 text-center italic max-w-md px-3">
+                {alt}
+              </figcaption>
+            )}
+          </figure>
+        ),
         blockquote: ({ children }) => (
           <blockquote className={`pl-4 border-l-4 border-primary/20 ${accentBg} py-2 pr-4 rounded-r-xl my-5 italic text-gray-600 dark:text-gray-400`}>
             {wrap(children)}
