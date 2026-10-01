@@ -253,16 +253,16 @@ export const HomeHub: React.FC = () => {
               </div>
             </button>
 
-            {/* Flashcards */}
+            {/* Quick Drill */}
             <button
-              onClick={() => { sounds.playTap(); haptic.impact('medium'); router.push('/practice?mode=flashcards'); }}
+              onClick={() => { sounds.playTap(); haptic.impact('medium'); setSetupModalType('exam'); }}
               className="bg-tint-peach text-tint-peach-fg border-2 border-b-[4px] border-tint-peach-border p-4 rounded-3xl text-left group shadow-tactile-xs hover:-translate-y-0.5 transition-all active:translate-y-0 active:border-b-2"
             >
               <div className="w-10 h-10 bg-white dark:bg-black/40 text-amber-700 dark:text-amber-300 border border-amber-300/40 rounded-2xl flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform shadow-2xs">
                 <Zap className="w-5 h-5 stroke-[2.4]" />
               </div>
-              <h3 className="text-sm font-black leading-tight">Flashcards</h3>
-              <p className="text-xs font-bold opacity-80 mt-0.5">Speed Drills</p>
+              <h3 className="text-sm font-black leading-tight">Quick Drill</h3>
+              <p className="text-xs font-bold opacity-80 mt-0.5">Custom Practice</p>
               <div className="mt-2.5 text-micro font-black px-2 py-0.5 rounded-full bg-white/80 dark:bg-black/40 border border-current/10 inline-flex items-center shadow-2xs">
                 +15 XP
               </div>

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type SetupModalType = 'exam' | 'flashcards' | 'notes' | null;
+export type SetupModalType = 'exam' | 'notes' | null;
 
 /**
  * Lightweight session profile stored in the Zustand store.

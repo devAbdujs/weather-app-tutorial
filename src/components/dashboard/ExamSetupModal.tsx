@@ -82,8 +82,7 @@ export const ExamSetupModal: React.FC = () => {
   const isG12       = targetExam === 'entrance';
 
   const getDefaultSubject = () => {
-    if (setupModalType === 'flashcards') return 'Biology';
-    if (setupModalType === 'notes')      return 'All';
+    if (setupModalType === 'notes') return 'All';
     if (isG12)      return g12Subjects[0]?.id || 'Physics';
     if (isFreshman) return freshmanSubjects[0]?.id || 'English';
     if (isExit)     return profileStream;
@@ -108,9 +107,7 @@ export const ExamSetupModal: React.FC = () => {
     const dbExamType = isFreshman ? 'freshman' : isExit ? 'exit' : 'entrance';
     const encodedSubject = encodeURIComponent(subject);
 
-    if (setupModalType === 'flashcards') {
-      router.push(`/flashcards/${encodedSubject}`);
-    } else if (setupModalType === 'notes') {
+    if (setupModalType === 'notes') {
       // Pass examType so the server-side query can isolate content correctly
       router.push(`/notes/${encodedSubject}?examType=${dbExamType}`);
     } else if (setupModalType === 'exam') {
@@ -139,9 +136,8 @@ export const ExamSetupModal: React.FC = () => {
   if (!setupModalType) return null;
 
   const titles = {
-    exam:       'Start Practice',
-    flashcards: 'Speed Flashcards',
-    notes:      'Study Notes',
+    exam:  'Start Practice',
+    notes: 'Study Notes',
   };
 
   return (
@@ -303,41 +299,6 @@ export const ExamSetupModal: React.FC = () => {
             </div>
           )}
 
-          {setupModalType === 'flashcards' && (
-            <div className="space-y-5">
-              <div className="space-y-2">
-                <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Choose Subject</label>
-                <div className="grid grid-cols-2 gap-2.5">
-                  {(isFreshman
-                    ? [{ id: 'All', label: '📚 All Mixed' }, ...freshmanSubjects]
-                    : isExit
-                    ? [{ id: profileStream, label: `📚 ${profileStream}` }]
-                    : [
-                        { id: 'All',         label: '📚 All Mixed' },
-                        ...g12Subjects.map(s => ({ id: s.id, label: s.label })),
-                      ]
-                  ).map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
-                      className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
-                        subject === s.id
-                          ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5'
-                          : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
-                      }`}
-                    >
-                      {s.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="p-4 rounded-2xl bg-tint-cream text-tint-cream-fg border-2 border-b-[3px] border-tint-cream-border flex items-center gap-3 shadow-2xs">
-                <Zap className="w-5 h-5 text-accent-gold shrink-0" />
-                <p className="text-xs font-bold leading-relaxed">Swipe through rapid-fire question cards to master key concepts.</p>
-              </div>
-            </div>
-          )}
 
           {setupModalType === 'notes' && (
             <div className="space-y-5">

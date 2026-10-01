@@ -27,7 +27,7 @@ export function getLevelForXp(xp: number): LevelInfo {
 }
 
 export interface CelebrationPayload {
-  type: 'quiz_completed' | 'level_up' | 'streak_milestone' | 'deck_completed';
+  type: 'quiz_completed' | 'level_up' | 'streak_milestone';
   title: string;
   subtitle: string;
   xpEarned: number;

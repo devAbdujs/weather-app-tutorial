@@ -193,8 +193,6 @@ export const PracticeHub = () => {
     if (mode === 'notes') {
       const p = new URLSearchParams({ examType });
       router.push(`/notes/${encodeURIComponent(params.subject)}?${p.toString()}`);
-    } else if (mode === 'flashcards') {
-      router.push(`/flashcards/${encodeURIComponent(params.subject)}`);
     } else {
       const p = new URLSearchParams({ examType, ...params });
       router.push(`/practice/sessions?${p.toString()}`);

@@ -28,16 +28,6 @@ export interface Question {
   exam_variant?: 'mock' | 'model' | null;
 }
 
-export interface Flashcard {
-  id: string;
-  grade: number;
-  subject: string;
-  unit: string | null;
-  front: string;
-  back: string;
-  source: string;
-}
-
 export interface StudyNote {
   id: string;
   exam_type: string;

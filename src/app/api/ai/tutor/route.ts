@@ -18,7 +18,7 @@ const RequestSchema = z.object({
   options:         z.array(z.string().nullable()).max(4).optional(),
   correctAnswer:   z.string().nullable().optional(),
   explanation:     z.string().nullable().optional(),
-  promptType:      z.enum(['hint', 'explain', 'eli5', 'amharic', 'summary', 'chat']).default('chat'),
+  promptType:      z.enum(['explain', 'eli5', 'amharic', 'summary', 'chat']).default('chat'),
   subject:         z.string().optional(),
   studentAnswer:   z.string().nullable().optional(),
   chatHistory:     z.array(z.object({
@@ -69,14 +69,12 @@ function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string
     system.push('');
     system.push(`Rules:
 1. If promptType='explain', provide the full step-by-step solution clearly explaining why the correct choice is right and others are wrong.
-2. If promptType='hint', DO NOT give the answer away—use the Socratic method to guide them with a clue.
-3. If student got it wrong, gently explain why their choice was incorrect without being discouraging.
-4. Keep responses concise (under 3-4 short paragraphs). Use Markdown formatting (bold, bullet points) for readability.
-5. If promptType='amharic', explain entirely in easy-to-understand Amharic (አማርኛ).`);
+2. If student got it wrong, gently explain why their choice was incorrect without being discouraging.
+3. Keep responses concise (under 3-4 short paragraphs). Use Markdown formatting (bold, bullet points) for readability.
+4. If promptType='amharic', explain entirely in easy-to-understand Amharic (አማርኛ).`);
   }
 
   const userPrompts: Record<string, string> = {
-    hint: 'Give me a small hint to help me solve this without giving the answer away.',
     explain: 'Please explain the correct answer step-by-step with clear reasoning.',
     eli5: 'Explain the core concept behind this simply, like I am 5 years old.',
     amharic: 'Translate the main idea and explain it in Amharic.',
@@ -117,7 +115,6 @@ export async function POST(req: NextRequest) {
     const rawHistory = payload.chatHistory || [];
     // Ensure chatHistory does not begin with an assistant greeting (Gemini requires starting with 'user')
     const cleanedHistory = rawHistory.filter((msg, idx) => !(idx === 0 && msg.role === 'assistant'));
-    const isFollowUpChat = cleanedHistory.length > 1;
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -184,7 +181,8 @@ export async function POST(req: NextRequest) {
       console.error('[AI Profile Error]', e);
     }
 
-    if (payload.questionId && !isFollowUpChat) {
+    // Only check cache on initial static prompt queries (explain, eli5, amharic, etc.), not custom freeform chat
+    if (payload.questionId && payload.promptType !== 'chat' && cleanedHistory.length <= 1) {
       try {
         const { data: cached } = await supabaseAdmin
           .from('ai_responses_cache')
@@ -220,7 +218,9 @@ export async function POST(req: NextRequest) {
 
     const { system, defaultUserPrompt } = buildPrompt(payload, profileContext);
 
-    const finalMessages = isFollowUpChat 
+    // If student provided chat history (first custom question, quick prompt, or multi-turn), preserve it!
+    // Only fall back to defaultUserPrompt if cleanedHistory is completely empty.
+    const finalMessages = cleanedHistory.length > 0
       ? cleanedHistory 
       : [{ role: 'user' as const, content: defaultUserPrompt }];
 
@@ -256,8 +256,8 @@ export async function POST(req: NextRequest) {
               console.error('[AI Quota Increment Error]', quotaErr);
             }
 
-            // 2. CACHE POPULATION: Save the generated response for the next student
-            if (payload.questionId && !isFollowUpChat) {
+            // 2. CACHE POPULATION: Save standard static responses (explain, eli5, amharic) for next students
+            if (payload.questionId && payload.promptType !== 'chat' && cleanedHistory.length <= 1) {
               await supabaseAdmin.from('ai_responses_cache').insert({
                 question_id: payload.questionId,
                 prompt_type: payload.promptType,

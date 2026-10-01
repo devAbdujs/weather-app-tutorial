@@ -25,8 +25,8 @@ const TOUR_STEPS = [
     color: 'bg-accent-gold/10 text-accent-gold'
   },
   {
-    title: 'Smart Flashcards',
-    description: 'Review key concepts fast with our Tinder-style swipeable flashcards and spaced repetition.',
+    title: 'Chapter Study Notes',
+    description: 'Master core concepts with concise chapter notes, formula breakdowns, and interactive AI tutoring.',
     icon: <BookOpen className="w-6 h-6 text-accent-purple" />,
     color: 'bg-accent-purple/10 text-accent-purple'
   }

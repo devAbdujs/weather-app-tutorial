@@ -19,7 +19,6 @@ export const BottomNav = () => {
   const isFocusMode =
     pathname.startsWith('/exam/') ||
     pathname.startsWith('/notes/') ||
-    pathname.startsWith('/flashcards/') ||
     pathname.startsWith('/practice/sessions');
 
   if (isFocusMode) return null;

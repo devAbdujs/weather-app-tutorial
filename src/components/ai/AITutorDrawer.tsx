@@ -4,7 +4,6 @@ import { toast } from 'sonner';
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   X, 
-  Lightbulb, 
   Globe, 
   Loader2, 
   Send, 
@@ -95,7 +94,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
   if (!isOpen) return null;
 
   const sendMessage = async (
-    type: 'hint' | 'explain' | 'eli5' | 'amharic' | 'summary' | 'chat', 
+    type: 'explain' | 'eli5' | 'amharic' | 'summary' | 'chat', 
     customUserText?: string,
     customDisplayText?: string
   ) => {
@@ -105,10 +104,6 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
     let userText = customUserText || '';
     let displayText = customDisplayText || userText;
 
-    if (type === 'hint' && !customUserText) {
-      userText = 'Please give me a small, guiding hint to help me understand this. Do not give me the full answer directly.';
-      displayText = '💡 Give me a hint';
-    }
     if (type === 'explain' && !customUserText) {
       userText = 'Please explain the correct answer to me in detail and show me the step-by-step reasoning.';
       displayText = '📖 Explain the solution';
@@ -222,15 +217,6 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
 
   // ── VERTICALLY STACKED QUICK PROMPT ACTIONS ──────────────────────────
   const examPrompts = [
-    {
-      id: 'hint',
-      icon: Lightbulb,
-      title: 'Get a Guiding Hint',
-      desc: 'Clue to solve it yourself without giving the answer away',
-      tint: 'bg-tint-peach text-tint-peach-fg border-tint-peach-border',
-      iconBg: 'text-amber-600 bg-white/90 dark:bg-black/40',
-      action: () => sendMessage('hint', 'Please give me a small, guiding hint to help me solve this step-by-step without giving away the direct answer.', '💡 Give me a hint'),
-    },
     {
       id: 'explain',
       icon: CheckCircle2,

@@ -54,7 +54,7 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
     *   **Flaw:** `ExamSetupModal` holds mode state (`'practice'`), but `mode` is never added to `params` in `handleStart()`.
     *   **Impact:** In `exam/session/page.tsx`, `mode` defaults to `'exam'`. Students selecting "Quick Drill" are forced into timed simulator mode with an active countdown timer and no instant answer explanations.
     *   **Fix:** Append `params.set('mode', mode)` in `ExamSetupModal.tsx#L124`.
-*   [ ] **Purge and Remove Flashcard System Entirely (Routes, Components, Navigation & DB):**
+*   [x] **Purge and Remove Flashcard System Entirely (Routes, Components, Navigation & DB):**
     *   **Files to Remove/Update:**
         - Route: [`src/app/(app)/(protected)/flashcards/[subject]/page.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/app/(app)/(protected)/flashcards/[subject]/page.tsx) (delete entire route directory).
         - Component: [`src/components/flashcards/FlashcardDeck.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/flashcards/FlashcardDeck.tsx) (delete component).
@@ -105,7 +105,7 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
 A forensic analysis of the AI integration across short notes, questions, exams, prompt grounding, context payloads, and user interface workflows was conducted. Below are the critical logical flaws, grounding gaps, and UX defects identified:
 
 ### 🔴 Critical AI Logic & Grounding Flaws
-*   [ ] **Critical User Query Overwrite Bug on First Turn:**
+*   [x] **Critical User Query Overwrite Bug on First Turn:**
     *   **Files:** [`src/app/api/ai/tutor/route.ts#L120`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L120), [`#L223-L225`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/ai/tutor/route.ts#L223-L225).
     *   **Flaw:** In `route.ts`, `isFollowUpChat = cleanedHistory.length > 1`. On the very first user message (whether a custom question typed in the box or "✨ Explain Highlighted Text"), `cleanedHistory.length === 1`. Because `1 > 1` is false, `finalMessages` drops the student's actual text and sends `[{ role: 'user', content: defaultUserPrompt }]` (`"Hello! I need help with this."`).
     *   **Impact:** Any custom query typed into the drawer on turn 1 is silently erased! Gemini responds with a generic *"Hello! What can I help you with?"* instead of answering the student's question.
@@ -117,7 +117,7 @@ A forensic analysis of the AI integration across short notes, questions, exams, 
     *   **Impact:** When the student asks a question on Question 2, `chatHistory` from Question 1 is submitted alongside Question 2's context, causing severe model confusion, hallucinated explanations, and mismatched answers.
     *   **Technical Fix:** Add `question?.id` and `noteId` to a reset `useEffect`: clear `messages` and re-seed the welcome card whenever the active question or note changes.
 
-*   [ ] **Purge AI "Hint" Functionality Across Codebase (ExamWorkspace, AITutorDrawer, /api/ai/tutor):**
+*   [x] **Purge AI "Hint" Functionality Across Codebase (ExamWorkspace, AITutorDrawer, /api/ai/tutor):**
     *   **Files to Update:**
         - Exam Workspace: [`src/components/exam/ExamWorkspace.tsx#L88-L133`](file:///home/abdu/scraping/ethio-exam-app/src/components/exam/ExamWorkspace.tsx#L88-L133) (remove `handleGetHint`, `inlineHint`, `isHintLoading`, and the inline hint button/card).
         - AI Drawer: [`src/components/ai/AITutorDrawer.tsx#L98-L111`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L98-L111) & [`#L224-L233`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L224-L233) (remove `'hint'` from `sendMessage` types and the "Get a Guiding Hint" quick prompt card).

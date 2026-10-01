@@ -73,64 +73,13 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
   const [timeSpentSeconds, setTimeSpentSeconds] = useState(0);
   const [hasRecordedCompletion, setHasRecordedCompletion] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
-  const [inlineHint, setInlineHint] = useState<string | null>(null);
-  const [isHintLoading, setIsHintLoading] = useState(false);
   
   const [touchStart, setTouchStart] = useState<{ x: number, y: number } | null>(null);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
 
   useEffect(() => {
     setShowExplanation(false);
-    setInlineHint(null);
-    setIsHintLoading(false);
   }, [currentIndex]);
-
-  const handleGetHint = async () => {
-    const currentQ = questions[currentIndex];
-    if (!currentQ) return;
-    haptic.impact('medium');
-    setIsHintLoading(true);
-    setInlineHint('');
-    
-    try {
-      const res = await fetch('/api/ai/tutor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          questionId: currentQ.id,
-          questionText: currentQ.question,
-          options: [currentQ.option_a, currentQ.option_b, currentQ.option_c, currentQ.option_d],
-          promptType: 'hint',
-          subject: currentQ.subject
-        })
-      });
-      
-      if (!res.ok) {
-        let errMessage = 'Failed to fetch hint';
-        try {
-          const errData = await res.json();
-          if (errData?.error) errMessage = errData.error;
-        } catch {}
-        throw new Error(errMessage);
-      }
-      
-      const reader = res.body?.getReader();
-      if (!reader) return;
-      const decoder = new TextDecoder();
-      let accumulated = '';
-      
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        accumulated += decoder.decode(value, { stream: true });
-        setInlineHint(accumulated);
-      }
-    } catch {
-      setInlineHint('Failed to load hint. Please try again.');
-    } finally {
-      setIsHintLoading(false);
-    }
-  };
 
   const currentQ = questions[currentIndex];
 
