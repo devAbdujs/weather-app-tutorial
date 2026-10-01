@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
       uploadUri = uploadRes.file.uri;
       fileResourceName = uploadRes.file.name;
 
-      const model = ai.getGenerativeModel({ model: 'gemini-3.6-flash' });
+      const model = ai.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
       const prompt = `
 You are an expert curriculum summarizer and university tutor for Ethiopian students.

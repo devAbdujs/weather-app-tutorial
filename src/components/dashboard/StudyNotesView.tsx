@@ -77,6 +77,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
   const { user, haptic, setBackButton } = useTelegram();
   const [selectedNote, setSelectedNote] = useState<StudyNote | null>(null);
   const [showTutor, setShowTutor] = useState(false);
+  const [tutorExcerpt, setTutorExcerpt] = useState('');
 
   // Highlighter state
   const [highlights, setHighlights] = useState<NoteHighlight[]>([]);
@@ -121,6 +122,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
   const handleBackFromNote = useCallback(() => {
     setSelectedNote(null);
     setShowTutor(false);
+    setTutorExcerpt('');
     selectedTextRef.current = '';
     setSelectedText('');
     setSelectionCoords(null);
@@ -385,6 +387,26 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                 onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 onClick={() => {
+                  sounds.playTap();
+                  haptic.impact('medium');
+                  setTutorExcerpt(selectedText);
+                  setShowTutor(true);
+                  setSelectedText('');
+                  setSelectionCoords(null);
+                  try { window.getSelection()?.removeAllRanges(); } catch {}
+                }}
+                className="px-2 py-1 rounded-xl text-xs font-black text-primary bg-primary/10 hover:bg-primary/20 active:scale-95 transition-all flex items-center gap-1"
+                title="Ask AI Tutor about this selection"
+              >
+                <Sparkles className="w-3.5 h-3.5 fill-current" />
+                <span>Ask AI</span>
+              </button>
+              <div className="w-[1px] h-4 bg-black/10 dark:bg-white/10 mx-0.5" />
+              <button
+                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={() => {
                   selectedTextRef.current = '';
                   setSelectedText('');
                   setSelectionCoords(null);
@@ -424,6 +446,25 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                   />
                 ))}
               </div>
+              <div className="w-[1px] h-4 bg-black/10 dark:bg-white/10 mx-0.5" />
+              <button
+                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={() => {
+                  sounds.playTap();
+                  haptic.impact('medium');
+                  setTutorExcerpt(selectedHighlight.text);
+                  setShowTutor(true);
+                  setSelectedHighlight(null);
+                  setHighlightModalCoords(null);
+                }}
+                className="px-2 py-1 rounded-xl text-xs font-black text-primary bg-primary/10 hover:bg-primary/20 active:scale-95 transition-all flex items-center gap-1"
+                title="Ask AI Tutor about this highlight"
+              >
+                <Sparkles className="w-3.5 h-3.5 fill-current" />
+                <span>Ask AI</span>
+              </button>
               <div className="w-[1px] h-4 bg-black/10 dark:bg-white/10 mx-0.5" />
               <button
                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
@@ -590,9 +631,14 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
         <AITutorDrawer
           mode="notes"
+          noteId={selectedNote.id}
           noteText={selectedNote.content || ''}
+          selectedExcerpt={tutorExcerpt}
           isOpen={showTutor}
-          onClose={() => setShowTutor(false)}
+          onClose={() => {
+            setShowTutor(false);
+            setTutorExcerpt('');
+          }}
         />
       </div>
     );

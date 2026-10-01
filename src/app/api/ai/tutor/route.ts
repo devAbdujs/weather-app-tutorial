@@ -10,24 +10,25 @@ import { checkRateLimit } from '@/lib/rateLimiter';
 
 
 const RequestSchema = z.object({
-  mode:          z.enum(['exam', 'notes']).default('exam'),
-  noteText:      z.string().optional(),
-  questionId:    z.string().optional(),
-  questionText:  z.string().max(2000).optional(),
-  options:       z.array(z.string().nullable()).max(4).optional(),
-  correctAnswer: z.string().nullable().optional(),
-  explanation:   z.string().nullable().optional(),
-  promptType:    z.enum(['hint', 'explain', 'eli5', 'amharic', 'chat']).default('chat'),
-  subject:       z.string().optional(),
-  studentAnswer: z.string().nullable().optional(),
-  chatHistory:   z.array(z.object({
+  mode:            z.enum(['exam', 'notes']).default('exam'),
+  noteText:        z.string().optional(),
+  selectedExcerpt: z.string().max(4000).optional(),
+  questionId:      z.string().optional(),
+  questionText:    z.string().max(2000).optional(),
+  options:         z.array(z.string().nullable()).max(4).optional(),
+  correctAnswer:   z.string().nullable().optional(),
+  explanation:     z.string().nullable().optional(),
+  promptType:      z.enum(['hint', 'explain', 'eli5', 'amharic', 'summary', 'chat']).default('chat'),
+  subject:         z.string().optional(),
+  studentAnswer:   z.string().nullable().optional(),
+  chatHistory:     z.array(z.object({
     role: z.enum(['user', 'assistant']),
     content: z.string()
   })).optional(),
 });
 
 function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string): { system: string; defaultUserPrompt: string } {
-  const { mode, noteText, questionText, options, correctAnswer, explanation, subject, studentAnswer } = data;
+  const { mode, noteText, selectedExcerpt, questionText, options, correctAnswer, explanation, subject, studentAnswer } = data;
 
   const system = [
     `You are Temari AI, an elite AI tutor for Ethiopian students.`,
@@ -37,15 +38,25 @@ function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string
   ];
 
   if (mode === 'notes') {
-    system.push(`You are helping a student understand their textbook/study notes.`);
+    system.push(`You are Temari AI, helping an Ethiopian student understand and master their study notes.`);
     if (noteText) {
-      system.push(`Textbook content being read:`);
-      system.push(`"${noteText.substring(0, 4000)}"`);
+      system.push(`Study Note Content (Current Chapter):`);
+      system.push(`"""\n${noteText.substring(0, 100000)}\n"""`);
     }
-    system.push(`Answer any questions they have based on this text. Keep explanations simple, engaging, and directly related to the text. Do not make up formulas or facts not supported by the text.`);
-    if (data.promptType === 'amharic') {
-      system.push(`Important: Explain the core concepts entirely in clear, natural Amharic (አማርኛ).`);
+    if (selectedExcerpt) {
+      system.push(`\nStudent Focus: The student specifically selected and asked about this excerpt from the note:`);
+      system.push(`> "${selectedExcerpt}"`);
+      system.push(`Focus directly on unpacking, clarifying, and explaining this excerpt with intuitive examples and formulas, using the chapter context.`);
     }
+    system.push(`\nTeaching & Grounding Guidelines:
+1. Curriculum Anchor: Use the provided study note as your primary foundation for the topic, terms, and scope the student is studying.
+2. Active Expansion: Because study notes are compressed summaries, actively draw upon your general academic knowledge to:
+   - Explain the "why" and core intuition behind the concepts.
+   - Break down dense formulas and technical terms step-by-step.
+   - Provide concrete, relatable real-world examples and analogies.
+   - Fill in missing context so the student truly understands rather than just memorizes.
+3. Clarity & Format: Keep explanations clear, engaging, and well-structured using Markdown (bold headings, bullet points, and LaTeX for math $...$).
+4. Amharic: If promptType='amharic' or requested, translate and explain clearly and naturally in Amharic (አማርኛ).`);
   } else {
     const isIncorrect = studentAnswer && correctAnswer && studentAnswer.trim().toLowerCase() !== correctAnswer.trim().toLowerCase();
     system.push(`Question Context:`);
@@ -69,6 +80,7 @@ function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string
     explain: 'Please explain the correct answer step-by-step with clear reasoning.',
     eli5: 'Explain the core concept behind this simply, like I am 5 years old.',
     amharic: 'Translate the main idea and explain it in Amharic.',
+    summary: 'Please summarize the 3 most crucial takeaways and exam-focused points from this chapter note.',
     chat: 'Hello! I need help with this.'
   };
 

@@ -33,7 +33,9 @@ import { sounds } from '@/lib/sounds';
 
 interface AITutorDrawerProps {
   mode?: 'exam' | 'notes';
+  noteId?: string;
   noteText?: string;
+  selectedExcerpt?: string;
   question?: Question;
   isOpen: boolean;
   onClose: () => void;
@@ -47,7 +49,16 @@ interface ChatMessage {
   displayText?: string;
 }
 
-export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', noteText, question, isOpen, onClose, studentAnswer }) => {
+export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ 
+  mode = 'exam', 
+  noteId,
+  noteText, 
+  selectedExcerpt,
+  question, 
+  isOpen, 
+  onClose, 
+  studentAnswer 
+}) => {
   const { haptic } = useTelegram();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -57,16 +68,24 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
 
   // Initialize with a welcoming message
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      setMessages([{
-        id: 'welcome',
-        role: 'assistant',
-        content: mode === 'exam' 
-          ? "👋 **Hello! I'm Temari AI, your exam study companion.** \n\nI have this question loaded. Pick a guidance action below or type your custom question!"
-          : "👋 **Hello! I'm Temari AI, your textbook study companion.** \n\nI have read this chapter note. Pick an action below or ask me anything you want clarified!"
-      }]);
+    if (isOpen) {
+      if (selectedExcerpt) {
+        setMessages([{
+          id: 'welcome',
+          role: 'assistant',
+          content: `👋 **Hello! I'm Temari AI, your study companion.**\n\nI have loaded this excerpt from your note:\n> *"**${selectedExcerpt.slice(0, 160)}${selectedExcerpt.length > 160 ? '...' : ''}**"*\n\nTap **"Explain Highlighted Text"** below or ask me any question about it!`
+        }]);
+      } else if (messages.length === 0) {
+        setMessages([{
+          id: 'welcome',
+          role: 'assistant',
+          content: mode === 'exam' 
+            ? "👋 **Hello! I'm Temari AI, your exam study companion.** \n\nI have this question loaded. Pick a guidance action below or type your custom question!"
+            : "👋 **Hello! I'm Temari AI, your textbook study companion.** \n\nI have read this chapter note. Pick an action below or ask me anything you want clarified!"
+        }]);
+      }
     }
-  }, [isOpen, mode, messages.length]);
+  }, [isOpen, mode, selectedExcerpt]);
 
   // Auto scroll to bottom when messages change
   useEffect(() => {
@@ -76,7 +95,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
   if (!isOpen) return null;
 
   const sendMessage = async (
-    type: 'hint' | 'explain' | 'eli5' | 'amharic' | 'chat', 
+    type: 'hint' | 'explain' | 'eli5' | 'amharic' | 'summary' | 'chat', 
     customUserText?: string,
     customDisplayText?: string
   ) => {
@@ -93,6 +112,10 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
     if (type === 'explain' && !customUserText) {
       userText = 'Please explain the correct answer to me in detail and show me the step-by-step reasoning.';
       displayText = '📖 Explain the solution';
+    }
+    if (type === 'summary' && !customUserText) {
+      userText = 'Please summarize the 3 most crucial takeaways and exam-focused points from this chapter note.';
+      displayText = '📝 Chapter Key Takeaways';
     }
     if (type === 'amharic' && !customUserText) {
       userText = 'Please translate the main idea and explain it simply in Amharic.';
@@ -123,7 +146,8 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
         body: JSON.stringify({
           mode,
           noteText,
-          questionId: question?.id, // Fix: pass questionId to enable ai_cache
+          selectedExcerpt: selectedExcerpt || undefined,
+          questionId: (!selectedExcerpt && noteId) ? `note:${noteId}` : question?.id,
           subject: question?.subject,
           questionText: question?.question,
           options: question ? [question.option_a, question.option_b, question.option_c, question.option_d] : undefined,
@@ -237,6 +261,15 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
   ];
 
   const notePrompts = [
+    ...(selectedExcerpt ? [{
+      id: 'excerpt',
+      icon: Sparkles,
+      title: 'Explain Highlighted Text',
+      desc: 'Unpack the meaning, formulas, and intuition of your selection',
+      tint: 'bg-tint-purple text-tint-purple-fg border-tint-purple-border',
+      iconBg: 'text-purple-600 bg-white/90 dark:bg-black/40',
+      action: () => sendMessage('chat', `Please explain this highlighted excerpt in simple terms with clear intuition and examples: "${selectedExcerpt}"`, '✨ Explain Highlighted Text'),
+    }] : []),
     {
       id: 'summary',
       icon: BookOpen,
@@ -244,7 +277,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({ mode = 'exam', not
       desc: '3 most crucial exam-focused takeaways from this note',
       tint: 'bg-tint-peach text-tint-peach-fg border-tint-peach-border',
       iconBg: 'text-amber-600 bg-white/90 dark:bg-black/40',
-      action: () => sendMessage('chat', 'Please summarize the 3 most crucial takeaways and exam-focused points from this chapter note.', '📝 Chapter Key Takeaways'),
+      action: () => sendMessage('summary', 'Please summarize the 3 most crucial takeaways and exam-focused points from this chapter note.', '📝 Chapter Key Takeaways'),
     },
     {
       id: 'quiz',
