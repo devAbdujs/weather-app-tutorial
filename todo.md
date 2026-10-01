@@ -10,22 +10,22 @@
 An exhaustive, end-to-end code audit of every section, subsection, icon, button, tab, exam type (`entrance`, `freshman`, `exit`), route, and API endpoint was conducted. Below is the prioritized defect backlog for phased execution:
 
 ### 🔴 Phase 1: Critical P0 Flaws (Payment Fraud Flags, Session Sync & Blocked Workflows)
-*   [ ] **Fix Payment OCR Fraud Threshold Mismatch (False-Positive Fraud Flagging):**
+*   [x] **Fix Payment OCR Fraud Threshold Mismatch (False-Positive Fraud Flagging):**
     *   **Files:** [`src/app/api/payments/submit/route.ts#L12`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/payments/submit/route.ts#L12), [`L103`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/payments/submit/route.ts#L103) vs [`src/app/(app)/(protected)/upgrade/page.tsx#L524`](file:///home/abdu/scraping/ethio-exam-app/src/app/(app)/(protected)/upgrade/page.tsx#L524) and [`src/components/ai/AITutorDrawer.tsx#L147`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L147).
     *   **Flaw:** In `submit/route.ts`, `PAYMENT_AMOUNT_ETB = 200`, and Gemini Vision is instructed: `Set "is_suspicious" to true if amount is less than 200 ETB`. But the UI in `upgrade/page.tsx` and `AITutorDrawer.tsx` directs students to pay **199 ETB**.
     *   **Impact:** 100% of legitimate paying students paying 199 ETB get auto-flagged as `is_suspicious: true` and are told their payment requires manual admin investigation.
     *   **Fix:** Align `PAYMENT_AMOUNT_ETB = 199` in `submit/route.ts`.
-*   [ ] **Fix Missing `subscription_status` in Protected Layout Session Hydration:**
+*   [x] **Fix Missing `subscription_status` in Protected Layout Session Hydration:**
     *   **Files:** [`src/app/(app)/(protected)/layout.tsx#L20-L36`](file:///home/abdu/scraping/ethio-exam-app/src/app/(app)/(protected)/layout.tsx#L20-L36) & [`src/components/auth/StoreInitializer.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/auth/StoreInitializer.tsx).
     *   **Flaw:** `layout.tsx` only selects `daily_streak` from `profiles` and ignores `subscription_status`, `stream`, and `target_exam`. `formattedProfile` does not include `subscription_status`.
     *   **Impact:** `useAppStore.userProfile.subscription_status` is permanently `undefined` on page loads. Premium subscribers continue to see the `👑 PRO Upgrade` button in [`TopHeader.tsx#L108`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/TopHeader.tsx#L108).
     *   **Fix:** Include `subscription_status`, `stream`, `target_exam`, `ai_weekly_usage`, and `ai_quota_reset_at` in `layout.tsx` profile query and pass them into `formattedProfile`.
-*   [ ] **Fix Dead Center FAB Trigger on Practice, Mastery & Profile Tabs:**
+*   [x] **Fix Dead Center FAB Trigger on Practice, Mastery & Profile Tabs:**
     *   **Files:** [`src/components/layout/BottomNav.tsx#L27-L31`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/BottomNav.tsx#L27-L31), [`src/app/(app)/(protected)/dashboard/page.tsx#L13`](file:///home/abdu/scraping/ethio-exam-app/src/app/(app)/(protected)/dashboard/page.tsx#L13), [`src/components/layout/DashboardShell.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/DashboardShell.tsx).
     *   **Flaw:** Center orange FAB calls `setSetupModalType('exam')`. However, `<ExamSetupModal />` is only mounted inside `dashboard/page.tsx`.
     *   **Impact:** Tapping the center FAB while on `/practice`, `/mastery`, or `/profile` does nothing.
     *   **Fix:** Move `<ExamSetupModal />` to `DashboardShell.tsx` so the center FAB launches the modal across all tabs.
-*   [ ] **Fix Dropped Exam Stats, Streak Updates & Bookmarks for Web Students:**
+*   [x] **Fix Dropped Exam Stats, Streak Updates & Bookmarks for Web Students:**
     *   **Files:** [`src/components/exam/ExamWorkspace.tsx#L179`](file:///home/abdu/scraping/ethio-exam-app/src/components/exam/ExamWorkspace.tsx#L179), [`L227`](file:///home/abdu/scraping/ethio-exam-app/src/components/exam/ExamWorkspace.tsx#L227).
     *   **Flaw:** `toggleBookmark` and `handleFinish` check `if (!user?.id) return;` using `useTelegram()`.
     *   **Impact:** For web/desktop students (authenticated via OTP/OIDC session cookie), `user` is null. Exam results submitted to `/api/exam/submit` and daily streak updates via `updateDailyStreak()` are silently skipped and lost.

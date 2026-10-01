@@ -14,6 +14,8 @@ export interface UserProfile {
   stream: string;
   daily_streak: number;
   subscription_status?: string;
+  ai_weekly_usage?: number;
+  ai_quota_reset_at?: string;
 }
 
 interface AppState {

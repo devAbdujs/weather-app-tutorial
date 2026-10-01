@@ -85,10 +85,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
   useEffect(() => {
     const loadBookmarks = async () => {
-      if (!user?.id) return;
       try {
         const questionIds = await getSavedMistakes();
-        if (questionIds.length > 0) {
+        if (questionIds && questionIds.length > 0) {
           setSavedQuestions(new Set(questionIds));
         }
       } catch (err) {
@@ -96,7 +95,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
       }
     };
     loadBookmarks();
-  }, [user?.id]);
+  }, []);
 
   const handleSelectOption = (letter: 'A' | 'B' | 'C' | 'D') => {
     const wasAlreadyAnswered = selectedAnswers[currentIndex] !== undefined;
@@ -125,7 +124,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
   };
 
   const toggleBookmark = async () => {
-    if (!currentQ || !user?.id) return;
+    if (!currentQ) return;
     haptic.impact('light');
     const qId = currentQ.id || `${subject}-${currentQ.question.substring(0, 20)}`;
     const isSaved = savedQuestions.has(qId);
@@ -173,7 +172,6 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     if (!hasRecordedCompletion) {
       setHasRecordedCompletion(true);
       try {
-        if (!user?.id) return;
         await updateDailyStreak();
 
         try {
@@ -204,7 +202,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
         console.error("Error saving exam stats:", err);
       }
     }
-  }, [hasRecordedCompletion, user?.id, questions, selectedAnswers, subject, title]);
+  }, [hasRecordedCompletion, questions, selectedAnswers, subject, title]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });

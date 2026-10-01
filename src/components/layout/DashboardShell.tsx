@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { BottomNav } from './BottomNav';
 import { TopHeader } from './TopHeader';
 import { CelebrationModal } from '@/components/gamification/CelebrationModal';
+import { ExamSetupModal } from '@/components/dashboard/ExamSetupModal';
 
 export const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname() || '';
@@ -33,6 +34,9 @@ export const DashboardShell = ({ children }: { children: React.ReactNode }) => {
 
         {/* Global Gamification Celebration Overlay */}
         <CelebrationModal />
+
+        {/* Global Exam & Notes Setup Modal */}
+        <ExamSetupModal />
       </main>
     </div>
   );

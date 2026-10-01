@@ -9,7 +9,7 @@ import { sendAdminPaymentAlert } from '@/lib/paymentNotifier';
 // NOTE: Node.js runtime required for Buffer (not Edge-compatible)
 export const runtime = 'nodejs';
 
-const PAYMENT_AMOUNT_ETB = 200; // Expected payment amount — update this as needed
+const PAYMENT_AMOUNT_ETB = 199; // Expected payment amount (matches 199 ETB in upgrade UI)
 
 export async function POST(req: NextRequest) {
   const supabaseAdmin = createClient(
