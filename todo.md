@@ -100,6 +100,23 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
 
 ---
 
+### 🌐 Phase 4: Dedicated Subdomain Architecture & Exam-Specific Portals
+*   [ ] **Multi-Subdomain Routing (`entrance.temari.app`, `freshman.temari.app`, `exit.temari.app`) & Root Pitch Landing Page:**
+    *   **Files to Update/Create:**
+        - Next.js Middleware: [`src/middleware.ts`](file:///home/abdu/scraping/ethio-exam-app/src/middleware.ts) (detect `request.headers.get('host')` and rewrite to exam-scoped paths).
+        - Root Landing Page: [`src/app/page.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/app/page.tsx) (create compelling product pitch with 3 dedicated CTA buttons linking to each subdomain).
+        - Session & Cookies: [`src/utils/supabase/server.ts`](file:///home/abdu/scraping/ethio-exam-app/src/utils/supabase/server.ts) and [`src/utils/supabase/client.ts`](file:///home/abdu/scraping/ethio-exam-app/src/utils/supabase/client.ts) (configure cookie domain to `.temari.app` for seamless single-sign-on across all subdomains).
+        - Dynamic Metadata: Generate exam-specific SEO title, description, schema.org JSON-LD, and OpenGraph preview cards for each subdomain.
+    *   **Strategy & Rationale:**
+        1. *SEO Dominance:* Ethiopian student search queries are strictly segmented by persona ("Grade 12 EUEE past papers", "University freshman remedial courses", "Ethiopian university exit exam questions"). Dedicated subdomains maximize search engine rankings for each keyword group.
+        2. *Zero-Friction Conversion:* When a Grade 12 student visits `entrance.temari.app`, the entire interface, subjects, and study materials are pre-filtered to Grade 12 EUEE without cognitive overload from university departments.
+        3. *Root Hub (`temari.app`):* Acts as the high-impact brand pitch showcasing 31,000+ questions, Temari AI Tutor, and Chapter Notes with 3 hero CTA buttons:
+           - 🎓 **Grade 12 Entrance (EUEE)** -> `entrance.temari.app`
+           - 🏛️ **University Freshman** -> `freshman.temari.app`
+           - 🏆 **University Exit Exam** -> `exit.temari.app`
+
+---
+
 ## 🧠 Temari AI Integration Deep-Dive: Grounding, Context, Logic & UX Audit
 
 A forensic analysis of the AI integration across short notes, questions, exams, prompt grounding, context payloads, and user interface workflows was conducted. Below are the critical logical flaws, grounding gaps, and UX defects identified:
