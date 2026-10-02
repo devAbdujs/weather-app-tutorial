@@ -34,7 +34,7 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
 ---
 
 ### 🟡 Phase 2: High Priority P1 Flaws (Mode Overrides & UI Polish)
-*   [ ] **Fix Jumpy Text Selection, Snippet Highlighting & "Ask AI" Menu in Notes:**
+*   [x] **Fix Jumpy Text Selection, Snippet Highlighting & "Ask AI" Menu in Notes:**
     *   **Files:** [`src/components/dashboard/StudyNotesView.tsx#L233-L270`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/StudyNotesView.tsx#L233-L270), [`#L272-L281`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/StudyNotesView.tsx#L272-L281), [`#L363`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/StudyNotesView.tsx#L363), and [`tailwind.config.ts#L87-L91`](file:///home/abdu/scraping/ethio-exam-app/tailwind.config.ts#L87-L91).
     *   **Flaws & Root Causes:**
         1. *CSS Transform Collision:* The toolbar container pairs `-translate-x-1/2` with `animate-scale-bounce`. The `scale-bounce` keyframe specifies `transform: scale(...)`, which overrides Tailwind's `translateX(-50%)` during animation, causing the toolbar to violently jump horizontally by 50% width on mount.
@@ -49,7 +49,7 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
         - Don't clear selection on `pointerdown` if the touch is within `#note-content` while selection is active.
         - Alternatively implement a docked mobile action pill above the bottom footer (`[ 🎨 Colors | ✨ Ask AI | ✕ ]`) when text is selected, matching Kindle/Medium mobile UX for 100% stable, zero-jump interaction.
 
-*   [ ] **Fix ExamSetupModal Dropping `mode` (Practice Drill Overridden to Timed Simulator):**
+*   [x] **Fix ExamSetupModal Dropping `mode` (Practice Drill Overridden to Timed Simulator):**
     *   **Files:** [`src/components/dashboard/ExamSetupModal.tsx#L119-L128`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ExamSetupModal.tsx#L119-L128) vs [`src/app/(app)/(protected)/exam/session/page.tsx#L25`](file:///home/abdu/scraping/ethio-exam-app/src/app/(app)/(protected)/exam/session/page.tsx#L25).
     *   **Flaw:** `ExamSetupModal` holds mode state (`'practice'`), but `mode` is never added to `params` in `handleStart()`.
     *   **Impact:** In `exam/session/page.tsx`, `mode` defaults to `'exam'`. Students selecting "Quick Drill" are forced into timed simulator mode with an active countdown timer and no instant answer explanations.
@@ -66,7 +66,7 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
         - State & Types: [`src/store/useAppStore.ts#L3`](file:///home/abdu/scraping/ethio-exam-app/src/store/useAppStore.ts#L3) (update `SetupModalType = 'exam' | 'notes' | null`), [`src/types/index.ts`](file:///home/abdu/scraping/ethio-exam-app/src/types/index.ts) (remove `Flashcard` interface), and [`src/store/useGamificationStore.ts#L30`](file:///home/abdu/scraping/ethio-exam-app/src/store/useGamificationStore.ts#L30) (remove `'deck_completed'`).
         - Bot Webhook: [`src/app/api/bot/webhook/route.ts#L81`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/bot/webhook/route.ts#L81) (clean up copy).
     *   **Rationale:** Flashcards are being sunset in favor of deep Chapter Note study and Exam Practice questions, eliminating redundant route maintenance and client bundle overhead.
-*   [ ] **Implement Server-Side Highlight Synchronization:**
+*   [x] **Implement Server-Side Highlight Synchronization:**
     *   **Files:** [`src/components/dashboard/StudyNotesView.tsx#L140-L157`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/StudyNotesView.tsx#L140-L157) & [`src/app/api/highlights/route.ts`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/highlights/route.ts).
     *   **Flaw:** `StudyNotesView.tsx` only reads and writes highlights to `localStorage`. The server endpoint `/api/highlights` is never called.
     *   **Impact:** Student highlights do not sync across devices and are lost if Telegram clears browser storage.

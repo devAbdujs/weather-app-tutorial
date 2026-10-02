@@ -116,6 +116,7 @@ export const ExamSetupModal: React.FC = () => {
       const params = new URLSearchParams({
         examType: dbExamType,
         subject,
+        mode,
         sessionSize: '50',
         sessionOffset: '0',
       });

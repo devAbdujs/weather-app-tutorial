@@ -60,6 +60,7 @@ const config: Config = {
         "sheet-up":      "sheet-up 0.44s cubic-bezier(0.16, 1, 0.3, 1) both",
         "drawer-up":     "drawer-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both",
         "scale-bounce":  "scale-bounce 0.48s cubic-bezier(0.34, 1.56, 0.64, 1) both",
+        "slide-up-docked": "slide-up-docked 0.28s cubic-bezier(0.16, 1, 0.3, 1) both",
         "shake":         "shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both",
         "pulse-soft":    "pulse-soft 2s cubic-bezier(0.45, 0, 0.55, 1) infinite",
       },
@@ -83,6 +84,10 @@ const config: Config = {
         "drawer-up": {
           from: { opacity: "0", transform: "translateY(12%)" },
           to:   { opacity: "1", transform: "translateY(0)" },
+        },
+        "slide-up-docked": {
+          from: { opacity: "0", transform: "translate(-50%, 16px)" },
+          to:   { opacity: "1", transform: "translate(-50%, 0)" },
         },
         "scale-bounce": {
           "0%":   { opacity: "0", transform: "scale(0.82)" },

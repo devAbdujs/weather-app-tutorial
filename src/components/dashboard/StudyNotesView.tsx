@@ -136,14 +136,17 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     else              setBackButton(true, () => router.push('/'));
   }, [selectedNote, setBackButton, router, handleBackFromNote]);
 
-  // Load highlights for the selected note from localStorage
+  // 1. Load highlights from localStorage instantly, then sync with server
   useEffect(() => {
     if (!selectedNote) {
       setHighlights([]);
       return;
     }
 
-    const key = getStorageKey(selectedNote.title);
+    const noteTitle = selectedNote.title;
+    const key = getStorageKey(noteTitle);
+
+    // Initial instant load from localStorage
     try {
       const cached = safeLocalStorage.getItem(key);
       if (cached) {
@@ -154,10 +157,46 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     } catch {
       setHighlights([]);
     }
+
+    // Server-side synchronization
+    let isCancelled = false;
+    const fetchServerHighlights = async () => {
+      try {
+        const queryParams = new URLSearchParams({
+          subject: subject || 'General',
+          chapter_title: noteTitle,
+        });
+        const res = await fetch(`/api/highlights?${queryParams.toString()}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!isCancelled && Array.isArray(data.highlights)) {
+          setHighlights(prev => {
+            const map = new Map<string, NoteHighlight>();
+            // Add server items
+            data.highlights.forEach((h: NoteHighlight) => map.set(h.text, h));
+            // Keep any local optimistic highlights not yet saved
+            prev.forEach(h => {
+              if (!map.has(h.text)) map.set(h.text, h);
+            });
+            const merged = Array.from(map.values());
+            try { safeLocalStorage.setItem(key, JSON.stringify(merged)); } catch {}
+            return merged;
+          });
+        }
+      } catch (err) {
+        console.warn('Failed to sync highlights with server:', err);
+      }
+    };
+
+    fetchServerHighlights();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [selectedNote, subject, getStorageKey]);
 
-  // Direct highlight application
-  const applyHighlightDirect = useCallback((textToSave: string, color: HighlightColor) => {
+  // Direct highlight application with server sync
+  const applyHighlightDirect = useCallback(async (textToSave: string, color: HighlightColor) => {
     if (!textToSave || !selectedNote) return;
     const cleanText = textToSave.replace(/\s+/g, ' ').trim();
     if (cleanText.length < 2) return;
@@ -176,6 +215,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
       created_at: new Date().toISOString(),
     };
 
+    // Optimistic local update
     setHighlights(prev => {
       if (prev.some(h => h.text === cleanText && h.color === color)) return prev;
       const updated = [...prev, newHighlight];
@@ -190,10 +230,36 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     try {
       window.getSelection()?.removeAllRanges();
     } catch {}
+
+    // Persist to server
+    try {
+      const res = await fetch('/api/highlights', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject: subject || 'General',
+          chapter_title: noteTitle,
+          text: cleanText,
+          color,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.highlight?.id) {
+          setHighlights(prev => {
+            const updated = prev.map(h => h.id === tempId ? { ...h, id: data.highlight.id } : h);
+            try { safeLocalStorage.setItem(key, JSON.stringify(updated)); } catch {}
+            return updated;
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to save highlight to server:', err);
+    }
   }, [selectedNote, subject, getStorageKey, haptic]);
 
-  // Remove a highlight
-  const removeHighlight = (id: string) => {
+  // Remove a highlight with server sync
+  const removeHighlight = async (id: string) => {
     if (!selectedNote) return;
     haptic.impact('light');
     const noteTitle = selectedNote.title;
@@ -207,14 +273,24 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
     setSelectedHighlight(null);
     setHighlightModalCoords(null);
+
+    // Persist deletion to server
+    try {
+      await fetch(`/api/highlights?id=${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      });
+    } catch (err) {
+      console.warn('Failed to delete highlight from server:', err);
+    }
   };
 
-  // Update an existing highlight's color
-  const updateHighlightColor = (id: string, newColor: HighlightColor) => {
+  // Update an existing highlight's color with server sync
+  const updateHighlightColor = async (id: string, newColor: HighlightColor) => {
     if (!selectedNote) return;
     haptic.selection();
     const noteTitle = selectedNote.title;
     const key = getStorageKey(noteTitle);
+    const target = highlights.find(h => h.id === id);
 
     setHighlights(prev => {
       const updated = prev.map(h => h.id === id ? { ...h, color: newColor } : h);
@@ -224,6 +300,21 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
     setSelectedHighlight(null);
     setHighlightModalCoords(null);
+
+    // Persist update to server
+    try {
+      await fetch('/api/highlights', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          text: target?.text || '',
+          color: newColor,
+        }),
+      });
+    } catch (err) {
+      console.warn('Failed to update highlight color on server:', err);
+    }
   };
 
   // Buttery-smooth text selection handling (zero interference with browser drag)
@@ -272,11 +363,16 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     const handlePointerDown = (e: any) => {
       isPointerDownRef.current = true;
       const target = e.target as HTMLElement;
-      // If user tapped outside the active toolbars, dismiss them
+      // If user tapped outside the active toolbars and outside highlight marks, dismiss popover
       if (!target?.closest?.('.highlighter-toolbar') && !target?.closest?.('.highlighter-popover')) {
-        setSelectedText('');
-        setSelectionCoords(null);
-        setSelectedHighlight(null);
+        if (!target?.closest?.('[data-highlight-id]')) {
+          setSelectedHighlight(null);
+        }
+        // If user tapped outside note content, dismiss active text selection too
+        if (!target?.closest?.('#note-content')) {
+          setSelectedText('');
+          setSelectionCoords(null);
+        }
       }
     };
 
@@ -357,15 +453,9 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     return (
       <div className="min-h-screen bg-ground flex flex-col font-sans animate-fade-in relative pb-28">
 
-        {/* Floating Selection Highlighter Bar */}
-        {!penModeActive && selectionCoords && selectedText && (
-          <div
-            className="highlighter-toolbar fixed z-50 -translate-x-1/2 animate-scale-bounce pointer-events-auto select-none"
-            style={{
-              top: Math.max(72, selectionCoords.top),
-              left: `clamp(110px, ${selectionCoords.left}px, calc(100vw - 110px))`,
-            }}
-          >
+        {/* Docked Selection Highlighter Bar */}
+        {!penModeActive && selectedText && (
+          <div className="highlighter-toolbar fixed bottom-20 sm:bottom-8 left-1/2 z-50 pointer-events-auto select-none animate-slide-up-docked">
             <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-tactile-lg">
               <div className="flex items-center pl-1.5 pr-1 text-slate-400">
                 <PenLine className="w-3.5 h-3.5" />
@@ -421,15 +511,9 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
           </div>
         )}
 
-        {/* Floating Edit Popover for Existing Highlight */}
-        {selectedHighlight && highlightModalCoords && (
-          <div
-            className="highlighter-popover fixed z-50 -translate-x-1/2 animate-scale-bounce pointer-events-auto select-none"
-            style={{
-              top: Math.max(72, highlightModalCoords.top),
-              left: `clamp(120px, ${highlightModalCoords.left}px, calc(100vw - 120px))`,
-            }}
-          >
+        {/* Docked Edit Popover for Existing Highlight */}
+        {selectedHighlight && (
+          <div className="highlighter-popover fixed bottom-20 sm:bottom-8 left-1/2 z-50 pointer-events-auto select-none animate-slide-up-docked">
             <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-tactile-lg">
               <div className="flex items-center gap-1 pl-1">
                 {HIGHLIGHT_PALETTE.map(col => (
@@ -495,7 +579,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         {penModeActive && (
           <aside
             aria-label="Active Highlighter Pen Toolbar"
-            className="fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-scale-bounce pointer-events-auto select-none"
+            className="fixed bottom-20 sm:bottom-6 left-1/2 z-50 animate-slide-up-docked pointer-events-auto select-none"
           >
             <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-tactile-lg">
               <div className="flex items-center gap-1.5 pl-1 pr-1 text-xs font-bold text-foreground">
