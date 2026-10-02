@@ -371,35 +371,51 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         // If user tapped outside note content, dismiss active text selection too
         if (!target?.closest?.('#note-content')) {
           setSelectedText('');
+          selectedTextRef.current = '';
           setSelectionCoords(null);
         }
       }
     };
 
-    const handlePointerUp = () => {
+    const handlePointerUp = (e: any) => {
       isPointerDownRef.current = false;
+      const target = e?.target as HTMLElement;
+
+      // If user tapped inside the toolbar itself, don't dismiss or reprocess
+      if (target?.closest?.('.highlighter-toolbar') || target?.closest?.('.highlighter-popover')) {
+        return;
+      }
+
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-      debounceTimerRef.current = setTimeout(processSelection, 50);
+      debounceTimerRef.current = setTimeout(() => {
+        if (isPointerDownRef.current) return;
+        const sel = window.getSelection();
+        if (!sel || sel.isCollapsed || sel.toString().trim().length < 2) {
+          // If user tapped inside note content without selecting text, dismiss active selection
+          if (target?.closest?.('#note-content')) {
+            setSelectedText('');
+            selectedTextRef.current = '';
+            setSelectionCoords(null);
+          }
+        } else {
+          processSelection();
+        }
+      }, 50);
     };
 
     const handleSelectionChange = () => {
-      // NEVER process during active dragging/gesturing!
+      // Don't process during active dragging/gesturing
       if (isPointerDownRef.current) return;
 
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
       debounceTimerRef.current = setTimeout(() => {
         if (isPointerDownRef.current) return;
         const sel = window.getSelection();
-        if (!sel || sel.isCollapsed) {
-          const activeEl = document.activeElement;
-          if (!activeEl?.closest('.highlighter-toolbar') && !activeEl?.closest('.highlighter-popover')) {
-            setSelectedText('');
-            setSelectionCoords(null);
-          }
-        } else {
+        // Only trigger processSelection if there IS a valid active selection with content
+        if (sel && !sel.isCollapsed && sel.toString().trim().length >= 2) {
           processSelection();
         }
-      }, 150);
+      }, 100);
     };
 
     document.addEventListener('pointerdown', handlePointerDown);
@@ -428,8 +444,8 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     }
   };
 
-  // Handle clicking on an existing highlight tag in the note
-  const handleHighlightClick = (h: NoteHighlight) => {
+  // Handle clicking on an existing highlight tag in the note (memoized to keep MarkdownRenderer pristine)
+  const handleHighlightClick = useCallback((h: NoteHighlight) => {
     haptic.impact('light');
     setSelectedHighlight(h);
     const el = document.querySelector(`[data-highlight-id="${h.id}"]`);
@@ -440,7 +456,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     } else {
       setHighlightModalCoords({ top: 120, left: window.innerWidth / 2 });
     }
-  };
+  }, [haptic]);
 
   const calculateReadTime = (text: string) =>
     Math.max(1, Math.ceil(text.split(/\s+/).length / 200));
@@ -455,122 +471,152 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
         {/* Docked Selection Highlighter Bar */}
         {!penModeActive && selectedText && (
-          <div className="highlighter-toolbar fixed bottom-20 sm:bottom-8 left-1/2 z-50 pointer-events-auto select-none animate-slide-up-docked">
-            <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-tactile-lg">
-              <div className="flex items-center pl-1.5 pr-1 text-slate-400">
-                <PenLine className="w-3.5 h-3.5" />
-              </div>
-              {HIGHLIGHT_PALETTE.map(col => (
+          <div className="highlighter-toolbar fixed bottom-20 sm:bottom-8 left-1/2 z-50 pointer-events-auto select-none animate-slide-up-docked w-[calc(100%-1.5rem)] max-w-sm sm:max-w-md">
+            <div className="flex flex-col rounded-2xl bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-tactile-lg overflow-hidden">
+              {/* Snippet Preview Header */}
+              <div className="flex items-center justify-between px-3 py-1.5 bg-black/[0.03] dark:bg-white/[0.04] border-b border-black/5 dark:border-white/10 text-xs">
+                <div className="flex items-center gap-1.5 text-muted-foreground truncate mr-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 animate-pulse" />
+                  <span className="font-bold text-foreground text-[10px] sm:text-[11px] uppercase tracking-wider shrink-0">Selected:</span>
+                  <span className="truncate italic text-foreground/80 font-medium text-[11px] sm:text-xs">"{selectedText}"</span>
+                </div>
                 <button
-                  key={col.id}
+                  onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onClick={() => {
+                    selectedTextRef.current = '';
+                    setSelectedText('');
+                    setSelectionCoords(null);
+                    try { window.getSelection()?.removeAllRanges(); } catch {}
+                  }}
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-slate-400 hover:text-foreground active:scale-90 transition-all shrink-0"
+                  title="Cancel selection"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Action Buttons Row */}
+              <div className="flex items-center justify-between gap-1 p-1.5 sm:p-2">
+                <div className="flex items-center gap-1.5 pl-0.5">
+                  {HIGHLIGHT_PALETTE.map(col => (
+                    <button
+                      key={col.id}
+                      onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onClick={() => applyHighlight(col.id)}
+                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${col.dot} ${col.border} border-2 hover:scale-110 active:scale-95 transition-all shadow-sm flex items-center justify-center`}
+                      title={`Highlight in ${col.name}`}
+                    />
+                  ))}
+                </div>
+
+                <div className="w-[1px] h-5 bg-black/10 dark:bg-white/10 mx-0.5" />
+
+                <button
                   onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  onClick={() => applyHighlight(col.id)}
-                  className={`w-7 h-7 rounded-full ${col.dot} ${col.border} border-2 hover:scale-110 active:scale-95 transition-all shadow-sm flex items-center justify-center`}
-                  title={`Highlight in ${col.name}`}
-                />
-              ))}
-              <div className="w-[1px] h-4 bg-black/10 dark:bg-white/10 mx-0.5" />
-              <button
-                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onClick={() => {
-                  sounds.playTap();
-                  haptic.impact('medium');
-                  setTutorExcerpt(selectedText);
-                  setShowTutor(true);
-                  setSelectedText('');
-                  setSelectionCoords(null);
-                  try { window.getSelection()?.removeAllRanges(); } catch {}
-                }}
-                className="px-2 py-1 rounded-xl text-xs font-black text-primary bg-primary/10 hover:bg-primary/20 active:scale-95 transition-all flex items-center gap-1"
-                title="Ask AI Tutor about this selection"
-              >
-                <Sparkles className="w-3.5 h-3.5 fill-current" />
-                <span>Ask AI</span>
-              </button>
-              <div className="w-[1px] h-4 bg-black/10 dark:bg-white/10 mx-0.5" />
-              <button
-                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onClick={() => {
-                  selectedTextRef.current = '';
-                  setSelectedText('');
-                  setSelectionCoords(null);
-                  try { window.getSelection()?.removeAllRanges(); } catch {}
-                }}
-                className="w-6 h-6 rounded-full flex items-center justify-center text-slate-400 hover:text-foreground active:scale-90 transition-all"
-                title="Cancel"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
+                  onClick={() => {
+                    sounds.playTap();
+                    haptic.impact('medium');
+                    setTutorExcerpt(selectedText);
+                    setShowTutor(true);
+                    selectedTextRef.current = '';
+                    setSelectedText('');
+                    setSelectionCoords(null);
+                    try { window.getSelection()?.removeAllRanges(); } catch {}
+                  }}
+                  className="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-black text-primary bg-primary/10 hover:bg-primary/20 active:scale-95 transition-all flex items-center gap-1.5 shrink-0"
+                  title="Ask AI Tutor about this selection"
+                >
+                  <Sparkles className="w-3.5 h-3.5 fill-current" />
+                  <span>Ask AI</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
 
         {/* Docked Edit Popover for Existing Highlight */}
         {selectedHighlight && (
-          <div className="highlighter-popover fixed bottom-20 sm:bottom-8 left-1/2 z-50 pointer-events-auto select-none animate-slide-up-docked">
-            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-tactile-lg">
-              <div className="flex items-center gap-1 pl-1">
-                {HIGHLIGHT_PALETTE.map(col => (
+          <div className="highlighter-popover fixed bottom-20 sm:bottom-8 left-1/2 z-50 pointer-events-auto select-none animate-slide-up-docked w-[calc(100%-1.5rem)] max-w-sm sm:max-w-md">
+            <div className="flex flex-col rounded-2xl bg-card/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-tactile-lg overflow-hidden">
+              {/* Snippet Preview Header */}
+              <div className="flex items-center justify-between px-3 py-1.5 bg-black/[0.03] dark:bg-white/[0.04] border-b border-black/5 dark:border-white/10 text-xs">
+                <div className="flex items-center gap-1.5 text-muted-foreground truncate mr-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                  <span className="font-bold text-foreground text-[10px] sm:text-[11px] uppercase tracking-wider shrink-0">Highlight:</span>
+                  <span className="truncate italic text-foreground/80 font-medium text-[11px] sm:text-xs">"{selectedHighlight.text}"</span>
+                </div>
+                <button
+                  onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onClick={() => {
+                    setSelectedHighlight(null);
+                    setHighlightModalCoords(null);
+                  }}
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-slate-400 hover:text-foreground active:scale-90 transition-all shrink-0"
+                  title="Close"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Action Buttons Row */}
+              <div className="flex items-center justify-between gap-1 p-1.5 sm:p-2">
+                <div className="flex items-center gap-1.5 pl-0.5">
+                  {HIGHLIGHT_PALETTE.map(col => (
+                    <button
+                      key={col.id}
+                      onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onClick={() => updateHighlightColor(selectedHighlight.id, col.id)}
+                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${col.dot} ${col.border} border-2 hover:scale-110 active:scale-95 transition-all ${
+                        selectedHighlight.color === col.id ? 'ring-2 ring-primary ring-offset-2' : ''
+                      }`}
+                      title={`Change color to ${col.name}`}
+                    />
+                  ))}
+                </div>
+
+                <div className="w-[1px] h-5 bg-black/10 dark:bg-white/10 mx-0.5" />
+
+                <div className="flex items-center gap-1 sm:gap-1.5">
                   <button
-                    key={col.id}
                     onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                    onClick={() => updateHighlightColor(selectedHighlight.id, col.id)}
-                    className={`w-6 h-6 rounded-full ${col.dot} ${col.border} border-2 hover:scale-110 active:scale-95 transition-all ${
-                      selectedHighlight.color === col.id ? 'ring-2 ring-primary ring-offset-1' : ''
-                    }`}
-                    title={`Change color to ${col.name}`}
-                  />
-                ))}
+                    onClick={() => {
+                      sounds.playTap();
+                      haptic.impact('medium');
+                      setTutorExcerpt(selectedHighlight.text);
+                      setShowTutor(true);
+                      setSelectedHighlight(null);
+                      setHighlightModalCoords(null);
+                    }}
+                    className="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-black text-primary bg-primary/10 hover:bg-primary/20 active:scale-95 transition-all flex items-center gap-1 shrink-0"
+                    title="Ask AI Tutor about this highlight"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 fill-current" />
+                    <span>Ask AI</span>
+                  </button>
+
+                  <button
+                    onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                    onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                    onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                    onClick={() => removeHighlight(selectedHighlight.id)}
+                    className="px-2 sm:px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-500 hover:bg-rose-500/10 active:scale-95 transition-all flex items-center gap-1 shrink-0"
+                    title="Remove Highlight"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span className="hidden xs:inline">Delete</span>
+                  </button>
+                </div>
               </div>
-              <div className="w-[1px] h-4 bg-black/10 dark:bg-white/10 mx-0.5" />
-              <button
-                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onClick={() => {
-                  sounds.playTap();
-                  haptic.impact('medium');
-                  setTutorExcerpt(selectedHighlight.text);
-                  setShowTutor(true);
-                  setSelectedHighlight(null);
-                  setHighlightModalCoords(null);
-                }}
-                className="px-2 py-1 rounded-xl text-xs font-black text-primary bg-primary/10 hover:bg-primary/20 active:scale-95 transition-all flex items-center gap-1"
-                title="Ask AI Tutor about this highlight"
-              >
-                <Sparkles className="w-3.5 h-3.5 fill-current" />
-                <span>Ask AI</span>
-              </button>
-              <div className="w-[1px] h-4 bg-black/10 dark:bg-white/10 mx-0.5" />
-              <button
-                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onClick={() => removeHighlight(selectedHighlight.id)}
-                className="px-2.5 py-1 rounded-xl text-xs font-bold text-rose-500 hover:bg-rose-500/10 active:scale-95 transition-all flex items-center gap-1"
-                title="Remove Highlight"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Remove</span>
-              </button>
-              <button
-                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onClick={() => setSelectedHighlight(null)}
-                className="w-6 h-6 rounded-full flex items-center justify-center text-slate-400 hover:text-foreground active:scale-90"
-                title="Close"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
             </div>
           </div>
         )}

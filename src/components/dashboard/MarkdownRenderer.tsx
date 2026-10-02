@@ -208,7 +208,7 @@ interface MarkdownRendererProps {
   onHighlightClick?: (highlight: NoteHighlight) => void;
 }
 
-export default function MarkdownRenderer({
+function MarkdownRendererComponent({
   content,
   accentBg = 'bg-primary/5',
   accentText = 'text-gray-900 dark:text-gray-100',
@@ -317,3 +317,6 @@ export default function MarkdownRenderer({
     </ReactMarkdown>
   );
 }
+
+export const MarkdownRenderer = React.memo(MarkdownRendererComponent);
+export default MarkdownRenderer;
