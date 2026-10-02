@@ -152,7 +152,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
              <span className="font-black text-lg tracking-tight">Temari</span>
           </div>
           <button 
-            onClick={handleTelegramOIDCLogin} 
+            onClick={() => handleTelegramOIDCLogin()} 
             className="btn-3d-card text-xs font-black px-4 py-2 rounded-xl text-gray-800 dark:text-gray-200"
           >
             Sign In
@@ -457,7 +457,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
         <h2 className="text-2xl sm:text-3xl font-black mb-2 tracking-tight">Ready to ace your exams?</h2>
         <p className="text-xs sm:text-sm font-bold text-gray-500 mb-6">Join thousands of Ethiopian students learning smarter today.</p>
         <button
-          onClick={handleTelegramOIDCLogin}
+          onClick={() => handleTelegramOIDCLogin()}
           className="btn-3d-primary w-full max-w-[320px] py-4 rounded-2xl flex items-center justify-center gap-2.5 text-sm font-black"
         >
           <Send className="w-5 h-5 text-white" />

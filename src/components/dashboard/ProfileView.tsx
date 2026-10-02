@@ -19,7 +19,9 @@ import {
   Bell,
   CheckCircle2,
   FileQuestion,
-  ShieldCheck
+  ShieldCheck,
+  Headphones,
+  Settings
 } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useRouter } from 'next/navigation';

@@ -23,7 +23,7 @@ export function cleanForTelegram(text: string | null | undefined): string {
     // Remove all remaining HTML tags
     .replace(/<[^>]+>/g, '')
     // Normalize LaTeX dollar delimiters for readability if needed
-    .replace(/\$\$(.+?)\$\$/gs, '$1')
+    .replace(/\$\$([\s\S]+?)\$\$/g, '$1')
     .replace(/\$(.+?)\$/g, '$1')
     // Collapse excess spaces and newlines
     .replace(/[ \t]+/g, ' ')
