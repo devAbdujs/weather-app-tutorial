@@ -72,15 +72,15 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
         setMessages([{
           id: 'welcome',
           role: 'assistant',
-          content: `👋 **Hello! I'm Temari AI, your study companion.**\n\nI have loaded this excerpt from your note:\n> *"**${selectedExcerpt.slice(0, 160)}${selectedExcerpt.length > 160 ? '...' : ''}**"*\n\nTap **"Explain Highlighted Text"** below or ask me any question about it!`
+          content: `👋 **Hello! I'm Temari AI, your study companion.**\n\nI have loaded this excerpt:\n> *"**${selectedExcerpt.slice(0, 160)}${selectedExcerpt.length > 160 ? '...' : ''}**"*\n\nTap a suggestion below or ask me anything!`
         }]);
       } else if (messages.length === 0) {
         setMessages([{
           id: 'welcome',
           role: 'assistant',
           content: mode === 'exam' 
-            ? "👋 **Hello! I'm Temari AI, your exam study companion.** \n\nI have this question loaded. Pick a guidance action below or type your custom question!"
-            : "👋 **Hello! I'm Temari AI, your textbook study companion.** \n\nI have read this chapter note. Pick an action below or ask me anything you want clarified!"
+            ? "👋 **Hello! I'm Temari AI, your exam study companion.**\n\nPick a suggested question below or type your own question!"
+            : "👋 **Hello! I'm Temari AI, your textbook study companion.**\n\nPick a suggested question below or ask me anything you want clarified!"
         }]);
       }
     }
@@ -215,34 +215,25 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
     sendMessage('chat', input);
   };
 
-  // ── VERTICALLY STACKED QUICK PROMPT ACTIONS ──────────────────────────
+  // ── MINIMAL INLINE PROMPT SUGGESTIONS ──────────────────────────
   const examPrompts = [
     {
       id: 'explain',
       icon: CheckCircle2,
-      title: 'Full Step-by-Step Solution',
-      desc: 'Detailed breakdown of why the correct choice is right',
-      tint: 'bg-tint-green text-tint-green-fg border-tint-green-border',
-      iconBg: 'text-emerald-600 bg-white/90 dark:bg-black/40',
-      action: () => sendMessage('explain', 'Please explain the correct answer in detail with clear step-by-step reasoning.', '📖 Explain the solution'),
-    },
-    {
-      id: 'amharic',
-      icon: Globe,
-      title: 'በአማርኛ ማብራሪያ',
-      desc: 'ጥያቄውን እና የትክክለኛውን መልስ ማብራሪያ በአማርኛ አስረዳኝ',
-      tint: 'bg-tint-sky text-tint-sky-fg border-tint-sky-border',
-      iconBg: 'text-sky-600 bg-white/90 dark:bg-black/40',
-      action: () => sendMessage('amharic', 'Please translate the core problem and explain the solution in clear, natural Amharic (አማርኛ).', '🇪🇹 በአማርኛ አስረዳኝ'),
+      label: 'Step-by-Step Solution',
+      action: () => sendMessage('explain', 'Please explain the correct answer in detail with clear step-by-step reasoning.', '📖 Step-by-Step Solution'),
     },
     {
       id: 'concept',
       icon: Brain,
-      title: 'Core Concept & Exam Traps',
-      desc: 'Key formulas, principles, or common mistakes in this question',
-      tint: 'bg-tint-purple text-tint-purple-fg border-tint-purple-border',
-      iconBg: 'text-purple-600 bg-white/90 dark:bg-black/40',
-      action: () => sendMessage('eli5', 'What core formula, scientific principle, or common exam trap does this question test? Explain clearly.', '🧠 Core concept & exam traps'),
+      label: 'Core Concept & Traps',
+      action: () => sendMessage('eli5', 'What core formula, scientific principle, or common exam trap does this question test? Explain clearly.', '🧠 Core Concept & Traps'),
+    },
+    {
+      id: 'amharic',
+      icon: Globe,
+      label: 'በአማርኛ አስረዳኝ',
+      action: () => sendMessage('amharic', 'Please translate the core problem and explain the solution in clear, natural Amharic (አማርኛ).', '🇪🇹 በአማርኛ አስረዳኝ'),
     },
   ];
 
@@ -250,47 +241,32 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
     ...(selectedExcerpt ? [{
       id: 'excerpt',
       icon: Sparkles,
-      title: 'Explain Highlighted Text',
-      desc: 'Unpack the meaning, formulas, and intuition of your selection',
-      tint: 'bg-tint-purple text-tint-purple-fg border-tint-purple-border',
-      iconBg: 'text-purple-600 bg-white/90 dark:bg-black/40',
+      label: 'Explain Highlighted Text',
       action: () => sendMessage('chat', `Please explain this highlighted excerpt in simple terms with clear intuition and examples: "${selectedExcerpt}"`, '✨ Explain Highlighted Text'),
     }] : []),
     {
       id: 'summary',
       icon: BookOpen,
-      title: 'Chapter Key Takeaways',
-      desc: '3 most crucial exam-focused takeaways from this note',
-      tint: 'bg-tint-peach text-tint-peach-fg border-tint-peach-border',
-      iconBg: 'text-amber-600 bg-white/90 dark:bg-black/40',
+      label: 'Key Takeaways',
       action: () => sendMessage('summary', 'Please summarize the 3 most crucial takeaways and exam-focused points from this chapter note.', '📝 Chapter Key Takeaways'),
     },
     {
       id: 'quiz',
       icon: Target,
-      title: 'Generate Practice Question',
-      desc: 'Quiz me with an exam-style multiple-choice question on this note',
-      tint: 'bg-tint-green text-tint-green-fg border-tint-green-border',
-      iconBg: 'text-emerald-600 bg-white/90 dark:bg-black/40',
+      label: 'Practice Quiz',
       action: () => sendMessage('chat', 'Generate a realistic multiple-choice exam question based strictly on this chapter note with 4 options (A, B, C, D). Wait for me to answer before revealing the solution.', '🎯 Generate Practice Quiz'),
-    },
-    {
-      id: 'amharic',
-      icon: Globe,
-      title: 'ዋና ዋና ነጥቦች በአማርኛ',
-      desc: 'የዚህን ምዕራፍ ዋና ዋና ጽንሰ-ሀሳቦች በአማርኛ አጠቃልልልኝ',
-      tint: 'bg-tint-sky text-tint-sky-fg border-tint-sky-border',
-      iconBg: 'text-sky-600 bg-white/90 dark:bg-black/40',
-      action: () => sendMessage('amharic', 'የዚህን ምዕራፍ ዋና ዋና ጽንሰ-ሀሳቦች እና ፈተና ላይ ሊወጡ የሚችሉ ነጥቦችን በአማርኛ አጠቃልለህ አስረዳኝ።', '🇪🇹 ዋና ዋና ነጥቦች በአማርኛ'),
     },
     {
       id: 'analogy',
       icon: Sparkles,
-      title: 'Simplify Tough Concept',
-      desc: 'Break down the most complex idea here with a simple analogy',
-      tint: 'bg-tint-purple text-tint-purple-fg border-tint-purple-border',
-      iconBg: 'text-purple-600 bg-white/90 dark:bg-black/40',
+      label: 'Simplify Concept',
       action: () => sendMessage('eli5', 'Take the most difficult or complex concept in this chapter note and explain it using a simple, intuitive real-world analogy.', '💡 Explain tough concept simply'),
+    },
+    {
+      id: 'amharic',
+      icon: Globe,
+      label: 'በአማርኛ አጠቃልልኝ',
+      action: () => sendMessage('amharic', 'የዚህን ምዕራፍ ዋና ዋና ጽንሰ-ሀሳቦች እና ፈተና ላይ ሊወጡ የሚችሉ ነጥቦችን በአማርኛ አጠቃልለህ አስረዳኝ።', '🇪🇹 ዋና ዋና ነጥቦች በአማርኛ'),
     },
   ];
 
@@ -328,92 +304,71 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
           </button>
         </div>
 
-        {/* ── CONTEXT PILL CARD (Question or Note snippet) ── */}
-        <div className="pt-2 shrink-0">
-          {mode === 'exam' && question && (
-            <div className="p-2.5 bg-ground border border-black/[0.08] dark:border-white/[0.08] rounded-2xl flex items-center justify-between text-xs shadow-2xs">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="px-2 py-0.5 rounded-lg bg-primary/10 text-primary font-black uppercase text-micro shrink-0">
-                  {question.subject || 'Question'}
+        {/* ── CONTEXT BAR (Minimal 1-line crumb) ── */}
+        {mode === 'exam' && question && (
+          <div className="pt-2 shrink-0">
+            <div className="px-3 py-1.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between text-xs text-muted-foreground">
+              <div className="flex items-center gap-1.5 min-w-0 mr-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                <span className="font-bold text-foreground text-[10px] uppercase tracking-wider shrink-0">
+                  {question.subject || 'Question'}:
                 </span>
-                <span className="font-semibold text-gray-700 dark:text-gray-300 truncate">
+                <span className="truncate italic text-foreground/80 font-medium text-xs">
                   {question.question.replace(/\n/g, ' ')}
                 </span>
               </div>
-              {studentAnswer ? (
-                <span className="px-2 py-0.5 rounded-md bg-accent-gold/20 text-accent-gold font-mono font-black text-micro shrink-0 ml-2">
+              {studentAnswer && (
+                <span className="px-1.5 py-0.5 rounded bg-primary/10 text-primary font-mono font-bold text-[10px] shrink-0">
                   Choice: {studentAnswer}
-                </span>
-              ) : (
-                <span className="text-micro font-bold text-slate-400 shrink-0 ml-2">
-                  Unanswered
                 </span>
               )}
             </div>
-          )}
+          </div>
+        )}
 
-          {mode === 'notes' && (
-            <div className="p-2.5 bg-ground border border-black/[0.08] dark:border-white/[0.08] rounded-2xl flex items-center justify-between text-xs shadow-2xs">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="px-2 py-0.5 rounded-lg bg-accent-purple/15 text-accent-purple font-black uppercase text-micro shrink-0">
-                  Chapter Guide
-                </span>
-                <span className="font-semibold text-gray-700 dark:text-gray-300 truncate">
-                  Active study note loaded for analysis
-                </span>
-              </div>
+        {mode === 'notes' && selectedExcerpt && (
+          <div className="pt-2 shrink-0">
+            <div className="px-3 py-1.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] flex items-center gap-1.5 text-xs text-muted-foreground truncate">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+              <span className="font-bold text-foreground text-[10px] uppercase tracking-wider shrink-0">Excerpt:</span>
+              <span className="truncate italic text-foreground/80 font-medium text-xs">"{selectedExcerpt}"</span>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Mid-chat Collapsible Toggle for Quick Prompts */}
         {messages.length > 1 && (
-          <div className="pt-2 shrink-0">
+          <div className="pt-1.5 shrink-0 flex items-center justify-between">
             <button
               onClick={() => { sounds.playTap(); setShowPromptsMenu(!showPromptsMenu); }}
-              className="w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-card border border-black/[0.08] dark:border-white/[0.08] text-xs font-black text-gray-700 dark:text-gray-300 hover:text-primary transition-colors shadow-2xs"
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground hover:text-primary transition-colors py-0.5"
             >
-              <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-primary" />
-                <span>{mode === 'exam' ? 'Question Actions' : 'Chapter Actions'}</span>
-              </span>
-              {showPromptsMenu ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              <Sparkles className="w-3 h-3 text-primary" />
+              <span>{showPromptsMenu ? 'Hide suggestions' : 'Suggested questions'}</span>
+              {showPromptsMenu ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </button>
           </div>
         )}
 
-        {/* ── VERTICALLY STACKED PROMPT CARDS (Collapsible in chat, default when fresh) ── */}
+        {/* ── MINIMAL INLINE PROMPT CHIPS (Clean & minimal, not cards) ── */}
         {(messages.length <= 1 || showPromptsMenu) && (
-          <div className="pt-2 pb-1 space-y-2 shrink-0 animate-fade-in">
-            {activePrompts.map((p) => {
-              const Icon = p.icon;
-              return (
-                <button
-                  key={p.id}
-                  onClick={() => { sounds.playTap(); p.action(); }}
-                  disabled={isLoading}
-                  className={`w-full flex items-center justify-between gap-3 p-3 rounded-2xl border-2 border-b-[3px] text-left transition-all active:translate-y-[1px] shadow-tactile-xs hover:brightness-105 ${p.tint}`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-2xs border border-current/10 ${p.iconBg}`}>
-                      <Icon className="w-5 h-5 stroke-[2.4]" />
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="text-xs font-black leading-tight truncate">
-                        {p.title}
-                      </h4>
-                      <p className="text-micro font-medium opacity-85 mt-0.5 truncate">
-                        {p.desc}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="w-7 h-7 rounded-full bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center shrink-0 shadow-2xs">
-                    <ChevronRight className="w-3.5 h-3.5 stroke-[2.8]" />
-                  </div>
-                </button>
-              );
-            })}
+          <div className="pt-2 pb-1 shrink-0 animate-fade-in">
+            <div className="flex flex-wrap gap-1.5">
+              {activePrompts.map((p) => {
+                const Icon = p.icon;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => { sounds.playTap(); p.action(); }}
+                    disabled={isLoading}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] hover:bg-primary/10 hover:border-primary/40 hover:text-primary active:scale-95 border border-black/[0.08] dark:border-white/[0.08] text-xs font-semibold text-foreground/90 transition-all shadow-2xs group"
+                  >
+                    <Icon className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                    <span>{p.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
 
