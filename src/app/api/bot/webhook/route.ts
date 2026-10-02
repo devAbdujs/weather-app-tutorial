@@ -2,11 +2,17 @@
  * Telegram Bot Webhook — Primary Update Handler
  *
  * Handles:
- *   1. /start command  → Welcome message with mini-app launch button
- *   2. callback_query  → Payment approve / reject inline keyboard buttons
+ *   1. /start, /menu   → Multi-track interactive deep-link navigation grid
+ *   2. /quiz           → Instant Daily Quiz drill with 4 inline choice buttons (+10 XP)
+ *   3. /stats          → In-chat Scholar Profile card (XP, level, streak, subject mastery)
+ *   4. /upgrade        → PRO subscription overview & Telebirr/CBE payment guide
+ *   5. /help           → Full command index and learning guide
+ *   6. callback_query  → Interactive in-chat navigation, track switching & quiz grading
+ *   7. Document upload → Admin PDF auto-forwarding
+ *   8. Payment alerts  → Admin instant approve/reject verification
  *
  * Telegram sends ALL updates for the bot to this single endpoint.
- * Register it once via:
+ * Register once via:
  *   POST https://api.telegram.org/bot<TOKEN>/setWebhook
  *   { "url": "https://www.temari.top/api/bot/webhook" }
  */
@@ -15,6 +21,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { sendStudentNotification } from '@/lib/paymentNotifier';
+import {
+  sendTelegramMessage,
+  editTelegramMessage,
+  answerCallbackQuery,
+  ensureUserProfile,
+  getMainMenuPayload,
+  getTracksPayload,
+  setTargetExamTrack,
+  getStatsPayload,
+  getQuizPayload,
+  handleQuizAnswer,
+  getUpgradePayload,
+  getHelpPayload,
+} from '@/lib/telegramBot';
 
 export const runtime = 'nodejs';
 
@@ -23,32 +43,7 @@ const ADMIN_TELEGRAM_ID = process.env.ADMIN_TELEGRAM_ID || '2111526264';
 
 // ── Security: verify request is genuinely from Telegram ───────────────────────
 function getExpectedSecret(): string {
-  return crypto.createHash('sha256').update(BOT_TOKEN).digest('hex').slice(0, 32);
-}
-
-async function answerCallbackQuery(callbackQueryId: string, text: string): Promise<void> {
-  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ callback_query_id: callbackQueryId, text, show_alert: false }),
-  });
-}
-
-async function editMessageText(
-  chatId: number | string,
-  messageId: number,
-  newText: string
-): Promise<void> {
-  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageText`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chat_id: chatId,
-      message_id: messageId,
-      text: newText,
-      parse_mode: 'HTML',
-    }),
-  });
+  return crypto.createHash('sha256').update(BOT_TOKEN || '').digest('hex').slice(0, 32);
 }
 
 // ── Main handler ──────────────────────────────────────────────────────────────
@@ -56,54 +51,95 @@ export async function POST(req: NextRequest) {
   try {
     // Verify secret header from Telegram
     const secretHeader = req.headers.get('X-Telegram-Bot-Api-Secret-Token');
-    if (secretHeader !== getExpectedSecret()) {
-      // Telegram doesn't always send the header on all update types — allow if no header
-      // but log it. In production consider strict mode: return 403.
-      console.warn('[BotWebhook] Missing or invalid secret header');
+    if (BOT_TOKEN && secretHeader && secretHeader !== getExpectedSecret()) {
+      console.warn('[BotWebhook] Invalid secret header received');
     }
 
     const update = await req.json();
 
-    // ── Route 1: /start command ──────────────────────────────────────────────
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    // ── Route 1: Message / Commands Handler ──────────────────────────────────
     if (update.message) {
       const message = update.message;
       const telegramUser = message.from;
-      const text: string = message.text || '';
+      const text: string = (message.text || '').trim();
+      const chatId = message.chat?.id || telegramUser?.id;
 
-      if (text.startsWith('/start') && telegramUser) {
-        const appUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top';
+      if (telegramUser && chatId) {
+        // Auto-register student profile if not exists
+        await ensureUserProfile(supabaseAdmin, telegramUser);
 
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: telegramUser.id,
-            text: `👋 <b>Welcome to Temari, ${telegramUser.first_name}!</b>\n\nI am your ultimate AI-powered study companion for Ethiopian exams. 📚\n\n<b>What can you do inside the app?</b>\n🎯 Practice 31,000+ past exam questions\n🧠 Get instant explanations from an AI Tutor\n📊 Track your Scholar Tree mastery\n📝 Master chapter notes & formula breakdowns\n\nReady to ace your exams? Click the button below to launch!`,
-            parse_mode: 'HTML',
-            reply_markup: {
-              inline_keyboard: [
-                [{ text: 'Launch Temari App 🚀', web_app: { url: appUrl } }],
-              ],
-            },
-          }),
-        });
+        // Command: /start or /menu
+        if (text.startsWith('/start') || text.startsWith('/menu')) {
+          const parts = text.split(/\s+/);
+          const arg = (parts[1] || '').toLowerCase();
+
+          if (arg === 'quiz') {
+            const { text: quizText, reply_markup } = await getQuizPayload(supabaseAdmin, String(telegramUser.id));
+            await sendTelegramMessage(chatId, quizText, reply_markup);
+          } else if (arg === 'stats') {
+            const { text: statsText, reply_markup } = await getStatsPayload(
+              supabaseAdmin,
+              String(telegramUser.id),
+              telegramUser.first_name
+            );
+            await sendTelegramMessage(chatId, statsText, reply_markup);
+          } else if (arg === 'upgrade' || arg === 'pro') {
+            const { text: upText, reply_markup } = getUpgradePayload();
+            await sendTelegramMessage(chatId, upText, reply_markup);
+          } else {
+            const { text: menuText, reply_markup } = getMainMenuPayload(telegramUser.first_name || 'Scholar');
+            await sendTelegramMessage(chatId, menuText, reply_markup);
+          }
+          return NextResponse.json({ ok: true });
+        }
+
+        // Command: /quiz (Instant Micro-Drill)
+        if (text.startsWith('/quiz')) {
+          const { text: quizText, reply_markup } = await getQuizPayload(supabaseAdmin, String(telegramUser.id));
+          await sendTelegramMessage(chatId, quizText, reply_markup);
+          return NextResponse.json({ ok: true });
+        }
+
+        // Command: /stats (Scholar Stats Card)
+        if (text.startsWith('/stats')) {
+          const { text: statsText, reply_markup } = await getStatsPayload(
+            supabaseAdmin,
+            String(telegramUser.id),
+            telegramUser.first_name
+          );
+          await sendTelegramMessage(chatId, statsText, reply_markup);
+          return NextResponse.json({ ok: true });
+        }
+
+        // Command: /upgrade or /pro
+        if (text.startsWith('/upgrade') || text.startsWith('/pro')) {
+          const { text: upText, reply_markup } = getUpgradePayload();
+          await sendTelegramMessage(chatId, upText, reply_markup);
+          return NextResponse.json({ ok: true });
+        }
+
+        // Command: /help
+        if (text.startsWith('/help')) {
+          const { text: helpText, reply_markup } = getHelpPayload();
+          await sendTelegramMessage(chatId, helpText, reply_markup);
+          return NextResponse.json({ ok: true });
+        }
       }
 
       // ── Handle Admin PDF Document Upload ──────────────────────────────────
       if (message.document && telegramUser && String(telegramUser.id) === ADMIN_TELEGRAM_ID) {
         const docName = message.document.file_name || 'document.pdf';
         const caption = message.caption || '';
-        
-        // Notify admin that document was received
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: telegramUser.id,
-            text: `📥 <b>Document Received!</b>\n\n📄 File: <code>${docName}</code>\n🏷️ Caption: <i>${caption || 'No tags'}</i>\n\n⚙️ <i>Processing into study notes...</i>\n\n💡 <b>Tip:</b> For 100% precision on chapter names & course matching, you can also paste notes directly in the <a href="https://www.temari.top/admin/upload-notes">Web Admin Portal</a>.`,
-            parse_mode: 'HTML',
-          }),
-        });
+
+        await sendTelegramMessage(
+          telegramUser.id,
+          `📥 <b>Document Received!</b>\n\n📄 File: <code>${docName}</code>\n🏷️ Caption: <i>${caption || 'No tags'}</i>\n\n⚙️ <i>Processing into study notes...</i>\n\n💡 <b>Tip:</b> For 100% precision on chapter names & course matching, you can also paste notes directly in the <a href="https://www.temari.top/admin/upload-notes">Web Admin Portal</a>.`
+        );
 
         // Forward to n8n if webhook URL is configured
         const n8nWebhook = process.env.N8N_WEBHOOK_URL;
@@ -123,33 +159,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    // ── Route 2: Inline keyboard callback (Payment Approve / Reject) ──────────
+    // ── Route 2: Inline keyboard callback handler ────────────────────────────
     if (update.callback_query) {
       const callbackQuery = update.callback_query;
-      const adminId = String(callbackQuery.from?.id);
+      const fromUser = callbackQuery.from;
       const data: string = callbackQuery.data || '';
       const messageId: number = callbackQuery.message?.message_id;
-      const chatId: number = callbackQuery.message?.chat?.id;
+      const chatId: number = callbackQuery.message?.chat?.id || fromUser?.id;
 
-      // Security: only the configured admin can approve/reject payments
-      if (ADMIN_TELEGRAM_ID && adminId !== ADMIN_TELEGRAM_ID) {
-        await answerCallbackQuery(callbackQuery.id, '⛔ Unauthorized');
-        return NextResponse.json({ ok: true });
-      }
-
+      // 1. Admin Payment Approve / Reject
       const approveMatch = data.match(/^approve_payment:(.+)$/);
       const rejectMatch = data.match(/^reject_payment:(.+)$/);
 
       if (approveMatch || rejectMatch) {
+        if (ADMIN_TELEGRAM_ID && String(fromUser?.id) !== ADMIN_TELEGRAM_ID) {
+          await answerCallbackQuery(callbackQuery.id, '⛔ Unauthorized', true);
+          return NextResponse.json({ ok: true });
+        }
+
         const receiptId = (approveMatch ?? rejectMatch)![1];
         const approved = !!approveMatch;
 
-        const supabaseAdmin = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.SUPABASE_SERVICE_ROLE_KEY!
-        );
-
-        // Fetch the receipt to get the student's telegram_id and receipt_url
+        // Fetch receipt
         const { data: receipt, error: fetchErr } = await supabaseAdmin
           .from('payment_receipts')
           .select('telegram_id, status, transaction_id, receipt_url')
@@ -172,7 +203,7 @@ export async function POST(req: NextRequest) {
         const studentTelegramId: string = receipt.telegram_id;
         const newStatus = approved ? 'approved' : 'rejected';
 
-        // ── DB updates ────────────────────────────────────────────────────────
+        // Update receipt status
         const { error: receiptUpdateErr } = await supabaseAdmin
           .from('payment_receipts')
           .update({ status: newStatus })
@@ -191,7 +222,6 @@ export async function POST(req: NextRequest) {
 
           if (profileUpdateErr) {
             console.error('[BotWebhook] Profile upgrade failed:', profileUpdateErr.message);
-            // Non-fatal for the admin response — log and continue
           }
 
           // Auto-resolve any other duplicate pending receipts from this student
@@ -202,7 +232,7 @@ export async function POST(req: NextRequest) {
             .eq('status', 'pending');
         }
 
-        // ── Auto-Purge receipt image from storage to keep Supabase free tier at ~0 MB ──
+        // Auto-Purge receipt image from storage to keep Supabase free tier at ~0 MB
         if (receipt.receipt_url) {
           try {
             const fileName = receipt.receipt_url.split('/receipts/')[1];
@@ -214,7 +244,7 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // ── Fetch student name for notification ───────────────────────────────
+        // Fetch student name for notification
         const { data: profile } = await supabaseAdmin
           .from('profiles')
           .select('full_name')
@@ -223,34 +253,97 @@ export async function POST(req: NextRequest) {
 
         const studentName = profile?.full_name?.split(' ')[0] ?? 'Student';
 
-        // ── Notify student ────────────────────────────────────────────────────
+        // Notify student
         try {
           await sendStudentNotification(studentTelegramId, approved, studentName);
         } catch (notifyErr) {
           console.error('[BotWebhook] Student notification failed:', notifyErr);
         }
 
-        // ── Update the admin's message to show it's been handled ──────────────
+        // Update the admin message
         const statusEmoji = approved ? '✅' : '❌';
         const statusLabel = approved ? 'APPROVED' : 'REJECTED';
         const originalText = callbackQuery.message?.text || '';
         const updatedText = `${statusEmoji} <b>[${statusLabel}]</b>\n\n${originalText}`;
 
-        try {
-          await editMessageText(chatId, messageId, updatedText);
-        } catch (editErr) {
-          // Non-critical
-          console.warn('[BotWebhook] Could not edit admin message:', editErr);
-        }
-
+        await editTelegramMessage(chatId, messageId, updatedText);
         await answerCallbackQuery(
           callbackQuery.id,
           approved
             ? `✅ ${studentName}'s account upgraded to Premium!`
             : `❌ Payment rejected. Student notified.`
         );
+
+        return NextResponse.json({ ok: true });
       }
 
+      // 2. Navigation: Return to Main Menu
+      if (data === 'nav:menu') {
+        await answerCallbackQuery(callbackQuery.id);
+        const { text, reply_markup } = getMainMenuPayload(fromUser?.first_name || 'Scholar');
+        await editTelegramMessage(chatId, messageId, text, reply_markup);
+        return NextResponse.json({ ok: true });
+      }
+
+      // 3. Navigation: Scholar Stats Card
+      if (data === 'nav:stats') {
+        await answerCallbackQuery(callbackQuery.id, '📊 Loading your stats...');
+        const { text, reply_markup } = await getStatsPayload(
+          supabaseAdmin,
+          String(fromUser?.id),
+          fromUser?.first_name || 'Scholar'
+        );
+        await editTelegramMessage(chatId, messageId, text, reply_markup);
+        return NextResponse.json({ ok: true });
+      }
+
+      // 4. Navigation: Instant Quiz Drill
+      if (data === 'nav:quiz') {
+        await answerCallbackQuery(callbackQuery.id, '🎯 Loading question...');
+        const { text, reply_markup } = await getQuizPayload(supabaseAdmin, String(fromUser?.id));
+        await editTelegramMessage(chatId, messageId, text, reply_markup);
+        return NextResponse.json({ ok: true });
+      }
+
+      // 5. Navigation: Exam Tracks Menu
+      if (data === 'nav:tracks') {
+        await answerCallbackQuery(callbackQuery.id);
+        const { text, reply_markup } = getTracksPayload();
+        await editTelegramMessage(chatId, messageId, text, reply_markup);
+        return NextResponse.json({ ok: true });
+      }
+
+      // 6. Action: Set Exam Track
+      const trackMatch = data.match(/^track:(entrance|freshman|exit)$/);
+      if (trackMatch) {
+        const track = trackMatch[1];
+        const trackLabel = await setTargetExamTrack(supabaseAdmin, String(fromUser?.id), track);
+        await answerCallbackQuery(callbackQuery.id, `✅ Track changed to ${trackLabel}!`, true);
+        const { text, reply_markup } = getMainMenuPayload(fromUser?.first_name || 'Scholar');
+        await editTelegramMessage(chatId, messageId, text, reply_markup);
+        return NextResponse.json({ ok: true });
+      }
+
+      // 7. Navigation: PRO Upgrade Guide
+      if (data === 'nav:upgrade') {
+        await answerCallbackQuery(callbackQuery.id);
+        const { text, reply_markup } = getUpgradePayload();
+        await editTelegramMessage(chatId, messageId, text, reply_markup);
+        return NextResponse.json({ ok: true });
+      }
+
+      // 8. Quiz Answer Evaluation
+      const quizMatch = data.match(/^quiz:([^:]+):([A-Da-d])$/);
+      if (quizMatch) {
+        const [, questionId, option] = quizMatch;
+        const result = await handleQuizAnswer(supabaseAdmin, String(fromUser?.id), questionId, option);
+        await answerCallbackQuery(callbackQuery.id, result.isCorrect ? '🎉 Correct! +10 XP' : '❌ Not quite!');
+        await editTelegramMessage(chatId, messageId, result.text, result.reply_markup);
+        return NextResponse.json({ ok: true });
+      }
+
+      // Default: Acknowledge callback query
+      await answerCallbackQuery(callbackQuery.id);
       return NextResponse.json({ ok: true });
     }
 

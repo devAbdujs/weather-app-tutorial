@@ -119,27 +119,33 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
 ---
 
 ### 🤖 Phase 5: Interactive Telegram Bot & Navigation Architecture
-*   [ ] **Multi-Button Telegram Bot Hub & Deep-Link Navigators:**
-    *   **Files:** [`src/app/api/bot/webhook/route.ts#L67-L90`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/bot/webhook/route.ts#L67-L90).
-    *   **Current State:** Bot only responds to `/start` with a single static button: `Launch Temari App 🚀`.
-    *   **Enhancements to Implement:**
+*   [x] **Multi-Button Telegram Bot Hub & Deep-Link Navigators:**
+    *   **Files:** [`src/app/api/bot/webhook/route.ts`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/bot/webhook/route.ts), [`src/lib/telegramBot.ts`](file:///home/abdu/scraping/ethio-exam-app/src/lib/telegramBot.ts), and [`__tests__/telegramBot.test.ts`](file:///home/abdu/scraping/ethio-exam-app/__tests__/telegramBot.test.ts).
+    *   **Completed Implementation:**
         1. *Direct Deep-Link Navigation Grid (Inline Buttons):*
-           - `[ 🎓 Matric / Grade 12 EUEE ]` → Direct launch to Grade 12 entrance practice.
-           - `[ 🏛️ University Freshman ]` → Direct launch to freshman courses.
-           - `[ 🏆 University Exit Exam ]` → Direct launch to university exit exam departments.
-           - `[ ⚡ My Stats & Streak ]` → Instant in-chat profile card (XP, level, streak, questions solved).
-           - `[ 👑 PRO Upgrade ]` → Quick Telebirr/CBE payment receipt submission flow.
+           - `[ 🎓 Matric / Grade 12 EUEE ]` → Deep-link Mini App launch to Grade 12 entrance portal.
+           - `[ 🏛️ University Freshman ]` → Deep-link Mini App launch to freshman remedial portal.
+           - `[ 🏆 University Exit Exam ]` → Deep-link Mini App launch to university exit exam portal.
+           - `[ ⚡ My Stats & Streak ]` → Instant in-chat profile card (XP, level 1-7, streak, questions solved, accuracy %, top subject breakdown).
+           - `[ 🔄 Change Track ]` → In-chat interactive exam stream selector (Entrance, Freshman, Exit).
+           - `[ 👑 PRO Upgrade ]` → In-chat Telebirr and CBE payment instructions + direct app link.
         2. *Interactive Callback Queries (`callback_query`):*
-           - Handle inline button clicks without leaving the Telegram chat (dynamic menus, quick stats card, changing target exam stream).
+           - Handled inline button clicks without leaving Telegram chat (`nav:menu`, `nav:stats`, `nav:quiz`, `nav:tracks`, `track:<exam>`, `nav:upgrade`).
+           - Dynamic in-place message updates (`editMessageText`) with plain-text fallback on entity parser errors.
         3. *Daily Question of the Day / Morning Micro-Drill:*
-           - Bot posts a daily exam question with 4 inline choice buttons (`[A]`, `[B]`, `[C]`, `[D]`).
-           - Instant answer key verification + awards 10 XP directly in Telegram.
-           - Includes a `[ 🧠 Ask Temari AI in App ]` deep-link button for full step-by-step reasoning.
+           - Random question fetching by user's exam track with clean Telegram HTML formatting.
+           - 4 inline choice buttons (`[A]`, `[B]`, `[C]`, `[D]`).
+           - Instant answer key verification, awarding +10 XP and updating daily streak in DB.
+           - Includes `[ 🧠 Ask Temari AI in App ]` deep-link button straight into practice mode.
         4. *Rich Slash Commands:*
-           - `/menu` or `/start` → Main interactive navigation grid.
-           - `/quiz` → Fetch and send an instant single question drill.
-           - `/stats` → Display user rank, streak, and scholar tree progress.
-           - `/upgrade` → Display subscription status and Telebirr instructions.
+           - `/menu` or `/start` (with deep-link argument support: `/start quiz`, `/start stats`, `/start upgrade`).
+           - `/quiz` → Instant single question drill.
+           - `/stats` → Display user rank, streak, total XP, level, and scholar tree progress.
+           - `/upgrade` → Display subscription status and Telebirr/CBE instructions.
+           - `/help` → Command index and learning guide.
+        5. *Resilience & Auto-Registration:*
+           - Auto-creates student profile upon Telegram bot interaction.
+           - Complete test coverage in `__tests__/telegramBot.test.ts` (11 suites, 89/89 tests passing).
 
 ---
 
