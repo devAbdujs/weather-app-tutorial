@@ -12,27 +12,35 @@ export function PWARegistry() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Inside Telegram WebApp, skip PWA install prompts and iframe service workers
-    const isTelegram = Boolean((window as any).Telegram?.WebApp?.initData);
-    if (isTelegram) return;
-
+    // 1. Service Worker & Offline Sync (Run for ALL users including Telegram Mini App)
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
+      const registerSW = () => {
         navigator.serviceWorker
           .register('/sw.js')
           .then(() => console.log('Service Worker registered successfully'))
           .catch((err) => console.error('PWA Registration failed:', err));
-      });
+      };
+
+      if (document.readyState === 'complete') {
+        registerSW();
+      } else {
+        window.addEventListener('load', registerSW);
+      }
     }
 
     syncOfflineSubmissions();
     window.addEventListener('online', syncOfflineSubmissions);
     
-    // Check if the app is already installed/running in standalone mode
+    // 2. Install Banner Prompts (Skip inside Telegram WebApp or standalone mode)
+    const isTelegram = Boolean((window as any).Telegram?.WebApp?.initData);
     const isStandalone = ('standalone' in window.navigator && (window.navigator as any).standalone) || 
                          window.matchMedia('(display-mode: standalone)').matches;
     
-    if (isStandalone) return; // Never show the prompt if they already installed it
+    if (isTelegram || isStandalone) {
+      return () => {
+        window.removeEventListener('online', syncOfflineSubmissions);
+      };
+    }
 
     // Check if device is iOS
     const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
@@ -40,10 +48,14 @@ export function PWARegistry() {
     if (isIos) {
       // --- iOS FALLBACK LOGIC ---
       // iOS doesn't fire beforeinstallprompt, so we just trigger the toast after 5s
-      if (hasPrompted.current) return;
+      if (hasPrompted.current) {
+        return () => {
+          window.removeEventListener('online', syncOfflineSubmissions);
+        };
+      }
       hasPrompted.current = true;
 
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         toast.custom((t) => (
           <div className="bg-card dark:bg-card border border-black/5 dark:border-white/10 shadow-xl p-3 rounded-card-sm flex flex-col w-[320px] pointer-events-auto">
              <div className="flex justify-between items-start mb-2">
@@ -73,6 +85,10 @@ export function PWARegistry() {
         });
       }, 5000);
 
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('online', syncOfflineSubmissions);
+      };
     } else {
       // --- STANDARD ANDROID/DESKTOP LOGIC ---
       const handleBeforeInstallPrompt = (e: Event) => {

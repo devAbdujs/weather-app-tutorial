@@ -18,6 +18,8 @@ const RequestSchema = z.object({
   options:         z.array(z.string().nullable()).max(4).optional(),
   correctAnswer:   z.string().nullable().optional(),
   explanation:     z.string().nullable().optional(),
+  imageUrl:        z.string().optional(),
+  isSimulator:     z.boolean().optional(),
   promptType:      z.enum(['explain', 'eli5', 'amharic', 'summary', 'chat']).default('chat'),
   subject:         z.string().optional(),
   studentAnswer:   z.string().nullable().optional(),
@@ -28,7 +30,7 @@ const RequestSchema = z.object({
 });
 
 function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string): { system: string; defaultUserPrompt: string } {
-  const { mode, noteText, selectedExcerpt, questionText, options, correctAnswer, explanation, subject, studentAnswer } = data;
+  const { mode, noteText, selectedExcerpt, questionText, options, correctAnswer, explanation, imageUrl, isSimulator, subject, studentAnswer } = data;
 
   const system = [
     `You are Temari AI, an elite AI tutor for Ethiopian students.`,
@@ -66,6 +68,19 @@ function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string
     if (explanation) system.push(`Official Explanation: ${explanation}`);
     if (studentAnswer) system.push(`Student's Answer: ${studentAnswer} ${isIncorrect ? '(INCORRECT)' : '(CORRECT)'}`);
     
+    if (imageUrl) {
+      system.push(`\nAccompanying Diagram / Visual Figure:`);
+      system.push(`This question includes an associated diagram or figure (${imageUrl}). Refer to this visual context when analyzing equations, options, forces, anatomical structures, or diagrams.`);
+    }
+
+    if (isSimulator) {
+      system.push(`\nCRITICAL SOCRATIC GUARD (Active Timed Exam Simulation Mode):
+- The student is taking an active, timed exam and has NOT yet submitted their final paper.
+- You MUST NEVER directly disclose which option is correct (e.g. never say "The answer is B" or "Select C").
+- If the student directly asks for the answer, remind them encouragingly that this is simulation mode.
+- Guide the student Socratically: explain relevant physics/math/biology laws, formulas, and definitions; point out key terms in the question; and prompt them to apply the formula themselves to reach the answer.`);
+    }
+
     system.push('');
     system.push(`Rules:
 1. If promptType='explain', provide the full step-by-step solution clearly explaining why the correct choice is right and others are wrong.
@@ -120,100 +135,103 @@ export async function POST(req: NextRequest) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
 
-    // 1. INDIVIDUAL QUOTA & SUBSCRIPTION ENGINE
+    // 1. INDIVIDUAL QUOTA & SUBSCRIPTION ENGINE (Parallelized with Cache Check)
     let profileContext = '';
     let currentUsage = 0;
     let isPremium = false;
     let quotaLimit = 5; // Default free tier allowance: 5 questions/week
 
+    const shouldCheckCache = payload.questionId && payload.promptType !== 'chat' && cleanedHistory.length <= 1;
+
+    let profile: any = null;
+    let cached: any = null;
+
     try {
-      const { data: profile } = await supabaseAdmin
+      const [profileRes, cacheRes] = await Promise.all([
+        supabaseAdmin
+          .from('profiles')
+          .select('target_exam, stream, subscription_status, ai_weekly_usage, ai_quota_reset_at')
+          .eq('telegram_id', session.telegram_id)
+          .maybeSingle(),
+        shouldCheckCache
+          ? supabaseAdmin
+              .from('ai_responses_cache')
+              .select('response')
+              .eq('question_id', payload.questionId)
+              .eq('prompt_type', payload.promptType)
+              .maybeSingle()
+          : Promise.resolve({ data: null, error: null }),
+      ]);
+
+      profile = profileRes.data;
+      cached = cacheRes.data;
+    } catch (e) {
+      console.error('[AI Parallel Lookup Error]', e);
+    }
+
+    if (!profile) {
+      return new Response(JSON.stringify({ error: 'Profile not found' }), { status: 404 });
+    }
+
+    isPremium = profile.subscription_status === 'premium';
+    quotaLimit = isPremium ? 150 : 5;
+
+    // Check weekly reset (if reset_at is null or passed, reset usage to 0 and set 7-day rolling window)
+    const now = new Date();
+    const resetAt = profile.ai_quota_reset_at ? new Date(profile.ai_quota_reset_at) : null;
+
+    if (!resetAt || now >= resetAt) {
+      const nextReset = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      currentUsage = 0;
+      await supabaseAdmin
         .from('profiles')
-        .select('target_exam, stream, subscription_status, ai_weekly_usage, ai_quota_reset_at')
-        .eq('telegram_id', session.telegram_id)
-        .maybeSingle();
+        .update({
+          ai_weekly_usage: 0,
+          ai_quota_reset_at: nextReset.toISOString(),
+        })
+        .eq('telegram_id', session.telegram_id);
+    } else {
+      currentUsage = profile.ai_weekly_usage || 0;
+    }
 
-      if (!profile) {
-        return new Response(JSON.stringify({ error: 'Profile not found' }), { status: 404 });
-      }
+    // Check if user reached their weekly limit
+    if (currentUsage >= quotaLimit) {
+      return new Response(
+        JSON.stringify({
+          error: 'quota_exceeded',
+          isPremium,
+          usage: currentUsage,
+          limit: quotaLimit,
+          message: isPremium
+            ? `You have reached your weekly allowance of ${quotaLimit} Temari AI inquiries. Your quota refreshes soon!`
+            : `You've used all ${quotaLimit} of your free Temari AI questions this week. Upgrade to Premium for 150 inquiries/week!`
+        }),
+        { status: 403 }
+      );
+    }
 
-      isPremium = profile.subscription_status === 'premium';
-      quotaLimit = isPremium ? 150 : 5;
+    if (profile.target_exam === 'entrance') profileContext = `Student Profile: Grade 12 (${profile.stream} track)`;
+    else if (profile.target_exam === 'freshman') profileContext = `Student Profile: University Freshman (${profile.stream} track)`;
+    else if (profile.target_exam === 'exit') profileContext = `Student Profile: University Exit Exam (${profile.stream} department)`;
 
-      // Check weekly reset (if reset_at is null or passed, reset usage to 0 and set 7-day rolling window)
-      const now = new Date();
-      const resetAt = profile.ai_quota_reset_at ? new Date(profile.ai_quota_reset_at) : null;
-
-      if (!resetAt || now >= resetAt) {
-        const nextReset = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-        currentUsage = 0;
+    // Check if cache hit
+    if (cached?.response) {
+      try {
         await supabaseAdmin
           .from('profiles')
           .update({
-            ai_weekly_usage: 0,
-            ai_quota_reset_at: nextReset.toISOString(),
+            ai_weekly_usage: currentUsage + 1,
+            updated_at: new Date().toISOString()
           })
           .eq('telegram_id', session.telegram_id);
-      } else {
-        currentUsage = profile.ai_weekly_usage || 0;
+      } catch (quotaErr) {
+        console.error('[AI Cache Quota Update Error]', quotaErr);
       }
 
-      // Check if user reached their weekly limit
-      if (currentUsage >= quotaLimit) {
-        return new Response(
-          JSON.stringify({
-            error: 'quota_exceeded',
-            isPremium,
-            usage: currentUsage,
-            limit: quotaLimit,
-            message: isPremium
-              ? `You have reached your weekly allowance of ${quotaLimit} Temari AI inquiries. Your quota refreshes soon!`
-              : `You've used all ${quotaLimit} of your free Temari AI questions this week. Upgrade to Premium for 150 inquiries/week!`
-          }),
-          { status: 403 }
-        );
-      }
-
-      if (profile.target_exam === 'entrance') profileContext = `Student Profile: Grade 12 (${profile.stream} track)`;
-      else if (profile.target_exam === 'freshman') profileContext = `Student Profile: University Freshman (${profile.stream} track)`;
-      else if (profile.target_exam === 'exit') profileContext = `Student Profile: University Exit Exam (${profile.stream} department)`;
-    } catch (e) {
-      console.error('[AI Profile Error]', e);
-    }
-
-    // Only check cache on initial static prompt queries (explain, eli5, amharic, etc.), not custom freeform chat
-    if (payload.questionId && payload.promptType !== 'chat' && cleanedHistory.length <= 1) {
-      try {
-        const { data: cached } = await supabaseAdmin
-          .from('ai_responses_cache')
-          .select('response')
-          .eq('question_id', payload.questionId)
-          .eq('prompt_type', payload.promptType)
-          .maybeSingle();
-
-        if (cached?.response) {
-          // Increment weekly quota usage even on cache hit
-          try {
-            await supabaseAdmin
-              .from('profiles')
-              .update({
-                ai_weekly_usage: currentUsage + 1,
-                updated_at: new Date().toISOString()
-              })
-              .eq('telegram_id', session.telegram_id);
-          } catch (quotaErr) {
-            console.error('[AI Cache Quota Update Error]', quotaErr);
-          }
-
-          // Cache Hit! Return instantly.
-          return new Response(cached.response, { 
-            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-          });
-        }
-      } catch (cacheErr) {
-        // Silently ignore cache read errors
-        console.error('[AI Cache Read Error]', cacheErr);
-      }
+      // Cache Hit! Return instantly.
+      return new Response(cached.response, { 
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+      });
     }
 
     const { system, defaultUserPrompt } = buildPrompt(payload, profileContext);

@@ -581,6 +581,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           isOpen={showAI} 
           onClose={() => setShowAI(false)}
           studentAnswer={selectedAnswers[currentIndex]}
+          isSimulator={isSimulator && !isFinished}
         />
       )}
 

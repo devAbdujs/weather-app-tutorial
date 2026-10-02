@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ethioscholar-cache-v1';
+const CACHE_NAME = 'temari-cache-v2';
 
 // Static assets critical for the initial offline paint
 const PRECACHE_ASSETS = [
@@ -29,18 +29,18 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Skip cross-origin requests, chrome extensions, etc.
+  // Skip non-http requests, chrome extensions, etc.
   if (!event.request.url.startsWith('http')) return;
   if (event.request.method !== 'GET') return;
 
-  // 1. Cache-First Strategy for Next.js Static Assets (JS, CSS, Fonts)
-  if (url.pathname.startsWith('/_next/static/') || url.pathname.match(/\.(png|jpg|jpeg|svg|woff|woff2)$/)) {
+  // 1. Cache-First Strategy for Next.js Static Assets (JS, CSS, Fonts) and Images (including Cloudinary)
+  if (url.pathname.startsWith('/_next/static/') || url.pathname.match(/\.(png|jpg|jpeg|svg|webp|gif|woff|woff2)$/i)) {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
         if (cachedResponse) return cachedResponse;
         
         return fetch(event.request).then((networkResponse) => {
-          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          if (!networkResponse || networkResponse.status !== 200 || (networkResponse.type !== 'basic' && networkResponse.type !== 'cors')) {
             return networkResponse;
           }
           const responseClone = networkResponse.clone();

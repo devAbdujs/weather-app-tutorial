@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { noteText } = body;
+    const { noteText, noteId } = body;
     
     if (!noteText || typeof noteText !== 'string') {
       return NextResponse.json({ error: 'noteText is required' }, { status: 400 });
@@ -54,6 +54,25 @@ export async function POST(req: NextRequest) {
         { error: 'upgrade_required', message: 'AI Quiz generation is a premium feature. Upgrade to access it.' },
         { status: 403 }
       );
+    }
+
+    // Cache hit lookup: return pre-generated quiz instantly if available
+    if (noteId) {
+      try {
+        const { data: cached } = await supabase
+          .from('ai_responses_cache')
+          .select('response')
+          .eq('question_id', `quiz:note:${noteId}`)
+          .eq('prompt_type', 'quiz')
+          .maybeSingle();
+
+        if (cached?.response) {
+          const parsed = JSON.parse(cached.response);
+          return NextResponse.json({ success: true, quiz: parsed, fromCache: true });
+        }
+      } catch (cacheErr) {
+        console.warn('[Quiz Cache Read Warning]:', cacheErr);
+      }
     }
 
     const systemPrompt = `You are an elite, highly rigorous university examiner in Ethiopia.
@@ -81,6 +100,21 @@ The options must be highly plausible to challenge the student. Ensure the correc
           schema: QuizSchema,
           temperature: 0.3, 
         });
+
+        // Save generated quiz to cache for future instant loads
+        if (noteId) {
+          try {
+            await supabase
+              .from('ai_responses_cache')
+              .upsert({
+                question_id: `quiz:note:${noteId}`,
+                prompt_type: 'quiz',
+                response: JSON.stringify(object.questions),
+              }, { onConflict: 'question_id,prompt_type' });
+          } catch (cacheSaveErr) {
+            console.warn('[Quiz Cache Save Warning]:', cacheSaveErr);
+          }
+        }
 
         return NextResponse.json({ success: true, quiz: object.questions });
 

@@ -9,8 +9,6 @@ import {
   Send, 
   Sparkles, 
   GraduationCap, 
-  Camera, 
-  Mic,
   ChevronRight,
   BookOpen,
   Target,
@@ -40,6 +38,7 @@ interface AITutorDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   studentAnswer?: string | null;
+  isSimulator?: boolean;
 }
 
 interface ChatMessage {
@@ -57,7 +56,8 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
   question, 
   isOpen, 
   onClose, 
-  studentAnswer 
+  studentAnswer,
+  isSimulator = false,
 }) => {
   const { haptic } = useTelegram();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -65,6 +65,17 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPromptsMenu, setShowPromptsMenu] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Track active context (question ID or note ID) to reset history across question transitions
+  const activeContextKey = mode === 'exam' ? (question?.id || 'exam-unknown') : (noteId || 'notes-unknown');
+  const prevContextKeyRef = useRef<string>(activeContextKey);
+
+  useEffect(() => {
+    if (prevContextKeyRef.current !== activeContextKey) {
+      prevContextKeyRef.current = activeContextKey;
+      setMessages([]);
+    }
+  }, [activeContextKey]);
 
   // Initialize with a welcoming message
   useEffect(() => {
@@ -85,7 +96,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
         }]);
       }
     }
-  }, [isOpen, mode, selectedExcerpt]);
+  }, [isOpen, mode, selectedExcerpt, activeContextKey, messages.length]);
 
   // Auto scroll to bottom when messages change
   useEffect(() => {
@@ -141,7 +152,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           mode,
-          noteText,
+          noteText: updatedMessages.filter(m => m.id !== 'welcome').length <= 1 ? noteText : undefined,
           selectedExcerpt: selectedExcerpt || undefined,
           questionId: (!selectedExcerpt && noteId) ? `note:${noteId}` : question?.id,
           subject: question?.subject,
@@ -149,6 +160,9 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
           options: question ? [question.option_a, question.option_b, question.option_c, question.option_d] : undefined,
           correctAnswer: question?.answer,
           explanation: question?.explanation,
+          imageUrl: question?.image_url || undefined,
+          studentAnswer: studentAnswer || undefined,
+          isSimulator,
           promptType: type,
           // Only send actual user/assistant conversational turns to the AI, excluding welcome banner
           chatHistory: updatedMessages
@@ -192,15 +206,26 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
 
       const decoder = new TextDecoder();
       let accumulated = '';
+      let lastUpdate = Date.now();
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         accumulated += decoder.decode(value, { stream: true });
         
-        setMessages(prev => 
-          prev.map(m => m.id === assistantMsgId ? { ...m, content: accumulated } : m)
-        );
+        const now = Date.now();
+        if (now - lastUpdate > 75) {
+          lastUpdate = now;
+          setMessages(prev => 
+            prev.map(m => m.id === assistantMsgId ? { ...m, content: accumulated } : m)
+          );
+        }
       }
+
+      // Final update to guarantee all tokens are rendered
+      setMessages(prev => 
+        prev.map(m => m.id === assistantMsgId ? { ...m, content: accumulated } : m)
+      );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
       toast.error('AI Tutor is unavailable right now. Please try again in a moment.');
@@ -275,7 +300,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm animate-fade-in transition-all duration-300">
-      <div className="w-full max-w-lg bg-card border-t border-black/[0.06] dark:border-white/[0.08] rounded-t-modal p-4 sm:p-5 max-h-[92vh] h-[92vh] flex flex-col shadow-2xl animate-drawer-up">
+      <div className="w-full max-w-lg bg-card border-t border-black/[0.06] dark:border-white/[0.08] rounded-t-modal p-4 sm:p-5 max-h-[90dvh] h-[90dvh] flex flex-col shadow-2xl animate-drawer-up">
         {/* Premium Header */}
         <div className="flex items-center justify-between pb-3 border-b border-black/[0.06] dark:border-white/[0.08] shrink-0">
           <div className="flex items-center gap-3">
@@ -431,35 +456,17 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
           <div ref={messagesEndRef} className="h-1" />
         </div>
         
-        {/* Floating Input Box with Camera & Mic Icons (ui_inspiration2.png) */}
+        {/* Floating Input Box */}
         <form onSubmit={handleFormSubmit} className="pt-3 border-t border-black/[0.08] dark:border-white/[0.08] shrink-0 flex items-center gap-2 relative">
-          <div className="flex-1 flex items-center bg-white dark:bg-[#1A222D] border-2 border-black/[0.08] dark:border-white/[0.08] rounded-full px-3 py-1 focus-within:border-primary shadow-tactile-xs transition-all">
+          <div className="flex-1 flex items-center bg-white dark:bg-[#1A222D] border-2 border-black/[0.08] dark:border-white/[0.08] rounded-full px-4 py-1 focus-within:border-primary shadow-tactile-xs transition-all">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask Teme anything..."
               disabled={isLoading}
-              className="flex-1 bg-transparent px-2 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none font-medium"
+              className="flex-1 bg-transparent py-2 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none font-medium"
             />
-            <div className="flex items-center gap-1 shrink-0 pr-1">
-              <button
-                type="button"
-                onClick={() => { sounds.playTap(); toast.info("Photo scan: Upload question image for Gemini analysis"); }}
-                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 active:scale-90 transition-all"
-                title="Scan question with Camera"
-              >
-                <Camera className="w-4 h-4 stroke-[2.2]" />
-              </button>
-              <button
-                type="button"
-                onClick={() => { sounds.playTap(); toast.info("Voice query: Speak your question to Teme"); }}
-                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 active:scale-90 transition-all"
-                title="Ask with voice"
-              >
-                <Mic className="w-4 h-4 stroke-[2.2]" />
-              </button>
-            </div>
           </div>
           <button
             type="submit"
