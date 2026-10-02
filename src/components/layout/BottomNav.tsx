@@ -87,7 +87,7 @@ export const BottomNav = () => {
                     strokeWidth={isActive ? 2.6 : 2}
                   />
                   {isActive && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1 shadow-sm shadow-orange-500/50 animate-fade-in" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1 shadow-sm shadow-primary/40 animate-fade-in" />
                   )}
                 </div>
               </Link>
@@ -95,7 +95,7 @@ export const BottomNav = () => {
           })}
         </div>
 
-        {/* Center Glowing Orange FAB (Signature Chegg Inspiration) */}
+        {/* Center Glowing Academic Royal Blue FAB */}
         <div className="flex items-center justify-center px-1">
           <button
             onClick={handleCenterFab}
@@ -104,13 +104,13 @@ export const BottomNav = () => {
             className="
               relative -top-4
               w-13 h-13 rounded-full
-              bg-gradient-to-tr from-[#EA580C] via-[#F96E10] to-[#FB923C]
+              bg-gradient-to-tr from-[#094B82] via-[#1155A5] to-[#2563EB]
               text-white
-              shadow-xl shadow-orange-500/40
+              shadow-xl shadow-blue-600/40
               border-4 border-ground
               flex items-center justify-center
               active:scale-90 transition-all duration-150
-              hover:shadow-orange-500/60
+              hover:shadow-blue-600/60
             "
           >
             <Sparkles className="w-6 h-6 fill-white text-white drop-shadow-sm animate-pulse-soft" />
@@ -145,7 +145,7 @@ export const BottomNav = () => {
                     strokeWidth={isActive ? 2.6 : 2}
                   />
                   {isActive && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1 shadow-sm shadow-orange-500/50 animate-fade-in" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1 shadow-sm shadow-primary/40 animate-fade-in" />
                   )}
                 </div>
               </Link>

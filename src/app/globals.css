@@ -6,20 +6,20 @@
 
 /* ─── CSS Custom Properties (Bespoke UI Design Tokens) ───────── */
 :root {
-  /* Light mode surfaces: Warm, welcoming mobile canvas (ui_inspiration.png) */
-  --background:    hsl(40, 20%, 97.5%);  /* #FAF9F5: Soft warm ivory/cream canvas */
-  --foreground:    hsl(24, 10%, 10%);    /* #1C1917: Deep espresso ink readability, WCAG AAA */
-  --surface:       hsl(0, 0%, 100%);      /* #FFFFFF: Pure crisp white cards that pop against warm canvas */
-  --surface-2:     hsl(38, 22%, 93%);    /* #F3F0EA: Warm sand/cream recessed trays, inputs, pills */
-  --border:        hsla(24, 15%, 15%, 0.08); /* Crisp warm neutral border */
-  --border-strong: hsla(24, 15%, 15%, 0.16); /* Defined 3D card bottom bevel */
+  /* Light mode surfaces: Crisp, modern educational canvas */
+  --background:    hsl(210, 20%, 98%);  /* #F8FAFC: Modern crisp slate-white canvas */
+  --foreground:    hsl(220, 25%, 10%);  /* #111827: Deep slate ink readability, WCAG AAA */
+  --surface:       hsl(0, 0%, 100%);     /* #FFFFFF: Pure crisp white cards */
+  --surface-2:     hsl(210, 16%, 93%);  /* #EBF0F5: Soft neutral recessed tray, inputs, pills */
+  --border:        hsla(215, 20%, 20%, 0.08); /* Crisp neutral border */
+  --border-strong: hsla(215, 20%, 20%, 0.16); /* Defined 3D card bottom bevel */
 
-  /* Brand Primary: Warm Sunset Orange (ui_inspiration.png Chegg brand CTA & FAB) */
-  --primary:               hsl(24, 94%, 52%);  /* #F96E10: Vibrant, warm, high-contrast CTA */
+  /* Brand Primary: Temari Academic Royal Blue (#1155A5) matching the brand logo */
+  --primary:               hsl(212, 81%, 38%);  /* #1155A5: Signature Academic Royal Blue */
   --primary-foreground:    hsl(0, 0%, 100%);   /* Pure white text */
-  --primary-rgb:           249, 110, 16;
-  --primary-border-bottom: hsl(22, 94%, 38%);  /* #BF4D05: Rich burnt terracotta 3D tactile bevel */
-  --accent:                hsl(38, 92%, 46%);
+  --primary-rgb:           17, 85, 165;
+  --primary-border-bottom: hsl(214, 88%, 24%);  /* #073B75: Deep royal navy 3D tactile bevel */
+  --accent:                hsl(38, 92%, 48%);
 
   /* Semantic Accents — calibrated from ui_inspiration.png (WCAG AA compliant) */
   --accent-gold:        hsl(38, 92%, 48%);     /* Warm golden amber: Streaks, ratings, tips, XP */
@@ -78,11 +78,11 @@
   --border:        hsla(0, 0%, 100%, 0.12);
   --border-strong: hsla(0, 0%, 100%, 0.22);
 
-  /* Dark mode primary: luminous warm sunset orange — high contrast against slate */
-  --primary:               hsl(24, 94%, 56%);   /* #FA7B25: Radiant warm orange */
-  --primary-foreground:    hsl(0, 0%, 100%);
-  --primary-rgb:           250, 123, 37;
-  --primary-border-bottom: hsl(22, 85%, 40%);   /* #BF4D05 */
+  /* Dark mode primary: Luminous Academic Royal Blue */
+  --primary:               hsl(212, 92%, 62%);  /* #4E9BF7: Vibrant luminous blue */
+  --primary-foreground:    hsl(220, 24%, 6.5%);
+  --primary-rgb:           78, 155, 247;
+  --primary-border-bottom: hsl(212, 80%, 40%);  /* #1765C9: Tactile bevel */
   --accent:                hsl(40, 92%, 62%);
 
   /* Dark mode semantic accents: softened & anti-glare */
@@ -148,15 +148,15 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   background-image: 
-    radial-gradient(ellipse at 15% 10%, hsla(38, 75%, 92%, 0.45), transparent 45%),
-    radial-gradient(ellipse at 85% 25%, hsla(28, 80%, 93%, 0.35), transparent 50%),
-    radial-gradient(ellipse at 45% 75%, hsla(45, 70%, 93%, 0.40), transparent 55%);
+    radial-gradient(ellipse at 15% 10%, hsla(212, 70%, 94%, 0.5), transparent 45%),
+    radial-gradient(ellipse at 85% 25%, hsla(215, 60%, 95%, 0.4), transparent 50%),
+    radial-gradient(ellipse at 45% 75%, hsla(220, 50%, 96%, 0.4), transparent 55%);
 }
 .dark body {
   background-image: 
-    radial-gradient(ellipse at 15% 10%, hsla(220, 25%, 11%, 0.6), transparent 45%),
-    radial-gradient(ellipse at 85% 25%, hsla(24, 30%, 9%, 0.4), transparent 50%),
-    radial-gradient(ellipse at 45% 75%, hsla(220, 20%, 10%, 0.5), transparent 55%);
+    radial-gradient(ellipse at 15% 10%, hsla(212, 40%, 12%, 0.6), transparent 45%),
+    radial-gradient(ellipse at 85% 25%, hsla(220, 30%, 10%, 0.4), transparent 50%),
+    radial-gradient(ellipse at 45% 75%, hsla(220, 25%, 8%, 0.5), transparent 55%);
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────────── */

@@ -1,16 +1,17 @@
-const CACHE_NAME = 'temari-cache-v2';
+const CACHE_NAME = 'temari-cache-v3';
 
-// Static assets critical for the initial offline paint
+// Static assets critical for the initial offline paint (only immutable assets, never dynamic HTML)
 const PRECACHE_ASSETS = [
-  '/',
   '/manifest.json',
+  '/assets/temari_icon.png',
+  '/assets/temari_icon_192.png',
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
   );
-  self.skipWaiting(); // Force the waiting service worker to become the active service worker
+  self.skipWaiting(); // Force the waiting service worker to become active immediately
 });
 
 self.addEventListener('activate', (event) => {
@@ -19,7 +20,10 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames
           .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+          .map((name) => {
+            console.log('[SW] Purging outdated cache:', name);
+            return caches.delete(name);
+          })
       );
     })
   );
@@ -33,20 +37,22 @@ self.addEventListener('fetch', (event) => {
   if (!event.request.url.startsWith('http')) return;
   if (event.request.method !== 'GET') return;
 
-  // 1. Cache-First Strategy for Next.js Static Assets (JS, CSS, Fonts) and Images (including Cloudinary)
+  // 1. Cache-First with Background Revalidation for Next.js Static Assets & Images
   if (url.pathname.startsWith('/_next/static/') || url.pathname.match(/\.(png|jpg|jpeg|svg|webp|gif|woff|woff2)$/i)) {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
-        if (cachedResponse) return cachedResponse;
-        
-        return fetch(event.request).then((networkResponse) => {
-          if (!networkResponse || networkResponse.status !== 200 || (networkResponse.type !== 'basic' && networkResponse.type !== 'cors')) {
+        const fetchPromise = fetch(event.request)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200 && (networkResponse.type === 'basic' || networkResponse.type === 'cors')) {
+              const responseClone = networkResponse.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+            }
             return networkResponse;
-          }
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
-          return networkResponse;
-        });
+          })
+          .catch(() => null);
+
+        // Return cached asset immediately for speed; if missing, wait for network
+        return cachedResponse || fetchPromise;
       })
     );
     return;

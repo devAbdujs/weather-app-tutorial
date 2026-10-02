@@ -84,7 +84,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
     });
   };
 
-  const isPremium = profile.subscription_status === 'premium';
+  const userProfile = useAppStore(s => s.userProfile);
+  const isPremium = (userProfile?.subscription_status === 'premium') || (profile?.subscription_status === 'premium');
   
   // Weekly Quota Calculations
   const weeklyCap = isPremium ? 150 : 5;

@@ -127,9 +127,9 @@ export const tailwindTokens = {
 
 // Raw hex palette for environments requiring raw color strings (e.g. Telegram WebApp setHeaderColor)
 export const surfaceHex = {
-  groundLight: '#FAF9F5',
+  groundLight: '#F8FAFC',
   groundDark: '#0C0F14',
-  panelLight: '#F3F0EA',
+  panelLight: '#EBF0F5',
   panelDark: '#1E2530',
   cardLight: '#FFFFFF',
   cardDark: '#151A22',

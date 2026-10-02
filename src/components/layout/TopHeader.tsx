@@ -92,13 +92,13 @@ export const TopHeader = () => {
           <span className="font-mono font-black tabular-nums" suppressHydrationWarning>{streak}</span>
         </button>
 
-        {/* XP Counter Pill - High Contrast */}
+        {/* XP Counter Pill - High Contrast Gamification Gold */}
         <button
           onClick={() => { sounds.playCorrect(); router.push('/profile'); }}
           title={`${xp} Total XP`}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/15 border-2 border-b-[3px] border-orange-500/30 text-orange-950 dark:text-orange-200 font-black text-xs active:translate-y-[1px] transition-all shadow-2xs"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-gold/15 border-2 border-b-[3px] border-accent-gold/30 text-amber-950 dark:text-amber-200 font-black text-xs active:translate-y-[1px] transition-all shadow-2xs"
         >
-          <Zap className="w-4 h-4 fill-primary text-primary" />
+          <Zap className="w-4 h-4 fill-accent-gold text-accent-gold" />
           <span className="font-mono font-black tabular-nums" suppressHydrationWarning>{xp}</span>
         </button>
       </div>
