@@ -37,4 +37,17 @@ describe('MarkdownRenderer LaTeX normalization', () => {
     render(<MarkdownRenderer content="Hello \(x^2\)" />);
     expect(screen.getByTestId('markdown')).toHaveTextContent('Hello $x^2$');
   });
+
+  it('auto-repairs unclosed display math before heading', () => {
+    const input = '$$ E = mc^2\n## Chapter 2';
+    const output = normalizeLaTeX(input);
+    expect(output).toContain('$$\n## Chapter 2');
+  });
+
+  it('escapes lone dollars so they do not break markdown rendering', () => {
+    const input = 'Price is $100 and tax is $5.';
+    const output = normalizeLaTeX(input);
+    expect(output).toContain('\\$100');
+    expect(output).toContain('\\$5');
+  });
 });

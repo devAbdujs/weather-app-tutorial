@@ -392,7 +392,23 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
                 {msg.role === 'assistant' ? (
                   msg.content ? (
                     <div className="prose prose-sm max-w-none prose-p:leading-relaxed prose-p:text-gray-900 dark:prose-p:text-gray-100 prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-li:text-gray-900 dark:prose-li:text-gray-100 prose-a:text-primary font-medium tracking-tight">
-                      <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm, remarkMath]}
+                        rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false, errorColor: 'inherit' }]]}
+                        components={{
+                          table: ({ children }) => (
+                            <div className="my-3 w-full overflow-x-auto rounded-xl border border-black/10 dark:border-white/10">
+                              <table className="w-full text-left text-xs border-collapse">{children}</table>
+                            </div>
+                          ),
+                          thead: ({ children }) => (
+                            <thead className="border-b border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 font-semibold">{children}</thead>
+                          ),
+                          tbody: ({ children }) => <tbody className="divide-y divide-black/5 dark:divide-white/5">{children}</tbody>,
+                          th: ({ children }) => <th className="px-3 py-2 font-semibold">{children}</th>,
+                          td: ({ children }) => <td className="px-3 py-2 align-top">{children}</td>,
+                        }}
+                      >
                         {normalizeMarkdownLaTeX(msg.content)}
                       </ReactMarkdown>
                     </div>

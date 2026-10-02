@@ -3,10 +3,9 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { NoteHighlight, HighlightColor } from '@/types';
-import { normalizeMarkdownLaTeX as normalizeLaTeX } from '@/lib/latex';
+import { normalizeMarkdownLaTeX as normalizeLaTeX, renderKaTeX } from '@/lib/latex';
 
 export const HIGHLIGHT_STYLE_MAP: Record<HighlightColor, string> = {
   yellow: 'bg-amber-300/85 text-amber-950 dark:bg-amber-400/35 dark:text-amber-100',
@@ -18,14 +17,21 @@ export const HIGHLIGHT_STYLE_MAP: Record<HighlightColor, string> = {
 
 export { normalizeLaTeX };
 
-// Extracts plain text from any node or element tree
+// Extracts plain text from any node or element tree, skipping code and KaTeX math nodes
 function getPlainText(node: React.ReactNode): string {
   if (typeof node === 'string') return node;
   if (typeof node === 'number') return String(node);
   if (!node) return '';
   if (Array.isArray(node)) return node.map(getPlainText).join('');
-  if (React.isValidElement(node) && node.props && (node.props as any).children) {
-    return getPlainText((node.props as any).children);
+  if (React.isValidElement(node)) {
+    const props = node.props as any;
+    const type = (node as any).type;
+    if (type === 'code' || props?.className?.includes?.('katex')) {
+      return '';
+    }
+    if (props && props.children) {
+      return getPlainText(props.children);
+    }
   }
   return '';
 }
@@ -213,7 +219,7 @@ function MarkdownRendererComponent({
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm, remarkMath]}
-      rehypePlugins={[rehypeKatex]}
+      rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false, errorColor: 'inherit' }]]}
       components={{
         h1: ({ children }) => <h1 className="text-2xl font-black mt-8 mb-4 text-gray-900 dark:text-gray-100 leading-tight tracking-tight">{wrap(children)}</h1>,
         h2: ({ children }) => <h2 className="text-xl font-black mt-8 mb-3 text-gray-900 dark:text-gray-100 tracking-tight">{wrap(children)}</h2>,
@@ -224,6 +230,18 @@ function MarkdownRendererComponent({
         li: ({ children }) => <li className="pl-1">{wrap(children)}</li>,
         strong: ({ children }) => <strong className="font-bold text-gray-900 dark:text-gray-100">{children}</strong>,
         em: ({ children }) => <em className="italic">{children}</em>,
+        table: ({ children }) => (
+          <div className="my-6 w-full overflow-x-auto rounded-2xl border border-black/10 dark:border-white/10 shadow-sm bg-white dark:bg-card">
+            <table className="w-full text-left text-sm border-collapse">{children}</table>
+          </div>
+        ),
+        thead: ({ children }) => (
+          <thead className="border-b border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 text-gray-900 dark:text-gray-100 font-semibold">{children}</thead>
+        ),
+        tbody: ({ children }) => <tbody className="divide-y divide-black/5 dark:divide-white/5">{children}</tbody>,
+        tr: ({ children }) => <tr className="transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">{children}</tr>,
+        th: ({ children }) => <th className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">{wrap(children)}</th>,
+        td: ({ children }) => <td className="px-4 py-3 text-gray-600 dark:text-gray-400 align-top">{wrap(children)}</td>,
         img: ({ src, alt, ...props }: any) => (
           <figure className="my-6 flex flex-col items-center max-w-full">
             <div className="relative overflow-hidden rounded-2xl border border-black/10 dark:border-white/10 shadow-sm bg-black/5 dark:bg-white/5 max-w-full p-1 sm:p-2">
@@ -270,33 +288,22 @@ function MarkdownRendererComponent({
           
           if (isMathDisplay) {
             const mathStr = childrenStr.replace(/\n$/, '');
-            try {
-              const html = katex.renderToString(mathStr, {
-                displayMode: true,
-                throwOnError: false,
-              });
-              return (
-                <div className={`my-6 px-4 py-5 rounded-2xl ${accentBg} border border-black/5 dark:border-white/10 overflow-x-auto`}>
-                  <div className="flex justify-center items-center" dangerouslySetInnerHTML={{ __html: html }} />
-                </div>
-              );
-            } catch {
-              return <pre className="font-mono text-sm">{mathStr}</pre>;
-            }
+            const html = renderKaTeX(mathStr, true);
+            return (
+              <div className={`my-6 px-4 py-5 rounded-2xl ${accentBg} border border-black/5 dark:border-white/10 overflow-x-auto`}>
+                <div className="flex justify-center items-center" dangerouslySetInnerHTML={{ __html: html }} />
+              </div>
+            );
           }
           if (isMathInline) {
             const mathStr = childrenStr.replace(/^math-inline:/, '');
-            try {
-              const html = katex.renderToString(mathStr, { displayMode: false, throwOnError: false });
-              return (
-                <span
-                  className={`mx-0.5 px-1 py-0.5 rounded ${accentBg} ${accentText} text-[0.9em]`}
-                  dangerouslySetInnerHTML={{ __html: html }}
-                />
-              );
-            } catch {
-              return <code className="font-mono text-sm">{mathStr}</code>;
-            }
+            const html = renderKaTeX(mathStr, false);
+            return (
+              <span
+                className={`mx-0.5 px-1 py-0.5 rounded ${accentBg} ${accentText} text-[0.9em]`}
+                dangerouslySetInnerHTML={{ __html: html }}
+              />
+            );
           }
           return (
             <code className="bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md text-[0.88em] font-mono text-purple-700 dark:text-purple-400" {...props}>

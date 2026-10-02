@@ -3,9 +3,57 @@ import {
   normalizeMarkdownLaTeX,
   splitMathAndText,
   renderKaTeX,
+  repairUnclosedMath,
+  repairUnclosedSingleDollars,
+  autoWrapAlignedDisplay,
 } from '@/lib/latex';
 
 describe('LaTeX Normalization & Formatting Suite', () => {
+  describe('repairUnclosedMath', () => {
+    it('auto-closes unclosed $$ block before a markdown heading', () => {
+      const input = '$$ f(x) = x^2\n## Next Chapter\nContent';
+      const output = repairUnclosedMath(input);
+      expect(output).toContain('$$\n## Next Chapter');
+    });
+
+    it('auto-closes unclosed $$ at end of text', () => {
+      const input = 'Formula is:\n$$ y = mx + b';
+      const output = repairUnclosedMath(input);
+      expect(output.endsWith('$$')).toBe(true);
+    });
+  });
+
+  describe('repairUnclosedSingleDollars', () => {
+    it('escapes lone currency dollar values without treating as math', () => {
+      const input = 'Cost is $20 and discount is $0.25.';
+      const output = repairUnclosedSingleDollars(input);
+      expect(output).toContain('\\$20');
+      expect(output).toContain('\\$0.25');
+    });
+
+    it('escapes trailing lone dollar at end of sentence', () => {
+      const input = 'In this definition, we say $\n\nNext line';
+      const output = repairUnclosedSingleDollars(input);
+      expect(output).toContain('we say \\$');
+    });
+  });
+
+  describe('autoWrapAlignedDisplay', () => {
+    it('wraps multi-line aligned equations in begin{aligned}', () => {
+      const input = '$$\na &= b + c \\\\\nd &= e\n$$';
+      const output = autoWrapAlignedDisplay(input);
+      expect(output).toContain('\\begin{aligned}');
+      expect(output).toContain('\\end{aligned}');
+    });
+
+    it('does not double-wrap if already wrapped in begin{aligned}', () => {
+      const input = '$$\n\\begin{aligned}\na &= b \\\\\nc &= d\n\\end{aligned}\n$$';
+      const output = autoWrapAlignedDisplay(input);
+      const count = (output.match(/\\begin\{aligned\}/g) || []).length;
+      expect(count).toBe(1);
+    });
+  });
+
   describe('cleanCorruptedLaTeX', () => {
     it('fixes unescaped form-feed \\x0crac control characters from JSON', () => {
       const corrupted = 'The formula is \\( \x0crac{1}{2} \\)';
@@ -64,6 +112,14 @@ describe('LaTeX Normalization & Formatting Suite', () => {
       const output = normalizeMarkdownLaTeX(input);
       expect(output).toContain('$\\frac{1}{2}$');
       expect(output).toContain('$\\sqrt{gL}$');
+    });
+
+    it('preserves inner matrix environments inside $$ without duplicate wrapping', () => {
+      const input = '$$\nA = \\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix}\n$$';
+      const output = normalizeMarkdownLaTeX(input);
+      // Ensure no nested $$ inside $$
+      expect(output).not.toContain('$$A = $$');
+      expect(output).toContain('\\begin{pmatrix}');
     });
   });
 
