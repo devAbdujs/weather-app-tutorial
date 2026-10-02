@@ -5,17 +5,17 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F5F0E8",
-  "theme_color": "#1B3A6B",
+  "theme_color": "#1155A5",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/assets/temari logo.png",
+      "src": "/assets/temari_icon_192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/assets/temari logo.png",
+      "src": "/assets/temari_icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

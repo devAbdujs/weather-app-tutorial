@@ -10,16 +10,29 @@ const geistSans = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top'),
   title: 'Temari | AI Exam Prep & Study Partner',
   description: 'The ultimate exam prep app for Ethiopian students. Practice EUEE (Grade 12), University Freshman, and Exit Exams with AI-powered notes and real past papers.',
   keywords: ['Ethiopia', 'EUEE', 'Grade 12 Entrance Exam', 'Ethiopian University Exit Exam', 'Freshman courses', 'Temari App', 'Ethiopian exam prep'],
   authors: [{ name: 'Temari' }],
   manifest: '/manifest.json',
+  icons: {
+    icon: '/assets/temari_icon_192.png',
+    apple: '/assets/temari_icon.png',
+  },
   openGraph: {
     title: 'Temari | AI Exam Prep & Study Partner',
     description: 'Practice 31,000+ real exam questions for EUEE, Freshman & Exit Exams with AI.',
     url: 'https://www.temari.top',
     siteName: 'Temari App',
+    images: [
+      {
+        url: '/assets/New_temari_logo.png',
+        width: 371,
+        height: 219,
+        alt: 'Temari Exam Prep & AI Tutor',
+      },
+    ],
     locale: 'en_US',
     type: 'website',
   },
@@ -27,6 +40,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Temari | AI Exam Prep & Study Partner',
     description: 'Master your Ethiopian National Exams with AI-powered notes and practice papers.',
+    images: ['/assets/New_temari_logo.png'],
   },
 };
 

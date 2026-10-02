@@ -21,6 +21,14 @@ export async function generateMetadata(): Promise<Metadata> {
       description: config.metaDescription,
       url,
       siteName: 'Temari App',
+      images: [
+        {
+          url: '/assets/New_temari_logo.png',
+          width: 371,
+          height: 219,
+          alt: `Temari - ${config.label}`,
+        },
+      ],
       locale: 'en_US',
       type: 'website',
     },
@@ -28,6 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title: config.metaTitle,
       description: config.metaDescription,
+      images: ['/assets/New_temari_logo.png'],
     },
   };
 }
@@ -51,6 +60,8 @@ export default async function HomePage() {
     '@type': 'EducationalOrganization',
     name: `Temari - ${config.label}`,
     url: getSubdomainUrl(subdomain),
+    logo: 'https://temari.top/assets/New_temari_logo.png',
+    image: 'https://temari.top/assets/New_temari_logo.png',
     description: config.metaDescription,
     offers: {
       '@type': 'Offer',

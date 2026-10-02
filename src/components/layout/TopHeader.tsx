@@ -63,13 +63,14 @@ export const TopHeader = () => {
             onClick={() => { sounds.playTap(); router.push('/dashboard'); }}
             className="flex items-center gap-2 cursor-pointer active:scale-95 transition-transform"
           >
-            <div className="w-10 h-10 rounded-2xl overflow-hidden shadow-2xs border-2 border-b-[3px] border-orange-500/30 shrink-0 bg-primary/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl overflow-hidden shadow-2xs border-2 border-b-[3px] border-primary/25 dark:border-primary/40 shrink-0 bg-primary/10 flex items-center justify-center p-1">
               <Image
-                src="/assets/temari logo.png"
+                src="/assets/temari_icon.png"
                 alt="Temari"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 width={40}
                 height={40}
+                priority
               />
             </div>
             <span className="font-black text-lg text-gray-900 dark:text-gray-100 tracking-tight hidden xs:inline">

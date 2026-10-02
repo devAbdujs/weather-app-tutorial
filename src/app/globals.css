@@ -28,8 +28,8 @@
   --accent-emerald-rgb: 48, 166, 112;
   --accent-rose:        hsl(350, 78%, 54%);    /* Coral rose: Needs practice, warnings, errors */
   --accent-rose-rgb:    225, 29, 72;
-  --accent-blue:        hsl(199, 89%, 46%);    /* Chegg blue/cyan: Questions, Telegram & info */
-  --accent-blue-rgb:    2, 132, 199;
+  --accent-blue:        hsl(212, 81%, 36%);    /* Temari Academic Royal Blue (#1155A5) derived from brand logo */
+  --accent-blue-rgb:    17, 85, 165;
   --accent-purple:      hsl(268, 65%, 54%);    /* Academic lilac/violet: Mathematics, study notes */
   --accent-purple-rgb:  139, 92, 246;
 
@@ -92,8 +92,8 @@
   --accent-emerald-rgb: 68, 207, 138;
   --accent-rose:        hsl(350, 75%, 66%);
   --accent-rose-rgb:    235, 102, 126;
-  --accent-blue:        hsl(199, 85%, 62%);
-  --accent-blue-rgb:    77, 188, 239;
+  --accent-blue:        hsl(212, 90%, 65%);    /* Luminous Academic Blue for dark mode anti-glare */
+  --accent-blue-rgb:    84, 158, 247;
   --accent-purple:      hsl(268, 70%, 72%);
   --accent-purple-rgb:  192, 146, 245;
 

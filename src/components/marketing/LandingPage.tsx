@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Send, Bot, BookOpen, Target, Sparkles, GraduationCap, ShieldCheck, Building2, UserCircle2, Zap, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
 import { safeSessionStorage } from '@/lib/safeStorage';
@@ -138,8 +139,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
       <nav className="fixed top-0 w-full z-50 bg-ground/85 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06]">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-             <div className="w-9 h-9 rounded-2xl bg-primary flex items-center justify-center shadow-tactile-sm">
-               <span className="text-white font-black text-base tracking-tighter">Te</span>
+             <div className="w-9 h-9 rounded-2xl bg-primary/10 border-2 border-b-[3px] border-primary/25 dark:border-primary/40 flex items-center justify-center p-1 shadow-tactile-sm overflow-hidden">
+               <Image 
+                 src="/assets/temari_icon.png" 
+                 alt="Temari Logo" 
+                 width={36} 
+                 height={36} 
+                 className="w-full h-full object-contain" 
+                 priority 
+               />
              </div>
              <span className="font-black text-lg tracking-tight">Temari</span>
           </div>
@@ -461,7 +469,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
       <footer className="w-full bg-ground border-t border-black/[0.06] dark:border-white/[0.06] py-8 px-6">
          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-               <div className="w-6 h-6 rounded-lg bg-primary flex items-center justify-center"><span className="text-white font-black text-micro">Te</span></div>
+               <div className="w-6 h-6 rounded-lg bg-primary/10 border border-primary/25 overflow-hidden flex items-center justify-center p-0.5">
+                 <Image src="/assets/temari_icon.png" alt="Temari" width={24} height={24} className="w-full h-full object-contain" />
+               </div>
                <span className="font-black text-sm text-gray-900 dark:text-white">Temari</span>
             </div>
             <p className="text-xs font-semibold text-gray-400">© {new Date().getFullYear()} Temari. Built for Ethiopian scholars.</p>
