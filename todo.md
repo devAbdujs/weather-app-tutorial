@@ -80,11 +80,11 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
     *   **Flaw:** `getEntranceYearCounts` fetches all rows with `.select('year_ec')`. PostgREST defaults to a limit of 1,000 rows.
     *   **Impact:** In subjects with >1,000 questions, older exam years get truncated and show 0 counts.
     *   **Fix:** Aggregate question counts via Supabase RPC or group-by query.
-*   [ ] **Expand KaTeX Regex to Support Standard LaTeX Delimiters `\( ... \)` and `\[ ... \]`:**
-    *   **Files:** [`src/components/MathText.tsx#L14`](file:///home/abdu/scraping/ethio-exam-app/src/components/MathText.tsx#L14).
-    *   **Flaw:** Regex only matches `$...$` and `$$...$$`.
-    *   **Impact:** Questions containing `\( ... \)` or `\[ ... \]` display raw LaTeX code instead of rendered KaTeX formulas.
-    *   **Fix:** Update splitting regex in `MathText.tsx` to include `\\([\\s\\S]*?\\)|\\\[[\\s\\S]*?\\\]`.
+*   [x] **Expand KaTeX Regex to Support Standard LaTeX Delimiters `\( ... \)` and `\[ ... \]`:**
+    *   **Files:** [`src/components/MathText.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/MathText.tsx), [`src/lib/latex.ts`](file:///home/abdu/scraping/ethio-exam-app/src/lib/latex.ts), [`src/components/ai/AITutorDrawer.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx), [`src/components/AIResponse.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/AIResponse.tsx), and [`src/components/dashboard/MarkdownRenderer.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/MarkdownRenderer.tsx).
+    *   **Flaw:** Regex only matched `$...$` and `$$...$$`, and failed on `\( ... \)`, `\[ ... \]`, double-escaped backslashes, unescaped JSON control characters (`\x0crac`), and bare math commands without delimiters.
+    *   **Impact:** Questions, options, official explanations, and AI responses containing `\( ... \)` or bare LaTeX displayed raw LaTeX code.
+    *   **Fix:** Built `@/lib/latex.ts` engine with full normalization, multi-delimiters (`$$`, `\[`, `\(`, `$`, environments), KaTeX memoization cache, currency preservation, and integrated it across MathText, AI Tutor, and Study Notes.
 *   [ ] **Remove Dead Code `ClientAuthDetector.tsx`:**
     *   **Files:** [`src/components/auth/ClientAuthDetector.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/auth/ClientAuthDetector.tsx).
     *   **Flaw:** Component is completely orphaned and unreferenced in the codebase.

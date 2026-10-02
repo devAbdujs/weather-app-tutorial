@@ -1,6 +1,7 @@
 import React from 'react';
 import { getQuestions } from '@/app/actions/admin';
 import { BookOpen } from 'lucide-react';
+import { MathText } from '@/components/MathText';
 
 export default async function AdminQuestionsPage() {
   const questions = await getQuestions(100);
@@ -33,7 +34,9 @@ export default async function AdminQuestionsPage() {
               {questions.map((q: any) => (
                 <tr key={q.id} className="border-b border-black/[0.04] dark:border-white/[0.04] hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors">
                   <td className="p-4">
-                    <p className="font-bold text-gray-900 dark:text-gray-100 line-clamp-2">{q.question}</p>
+                    <p className="font-bold text-gray-900 dark:text-gray-100 line-clamp-2">
+                      <MathText content={q.question} />
+                    </p>
                     <p className="text-xs text-gray-400 font-mono mt-1 text-ellipsis overflow-hidden">ID: {q.id}</p>
                   </td>
                   <td className="p-4 font-bold text-gray-600 dark:text-gray-400 text-sm">

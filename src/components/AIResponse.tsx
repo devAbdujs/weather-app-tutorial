@@ -17,21 +17,12 @@ interface AIResponseProps {
   className?: string;
 }
 
-// ── KaTeX renderer ────────────────────────────────────────────
-function renderMath(tex: string, display: boolean): string {
-  try {
-    return katex.renderToString(tex, { displayMode: display, throwOnError: false });
-  } catch {
-    return tex;
-  }
-}
+import { renderKaTeX, normalizeMarkdownLaTeX } from '@/lib/latex';
 
 // ── Inline markdown → React nodes ─────────────────────────────
 // Handles: $$math$$, $math$, \(math\), \[math\], **bold**, *italic*, `code`
 function renderInline(text: string, key: string): React.ReactNode[] {
-  // Normalize alternate LaTeX delimiters to standard $ and $$
-  let normalized = text.replace(/\\\((.*?)\\\)/g, '$$$1$$');
-  normalized = normalized.replace(/\\\[(.*?)\\\]/g, '$$$$$1$$$$');
+  const normalized = normalizeMarkdownLaTeX(text);
 
   // Regex split
   const parts = normalized.split(/(\$\$[\s\S]*?\$\$|\$[^\$]+?\$|\*\*[^*]+\*\*|\*[^*\n]+\*|`[^`]+`)/g);
@@ -40,11 +31,11 @@ function renderInline(text: string, key: string): React.ReactNode[] {
     if (!part) return null;
 
     if (part.startsWith('$$') && part.endsWith('$$')) {
-      const html = renderMath(part.slice(2, -2).trim(), true);
+      const html = renderKaTeX(part.slice(2, -2).trim(), true);
       return <span key={k} dangerouslySetInnerHTML={{ __html: html }} className="block my-2 overflow-x-auto no-scrollbar" />;
     }
     if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
-      const html = renderMath(part.slice(1, -1).trim(), false);
+      const html = renderKaTeX(part.slice(1, -1).trim(), false);
       return <span key={k} dangerouslySetInnerHTML={{ __html: html }} className="inline-block px-0.5" />;
     }
     if (part.startsWith('**') && part.endsWith('**')) {

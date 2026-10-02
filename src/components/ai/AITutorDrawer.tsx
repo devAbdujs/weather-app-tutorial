@@ -25,6 +25,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { MathText } from '@/components/MathText';
+import { normalizeMarkdownLaTeX } from '@/lib/latex';
 import { Question } from '@/types';
 import { useTelegram } from '@/hooks/useTelegram';
 import { TemariMascot } from '@/components/mascot/TemariMascot';
@@ -314,7 +315,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
                   {question.subject || 'Question'}:
                 </span>
                 <span className="truncate italic text-foreground/80 font-medium text-xs">
-                  {question.question.replace(/\n/g, ' ')}
+                  <MathText content={question.question.replace(/\n/g, ' ')} />
                 </span>
               </div>
               {studentAnswer && (
@@ -331,7 +332,9 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
             <div className="px-3 py-1.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] flex items-center gap-1.5 text-xs text-muted-foreground truncate">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
               <span className="font-bold text-foreground text-[10px] uppercase tracking-wider shrink-0">Excerpt:</span>
-              <span className="truncate italic text-foreground/80 font-medium text-xs">"{selectedExcerpt}"</span>
+              <span className="truncate italic text-foreground/80 font-medium text-xs">
+                <MathText content={`"${selectedExcerpt}"`} />
+              </span>
             </div>
           </div>
         )}
@@ -390,7 +393,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
                   msg.content ? (
                     <div className="prose prose-sm max-w-none prose-p:leading-relaxed prose-p:text-gray-900 dark:prose-p:text-gray-100 prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-li:text-gray-900 dark:prose-li:text-gray-100 prose-a:text-primary font-medium tracking-tight">
                       <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
-                        {msg.content}
+                        {normalizeMarkdownLaTeX(msg.content)}
                       </ReactMarkdown>
                     </div>
                   ) : (
@@ -404,7 +407,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
                     </div>
                   )
                 ) : (
-                  msg.displayText || msg.content
+                  <MathText content={msg.displayText || msg.content} />
                 )}
               </div>
             </div>

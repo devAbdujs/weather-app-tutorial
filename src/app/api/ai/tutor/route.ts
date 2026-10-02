@@ -55,7 +55,7 @@ function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string
    - Break down dense formulas and technical terms step-by-step.
    - Provide concrete, relatable real-world examples and analogies.
    - Fill in missing context so the student truly understands rather than just memorizes.
-3. Clarity & Format: Keep explanations clear, engaging, and well-structured using Markdown (bold headings, bullet points, and LaTeX for math $...$).
+3. Clarity & Format: Keep explanations clear, engaging, and well-structured using Markdown (bold headings, bullet points) and standard LaTeX ($...$ for inline math, $$...$$ for display formulas).
 4. Amharic: If promptType='amharic' or requested, translate and explain clearly and naturally in Amharic (አማርኛ).`);
   } else {
     const isIncorrect = studentAnswer && correctAnswer && studentAnswer.trim().toLowerCase() !== correctAnswer.trim().toLowerCase();
@@ -70,7 +70,7 @@ function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string
     system.push(`Rules:
 1. If promptType='explain', provide the full step-by-step solution clearly explaining why the correct choice is right and others are wrong.
 2. If student got it wrong, gently explain why their choice was incorrect without being discouraging.
-3. Keep responses concise (under 3-4 short paragraphs). Use Markdown formatting (bold, bullet points) for readability.
+3. Keep responses concise (under 3-4 short paragraphs). Use Markdown formatting (bold, bullet points) and standard LaTeX ($...$ for inline formulas like $E=mc^2$ and $$...$$ on separate lines for display equations). Never output raw unformatted TeX without delimiters.
 4. If promptType='amharic', explain entirely in easy-to-understand Amharic (አማርኛ).`);
   }
 

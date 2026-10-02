@@ -6,6 +6,7 @@ import rehypeKatex from 'rehype-katex';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { NoteHighlight, HighlightColor } from '@/types';
+import { normalizeMarkdownLaTeX as normalizeLaTeX } from '@/lib/latex';
 
 export const HIGHLIGHT_STYLE_MAP: Record<HighlightColor, string> = {
   yellow: 'bg-amber-300/85 text-amber-950 dark:bg-amber-400/35 dark:text-amber-100',
@@ -15,15 +16,7 @@ export const HIGHLIGHT_STYLE_MAP: Record<HighlightColor, string> = {
   orange: 'bg-orange-300/85 text-orange-950 dark:bg-orange-400/35 dark:text-orange-100',
 };
 
-export const normalizeLaTeX = (text: string): string => {
-  if (!text) return '';
-  let p = text;
-  // 1. Convert LaTeX block math \[ ... \] to $$ ... $$
-  p = p.replace(/\\\[([\s\S]*?)\\\]/g, (_, m) => `\n\n$$\n${m.trim()}\n$$\n\n`);
-  // 2. Convert LaTeX inline math \( ... \) to $ ... $
-  p = p.replace(/\\\(([\s\S]*?)\\\)/g, (_, m) => `$${m.trim()}$`);
-  return p;
-};
+export { normalizeLaTeX };
 
 // Extracts plain text from any node or element tree
 function getPlainText(node: React.ReactNode): string {
