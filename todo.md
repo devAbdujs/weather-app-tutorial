@@ -75,28 +75,28 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
 ---
 
 ### 🟢 Phase 3: Medium Priority P2 Flaws (Math Rendering, PostgREST Limits & Housekeeping)
-*   [ ] **Fix PostgREST 1,000-Row Truncation in Entrance Year Counts:**
+*   [x] **Fix PostgREST 1,000-Row Truncation in Entrance Year Counts:**
     *   **Files:** [`src/app/actions/practice.ts#L38-L48`](file:///home/abdu/scraping/ethio-exam-app/src/app/actions/practice.ts#L38-L48).
     *   **Flaw:** `getEntranceYearCounts` fetches all rows with `.select('year_ec')`. PostgREST defaults to a limit of 1,000 rows.
     *   **Impact:** In subjects with >1,000 questions, older exam years get truncated and show 0 counts.
-    *   **Fix:** Aggregate question counts via Supabase RPC or group-by query.
+    *   **Fix:** Replaced full-row select with parallel `{ count: 'exact', head: true }` HEAD queries per exam year, completely bypassing the 1,000-row PostgREST payload limit.
 *   [x] **Expand KaTeX Regex to Support Standard LaTeX Delimiters `\( ... \)` and `\[ ... \]`:**
     *   **Files:** [`src/components/MathText.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/MathText.tsx), [`src/lib/latex.ts`](file:///home/abdu/scraping/ethio-exam-app/src/lib/latex.ts), [`src/components/ai/AITutorDrawer.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx), [`src/components/AIResponse.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/AIResponse.tsx), and [`src/components/dashboard/MarkdownRenderer.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/MarkdownRenderer.tsx).
     *   **Flaw:** Regex only matched `$...$` and `$$...$$`, and failed on `\( ... \)`, `\[ ... \]`, double-escaped backslashes, unescaped JSON control characters (`\x0crac`), and bare math commands without delimiters.
     *   **Impact:** Questions, options, official explanations, and AI responses containing `\( ... \)` or bare LaTeX displayed raw LaTeX code.
     *   **Fix:** Built `@/lib/latex.ts` engine with full normalization, multi-delimiters (`$$`, `\[`, `\(`, `$`, environments), KaTeX memoization cache, currency preservation, and integrated it across MathText, AI Tutor, and Study Notes.
-*   [ ] **Remove Dead Code `ClientAuthDetector.tsx`:**
+*   [x] **Remove Dead Code `ClientAuthDetector.tsx`:**
     *   **Files:** [`src/components/auth/ClientAuthDetector.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/auth/ClientAuthDetector.tsx).
     *   **Flaw:** Component is completely orphaned and unreferenced in the codebase.
-    *   **Fix:** Delete `src/components/auth/ClientAuthDetector.tsx`.
-*   [ ] **Contextual Subject Navigation from MasteryTree to Practice:**
-    *   **Files:** [`src/components/dashboard/MasteryTree.tsx#L534`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/MasteryTree.tsx#L534).
+    *   **Fix:** Deleted orphaned `src/components/auth/ClientAuthDetector.tsx`.
+*   [x] **Contextual Subject Navigation from MasteryTree to Practice:**
+    *   **Files:** [`src/components/dashboard/MasteryTree.tsx#L534`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/MasteryTree.tsx#L534) and [`src/components/practice/PracticeHub.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx).
     *   **Flaw:** Tapping "Practice" navigates to `/practice` without subject context.
-    *   **Fix:** Pass `subject` param: `router.push('/practice?subject=' + encodeURIComponent(stat.subject))`.
-*   [ ] **Harden OTP Verification Against Brute Force & SSR Crashes:**
+    *   **Fix:** Passed `subject` query param from `MasteryTree.tsx`, and updated `PracticeHub.tsx` to automatically route incoming subject queries straight into the subject's practice sessions.
+*   [x] **Harden OTP Verification Against Brute Force & SSR Crashes:**
     *   **Files:** [`src/app/api/auth/verify-otp/route.ts#L23`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/auth/verify-otp/route.ts#L23), [`L45`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/auth/verify-otp/route.ts#L45) and [`src/app/api/payments/status/route.ts#L28`](file:///home/abdu/scraping/ethio-exam-app/src/app/api/payments/status/route.ts#L28).
     *   **Flaw:** `.single()` throws on missing rows, and OTP verification lacks attempt rate limiting.
-    *   **Fix:** Replace `.single()` with `.maybeSingle()` and implement rate limiting on OTP attempts.
+    *   **Fix:** Replaced `.single()` with `.maybeSingle()` across `verify-otp/route.ts` and `payments/status/route.ts`, and implemented IP-based rate limiting (5 attempts/min) using `checkRateLimit`.
 
 ---
 

@@ -531,7 +531,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                       onClick={() => {
                         sounds.playTap();
                         haptic.selection();
-                        router.push('/practice');
+                        router.push('/practice?subject=' + encodeURIComponent(stat.subject));
                       }}
                       className="font-black text-primary hover:text-primary/80 flex items-center gap-0.5 active:scale-95 transition-all text-xs"
                     >

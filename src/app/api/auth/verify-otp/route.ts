@@ -2,9 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { encryptSession } from '@/lib/session';
+import { checkRateLimit } from '@/lib/rateLimiter';
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+    const rateLimit = checkRateLimit(`otp:${ip}`, 5, 60_000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many verification attempts. Please wait a minute before trying again.' },
+        { status: 429 }
+      );
+    }
+
     const { code } = await req.json();
 
     if (!code || code.length !== 6) {
@@ -20,7 +30,7 @@ export async function POST(req: NextRequest) {
       .eq('code', code)
       .eq('used', false)
       .gt('expires_at', new Date().toISOString())
-      .single();
+      .maybeSingle();
 
     if (error || !otpRecord) {
       return NextResponse.json({ error: 'Invalid or expired code. Please try again.' }, { status: 401 });
@@ -42,9 +52,9 @@ export async function POST(req: NextRequest) {
         full_name: `${telegramUser.first_name} ${telegramUser.last_name || ''}`.trim(),
       }, { onConflict: 'telegram_id' })
       .select('telegram_id, target_exam, stream')
-      .single();
+      .maybeSingle();
 
-    if (profileError) throw profileError;
+    if (profileError || !profile) throw profileError || new Error('Failed to create or update profile');
 
     // Create encrypted session cookie
     const sessionToken = await encryptSession({

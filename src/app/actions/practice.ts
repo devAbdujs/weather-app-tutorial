@@ -35,33 +35,30 @@ export async function getEntranceYearCounts(filters: { examType?: string; subjec
   }
 
   const supabase = await createClient();
-  let query = supabase.from('questions').select('year_ec');
-
-  if (filters.examType) query = query.eq('exam_type', filters.examType);
-  if (filters.subject && filters.subject !== 'All') query = query.eq('subject', filters.subject);
-
-  const { data, error } = await query;
-  if (error || !data) {
-    console.error("Error fetching entrance year counts:", error);
-    return [];
-  }
-
-  const countMap = new Map<number, number>();
-  for (const row of data) {
-    if (row.year_ec) {
-      countMap.set(row.year_ec, (countMap.get(row.year_ec) || 0) + 1);
-    }
-  }
-
   const defaultYears = filters.years || [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010];
-  const yearSet = new Set(defaultYears);
-  countMap.forEach((_, y) => {
-    yearSet.add(y);
-  });
 
-  return Array.from(yearSet)
-    .sort((a, b) => b - a)
-    .map(y => ({ year: y, count: countMap.get(y) || 0 }))
-    .filter(yc => yc.count > 0);
+  // Parallel exact count requests using HEAD queries to avoid PostgREST 1000-row truncation
+  const results = await Promise.all(
+    defaultYears.map(async (year) => {
+      let query = supabase
+        .from('questions')
+        .select('*', { count: 'exact', head: true })
+        .eq('year_ec', year);
+
+      if (filters.examType) query = query.eq('exam_type', filters.examType);
+      if (filters.subject && filters.subject !== 'All') query = query.eq('subject', filters.subject);
+
+      const { count, error } = await query;
+      if (error) {
+        console.error(`Error fetching entrance count for year ${year}:`, error);
+        return { year, count: 0 };
+      }
+      return { year, count: count || 0 };
+    })
+  );
+
+  return results
+    .filter(yc => yc.count > 0)
+    .sort((a, b) => b.year - a.year);
 }
 

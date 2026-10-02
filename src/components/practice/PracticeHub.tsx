@@ -187,6 +187,20 @@ export const PracticeHub = () => {
     setBackButton(false);
   }, [setBackButton]);
 
+  useEffect(() => {
+    const subjectParam = searchParams.get('subject');
+    if (subjectParam) {
+      const examType = targetExam || 'entrance';
+      if (mode === 'notes') {
+        const p = new URLSearchParams({ examType });
+        router.replace(`/notes/${encodeURIComponent(subjectParam)}?${p.toString()}`);
+      } else {
+        const p = new URLSearchParams({ examType, subject: subjectParam });
+        router.replace(`/practice/sessions?${p.toString()}`);
+      }
+    }
+  }, [searchParams, targetExam, mode, router]);
+
   const navigate = (examType: string, params: Record<string, string>) => {
     sounds.playTap();
     haptic.selection();

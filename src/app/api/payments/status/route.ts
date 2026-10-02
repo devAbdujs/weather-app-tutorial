@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       .from('profiles')
       .select('subscription_status, full_name')
       .eq('telegram_id', session.telegram_id)
-      .single();
+      .maybeSingle();
 
     const isPremium = profile?.subscription_status === 'premium';
 
