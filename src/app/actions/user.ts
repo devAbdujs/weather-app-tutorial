@@ -2,7 +2,7 @@
 import { calculateNewStreak } from '@/lib/streak';
 
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
-import { getServerSession, encryptSession } from '@/lib/session';
+import { getServerSession, encryptSession, getSessionCookieOptions } from '@/lib/session';
 import { cookies } from 'next/headers';
 
 /**
@@ -33,11 +33,7 @@ export async function updateProfilePreferences(target_exam: string, stream: stri
   cookies().set({
     name: 'es_session',
     value: newToken,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    path: '/',
-    maxAge: 60 * 60 * 24 * 30, // 30 days
+    ...getSessionCookieOptions(),
   });
 
   return { success: true };

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
-import { encryptSession } from '@/lib/session';
+import { encryptSession, getSessionCookieOptions } from '@/lib/session';
 
 import { validateMiniAppInitData, validateWebWidgetData } from '@/lib/telegramAuth';
 
@@ -74,11 +74,7 @@ export async function POST(req: NextRequest) {
     response.cookies.set({
       name: 'es_session',
       value: sessionToken,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
+      ...getSessionCookieOptions(),
     });
 
     return response;

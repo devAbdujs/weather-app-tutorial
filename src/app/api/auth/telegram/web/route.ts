@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     if (error) throw error;
 
     // 4. Create Encrypted HTTP-Only Session Cookie
-    const { encryptSession } = await import('@/lib/session');
+    const { encryptSession, getSessionCookieOptions } = await import('@/lib/session');
     const sessionToken = await encryptSession({
       telegram_id: data.id.toString(),
       profile_id: profile.telegram_id,
@@ -66,11 +66,7 @@ export async function POST(req: NextRequest) {
     response.cookies.set({
       name: 'es_session',
       value: sessionToken,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
+      ...getSessionCookieOptions(),
     });
 
     return response;

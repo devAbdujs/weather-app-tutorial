@@ -1,12 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Send, Bot, BookOpen, Target, Sparkles, GraduationCap, ShieldCheck, Building2, UserCircle2, Zap } from 'lucide-react';
+import { Send, Bot, BookOpen, Target, Sparkles, GraduationCap, ShieldCheck, Building2, UserCircle2, Zap, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
 import { safeSessionStorage } from '@/lib/safeStorage';
 import { TemariMascot, MascotBubble } from '@/components/mascot/TemariMascot';
+import { SubdomainType, SUBDOMAIN_CONFIGS, getSubdomainUrl } from '@/lib/subdomains';
 
-export const LandingPage = () => {
+interface LandingPageProps {
+  initialPortal?: SubdomainType;
+}
+
+export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root' }) => {
+  const [activePortal, setActivePortal] = useState<SubdomainType>(initialPortal);
+  const portalConfig = SUBDOMAIN_CONFIGS[activePortal] || SUBDOMAIN_CONFIGS.root;
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isWebApp, setIsWebApp] = useState(false);
@@ -57,11 +64,16 @@ export const LandingPage = () => {
     checkTelegram();
   }, []);
 
-  const handleTelegramOIDCLogin = async () => {
+  const handleTelegramOIDCLogin = async (targetPortal?: SubdomainType) => {
     sounds.playTap();
     setIsAuthenticating(true);
     setError(null);
     try {
+      const selected = targetPortal || activePortal;
+      if (selected !== 'root') {
+        safeSessionStorage.setItem('temari_target_exam', selected);
+      }
+
       const { generateRandomString, generateCodeChallenge } = await import('@/lib/pkce');
       const codeVerifier = generateRandomString(64);
       const state = generateRandomString(32);
@@ -141,33 +153,46 @@ export const LandingPage = () => {
       </nav>
 
       {/* 2. Hero Section with Teme the Mascot */}
-      <header className="relative px-6 pt-24 sm:pt-32 pb-12 sm:pb-16 flex flex-col items-center text-center max-w-3xl mx-auto w-full mt-2 sm:mt-4">
+      <header className="relative px-6 pt-24 sm:pt-32 pb-8 sm:pb-12 flex flex-col items-center text-center max-w-3xl mx-auto w-full mt-2 sm:mt-4">
         
-        {/* Teme the Mascot Intro */}
+        {/* Teme the Mascot Intro & Active Portal Badge */}
         <div className="flex flex-col items-center mb-6 animate-fade-up">
           <TemariMascot mood="happy" size={120} className="drop-shadow-sm mb-3" />
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 text-xs font-black uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" /> 
-            Meet Teme, Your Ethiopian Study Buddy
-          </div>
+          {activePortal !== 'root' ? (
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-black tracking-wide shadow-2xs">
+              <span className="text-sm">{portalConfig.emoji}</span>
+              <span>{portalConfig.tagline}</span>
+              <button 
+                onClick={() => setActivePortal('root')}
+                className="ml-2 text-[11px] underline text-muted-foreground hover:text-foreground font-semibold"
+              >
+                (view all exams)
+              </button>
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 text-xs font-black uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" /> 
+              Meet Teme, Your Ethiopian Study Buddy
+            </div>
+          )}
         </div>
 
         <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight sm:leading-[1.1] mb-5 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-          Master your national exams. <br className="hidden sm:block" />
-          <span className="text-primary">Without the stress.</span>
+          {portalConfig.headline} <br className="hidden sm:block" />
+          <span className="text-primary">{portalConfig.highlightedText}</span>
         </h1>
         
         <p className="text-gray-500 dark:text-gray-400 font-semibold text-base sm:text-lg mb-8 max-w-lg mx-auto leading-relaxed animate-fade-up" style={{ animationDelay: '0.2s' }}>
-          Practice 31,000+ real EUEE, Freshman, and Exit exam questions. Earn XP, build your daily streak, and let AI explain tricky concepts step by step.
+          {portalConfig.description}
         </p>
 
         <button
-          onClick={handleTelegramOIDCLogin}
-          className="btn-3d-primary w-full max-w-[320px] py-4 rounded-2xl flex items-center justify-center gap-2.5 shadow-tactile-md text-sm font-black tracking-wide animate-fade-up z-10"
+          onClick={() => handleTelegramOIDCLogin(activePortal)}
+          className="btn-3d-primary w-full max-w-[340px] py-4 rounded-2xl flex items-center justify-center gap-2.5 shadow-tactile-md text-sm font-black tracking-wide animate-fade-up z-10"
           style={{ animationDelay: '0.3s' }}
         >
           <Send className="w-5 h-5 text-white" />
-          <span>Start Learning — Free</span>
+          <span>{activePortal === 'root' ? 'Start Learning — Free' : `Start ${portalConfig.shortLabel} Prep — Free`}</span>
         </button>
 
         {error && <p className="text-sm text-error font-bold mt-4">{error}</p>}
@@ -188,6 +213,158 @@ export const LandingPage = () => {
           </div>
         </div>
       </header>
+
+      {/* ── 3 DEDICATED EXAM PATH PORTALS (Multi-Subdomain Architecture) ── */}
+      <section className="w-full max-w-4xl mx-auto px-6 py-8">
+        <div className="text-center mb-6">
+          <span className="text-micro font-black tracking-widest uppercase text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+            Choose Your Exam Path
+          </span>
+          <h2 className="text-xl sm:text-2xl font-black tracking-tight mt-2 text-gray-900 dark:text-gray-100">
+            Specialized Portals for Every Milestone
+          </h2>
+          <p className="text-xs sm:text-sm font-bold text-gray-500 dark:text-gray-400 max-w-md mx-auto mt-1">
+            Official question banks, verified answer keys, and curriculum notes scoped specifically to your exam.
+          </p>
+        </div>
+
+        <div className="grid sm:grid-cols-3 gap-4">
+          {/* Portal 1: Grade 12 EUEE */}
+          <div 
+            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+              activePortal === 'entrance' 
+                ? 'bg-primary/5 border-primary shadow-tactile-sm ring-2 ring-primary/20' 
+                : 'bg-card border-black/[0.08] dark:border-white/[0.08] hover:border-primary/40 shadow-tactile-xs'
+            }`}
+            onClick={() => { sounds.playTap(); setActivePortal('entrance'); }}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-2xl">🎓</span>
+                <span className="text-micro font-black px-2 py-0.5 rounded-full bg-accent-blue/15 text-accent-blue border border-accent-blue/30">
+                  15,000+ Qs
+                </span>
+              </div>
+              <h3 className="font-black text-base text-gray-900 dark:text-gray-100 mb-1">
+                Grade 12 Entrance (EUEE)
+              </h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-3 leading-relaxed">
+                National EUEE past papers (2010–2018 E.C.) for Natural &amp; Social Science streams.
+              </p>
+              <div className="flex flex-wrap gap-1 mb-4">
+                {['Math', 'Physics', 'Chem', 'Bio', 'SAT', 'Civics'].map(s => (
+                  <span key={s} className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-300">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <a
+              href={getSubdomainUrl('entrance')}
+              onClick={(e) => {
+                if (activePortal !== 'entrance') {
+                  e.preventDefault();
+                  setActivePortal('entrance');
+                }
+              }}
+              className="w-full py-2.5 rounded-xl font-black text-xs text-center flex items-center justify-center gap-1.5 transition-all bg-accent-blue/10 hover:bg-accent-blue/20 text-accent-blue border border-accent-blue/30 active:scale-95"
+            >
+              <span>Explore Grade 12</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          {/* Portal 2: Freshman */}
+          <div 
+            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+              activePortal === 'freshman' 
+                ? 'bg-primary/5 border-primary shadow-tactile-sm ring-2 ring-primary/20' 
+                : 'bg-card border-black/[0.08] dark:border-white/[0.08] hover:border-primary/40 shadow-tactile-xs'
+            }`}
+            onClick={() => { sounds.playTap(); setActivePortal('freshman'); }}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-2xl">🏛️</span>
+                <span className="text-micro font-black px-2 py-0.5 rounded-full bg-accent-purple/15 text-accent-purple border border-accent-purple/30">
+                  8,000+ Qs
+                </span>
+              </div>
+              <h3 className="font-black text-base text-gray-900 dark:text-gray-100 mb-1">
+                University Freshman
+              </h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-3 leading-relaxed">
+                Common courses &amp; remedial exams across AAU, ASTU, AASTU, and regional universities.
+              </p>
+              <div className="flex flex-wrap gap-1 mb-4">
+                {['Logic', 'Applied Math', 'Psychology', 'Emerging Tech'].map(s => (
+                  <span key={s} className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-300">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <a
+              href={getSubdomainUrl('freshman')}
+              onClick={(e) => {
+                if (activePortal !== 'freshman') {
+                  e.preventDefault();
+                  setActivePortal('freshman');
+                }
+              }}
+              className="w-full py-2.5 rounded-xl font-black text-xs text-center flex items-center justify-center gap-1.5 transition-all bg-accent-purple/10 hover:bg-accent-purple/20 text-accent-purple border border-accent-purple/30 active:scale-95"
+            >
+              <span>Explore Freshman</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          {/* Portal 3: Exit */}
+          <div 
+            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+              activePortal === 'exit' 
+                ? 'bg-primary/5 border-primary shadow-tactile-sm ring-2 ring-primary/20' 
+                : 'bg-card border-black/[0.08] dark:border-white/[0.08] hover:border-primary/40 shadow-tactile-xs'
+            }`}
+            onClick={() => { sounds.playTap(); setActivePortal('exit'); }}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-2xl">🏆</span>
+                <span className="text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
+                  8,000+ Qs
+                </span>
+              </div>
+              <h3 className="font-black text-base text-gray-900 dark:text-gray-100 mb-1">
+                University Exit Exam
+              </h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-3 leading-relaxed">
+                National graduation qualification exams across Engineering, Medicine, Law, and Business.
+              </p>
+              <div className="flex flex-wrap gap-1 mb-4">
+                {['CS/IT', 'Engineering', 'Accounting', 'Law', 'Medicine'].map(s => (
+                  <span key={s} className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-300">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <a
+              href={getSubdomainUrl('exit')}
+              onClick={(e) => {
+                if (activePortal !== 'exit') {
+                  e.preventDefault();
+                  setActivePortal('exit');
+                }
+              }}
+              className="w-full py-2.5 rounded-xl font-black text-xs text-center flex items-center justify-center gap-1.5 transition-all bg-accent-gold/10 hover:bg-accent-gold/20 text-accent-gold border border-accent-gold/30 active:scale-95"
+            >
+              <span>Explore Exit Exam</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
+      </section>
 
       {/* 4. Gamified Pillars Section */}
       <section className="px-6 py-12 bg-card border-t border-black/[0.08] dark:border-white/[0.08]">

@@ -73,3 +73,32 @@ export async function getServerSession(): Promise<SessionData | null> {
   
   return decryptSession(sessionCookie.value);
 }
+
+/**
+ * Returns cookie options for es_session, automatically configuring
+ * domain: .<root-domain> in production for seamless Single Sign-On across subdomains.
+ */
+export function getSessionCookieOptions() {
+  const isProd = process.env.NODE_ENV === 'production';
+  let cookieDomain: string | undefined = undefined;
+
+  if (isProd) {
+    try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top';
+      const parsedHost = new URL(siteUrl).hostname;
+      const parts = parsedHost.split('.');
+      if (parts.length >= 2) {
+        cookieDomain = `.${parts.slice(-2).join('.')}`;
+      }
+    } catch {}
+  }
+
+  return {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: (isProd ? 'none' : 'lax') as 'none' | 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 30, // 30 days
+    ...(cookieDomain ? { domain: cookieDomain } : {}),
+  };
+}
