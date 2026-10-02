@@ -17,10 +17,9 @@ import {
   VolumeX,
   Award,
   Bell,
-  Headphones,
-  Settings,
   CheckCircle2,
-  FileQuestion
+  FileQuestion,
+  ShieldCheck
 } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useRouter } from 'next/navigation';
@@ -184,8 +183,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
               </div>
 
               {isPremium && (
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-accent-gold border-2 border-card flex items-center justify-center shadow-sm text-white">
-                  <Zap className="w-3 h-3 fill-current" />
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-tr from-amber-500 to-amber-400 border-2 border-card flex items-center justify-center shadow-xs text-white text-[10px]">
+                  👑
                 </div>
               )}
             </div>
@@ -197,12 +196,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                   {profile.full_name || 'Scholar'}
                 </h1>
                 {isPremium ? (
-                  <span className="px-2 py-0.5 rounded-full bg-accent-gold/15 border border-accent-gold/30 text-accent-gold text-micro font-black uppercase tracking-wider shrink-0">
-                    PRO
+                  <span className="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-micro font-black uppercase tracking-wider shrink-0 flex items-center gap-1 shadow-2xs">
+                    👑 PRO Member
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 rounded-full bg-panel border border-black/[0.08] dark:border-white/[0.08] text-slate-500 dark:text-slate-400 text-micro font-black uppercase tracking-wider shrink-0">
-                    Free
+                    Free Tier
                   </span>
                 )}
               </div>
@@ -292,37 +291,84 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           </div>
         </section>
 
-        {/* ── 4. "UPGRADE TO PRO" BANNER ── */}
-        <section 
-          onClick={() => {
-            sounds.playCelebration();
-            haptic.impact('heavy');
-            router.push('/upgrade');
-          }}
-          className="bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white rounded-2xl p-4 shadow-lg shadow-orange-500/25 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all relative overflow-hidden"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-amber-300/40 backdrop-blur-xs flex items-center justify-center text-stone-900 shadow-2xs shrink-0 text-xl font-black border border-white/20">
-              👑
-            </div>
-            <div>
-              <h2 className="text-sm font-black text-white tracking-tight leading-tight">
-                Temari Pro
-              </h2>
-              <p className="text-caption font-bold text-white/95 mt-0.5">
-                199 ETB • Unlimited AI Tutor
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="bg-stone-950 text-white px-3.5 py-2 rounded-full text-xs font-black shadow-md shrink-0 flex items-center gap-1 hover:bg-black transition-all"
+        {/* ── 4. PRO MEMBERSHIP STATUS / UPGRADE BANNER ── */}
+        {isPremium ? (
+          <section 
+            className="bg-gradient-to-br from-amber-500/10 via-card to-amber-500/5 border-2 border-b-[4px] border-amber-500/30 rounded-2xl p-4 shadow-tactile-xs relative overflow-hidden"
           >
-            <span>Upgrade</span>
-            <span className="text-amber-400 text-sm">↗</span>
-          </button>
-        </section>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center shadow-tactile-xs shrink-0 text-2xl font-black border border-amber-300/40">
+                  👑
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-black text-gray-900 dark:text-gray-100 tracking-tight leading-tight">
+                      Temari PRO Active
+                    </h2>
+                    <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Active
+                    </span>
+                  </div>
+                  <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 mt-0.5">
+                    150 AI queries/week • Full Exam Archives Unlocked
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-3 pt-3 border-t border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between text-xs">
+              <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-bold">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Verified Subscription</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  sounds.playTap();
+                  haptic.selection();
+                  router.push('/upgrade');
+                }}
+                className="text-xs font-black text-primary hover:underline flex items-center gap-1"
+              >
+                <span>View Status</span>
+                <span>↗</span>
+              </button>
+            </div>
+          </section>
+        ) : (
+          <section 
+            onClick={() => {
+              sounds.playCelebration();
+              haptic.impact('heavy');
+              router.push('/upgrade');
+            }}
+            className="bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white rounded-2xl p-4 shadow-lg shadow-orange-500/25 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all relative overflow-hidden"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-amber-300/40 backdrop-blur-xs flex items-center justify-center text-stone-900 shadow-2xs shrink-0 text-xl font-black border border-white/20">
+                👑
+              </div>
+              <div>
+                <h2 className="text-sm font-black text-white tracking-tight leading-tight">
+                  Temari Pro
+                </h2>
+                <p className="text-caption font-bold text-white/95 mt-0.5">
+                  199 ETB • Unlimited AI Tutor
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="bg-stone-950 text-white px-3.5 py-2 rounded-full text-xs font-black shadow-md shrink-0 flex items-center gap-1 hover:bg-black transition-all"
+            >
+              <span>Upgrade</span>
+              <span className="text-amber-400 text-sm">↗</span>
+            </button>
+          </section>
+        )}
 
         {/* ── 5. AI QUOTA STATUS BAR ── */}
         <section 

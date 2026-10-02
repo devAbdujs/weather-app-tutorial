@@ -162,6 +162,79 @@ An exhaustive, end-to-end code audit of every section, subsection, icon, button,
 
 ---
 
+### 👑 Phase 7: Senior-Level Design System Refactor, Color Palette Harmonization & PRO State UX Hardening
+
+An exhaustive, senior staff engineer audit of the UI/UX, theme system, dark mode implementation, and PRO subscription state lifecycle was conducted. Below are the critical flaws, root causes, and technical remedies tracked for execution:
+
+#### 1. PRO Subscription State & User Lifecycle Flaws
+*   [x] **Fix Unconditional "Upgrade to Pro" Banner in `ProfileView.tsx`:**
+    *   **Files:** [`src/components/dashboard/ProfileView.tsx#L295-L325`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L295-L325).
+    *   **Flaw:** In `ProfileView.tsx`, `isPremium` is computed on line 86 (`const isPremium = profile.subscription_status === 'premium';`), but Section 4 (`UPGRADE TO PRO BANNER`) was rendered unconditionally.
+    *   **Impact:** Students who have already paid 199 ETB for Temari PRO are continually shown a large gradient promotional card prompting them to pay 199 ETB again.
+    *   **Technical Fix:** Added conditional branch:
+        - If `!isPremium`: Render the promotional "Temari Pro - 199 ETB • Unlimited AI Tutor" upgrade banner.
+        - If `isPremium`: Render a prestigious **"Temari PRO Active"** membership card featuring an active badge, weekly 150 AI queries quota reminder, unlocked past paper archives badge, and subscription standing.
+*   [x] **Fix Misleading AI Tutor Paywall Error Message for Pro Users:**
+    *   **Files:** [`src/components/ai/AITutorDrawer.tsx#L176-L187`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L176-L187).
+    *   **Flaw:** When the server returns 403 (Quota Reached), the client fallback message instructs: `👉 Head to **Profile → Upgrade** to unlock **150 questions/week** for just **199 ETB/term**!`.
+    *   **Impact:** A Pro user who has used up their 150 inquiries is incorrectly instructed to pay 199 ETB to unlock what they already purchased.
+    *   **Technical Fix:** Differentiate `errData?.isPremium`. For free tier, show the 199 ETB upgrade prompt. For PRO tier, explain that their weekly 150 query quota will reset at the start of next week.
+*   [x] **Eliminate Payment Form Flash on `/upgrade` for Active Pro Users:**
+    *   **Files:** [`src/app/(app)/(protected)/upgrade/page.tsx#L37-L75`](file:///home/abdu/scraping/ethio-exam-app/src/app/(app)/(protected)/upgrade/page.tsx#L37-L75).
+    *   **Flaw:** `UpgradePage` initializes state with `phase = 'form'`. The `/api/payments/status` check runs asynchronously in `useEffect`.
+    *   **Impact:** Active Pro users who open `/upgrade` see an unsightly 300–500ms flash of the Telebirr/CBE payment receipt submission form before it flips to the approved state.
+    *   **Technical Fix:** Initialize `phase` using `useAppStore` user profile subscription status (`userProfile?.subscription_status === 'premium' ? 'approved' : 'loading'`), rendering the approved status screen immediately with zero flash.
+*   [x] **Add PRO Scholar Badge in Profile Header & Top Nav:**
+    *   **Files:** [`src/components/dashboard/ProfileView.tsx#L125-L160`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L125-L160) and [`src/components/layout/TopHeader.tsx#L108-L118`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/TopHeader.tsx#L108-L118).
+    *   **Flaw:** While free users see a `👑 PRO` upgrade button in `TopHeader`, active Pro users have no visual acknowledgement in the header or profile hero.
+    *   **Impact:** Lack of positive reinforcement and visual prestige for paying subscribers.
+    *   **Technical Fix:** Render a sleek golden crown badge or active PRO badge next to the student's name in `ProfileView` and an active PRO pill in `TopHeader`.
+
+#### 2. Color Scheme Inconsistencies & Dark Mode Token Fragmentation
+*   [ ] **Purge 5+ Fractured Dark Mode Background Hex Codes Across Codebase:**
+    *   **Files:**
+        - [`src/components/dashboard/ProfileView.tsx#L330`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L330), [`#L360`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L360), [`#L386`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L386), [`#L408`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L408), [`#L433`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L433) (`dark:bg-[#1A222D]`)
+        - [`src/components/practice/PracticeHub.tsx#L269`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx#L269), [`#L275`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx#L275), [`#L287`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx#L287), [`#L307`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx#L307) (`dark:bg-[#18202C]`, `dark:bg-[#10141D]`)
+        - [`src/components/dashboard/MasteryTree.tsx#L432`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/MasteryTree.tsx#L432), [`#L443`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/MasteryTree.tsx#L443) (`dark:bg-[#18202C]`, `dark:bg-[#10141D]`)
+        - [`src/components/dashboard/ExamSetupModal.tsx#L192`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ExamSetupModal.tsx#L192), [`#L214`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ExamSetupModal.tsx#L214), [`#L245`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ExamSetupModal.tsx#L245), [`#L318`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ExamSetupModal.tsx#L318) (`dark:bg-[#1A222D]`)
+        - [`src/components/layout/BottomNav.tsx#L49`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/BottomNav.tsx#L49) (`dark:bg-[#151A22]`)
+        - [`src/components/ai/AITutorDrawer.tsx#L414`](file:///home/abdu/scraping/ethio-exam-app/src/components/ai/AITutorDrawer.tsx#L414) (`dark:bg-[#202938]`, `dark:bg-[#1A222D]`)
+        - [`src/components/layout/TopHeader.tsx#L57`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/TopHeader.tsx#L57), [`#L125`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/TopHeader.tsx#L125), [`#L138`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/TopHeader.tsx#L138) (`dark:bg-[#1A222D]`)
+    *   **Root Cause:** Components bypass Tailwind design tokens (`bg-card`, `bg-panel`, `bg-ground`) and hardcode arbitrary dark slates and midnight grays (`#1A222D`, `#10141D`, `#18202C`, `#151A22`, `#202938`).
+    *   **Impact:** When users switch routes or toggle dark mode, surfaces clash with jagged transitions, incompatible border colors, and inconsistent luminance levels.
+    *   **Technical Fix:** Consolidate all surfaces strictly onto design tokens:
+        - `bg-card` (`var(--surface)`: `#FFFFFF` light / `#151A22` dark) for all elevated cards, modals, sheets, and headers.
+        - `bg-panel` (`var(--surface-2)`: `#F3F0EA` light / `#1E2530` dark) for recessed segmented control trays, toggle tracks, and secondary badges.
+        - `bg-ground` (`var(--background)`: `#FAF9F5` light / `#0C0F14` dark) for the global canvas.
+*   [ ] **Purge Hardcoded Light Mode Creams (`#F0EBE5`, `#F3F0EA`):**
+    *   **Files:** [`src/components/practice/PracticeHub.tsx#L269`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx#L269), [`src/components/dashboard/MasteryTree.tsx#L432`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/MasteryTree.tsx#L432), [`src/components/dashboard/ExamSetupModal.tsx#L157`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ExamSetupModal.tsx#L157), [`src/components/exam/ExamWorkspace.tsx#L420`](file:///home/abdu/scraping/ethio-exam-app/src/components/exam/ExamWorkspace.tsx#L420).
+    *   **Root Cause:** Segmented controls and buttons hardcode `#F0EBE5` and `#F3F0EA` rather than referencing `bg-panel`.
+    *   **Technical Fix:** Replace all raw light mode cream hex codes with `bg-panel` and `border-black/[0.08] dark:border-white/[0.08]`.
+*   [ ] **Harmonize Brand Color Hierarchy (Royal Blue vs Sunset Orange vs Gamification Gold):**
+    *   **Files:** [`src/app/globals.css`](file:///home/abdu/scraping/ethio-exam-app/src/app/globals.css), [`src/styles/tokens.ts`](file:///home/abdu/scraping/ethio-exam-app/src/styles/tokens.ts), and [`src/components/layout/BottomNav.tsx#L107`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/BottomNav.tsx#L107).
+    *   **Root Cause:** The new Temari logo is Academic Royal Blue (`#1155A5`) + Gold, but the app uses Sunset Orange (`#F96E10`) as `--primary`, Amber (`#F59E0B`) for PRO buttons, and pastels for study cards with no clear visual hierarchy.
+    *   **Impact:** Chromatic identity crisis where students cannot identify Temari's signature brand color.
+    *   **Technical Fix:** Enforce a strict 3-tier chromatic hierarchy:
+        1. *Academic Brand Anchor:* Academic Royal Blue (`--accent-blue`: `#1155A5` light / `#549EF7` dark) for brand logos, top header brand accents, reading progress indicators, and verified credential badges.
+        2. *Action & Engagement CTA:* Sunset Orange (`--primary`: `#F96E10` light / `#FA7B25` dark) for high-energy Action CTAs (FAB, Start Session, Submit Exam, Quick Drill).
+        3. *Gamification & Prestige:* Warm Gold (`--accent-gold`: `#F59E0B`) strictly reserved for streaks, XP scores, and active PRO membership badges.
+*   [ ] **Fix Dark Mode Text Contrast Inside Colored Tint Containers:**
+    *   **Files:** [`src/components/dashboard/ProfileView.tsx#L273-L292`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L273-L292) and [`src/components/exam/ExamWorkspace.tsx#L444-L460`](file:///home/abdu/scraping/ethio-exam-app/src/components/exam/ExamWorkspace.tsx#L444-L460).
+    *   **Flaw:** In `ProfileView.tsx`, stat counters inside `bg-tint-green` and `bg-tint-sky` apply `text-gray-950 dark:text-white` and `text-gray-700 dark:text-gray-300`, fighting against `--tint-green-fg` and creating low-contrast illegible text against dark tints.
+    *   **Technical Fix:** Inherit semantic tint foregrounds (`text-tint-*-fg`), which are already calibrated for WCAG AAA contrast in both light and dark mode.
+
+#### 3. Senior UX & Interaction Polish
+*   [ ] **Safe-Area Inset Occlusion in Study Notes Sticky Header:**
+    *   **Files:** [`src/components/dashboard/StudyNotesView.tsx#L716`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/StudyNotesView.tsx#L716).
+    *   **Flaw:** Sticky reader header uses `pt-3` without `pt-safe`. On notched phones (iPhone dynamic island, Android punch-hole cameras), the chapter title and close button collide with native status bar indicators.
+    *   **Technical Fix:** Add `pt-safe` and adjust container height dynamically.
+*   [ ] **Standardize 3D Tactile Elevation vs Flat Borders Across Hubs:**
+    *   **Files:** [`src/components/dashboard/HomeHub.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/HomeHub.tsx), [`src/components/practice/PracticeHub.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx), [`src/components/dashboard/MasteryTree.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/MasteryTree.tsx), [`src/components/dashboard/ProfileView.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx).
+    *   **Flaw:** Inconsistent card border bevels (`border-2 border-b-[4px]` vs `border-b-bevel` vs flat `border border-black/[0.08]`) create visual dissonance across screens.
+    *   **Technical Fix:** Apply unified `border-2 border-b-[4px]` tactile styling to all interactive cards, and flat `border` with `bg-card` for static informational containers.
+
+---
+
 ## 🧠 Temari AI Integration Deep-Dive: Grounding, Context, Logic & UX Audit
 
 A forensic analysis of the AI integration across short notes, questions, exams, prompt grounding, context payloads, and user interface workflows was conducted. Below are the critical logical flaws, grounding gaps, and UX defects identified:

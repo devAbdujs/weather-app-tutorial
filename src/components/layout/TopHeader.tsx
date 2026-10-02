@@ -105,8 +105,8 @@ export const TopHeader = () => {
 
       {/* Right: Pro Subscribe Pill + Sound toggle + Theme toggle */}
       <div className="flex items-center gap-1.5 justify-end">
-        {/* Pro Pill (ui_inspiration2.png) */}
-        {userProfile?.subscription_status !== 'premium' && (
+        {/* Pro Pill (Upgrade or Active Badge) */}
+        {userProfile?.subscription_status !== 'premium' ? (
           <button
             onClick={() => { sounds.playTap(); router.push('/upgrade'); }}
             className="flex items-center gap-1 px-3 py-1.5 rounded-2xl bg-amber-400 hover:bg-amber-500 border-2 border-b-[3px] border-amber-600 text-stone-950 font-black text-xs shadow-2xs active:translate-y-0.5 transition-all"
@@ -114,6 +114,15 @@ export const TopHeader = () => {
           >
             <span>👑</span>
             <span>PRO</span>
+          </button>
+        ) : (
+          <button
+            onClick={() => { sounds.playTap(); router.push('/upgrade'); }}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border-2 border-b-[3px] border-amber-500/30 text-amber-900 dark:text-amber-200 font-black text-xs shadow-2xs active:translate-y-0.5 transition-all"
+            title="Temari PRO Active — View Benefits"
+          >
+            <span>👑</span>
+            <span className="text-[11px] font-black tracking-tight">PRO</span>
           </button>
         )}
 

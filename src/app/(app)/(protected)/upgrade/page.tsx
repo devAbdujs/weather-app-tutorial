@@ -23,19 +23,23 @@ import {
 import confetti from 'canvas-confetti';
 import { sounds } from '@/lib/sounds';
 import { TemariMascot } from '@/components/mascot/TemariMascot';
+import { useAppStore } from '@/store/useAppStore';
 
-type FlowPhase = 'form' | 'verifying' | 'approved' | 'rejected';
+type FlowPhase = 'loading' | 'form' | 'verifying' | 'approved' | 'rejected';
 
 export default function UpgradePage() {
   const router = useRouter();
   const { setBackButton, haptic } = useTelegram();
+  const userProfile = useAppStore(s => s.userProfile);
+  const isInitiallyPro = userProfile?.subscription_status === 'premium';
+
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [phase, setPhase] = useState<FlowPhase>('form');
+  const [phase, setPhase] = useState<FlowPhase>(isInitiallyPro ? 'approved' : 'loading');
   const [receiptId, setReceiptId] = useState<string | null>(null);
-  const [studentName, setStudentName] = useState<string>('Scholar');
+  const [studentName, setStudentName] = useState<string>(userProfile?.first_name || 'Scholar');
   const [error, setError] = useState('');
   const [copiedBank, setCopiedBank] = useState<string | null>(null);
 
@@ -55,7 +59,10 @@ export default function UpgradePage() {
     async function checkCurrentStatus() {
       try {
         const res = await fetch('/api/payments/status');
-        if (!res.ok) return;
+        if (!res.ok) {
+          if (isMounted) setPhase(isInitiallyPro ? 'approved' : 'form');
+          return;
+        }
         const data = await res.json();
         if (!isMounted) return;
 
@@ -68,16 +75,18 @@ export default function UpgradePage() {
         } else if (data.receiptStatus === 'pending') {
           // Resume verification countdown if already submitted
           setPhase('verifying');
+        } else {
+          setPhase('form');
         }
       } catch (e) {
-        // Silently continue to form
+        if (isMounted) setPhase(isInitiallyPro ? 'approved' : 'form');
       }
     }
     checkCurrentStatus();
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isInitiallyPro]);
 
   // Countdown timer logic when in 'verifying' phase
   useEffect(() => {
@@ -286,6 +295,20 @@ export default function UpgradePage() {
     const secs = totalSeconds % 60;
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
+
+  // ─────────────────────────────────────────────────────────────
+  // 0. MEMBERSHIP LOADING SCREEN
+  // ─────────────────────────────────────────────────────────────
+  if (phase === 'loading') {
+    return (
+      <div className="min-h-screen bg-ground flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+        <div className="w-12 h-12 rounded-2xl bg-amber-400/20 text-amber-500 border border-amber-400/30 flex items-center justify-center text-xl font-black mb-3 shadow-tactile-xs animate-pulse">
+          👑
+        </div>
+        <p className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Verifying Membership...</p>
+      </div>
+    );
+  }
 
   // ─────────────────────────────────────────────────────────────
   // 1. APPROVED / CELEBRATION SCREEN
