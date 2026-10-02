@@ -417,7 +417,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                       ? 'bg-rose-600 text-white' 
                       : isSelected 
                       ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 shadow-tactile-xs font-black' 
-                      : 'bg-[#F3F0EA] dark:bg-white/[0.08] text-gray-800 dark:text-gray-200'
+                      : 'bg-panel text-gray-800 dark:text-gray-200'
                   }`}>
                     {letter}
                   </div>
@@ -449,8 +449,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <div>
-                      <span className="text-micro font-black uppercase tracking-widest block text-emerald-950 dark:text-emerald-200 mb-0.5">Verified Correct Answer Key</span>
-                      <p className="text-lg font-black text-gray-950 dark:text-white">{currentQ.answer.trim().toUpperCase()}</p>
+                      <span className="text-micro font-black uppercase tracking-widest block text-current opacity-80 mb-0.5">Verified Correct Answer Key</span>
+                      <p className="text-lg font-black text-current">{currentQ.answer.trim().toUpperCase()}</p>
                     </div>
                   </>
                 ) : (
@@ -459,8 +459,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                       <Sparkles className="w-5 h-5" />
                     </div>
                     <div>
-                      <span className="text-micro font-black uppercase tracking-widest block text-orange-950 dark:text-orange-200 mb-0.5">No Key Provided</span>
-                      <p className="text-xs font-bold text-gray-900 dark:text-gray-100">Tap <strong className="text-primary font-black">Ask AI</strong> below for step-by-step guidance.</p>
+                      <span className="text-micro font-black uppercase tracking-widest block text-current opacity-80 mb-0.5">No Key Provided</span>
+                      <p className="text-xs font-bold text-current opacity-90">Tap <strong className="text-primary font-black">Ask AI</strong> below for step-by-step guidance.</p>
                     </div>
                   </>
                 )}
@@ -468,8 +468,8 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
               {currentQ.explanation ? (
                 <div className="mt-3 border-t border-tint-cream-border pt-3">
-                  <span className="text-micro font-black uppercase tracking-widest block text-tint-cream-fg mb-1.5">Official Explanation</span>
-                  <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-wrap">
+                  <span className="text-micro font-black uppercase tracking-widest block text-current opacity-80 mb-1.5">Official Explanation</span>
+                  <div className="text-sm font-semibold text-current opacity-95 leading-relaxed whitespace-pre-wrap">
                     <MathText content={currentQ.explanation} />
                   </div>
                 </div>

@@ -429,7 +429,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
           </h2>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1 bg-[#F0EBE5] dark:bg-[#18202C] border-2 border-black/[0.08] dark:border-white/[0.08] p-1 rounded-2xl shadow-inner">
+          <div className="flex items-center gap-1 bg-panel border-2 border-black/[0.08] dark:border-white/[0.08] p-1 rounded-2xl shadow-inner">
             {(['all', 'needs_practice', 'strong'] as const).map(tab => (
               <button
                 key={tab}
@@ -440,7 +440,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                 }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-black capitalize transition-all ${
                   filterMode === tab
-                    ? 'bg-white dark:bg-[#10141D] text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
+                    ? 'bg-card text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
                     : 'text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white font-bold'
                 }`}
               >
@@ -489,7 +489,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
               return (
                 <div
                   key={stat.subject}
-                  className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-2 rounded-card p-4 shadow-tactile-sm space-y-3 transition-all hover:border-black/20"
+                  className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-card p-4 shadow-tactile-xs space-y-3 transition-all hover:border-black/20"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
@@ -548,7 +548,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
 
       {/* ── 8. EMPTY STATE (IF ZERO HISTORY) ─────────────────────────── */}
       {stats.length === 0 && (
-        <section className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-hero p-8 text-center flex flex-col items-center shadow-tactile-sm">
+        <section className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-hero p-8 text-center flex flex-col items-center shadow-tactile-sm">
           <TemariMascot mood="happy" size={90} className="mb-2" />
           <h3 className="text-base font-black text-gray-900 dark:text-gray-100 mb-1">
             Start Your Exam Prep!

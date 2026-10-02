@@ -18,7 +18,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="h-screen bg-ground flex flex-col md:flex-row overflow-hidden">
-      <aside className="w-full md:w-64 bg-[#10141D] text-white flex flex-col h-auto md:h-full shrink-0 border-r border-white/10 shadow-tactile-md z-10">
+      <aside className="w-full md:w-64 bg-gray-950 dark:bg-card text-white flex flex-col h-auto md:h-full shrink-0 border-r border-white/10 shadow-tactile-md z-10">
         <div className="p-6 pb-4 border-b border-white/10 flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center p-1 shadow-2xs shrink-0">
             <TemariMascot mood="happy" size={38} animate={false} />

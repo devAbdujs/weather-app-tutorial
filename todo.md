@@ -191,7 +191,7 @@ An exhaustive, senior staff engineer audit of the UI/UX, theme system, dark mode
     *   **Technical Fix:** Render a sleek golden crown badge or active PRO badge next to the student's name in `ProfileView` and an active PRO pill in `TopHeader`.
 
 #### 2. Color Scheme Inconsistencies & Dark Mode Token Fragmentation
-*   [ ] **Purge 5+ Fractured Dark Mode Background Hex Codes Across Codebase:**
+*   [x] **Purge 5+ Fractured Dark Mode Background Hex Codes Across Codebase:**
     *   **Files:**
         - [`src/components/dashboard/ProfileView.tsx#L330`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L330), [`#L360`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L360), [`#L386`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L386), [`#L408`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L408), [`#L433`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L433) (`dark:bg-[#1A222D]`)
         - [`src/components/practice/PracticeHub.tsx#L269`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx#L269), [`#L275`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx#L275), [`#L287`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx#L287), [`#L307`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx#L307) (`dark:bg-[#18202C]`, `dark:bg-[#10141D]`)
@@ -206,11 +206,11 @@ An exhaustive, senior staff engineer audit of the UI/UX, theme system, dark mode
         - `bg-card` (`var(--surface)`: `#FFFFFF` light / `#151A22` dark) for all elevated cards, modals, sheets, and headers.
         - `bg-panel` (`var(--surface-2)`: `#F3F0EA` light / `#1E2530` dark) for recessed segmented control trays, toggle tracks, and secondary badges.
         - `bg-ground` (`var(--background)`: `#FAF9F5` light / `#0C0F14` dark) for the global canvas.
-*   [ ] **Purge Hardcoded Light Mode Creams (`#F0EBE5`, `#F3F0EA`):**
+*   [x] **Purge Hardcoded Light Mode Creams (`#F0EBE5`, `#F3F0EA`):**
     *   **Files:** [`src/components/practice/PracticeHub.tsx#L269`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx#L269), [`src/components/dashboard/MasteryTree.tsx#L432`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/MasteryTree.tsx#L432), [`src/components/dashboard/ExamSetupModal.tsx#L157`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ExamSetupModal.tsx#L157), [`src/components/exam/ExamWorkspace.tsx#L420`](file:///home/abdu/scraping/ethio-exam-app/src/components/exam/ExamWorkspace.tsx#L420).
     *   **Root Cause:** Segmented controls and buttons hardcode `#F0EBE5` and `#F3F0EA` rather than referencing `bg-panel`.
     *   **Technical Fix:** Replace all raw light mode cream hex codes with `bg-panel` and `border-black/[0.08] dark:border-white/[0.08]`.
-*   [ ] **Harmonize Brand Color Hierarchy (Royal Blue vs Sunset Orange vs Gamification Gold):**
+*   [x] **Harmonize Brand Color Hierarchy (Royal Blue vs Sunset Orange vs Gamification Gold):**
     *   **Files:** [`src/app/globals.css`](file:///home/abdu/scraping/ethio-exam-app/src/app/globals.css), [`src/styles/tokens.ts`](file:///home/abdu/scraping/ethio-exam-app/src/styles/tokens.ts), and [`src/components/layout/BottomNav.tsx#L107`](file:///home/abdu/scraping/ethio-exam-app/src/components/layout/BottomNav.tsx#L107).
     *   **Root Cause:** The new Temari logo is Academic Royal Blue (`#1155A5`) + Gold, but the app uses Sunset Orange (`#F96E10`) as `--primary`, Amber (`#F59E0B`) for PRO buttons, and pastels for study cards with no clear visual hierarchy.
     *   **Impact:** Chromatic identity crisis where students cannot identify Temari's signature brand color.
@@ -218,17 +218,17 @@ An exhaustive, senior staff engineer audit of the UI/UX, theme system, dark mode
         1. *Academic Brand Anchor:* Academic Royal Blue (`--accent-blue`: `#1155A5` light / `#549EF7` dark) for brand logos, top header brand accents, reading progress indicators, and verified credential badges.
         2. *Action & Engagement CTA:* Sunset Orange (`--primary`: `#F96E10` light / `#FA7B25` dark) for high-energy Action CTAs (FAB, Start Session, Submit Exam, Quick Drill).
         3. *Gamification & Prestige:* Warm Gold (`--accent-gold`: `#F59E0B`) strictly reserved for streaks, XP scores, and active PRO membership badges.
-*   [ ] **Fix Dark Mode Text Contrast Inside Colored Tint Containers:**
+*   [x] **Fix Dark Mode Text Contrast Inside Colored Tint Containers:**
     *   **Files:** [`src/components/dashboard/ProfileView.tsx#L273-L292`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx#L273-L292) and [`src/components/exam/ExamWorkspace.tsx#L444-L460`](file:///home/abdu/scraping/ethio-exam-app/src/components/exam/ExamWorkspace.tsx#L444-L460).
     *   **Flaw:** In `ProfileView.tsx`, stat counters inside `bg-tint-green` and `bg-tint-sky` apply `text-gray-950 dark:text-white` and `text-gray-700 dark:text-gray-300`, fighting against `--tint-green-fg` and creating low-contrast illegible text against dark tints.
     *   **Technical Fix:** Inherit semantic tint foregrounds (`text-tint-*-fg`), which are already calibrated for WCAG AAA contrast in both light and dark mode.
 
 #### 3. Senior UX & Interaction Polish
-*   [ ] **Safe-Area Inset Occlusion in Study Notes Sticky Header:**
+*   [x] **Safe-Area Inset Occlusion in Study Notes Sticky Header:**
     *   **Files:** [`src/components/dashboard/StudyNotesView.tsx#L716`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/StudyNotesView.tsx#L716).
     *   **Flaw:** Sticky reader header uses `pt-3` without `pt-safe`. On notched phones (iPhone dynamic island, Android punch-hole cameras), the chapter title and close button collide with native status bar indicators.
     *   **Technical Fix:** Add `pt-safe` and adjust container height dynamically.
-*   [ ] **Standardize 3D Tactile Elevation vs Flat Borders Across Hubs:**
+*   [x] **Standardize 3D Tactile Elevation vs Flat Borders Across Hubs:**
     *   **Files:** [`src/components/dashboard/HomeHub.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/HomeHub.tsx), [`src/components/practice/PracticeHub.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/practice/PracticeHub.tsx), [`src/components/dashboard/MasteryTree.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/MasteryTree.tsx), [`src/components/dashboard/ProfileView.tsx`](file:///home/abdu/scraping/ethio-exam-app/src/components/dashboard/ProfileView.tsx).
     *   **Flaw:** Inconsistent card border bevels (`border-2 border-b-[4px]` vs `border-b-bevel` vs flat `border border-black/[0.08]`) create visual dissonance across screens.
     *   **Technical Fix:** Apply unified `border-2 border-b-[4px]` tactile styling to all interactive cards, and flat `border` with `bg-card` for static informational containers.

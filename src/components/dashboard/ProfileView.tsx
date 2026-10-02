@@ -270,22 +270,22 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
 
           {/* Solved (Pastel Mint) */}
           <div className="bg-tint-green text-tint-green-fg border-2 border-b-[3px] border-tint-green-border rounded-2xl p-3 text-center shadow-2xs">
-            <CheckCircle2 className="w-5 h-5 mx-auto mb-1 stroke-[2.5] text-emerald-600 dark:text-emerald-400" />
-            <span className="text-xl font-black font-mono tabular-nums block text-gray-950 dark:text-white leading-tight">
+            <CheckCircle2 className="w-5 h-5 mx-auto mb-1 stroke-[2.5] text-current opacity-90" />
+            <span className="text-xl font-black font-mono tabular-nums block text-current leading-tight">
               {totalCorrect}
             </span>
-            <span className="text-micro font-black uppercase tracking-wider text-gray-700 dark:text-gray-300 mt-0.5 block">
+            <span className="text-micro font-black uppercase tracking-wider text-current opacity-75 mt-0.5 block">
               Solved
             </span>
           </div>
 
           {/* Accuracy (Pastel Sky) */}
           <div className="bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-tint-sky-border rounded-2xl p-3 text-center shadow-2xs">
-            <Target className="w-5 h-5 mx-auto mb-1 stroke-[2.5] text-sky-600 dark:text-sky-400" />
-            <span className="text-xl font-black font-mono tabular-nums block text-gray-950 dark:text-white leading-tight">
+            <Target className="w-5 h-5 mx-auto mb-1 stroke-[2.5] text-current opacity-90" />
+            <span className="text-xl font-black font-mono tabular-nums block text-current leading-tight">
               {overallAccuracy}%
             </span>
-            <span className="text-micro font-black uppercase tracking-wider text-gray-700 dark:text-gray-300 mt-0.5 block">
+            <span className="text-micro font-black uppercase tracking-wider text-current opacity-75 mt-0.5 block">
               Accuracy
             </span>
           </div>
@@ -373,7 +373,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         {/* ── 5. AI QUOTA STATUS BAR ── */}
         <section 
           aria-label="AI Quota"
-          className="bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 shadow-2xs space-y-2"
+          className="bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 shadow-2xs space-y-2"
         >
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2 font-black text-gray-900 dark:text-gray-100">
@@ -403,7 +403,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
               toggleSound();
               haptic.selection();
             }}
-            className="bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors cursor-pointer select-none active:scale-[0.99]"
+            className="bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors cursor-pointer select-none active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 border border-amber-200/50 flex items-center justify-center shadow-2xs shrink-0">
@@ -429,7 +429,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             target="_blank" 
             rel="noopener noreferrer"
             onClick={() => { sounds.playTap(); haptic.selection(); }}
-            className="bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors cursor-pointer active:scale-[0.99]"
+            className="bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors cursor-pointer active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/40 text-sky-600 border border-sky-200/50 flex items-center justify-center shadow-2xs shrink-0">
@@ -451,7 +451,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           <button 
             type="button"
             onClick={handleRetakeOnboarding}
-            className="w-full bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors text-left active:scale-[0.99]"
+            className="w-full bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors text-left active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 border border-purple-200/50 flex items-center justify-center shadow-2xs shrink-0">
@@ -476,7 +476,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             <button 
               disabled={isLoggingOut} 
               onClick={handleLogout} 
-              className="w-full py-4 bg-white dark:bg-[#1A222D] border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center justify-center gap-2.5 text-gray-900 dark:text-gray-100 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-400 font-black text-sm shadow-2xs transition-all active:translate-y-0.5 disabled:opacity-50"
+              className="w-full py-4 bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center justify-center gap-2.5 text-gray-900 dark:text-gray-100 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-400 font-black text-sm shadow-2xs transition-all active:translate-y-0.5 disabled:opacity-50"
             >
               {isLoggingOut ? (
                 <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />

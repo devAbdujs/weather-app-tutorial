@@ -413,8 +413,8 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
               )}
               <div className={`p-4 rounded-3xl max-w-[85%] font-sans shadow-tactile-xs ${
                 msg.role === 'user' 
-                  ? 'bg-gray-950 text-white dark:bg-[#202938] dark:text-white border border-black/10 dark:border-white/10 rounded-br-xs font-semibold whitespace-pre-line shadow-tactile-xs' 
-                  : 'bg-white dark:bg-[#1A222D] border border-black/[0.06] dark:border-white/[0.08] rounded-bl-xs text-gray-900 dark:text-gray-100'
+                  ? 'bg-gray-950 text-white dark:bg-panel dark:text-foreground border border-black/10 dark:border-white/10 rounded-br-xs font-semibold whitespace-pre-line shadow-tactile-xs' 
+                  : 'bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-bl-xs text-foreground'
               }`}>
                 {msg.role === 'assistant' ? (
                   msg.content ? (
@@ -460,7 +460,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
         
         {/* Floating Input Box */}
         <form onSubmit={handleFormSubmit} className="pt-3 border-t border-black/[0.08] dark:border-white/[0.08] shrink-0 flex items-center gap-2 relative">
-          <div className="flex-1 flex items-center bg-white dark:bg-[#1A222D] border-2 border-black/[0.08] dark:border-white/[0.08] rounded-full px-4 py-1 focus-within:border-primary shadow-tactile-xs transition-all">
+          <div className="flex-1 flex items-center bg-card border-2 border-black/[0.08] dark:border-white/[0.08] rounded-full px-4 py-1 focus-within:border-primary shadow-tactile-xs transition-all">
             <input
               type="text"
               value={input}

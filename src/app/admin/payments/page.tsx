@@ -21,7 +21,7 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
         </div>
       </header>
 
-      <div className="bg-white dark:bg-[#1A222D] border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden flex flex-col">
+      <div className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden flex flex-col">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

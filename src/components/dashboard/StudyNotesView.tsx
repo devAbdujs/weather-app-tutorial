@@ -713,8 +713,8 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         )}
 
         {/* Sticky Header */}
-        <header className="sticky top-0 bg-card/95 backdrop-blur-xl z-40 border-b border-black/[0.06] dark:border-white/[0.08] px-3 sm:px-4 pt-3 pb-0">
-          <div className="flex items-center gap-2.5 pb-3">
+        <header className="sticky top-0 bg-card/95 backdrop-blur-xl z-40 border-b border-black/[0.06] dark:border-white/[0.08] px-3 sm:px-4 pt-safe">
+          <div className="flex items-center gap-2.5 pt-3 pb-3">
             <button
               onClick={handleBackFromNote}
               aria-label="Back to chapters"

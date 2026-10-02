@@ -46,7 +46,7 @@ export const BottomNav = () => {
         className="
           pointer-events-auto
           w-full h-16
-          bg-white/95 dark:bg-[#151A22]/95
+          bg-card/95
           backdrop-blur-xl
           rounded-full
           border border-black/[0.08] dark:border-white/[0.09]
@@ -107,7 +107,7 @@ export const BottomNav = () => {
               bg-gradient-to-tr from-[#EA580C] via-[#F96E10] to-[#FB923C]
               text-white
               shadow-xl shadow-orange-500/40
-              border-4 border-[#FAF9F5] dark:border-[#0C0F14]
+              border-4 border-ground
               flex items-center justify-center
               active:scale-90 transition-all duration-150
               hover:shadow-orange-500/60

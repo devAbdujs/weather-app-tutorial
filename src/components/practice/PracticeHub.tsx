@@ -266,13 +266,13 @@ export const PracticeHub = () => {
 
       {/* ── 2. SEGMENTED TABS (ui_inspiration1.png) ── */}
       <div className="px-5 mb-3.5">
-        <div className="p-1 bg-[#F0EBE5] dark:bg-[#18202C] border-2 border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center shadow-inner">
+        <div className="p-1 bg-panel border-2 border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center shadow-inner">
           <button
             onClick={() => { sounds.playTap(); haptic.selection(); setFilterMode('all'); }}
             className={`
               flex-1 py-2 rounded-full text-xs font-black transition-all duration-150 flex items-center justify-center gap-1.5
               ${filterMode === 'all'
-                ? 'bg-white dark:bg-[#10141D] text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
+                ? 'bg-card text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
                 : 'text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white font-bold'}
             `}
           >
@@ -284,7 +284,7 @@ export const PracticeHub = () => {
             className={`
               flex-1 py-2 rounded-full text-xs font-black transition-all duration-150 flex items-center justify-center gap-1.5
               ${filterMode === 'saved'
-                ? 'bg-white dark:bg-[#10141D] text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
+                ? 'bg-card text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
                 : 'text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white font-bold'}
             `}
           >
@@ -304,7 +304,7 @@ export const PracticeHub = () => {
                 onClick={() => { sounds.playTap(); haptic.selection(); setActiveTab(tab); }}
                 className={`flex-1 py-1.5 text-xs font-black capitalize rounded-btn transition-all ${
                   activeTab === tab 
-                    ? 'bg-white dark:bg-[#10141D] text-gray-950 dark:text-white shadow-tactile-xs border border-black/10' 
+                    ? 'bg-card text-gray-950 dark:text-white shadow-tactile-xs border border-black/10 dark:border-white/10' 
                     : 'text-gray-700 dark:text-gray-300 font-bold'
                 }`}
               >

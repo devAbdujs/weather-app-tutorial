@@ -154,7 +154,7 @@ export const ExamSetupModal: React.FC = () => {
           </div>
           <button 
             onClick={() => { sounds.playTap(); onClose(); }} 
-            className="w-9 h-9 flex items-center justify-center rounded-full border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-[#F3F0EA] dark:bg-white/[0.06] text-gray-700 dark:text-gray-300 hover:bg-black/5 active:translate-y-0.5 active:border-b transition-all shadow-2xs"
+            className="w-9 h-9 flex items-center justify-center rounded-full border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-panel text-gray-700 dark:text-gray-300 hover:bg-black/5 active:translate-y-0.5 active:border-b transition-all shadow-2xs"
           >
             <X className="w-4 h-4" />
           </button>
@@ -189,7 +189,7 @@ export const ExamSetupModal: React.FC = () => {
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
                             ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5' 
-                            : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
+                            : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
                         {s.label}
@@ -211,7 +211,7 @@ export const ExamSetupModal: React.FC = () => {
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
                             ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5' 
-                            : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
+                            : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
                         {s.label}
@@ -242,7 +242,7 @@ export const ExamSetupModal: React.FC = () => {
                           className={`p-4 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all flex flex-col items-center text-center ${
                             mixType === 'quick' 
                               ? 'bg-tint-peach text-tint-peach-fg border-orange-500 border-b-orange-700 shadow-tactile-xs' 
-                              : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/20'
+                              : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/20'
                           }`}
                         >
                           <div className="text-2xl mb-1">⚡</div>
@@ -259,7 +259,7 @@ export const ExamSetupModal: React.FC = () => {
                           className={`p-4 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all flex flex-col items-center text-center ${
                             mixType === 'past_paper' 
                               ? 'bg-tint-sky text-tint-sky-fg border-cyan-500 border-b-cyan-700 shadow-tactile-xs' 
-                              : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/20'
+                              : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/20'
                           }`}
                         >
                           <div className="text-2xl mb-1">🏛️</div>
@@ -285,7 +285,7 @@ export const ExamSetupModal: React.FC = () => {
                               className={`shrink-0 px-4 py-2.5 rounded-2xl border-2 border-b-[4px] text-sm font-black transition-all ${
                                 selectedYear === yr 
                                   ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs' 
-                                  : 'bg-white dark:bg-[#1A222D] text-gray-700 dark:text-gray-300 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30'
+                                  : 'bg-card text-gray-700 dark:text-gray-300 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30'
                               }`}
                             >
                               {yr}
@@ -315,7 +315,7 @@ export const ExamSetupModal: React.FC = () => {
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
                             ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5' 
-                            : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
+                            : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
                         {s.label}
@@ -336,7 +336,7 @@ export const ExamSetupModal: React.FC = () => {
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
                             ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5' 
-                            : 'bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
+                            : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
                         {s.label}

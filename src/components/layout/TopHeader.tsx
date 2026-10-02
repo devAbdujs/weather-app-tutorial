@@ -54,7 +54,7 @@ export const TopHeader = () => {
           <button
             onClick={() => { sounds.playTap(); router.back(); }}
             aria-label="Go back"
-            className="w-10 h-10 flex items-center justify-center rounded-2xl border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-white dark:bg-[#1A222D] text-gray-900 dark:text-gray-100 hover:text-primary transition-all shadow-2xs"
+            className="w-10 h-10 flex items-center justify-center rounded-2xl border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-card text-gray-900 dark:text-gray-100 hover:text-primary transition-all shadow-2xs"
           >
             <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
           </button>
@@ -131,7 +131,7 @@ export const TopHeader = () => {
           onClick={toggleSound}
           aria-label={soundEnabled ? 'Mute sound effects' : 'Unmute sound effects'}
           title={soundEnabled ? 'Sound FX On' : 'Sound FX Muted'}
-          className="w-9 h-9 flex items-center justify-center rounded-2xl border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 hover:text-primary transition-all shadow-2xs"
+          className="w-9 h-9 flex items-center justify-center rounded-2xl border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-card text-gray-800 dark:text-gray-200 hover:text-primary transition-all shadow-2xs"
         >
           {soundEnabled ? (
             <Volume2 className="w-4 h-4 text-primary" />
@@ -144,7 +144,7 @@ export const TopHeader = () => {
         <button
           onClick={toggle}
           aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="w-9 h-9 flex items-center justify-center rounded-2xl border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-white dark:bg-[#1A222D] text-gray-800 dark:text-gray-200 hover:text-primary transition-all shadow-2xs"
+          className="w-9 h-9 flex items-center justify-center rounded-2xl border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-card text-gray-800 dark:text-gray-200 hover:text-primary transition-all shadow-2xs"
         >
           {resolvedTheme === 'dark' ? <Sun className="w-4 h-4 text-accent-gold" /> : <Moon className="w-4 h-4 text-gray-800" />}
         </button>
