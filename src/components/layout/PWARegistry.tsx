@@ -64,7 +64,7 @@ export function PWARegistry() {
                     <Download className="w-4 h-4 text-primary" />
                   </div>
                   <div className="flex flex-col">
-                     <span className="font-bold text-sm text-gray-900 dark:text-gray-100">Install Temari</span>
+                     <span className="font-bold text-sm text-foreground">Install Temari</span>
                      <span className="text-caption text-gray-500 font-medium">Faster & Offline</span>
                   </div>
                </div>
@@ -75,8 +75,8 @@ export function PWARegistry() {
                  <X className="w-4 h-4"/>
                </button>
              </div>
-             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-2.5 flex items-center justify-center gap-2 text-xs font-medium text-gray-600 dark:text-gray-400">
-               Tap <Share className="w-3.5 h-3.5 text-gray-900 dark:text-gray-100"/> then <span className="font-bold text-gray-900 dark:text-white">Add to Home Screen</span>
+             <div className="bg-black/5 dark:bg-white/5 rounded-xl p-2.5 flex items-center justify-center gap-2 text-xs font-medium text-muted-foreground">
+               Tap <Share className="w-3.5 h-3.5 text-foreground"/> then <span className="font-bold text-gray-900 dark:text-white">Add to Home Screen</span>
              </div>
           </div>
         ), { 
@@ -106,7 +106,7 @@ export function PWARegistry() {
                     <Download className="w-4 h-4 text-primary" />
                   </div>
                   <div className="flex flex-col">
-                     <span className="font-bold text-sm text-gray-900 dark:text-gray-100">Install Temari</span>
+                     <span className="font-bold text-sm text-foreground">Install Temari</span>
                      <span className="text-caption text-gray-500 font-medium">Faster & Offline</span>
                   </div>
                </div>

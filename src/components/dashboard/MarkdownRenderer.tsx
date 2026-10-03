@@ -210,7 +210,7 @@ interface MarkdownRendererProps {
 function MarkdownRendererComponent({
   content,
   accentBg = 'bg-primary/5',
-  accentText = 'text-gray-900 dark:text-gray-100',
+  accentText = 'text-foreground',
   highlights = [],
   onHighlightClick,
 }: MarkdownRendererProps) {
@@ -221,14 +221,14 @@ function MarkdownRendererComponent({
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false, errorColor: 'inherit' }]]}
       components={{
-        h1: ({ children }) => <h1 className="text-2xl font-black mt-8 mb-4 text-gray-900 dark:text-gray-100 leading-tight tracking-tight">{wrap(children)}</h1>,
-        h2: ({ children }) => <h2 className="text-xl font-black mt-8 mb-3 text-gray-900 dark:text-gray-100 tracking-tight">{wrap(children)}</h2>,
-        h3: ({ children }) => <h3 className="text-lg font-bold mt-6 mb-3 text-gray-900 dark:text-gray-100">{wrap(children)}</h3>,
-        p: ({ children }) => <p className="mb-4 text-regular leading-relaxed text-gray-600 dark:text-gray-400 font-medium">{wrap(children)}</p>,
-        ul: ({ children }) => <ul className="list-disc pl-5 mb-5 space-y-2 text-regular text-gray-600 dark:text-gray-400 font-medium">{wrap(children)}</ul>,
-        ol: ({ children }) => <ol className="list-decimal pl-5 mb-5 space-y-2 text-regular text-gray-600 dark:text-gray-400 font-medium">{wrap(children)}</ol>,
+        h1: ({ children }) => <h1 className="text-2xl font-black mt-8 mb-4 text-foreground leading-tight tracking-tight">{wrap(children)}</h1>,
+        h2: ({ children }) => <h2 className="text-xl font-black mt-8 mb-3 text-foreground tracking-tight">{wrap(children)}</h2>,
+        h3: ({ children }) => <h3 className="text-lg font-bold mt-6 mb-3 text-foreground">{wrap(children)}</h3>,
+        p: ({ children }) => <p className="mb-4 text-regular leading-relaxed text-muted-foreground font-medium">{wrap(children)}</p>,
+        ul: ({ children }) => <ul className="list-disc pl-5 mb-5 space-y-2 text-regular text-muted-foreground font-medium">{wrap(children)}</ul>,
+        ol: ({ children }) => <ol className="list-decimal pl-5 mb-5 space-y-2 text-regular text-muted-foreground font-medium">{wrap(children)}</ol>,
         li: ({ children }) => <li className="pl-1">{wrap(children)}</li>,
-        strong: ({ children }) => <strong className="font-bold text-gray-900 dark:text-gray-100">{children}</strong>,
+        strong: ({ children }) => <strong className="font-bold text-foreground">{children}</strong>,
         em: ({ children }) => <em className="italic">{children}</em>,
         table: ({ children }) => (
           <div className="my-6 w-full overflow-x-auto rounded-2xl border border-black/10 dark:border-white/10 shadow-sm bg-white dark:bg-card">
@@ -236,12 +236,12 @@ function MarkdownRendererComponent({
           </div>
         ),
         thead: ({ children }) => (
-          <thead className="border-b border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 text-gray-900 dark:text-gray-100 font-semibold">{children}</thead>
+          <thead className="border-b border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 text-foreground font-semibold">{children}</thead>
         ),
         tbody: ({ children }) => <tbody className="divide-y divide-black/5 dark:divide-white/5">{children}</tbody>,
         tr: ({ children }) => <tr className="transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">{children}</tr>,
-        th: ({ children }) => <th className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">{wrap(children)}</th>,
-        td: ({ children }) => <td className="px-4 py-3 text-gray-600 dark:text-gray-400 align-top">{wrap(children)}</td>,
+        th: ({ children }) => <th className="px-4 py-3 font-semibold text-foreground">{wrap(children)}</th>,
+        td: ({ children }) => <td className="px-4 py-3 text-muted-foreground align-top">{wrap(children)}</td>,
         img: ({ src, alt, ...props }: any) => (
           <figure className="my-6 flex flex-col items-center max-w-full">
             <div className="relative overflow-hidden rounded-2xl border border-black/10 dark:border-white/10 shadow-sm bg-black/5 dark:bg-white/5 max-w-full p-1 sm:p-2">
@@ -259,14 +259,14 @@ function MarkdownRendererComponent({
               />
             </div>
             {alt && (
-              <figcaption className="mt-2 text-xs font-semibold text-gray-500 dark:text-gray-400 text-center italic max-w-md px-3">
+              <figcaption className="mt-2 text-xs font-semibold text-muted-foreground text-center italic max-w-md px-3">
                 {alt}
               </figcaption>
             )}
           </figure>
         ),
         blockquote: ({ children }) => (
-          <blockquote className={`pl-4 border-l-4 border-primary/20 ${accentBg} py-2 pr-4 rounded-r-xl my-5 italic text-gray-600 dark:text-gray-400`}>
+          <blockquote className={`pl-4 border-l-4 border-primary/20 ${accentBg} py-2 pr-4 rounded-r-xl my-5 italic text-muted-foreground`}>
             {wrap(children)}
           </blockquote>
         ),

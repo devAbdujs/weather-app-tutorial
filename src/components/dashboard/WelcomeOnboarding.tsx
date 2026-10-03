@@ -194,7 +194,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className={`font-black text-sm ${isSelected ? 'text-primary' : 'text-gray-900 dark:text-gray-100'}`}>
+                        <span className={`font-black text-sm ${isSelected ? 'text-primary' : 'text-foreground'}`}>
                           {opt.title}
                         </span>
                         <span className="text-micro font-black px-2 py-0.5 rounded-md bg-black/[0.05] dark:bg-white/[0.08] text-slate-500 dark:text-slate-400">
@@ -240,7 +240,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                       {s.id === 'Natural Science' ? '🔬' : '📚'}
                     </div>
                     <div>
-                      <span className={`font-black text-sm block ${isSelected ? 'text-primary' : 'text-gray-900 dark:text-gray-100'}`}>
+                      <span className={`font-black text-sm block ${isSelected ? 'text-primary' : 'text-foreground'}`}>
                         {s.label}
                       </span>
                       <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
@@ -283,7 +283,7 @@ export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({ onComplete
                     className={`w-full text-left px-4 py-3 rounded-xl text-xs font-black transition-all duration-100 border ${
                       isSelected 
                         ? 'border-primary bg-primary/10 text-primary border-b-bevel' 
-                        : 'border-transparent hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 active:translate-y-[1px]'
+                        : 'border-transparent hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground active:translate-y-[1px]'
                     }`}
                   >
                     {d.label}

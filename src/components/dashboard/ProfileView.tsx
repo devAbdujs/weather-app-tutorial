@@ -195,7 +195,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             {/* Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-base font-black text-gray-900 dark:text-gray-100 tracking-tight truncate">
+                <h1 className="text-base font-black text-foreground tracking-tight truncate">
                   {profile.full_name || 'Scholar'}
                 </h1>
                 {isPremium ? (
@@ -237,7 +237,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="text-sm">{currentLevel.badge}</span>
-                <span className="text-xs font-black text-gray-900 dark:text-gray-100">
+                <span className="text-xs font-black text-foreground">
                   Level {currentLevel.level}: {currentLevel.title}
                 </span>
               </div>
@@ -266,7 +266,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             <span className="text-xl font-black font-mono tabular-nums block text-gray-950 dark:text-white leading-tight">
               {totalQuestions}
             </span>
-            <span className="text-micro font-black uppercase tracking-wider text-gray-700 dark:text-gray-300 mt-0.5 block">
+            <span className="text-micro font-black uppercase tracking-wider text-muted-foreground mt-0.5 block">
               Attempted
             </span>
           </div>
@@ -306,7 +306,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-black text-gray-900 dark:text-gray-100 tracking-tight leading-tight">
+                    <h2 className="text-sm font-black text-foreground tracking-tight leading-tight">
                       Temari PRO Active
                     </h2>
                     <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
@@ -314,7 +314,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                       Active
                     </span>
                   </div>
-                  <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 mt-0.5">
+                  <p className="text-xs font-semibold text-muted-foreground mt-0.5">
                     150 AI queries/week • Full Exam Archives Unlocked
                   </p>
                 </div>
@@ -379,12 +379,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           className="bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 shadow-2xs space-y-2"
         >
           <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 font-black text-gray-900 dark:text-gray-100">
+            <div className="flex items-center gap-2 font-black text-foreground">
               <Sparkles className="w-4 h-4 text-primary shrink-0" />
               <span>AI Quota</span>
             </div>
-            <div className="flex items-center gap-2 font-mono text-xs font-bold text-gray-700 dark:text-gray-300">
-              <span className="font-black text-gray-900 dark:text-gray-100">{usageClamped}/{weeklyCap}</span>
+            <div className="flex items-center gap-2 font-mono text-xs font-bold text-muted-foreground">
+              <span className="font-black text-foreground">{usageClamped}/{weeklyCap}</span>
               <span className="text-slate-400">•</span>
               <span>{daysUntilReset}d left</span>
             </div>
@@ -413,10 +413,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                 <Bell className="w-5 h-5 stroke-[2.4]" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-tight">
+                <h3 className="text-sm font-black text-foreground leading-tight">
                   Sound Effects
                 </h3>
-                <p className="text-caption font-bold text-gray-500 dark:text-gray-400 mt-0.5">
+                <p className="text-caption font-bold text-muted-foreground mt-0.5">
                   {soundEnabled ? 'Enabled' : 'Muted'}
                 </p>
               </div>
@@ -439,15 +439,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                 <Headphones className="w-5 h-5 stroke-[2.4]" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-tight">
+                <h3 className="text-sm font-black text-foreground leading-tight">
                   Help &amp; Community
                 </h3>
-                <p className="text-caption font-bold text-gray-500 dark:text-gray-400 mt-0.5">
+                <p className="text-caption font-bold text-muted-foreground mt-0.5">
                   Telegram &amp; Support
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-500 dark:text-gray-400 stroke-[2.5]" />
+            <ChevronRight className="w-5 h-5 text-muted-foreground stroke-[2.5]" />
           </a>
 
           {/* Settings / Preferences */}
@@ -461,15 +461,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                 <Settings className="w-5 h-5 stroke-[2.4]" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 leading-tight">
+                <h3 className="text-sm font-black text-foreground leading-tight">
                   Curriculum Track
                 </h3>
-                <p className="text-caption font-bold text-gray-500 dark:text-gray-400 mt-0.5">
+                <p className="text-caption font-bold text-muted-foreground mt-0.5">
                   {profile.stream || 'Natural Science'}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-500 dark:text-gray-400 stroke-[2.5]" />
+            <ChevronRight className="w-5 h-5 text-muted-foreground stroke-[2.5]" />
           </button>
         </section>
 
@@ -479,7 +479,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             <button 
               disabled={isLoggingOut} 
               onClick={handleLogout} 
-              className="w-full py-4 bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center justify-center gap-2.5 text-gray-900 dark:text-gray-100 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-400 font-black text-sm shadow-2xs transition-all active:translate-y-0.5 disabled:opacity-50"
+              className="w-full py-4 bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center justify-center gap-2.5 text-foreground hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-400 font-black text-sm shadow-2xs transition-all active:translate-y-0.5 disabled:opacity-50"
             >
               {isLoggingOut ? (
                 <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />

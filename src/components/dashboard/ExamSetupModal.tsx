@@ -148,13 +148,13 @@ export const ExamSetupModal: React.FC = () => {
           <div className="flex items-center gap-3">
             <TemariMascot mood="happy" size={48} />
             <div>
-              <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 leading-tight">{titles[setupModalType]}</h2>
-              <p className="text-xs font-bold text-gray-500 dark:text-gray-400">Configure your study session</p>
+              <h2 className="text-xl font-black text-foreground leading-tight">{titles[setupModalType]}</h2>
+              <p className="text-xs font-bold text-muted-foreground">Configure your study session</p>
             </div>
           </div>
           <button 
             onClick={() => { sounds.playTap(); onClose(); }} 
-            className="w-9 h-9 flex items-center justify-center rounded-full border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-panel text-gray-700 dark:text-gray-300 hover:bg-black/5 active:translate-y-0.5 active:border-b transition-all shadow-2xs"
+            className="w-9 h-9 flex items-center justify-center rounded-full border-2 border-b-[3px] border-black/10 dark:border-white/10 bg-panel text-muted-foreground hover:bg-black/5 active:translate-y-0.5 active:border-b transition-all shadow-2xs"
           >
             <X className="w-4 h-4" />
           </button>
@@ -164,7 +164,7 @@ export const ExamSetupModal: React.FC = () => {
           {setupModalType === 'exam' && (
             <div className="space-y-5">
               <div className="space-y-2">
-                <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Target Exam</label>
+                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest pl-1">Target Exam</label>
                 <div className="grid grid-cols-1 gap-2">
                   <div className="px-4 py-3 rounded-2xl bg-tint-peach text-tint-peach-fg font-black text-sm shadow-tactile-xs border-2 border-b-[4px] border-tint-peach-border flex items-center justify-between">
                     <span className="flex items-center gap-2">
@@ -179,7 +179,7 @@ export const ExamSetupModal: React.FC = () => {
               {/* Subject Selection based on track */}
               {isG12 && (
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Subject</label>
+                  <label className="text-xs font-black text-muted-foreground uppercase tracking-widest pl-1">Subject</label>
                   <div className="grid grid-cols-2 gap-2.5">
                     {g12Subjects.map((s) => (
                       <button 
@@ -189,7 +189,7 @@ export const ExamSetupModal: React.FC = () => {
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
                             ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5' 
-                            : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
+                            : 'bg-card text-foreground border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
                         {s.label}
@@ -201,7 +201,7 @@ export const ExamSetupModal: React.FC = () => {
 
               {isFreshman && (
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Course</label>
+                  <label className="text-xs font-black text-muted-foreground uppercase tracking-widest pl-1">Course</label>
                   <div className="grid grid-cols-2 gap-2.5">
                     {freshmanSubjects.map((s) => (
                       <button 
@@ -211,7 +211,7 @@ export const ExamSetupModal: React.FC = () => {
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
                             ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5' 
-                            : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
+                            : 'bg-card text-foreground border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
                         {s.label}
@@ -223,7 +223,7 @@ export const ExamSetupModal: React.FC = () => {
 
               {isExit && profileStream && (
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Discipline</label>
+                  <label className="text-xs font-black text-muted-foreground uppercase tracking-widest pl-1">Discipline</label>
                   <div className="px-4 py-3 rounded-2xl bg-tint-sky text-tint-sky-fg border-2 border-b-[4px] border-tint-sky-border font-black text-sm">
                     {profileStream}
                   </div>
@@ -234,7 +234,7 @@ export const ExamSetupModal: React.FC = () => {
                 {isG12 && (
                   <>
                     <div className="space-y-3 mt-4 pt-4 border-t border-black/[0.06] dark:border-white/[0.08]">
-                      <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Session Type</label>
+                      <label className="text-xs font-black text-muted-foreground uppercase tracking-widest pl-1">Session Type</label>
                       <div className="grid grid-cols-2 gap-3">
                         <button 
                           type="button" 
@@ -242,7 +242,7 @@ export const ExamSetupModal: React.FC = () => {
                           className={`p-4 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all flex flex-col items-center text-center ${
                             mixType === 'quick' 
                               ? 'bg-tint-peach text-tint-peach-fg border-orange-500 border-b-orange-700 shadow-tactile-xs' 
-                              : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/20'
+                              : 'bg-card text-foreground border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/20'
                           }`}
                         >
                           <div className="text-2xl mb-1">⚡</div>
@@ -259,7 +259,7 @@ export const ExamSetupModal: React.FC = () => {
                           className={`p-4 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all flex flex-col items-center text-center ${
                             mixType === 'past_paper' 
                               ? 'bg-tint-sky text-tint-sky-fg border-cyan-500 border-b-cyan-700 shadow-tactile-xs' 
-                              : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/20'
+                              : 'bg-card text-foreground border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/20'
                           }`}
                         >
                           <div className="text-2xl mb-1">🏛️</div>
@@ -275,7 +275,7 @@ export const ExamSetupModal: React.FC = () => {
 
                     {mixType === 'past_paper' && (
                       <div className="space-y-2 animate-fade-up">
-                        <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Select Year (EC)</label>
+                        <label className="text-xs font-black text-muted-foreground uppercase tracking-widest pl-1">Select Year (EC)</label>
                         <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar px-1">
                           {[2015, 2014, 2013, 2012, 2011, 2010].map((yr) => (
                             <button 
@@ -285,7 +285,7 @@ export const ExamSetupModal: React.FC = () => {
                               className={`shrink-0 px-4 py-2.5 rounded-2xl border-2 border-b-[4px] text-sm font-black transition-all ${
                                 selectedYear === yr 
                                   ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs' 
-                                  : 'bg-card text-gray-700 dark:text-gray-300 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30'
+                                  : 'bg-card text-muted-foreground border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30'
                               }`}
                             >
                               {yr}
@@ -305,7 +305,7 @@ export const ExamSetupModal: React.FC = () => {
             <div className="space-y-5">
               {isG12 && (
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Subject Notes</label>
+                  <label className="text-xs font-black text-muted-foreground uppercase tracking-widest pl-1">Subject Notes</label>
                   <div className="grid grid-cols-2 gap-2.5">
                     {g12Subjects.map((s) => (
                       <button 
@@ -315,7 +315,7 @@ export const ExamSetupModal: React.FC = () => {
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
                             ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5' 
-                            : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
+                            : 'bg-card text-foreground border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
                         {s.label}
@@ -326,7 +326,7 @@ export const ExamSetupModal: React.FC = () => {
               )}
               {isFreshman && (
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Course Notes</label>
+                  <label className="text-xs font-black text-muted-foreground uppercase tracking-widest pl-1">Course Notes</label>
                   <div className="grid grid-cols-2 gap-2.5">
                     {freshmanSubjects.map((s) => (
                       <button 
@@ -336,7 +336,7 @@ export const ExamSetupModal: React.FC = () => {
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
                             ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white border-b-black dark:border-b-gray-300 shadow-tactile-xs active:translate-y-0.5' 
-                            : 'bg-card text-gray-800 dark:text-gray-200 border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
+                            : 'bg-card text-foreground border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
                         {s.label}
@@ -347,7 +347,7 @@ export const ExamSetupModal: React.FC = () => {
               )}
               {isExit && profileStream && (
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest pl-1">Discipline Notes</label>
+                  <label className="text-xs font-black text-muted-foreground uppercase tracking-widest pl-1">Discipline Notes</label>
                   <div className="px-4 py-3 rounded-2xl bg-tint-sky text-tint-sky-fg border-2 border-b-[4px] border-tint-sky-border font-black text-sm">
                     {profileStream}
                   </div>

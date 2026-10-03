@@ -311,7 +311,7 @@ export const MascotBubble: React.FC<MascotBubbleProps> = ({
           </svg>
 
           {message ? (
-            <div className="text-sm font-black text-gray-900 dark:text-gray-100 leading-snug">
+            <div className="text-sm font-black text-foreground leading-snug">
               {message}
             </div>
           ) : null}

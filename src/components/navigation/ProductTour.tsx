@@ -80,7 +80,7 @@ export const ProductTour: React.FC = () => {
 
           <button 
             onClick={handleComplete}
-            className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 flex items-center justify-center rounded-full bg-ground border border-black/[0.06] dark:border-white/[0.08] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors active:scale-95 z-10"
+            className="absolute top-4 right-4 md:top-6 md:right-6 w-8 h-8 flex items-center justify-center rounded-full bg-ground border border-black/[0.06] dark:border-white/[0.08] text-muted-foreground hover:text-gray-900 dark:hover:text-gray-100 transition-colors active:scale-95 z-10"
           >
             <X className="w-4 h-4" />
           </button>
@@ -94,10 +94,10 @@ export const ProductTour: React.FC = () => {
 
             {/* Content */}
             <div className="space-y-3 min-h-[90px]">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight transition-opacity duration-300">
+              <h3 className="text-2xl font-bold text-foreground tracking-tight transition-opacity duration-300">
                 {TOUR_STEPS[step].title}
               </h3>
-              <p className="text-regular font-medium text-gray-600 dark:text-gray-400 leading-relaxed transition-opacity duration-300">
+              <p className="text-regular font-medium text-muted-foreground leading-relaxed transition-opacity duration-300">
                 {TOUR_STEPS[step].description}
               </p>
             </div>

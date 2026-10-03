@@ -11,7 +11,14 @@ export const tokens = {
     card: 'var(--surface)',
     panel: 'var(--surface-2)',
 
-    // Brand Primary (Warm Sunset Orange)
+    // ── Semantic Text Tokens ──────────────────────────────────────────
+    // Use these instead of paired `text-gray-900 dark:text-gray-100` patterns.
+    // They adapt automatically to light/dark mode via CSS variables.
+    foreground: 'var(--foreground)',          // Primary body text (replaces text-gray-900 dark:text-gray-100)
+    'muted-foreground': 'var(--text-secondary)', // Secondary / label text (replaces text-gray-500 dark:text-gray-400)
+    'subtle-foreground': 'var(--text-tertiary)', // Tertiary / hint text (replaces text-gray-400 dark:text-gray-500)
+
+    // Brand Primary (Academic Royal Blue)
     primary: 'rgb(var(--primary-rgb) / <alpha-value>)',
     'primary-foreground': 'var(--primary-foreground, #ffffff)',
     'primary-border': 'var(--primary-border-bottom)',

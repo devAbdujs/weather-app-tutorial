@@ -71,8 +71,8 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         <div className="w-16 h-16 bg-error/10 border border-error/20 rounded-full flex items-center justify-center mb-4">
           <span className="text-2xl">⚠️</span>
         </div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Error Loading Session</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">{serverError}</p>
+        <h2 className="text-xl font-bold text-foreground mb-2">Error Loading Session</h2>
+        <p className="text-sm text-muted-foreground mb-6">{serverError}</p>
         <button onClick={() => router.back()} className="px-6 py-3 bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 font-black rounded-xl shadow-tactile-xs border border-black/10 dark:border-white/10 active:scale-95 transition-all">
           Go Back
         </button>
@@ -87,10 +87,10 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         <div className="w-16 h-16 bg-accent-gold/10 text-accent-gold rounded-full flex items-center justify-center mb-4 border border-accent-gold/20">
           <BookOpen className="w-8 h-8" />
         </div>
-        <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight mb-2">
+        <h2 className="text-2xl font-black text-foreground tracking-tight mb-2">
           No Questions Available Yet
         </h2>
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 max-w-sm mb-8 leading-relaxed">
+        <p className="text-sm font-medium text-muted-foreground max-w-sm mb-8 leading-relaxed">
           We couldn&apos;t find past exam questions for <strong className="text-gray-900 dark:text-gray-200">{subject || 'All'}</strong> {year ? `(${year} E.C.)` : ''}. Our team is continuously digitizing past papers.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
@@ -103,7 +103,7 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
           </Link>
           <Link 
             href="/dashboard"
-            className="w-full h-12 rounded-xl bg-card border border-black/10 dark:border-white/10 text-gray-700 dark:text-gray-300 font-bold flex items-center justify-center text-sm active:scale-95 transition-transform"
+            className="w-full h-12 rounded-xl bg-card border border-black/10 dark:border-white/10 text-muted-foreground font-bold flex items-center justify-center text-sm active:scale-95 transition-transform"
           >
             Return to Dashboard
           </Link>

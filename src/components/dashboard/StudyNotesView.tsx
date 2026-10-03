@@ -127,7 +127,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
   const dept = subject && subject !== 'All' ? subject : 'General';
   const themeClass = getSubjectTheme(dept);
   const accentBar = 'bg-primary';
-  const accentText = 'text-gray-900 dark:text-gray-100';
+  const accentText = 'text-foreground';
   const accentBg = 'bg-primary/5';
   const emoji = SUBJECT_EMOJI[dept] ?? '📚';
 
@@ -744,7 +744,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             <button
               onClick={handleBackFromNote}
               aria-label="Back to chapters"
-              className="w-9 h-9 rounded-control flex items-center justify-center shrink-0 border border-black/[0.06] dark:border-white/[0.08] bg-card hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all text-gray-700 dark:text-gray-300"
+              className="w-9 h-9 rounded-control flex items-center justify-center shrink-0 border border-black/[0.06] dark:border-white/[0.08] bg-card hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all text-muted-foreground"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
@@ -752,7 +752,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               {emoji}
             </span>
             <div className="flex-1 min-w-0">
-              <h1 className="text-regular font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-1 tracking-tight">
+              <h1 className="text-regular font-black text-foreground leading-snug line-clamp-1 tracking-tight">
                 {selectedNote.title}
               </h1>
               <div className="flex items-center gap-2 mt-0.5">
@@ -761,7 +761,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                 </span>
                 <span className="text-gray-400 dark:text-gray-500 text-caption">·</span>
                 <Clock className="w-3 h-3 text-gray-400 dark:text-gray-500" />
-                <span className="text-caption font-semibold text-gray-500 dark:text-gray-400">{readMins} min read</span>
+                <span className="text-caption font-semibold text-muted-foreground">{readMins} min read</span>
               </div>
             </div>
 
@@ -810,7 +810,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-ground/90 backdrop-blur-xl border-t border-black/[0.06] dark:border-white/[0.08] p-3.5 z-30 flex gap-2.5 pb-safe">
           <button
             onClick={() => { sounds.playTap(); haptic.impact('light'); setShowTutor(true); }}
-            className="btn-3d-card flex-1 h-12 rounded-card-sm font-black text-xs flex items-center justify-center gap-2 text-gray-900 dark:text-gray-100"
+            className="btn-3d-card flex-1 h-12 rounded-card-sm font-black text-xs flex items-center justify-center gap-2 text-foreground"
           >
             <Sparkles className="w-4 h-4 text-accent-gold" />
             Ask AI Tutor
@@ -854,7 +854,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               router.push('/practice');
             }
           }}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-btn text-compact font-bold text-gray-700 dark:text-gray-300 btn-3d-card"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-btn text-compact font-bold text-muted-foreground btn-3d-card"
         >
           <ChevronLeft className="w-4 h-4" />
           <span>Back</span>
@@ -870,10 +870,10 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             <p className="text-caption font-bold uppercase tracking-widest text-primary mb-1">
               Study Notes
             </p>
-            <h1 className="text-display-md font-black text-gray-900 dark:text-gray-100 leading-tight tracking-tight">
+            <h1 className="text-display-md font-black text-foreground leading-tight tracking-tight">
               {courseDisplayName}
             </h1>
-            <p className="text-compact font-semibold text-gray-500 dark:text-gray-400 mt-0.5">
+            <p className="text-compact font-semibold text-muted-foreground mt-0.5">
               {examType} · {initialNotes.length > 0 ? `${initialNotes.length} chapters` : 'Loading…'}
             </p>
           </div>
@@ -908,8 +908,8 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
             <div className={`w-20 h-20 ${themeClass} rounded-hero flex items-center justify-center mb-5 text-4xl`}>
               {emoji}
             </div>
-            <h3 className="text-xl font-black text-gray-900 dark:text-gray-100 mb-2">No notes yet</h3>
-            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 max-w-[240px] leading-relaxed">
+            <h3 className="text-xl font-black text-foreground mb-2">No notes yet</h3>
+            <p className="text-sm font-semibold text-muted-foreground max-w-[240px] leading-relaxed">
               We haven&apos;t uploaded summary notes for this subject yet. Check back soon!
             </p>
           </div>
@@ -934,7 +934,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-black text-gray-900 dark:text-gray-100 text-sm leading-snug line-clamp-2 tracking-tight">
+                    <h3 className="font-black text-foreground text-sm leading-snug line-clamp-2 tracking-tight">
                       {note.title}
                     </h3>
                     <div className="flex items-center gap-2 mt-1">

@@ -101,8 +101,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
     return (
       <div className="min-h-screen bg-ground flex flex-col items-center justify-center animate-fade-in p-6 text-center">
         <TemariMascot mood="worried" size={100} className="mb-4" />
-        <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight mb-2">Connection Issue</h2>
-        <p className="text-sm font-semibold text-gray-600 dark:text-gray-400 max-w-xs mb-6">{authError}</p>
+        <h2 className="text-xl font-black text-foreground tracking-tight mb-2">Connection Issue</h2>
+        <p className="text-sm font-semibold text-muted-foreground max-w-xs mb-6">{authError}</p>
         <button
           onClick={() => {
             const tg = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp : null;
@@ -126,14 +126,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
         <TemariMascot mood="studying" size={100} className="mb-4" />
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 rounded-full border-bevel border-black/5 dark:border-white/10 border-t-primary animate-spin" />
-          <p className="text-caption font-black text-gray-700 dark:text-gray-300 tracking-[0.2em] uppercase">Authenticating Scholar</p>
+          <p className="text-caption font-black text-muted-foreground tracking-[0.2em] uppercase">Authenticating Scholar</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-ground text-gray-900 dark:text-gray-100 flex flex-col font-sans overflow-x-hidden selection:bg-primary/20">
+    <div className="min-h-screen bg-ground text-foreground flex flex-col font-sans overflow-x-hidden selection:bg-primary/20">
       
       {/* 1. Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-ground/85 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06]">
@@ -153,7 +153,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
           </div>
           <button 
             onClick={() => handleTelegramOIDCLogin()} 
-            className="btn-3d-card text-xs font-black px-4 py-2 rounded-xl text-gray-800 dark:text-gray-200"
+            className="btn-3d-card text-xs font-black px-4 py-2 rounded-xl text-foreground"
           >
             Sign In
           </button>
@@ -190,7 +190,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
           <span className="text-primary">{portalConfig.highlightedText}</span>
         </h1>
         
-        <p className="text-gray-500 dark:text-gray-400 font-semibold text-base sm:text-lg mb-8 max-w-lg mx-auto leading-relaxed animate-fade-up" style={{ animationDelay: '0.2s' }}>
+        <p className="text-muted-foreground font-semibold text-base sm:text-lg mb-8 max-w-lg mx-auto leading-relaxed animate-fade-up" style={{ animationDelay: '0.2s' }}>
           {portalConfig.description}
         </p>
 
@@ -213,7 +213,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
              <div className="w-8 h-8 rounded-full border-2 border-ground bg-accent-gold/15 flex items-center justify-center text-accent-gold"><UserCircle2 className="w-5 h-5"/></div>
              <div className="w-8 h-8 rounded-full border-2 border-ground bg-accent-purple/15 flex items-center justify-center text-accent-purple"><UserCircle2 className="w-5 h-5"/></div>
           </div>
-          <div className="text-xs font-black text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+          <div className="text-xs font-black text-muted-foreground flex items-center gap-1.5">
              <div className="flex gap-0.5 text-accent-gold">
                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
              </div>
@@ -228,10 +228,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
           <span className="text-micro font-black tracking-widest uppercase text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
             Choose Your Exam Path
           </span>
-          <h2 className="text-xl sm:text-2xl font-black tracking-tight mt-2 text-gray-900 dark:text-gray-100">
+          <h2 className="text-xl sm:text-2xl font-black tracking-tight mt-2 text-foreground">
             Specialized Portals for Every Milestone
           </h2>
-          <p className="text-xs sm:text-sm font-bold text-gray-500 dark:text-gray-400 max-w-md mx-auto mt-1">
+          <p className="text-xs sm:text-sm font-bold text-muted-foreground max-w-md mx-auto mt-1">
             Official question banks, verified answer keys, and curriculum notes scoped specifically to your exam.
           </p>
         </div>
@@ -253,10 +253,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
                   15,000+ Qs
                 </span>
               </div>
-              <h3 className="font-black text-base text-gray-900 dark:text-gray-100 mb-1">
+              <h3 className="font-black text-base text-foreground mb-1">
                 Grade 12 Entrance (EUEE)
               </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-3 leading-relaxed">
+              <p className="text-xs text-muted-foreground font-semibold mb-3 leading-relaxed">
                 National EUEE past papers (2010–2018 E.C.) for Natural &amp; Social Science streams.
               </p>
               <div className="flex flex-wrap gap-1 mb-4">
@@ -298,10 +298,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
                   8,000+ Qs
                 </span>
               </div>
-              <h3 className="font-black text-base text-gray-900 dark:text-gray-100 mb-1">
+              <h3 className="font-black text-base text-foreground mb-1">
                 University Freshman
               </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-3 leading-relaxed">
+              <p className="text-xs text-muted-foreground font-semibold mb-3 leading-relaxed">
                 Common courses &amp; remedial exams across AAU, ASTU, AASTU, and regional universities.
               </p>
               <div className="flex flex-wrap gap-1 mb-4">
@@ -343,10 +343,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
                   8,000+ Qs
                 </span>
               </div>
-              <h3 className="font-black text-base text-gray-900 dark:text-gray-100 mb-1">
+              <h3 className="font-black text-base text-foreground mb-1">
                 University Exit Exam
               </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mb-3 leading-relaxed">
+              <p className="text-xs text-muted-foreground font-semibold mb-3 leading-relaxed">
                 National graduation qualification exams across Engineering, Medicine, Law, and Business.
               </p>
               <div className="flex flex-wrap gap-1 mb-4">
@@ -379,7 +379,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-2">Designed for Daily Momentum</h2>
-            <p className="text-xs sm:text-sm font-bold text-gray-500 dark:text-gray-400">Warm, habit-forming study tools built for Ethiopian students.</p>
+            <p className="text-xs sm:text-sm font-bold text-muted-foreground">Warm, habit-forming study tools built for Ethiopian students.</p>
           </div>
           
           <div className="grid sm:grid-cols-3 gap-5">
@@ -389,7 +389,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
               </div>
               <div>
                 <h3 className="font-black text-lg mb-1 tracking-tight">31,000+ Past Papers</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-xs font-semibold leading-relaxed">Practice real Grade 12 EUEE, Freshman University, and Exit exams with official answer keys.</p>
+                <p className="text-muted-foreground text-xs font-semibold leading-relaxed">Practice real Grade 12 EUEE, Freshman University, and Exit exams with official answer keys.</p>
               </div>
             </div>
 
@@ -399,7 +399,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
               </div>
               <div>
                 <h3 className="font-black text-lg mb-1 tracking-tight">Step-by-Step AI Tutor</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-xs font-semibold leading-relaxed">Stuck on a tricky calculation? Teme breaks down the exact formula and reason step-by-step.</p>
+                <p className="text-muted-foreground text-xs font-semibold leading-relaxed">Stuck on a tricky calculation? Teme breaks down the exact formula and reason step-by-step.</p>
               </div>
             </div>
 
@@ -409,7 +409,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
               </div>
               <div>
                 <h3 className="font-black text-lg mb-1 tracking-tight">Streaks &amp; Levels</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-xs font-semibold leading-relaxed">Earn XP for every question solved, level up to National Champ, and celebrate every study win.</p>
+                <p className="text-muted-foreground text-xs font-semibold leading-relaxed">Earn XP for every question solved, level up to National Champ, and celebrate every study win.</p>
               </div>
             </div>
           </div>
@@ -428,7 +428,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
                 <ShieldCheck className="w-8 h-8 text-accent-emerald" />
                 <div className="text-left flex flex-col">
                    <span className="font-black text-base leading-none text-gray-900 dark:text-white">MoE</span>
-                   <span className="text-micro font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">Curriculum Aligned</span>
+                   <span className="text-micro font-bold text-muted-foreground uppercase tracking-wider mt-0.5">Curriculum Aligned</span>
                 </div>
              </div>
 
@@ -436,7 +436,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
                 <Building2 className="w-8 h-8 text-accent-blue" />
                 <div className="text-left flex flex-col">
                    <span className="font-black text-base leading-none text-gray-900 dark:text-white">EUEE</span>
-                   <span className="text-micro font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">National Standards</span>
+                   <span className="text-micro font-bold text-muted-foreground uppercase tracking-wider mt-0.5">National Standards</span>
                 </div>
              </div>
 
@@ -444,7 +444,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
                 <GraduationCap className="w-8 h-8 text-accent-purple" />
                 <div className="text-left flex flex-col">
                    <span className="font-black text-base leading-none text-gray-900 dark:text-white">Freshman</span>
-                   <span className="text-micro font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">University Track</span>
+                   <span className="text-micro font-bold text-muted-foreground uppercase tracking-wider mt-0.5">University Track</span>
                 </div>
              </div>
           </div>

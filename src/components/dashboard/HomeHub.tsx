@@ -121,12 +121,12 @@ export const HomeHub: React.FC = () => {
       {/* ── 1. GREETING & IDENTITY ── */}
       <div className="px-5 pt-3 pb-1 flex justify-between items-center">
         <div>
-          <p className="text-caption font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1.5" suppressHydrationWarning>
+          <p className="text-caption font-bold text-muted-foreground flex items-center gap-1.5" suppressHydrationWarning>
             <span>{getGreeting()}</span>
             <span>•</span>
             <span className="text-primary font-black">{currentLevel.badge} Lv.{currentLevel.level}</span>
           </p>
-          <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none mt-1">
+          <h1 className="text-2xl font-black text-foreground tracking-tight leading-none mt-1">
             {firstName}
           </h1>
         </div>
@@ -149,13 +149,13 @@ export const HomeHub: React.FC = () => {
               <div className="w-7 h-7 rounded-xl bg-accent-gold/20 text-accent-gold border border-accent-gold/40 flex items-center justify-center font-black text-xs shadow-2xs">
                 ⚡
               </div>
-              <h3 className="text-xs font-black uppercase tracking-wider text-gray-900 dark:text-gray-100">
+              <h3 className="text-xs font-black uppercase tracking-wider text-foreground">
                 Daily Goal
               </h3>
             </div>
 
-            <span className="font-mono font-black text-sm text-gray-900 dark:text-gray-100 tabular-nums">
-              {dailyXp} <span className="text-gray-600 dark:text-gray-400 font-bold text-xs">/ {dailyXpGoal} XP</span>
+            <span className="font-mono font-black text-sm text-foreground tabular-nums">
+              {dailyXp} <span className="text-muted-foreground font-bold text-xs">/ {dailyXpGoal} XP</span>
             </span>
           </div>
 
@@ -222,8 +222,8 @@ export const HomeHub: React.FC = () => {
                 <Flame className="w-3.5 h-3.5 fill-current" />
                 <span>Resume Active Study</span>
               </div>
-              <h3 className="font-black text-gray-900 dark:text-gray-100 text-sm leading-snug">{lastSession.subject}</h3>
-              <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
+              <h3 className="font-black text-foreground text-sm leading-snug">{lastSession.subject}</h3>
+              <p className="text-xs font-bold text-muted-foreground mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
             </div>
             <div className="w-10 h-10 bg-gray-950 text-white dark:bg-white dark:text-gray-950 rounded-2xl flex items-center justify-center shrink-0 shadow-tactile-xs">
               <ArrowRight className="w-5 h-5 stroke-[2.6]" />

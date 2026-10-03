@@ -254,7 +254,7 @@ export const PracticeHub = () => {
       {/* ── 1. CLEAN HEADER ── */}
       <div className="px-5 pt-3 pb-2 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none">
+          <h1 className="text-2xl font-black text-foreground tracking-tight leading-none">
             Practice
           </h1>
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
@@ -272,8 +272,8 @@ export const PracticeHub = () => {
             className={`
               flex-1 py-2 rounded-full text-xs font-black transition-all duration-150 flex items-center justify-center gap-1.5
               ${filterMode === 'all'
-                ? 'bg-card text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
-                : 'text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white font-bold'}
+                ? 'bg-card text-foreground shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
+                : 'text-muted-foreground hover:text-foreground font-bold'}
             `}
           >
             <span>All Subjects</span>
@@ -284,8 +284,8 @@ export const PracticeHub = () => {
             className={`
               flex-1 py-2 rounded-full text-xs font-black transition-all duration-150 flex items-center justify-center gap-1.5
               ${filterMode === 'saved'
-                ? 'bg-card text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
-                : 'text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white font-bold'}
+                ? 'bg-card text-foreground shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
+                : 'text-muted-foreground hover:text-foreground font-bold'}
             `}
           >
             <Star className={`w-3.5 h-3.5 ${savedSubjects.length > 0 ? 'fill-amber-400 text-amber-400' : ''}`} />
@@ -304,8 +304,8 @@ export const PracticeHub = () => {
                 onClick={() => { sounds.playTap(); haptic.selection(); setActiveTab(tab); }}
                 className={`flex-1 py-1.5 text-xs font-black capitalize rounded-btn transition-all ${
                   activeTab === tab 
-                    ? 'bg-card text-gray-950 dark:text-white shadow-tactile-xs border border-black/10 dark:border-white/10' 
-                    : 'text-gray-700 dark:text-gray-300 font-bold'
+                    ? 'bg-card text-foreground shadow-tactile-xs border border-black/10 dark:border-white/10' 
+                    : 'text-muted-foreground font-bold'
                 }`}
               >
                 {tab}
@@ -320,8 +320,8 @@ export const PracticeHub = () => {
         {displayedSubjects.length === 0 ? (
           <div className="card-chunky p-8 text-center space-y-2">
             <span className="text-3xl">⭐</span>
-            <h3 className="text-sm font-black text-gray-900 dark:text-gray-100">No saved subjects yet</h3>
-            <p className="text-xs font-bold text-gray-600 dark:text-gray-400">Tap the star on any subject to pin it here for quick access.</p>
+            <h3 className="text-sm font-black text-foreground">No saved subjects yet</h3>
+            <p className="text-xs font-bold text-muted-foreground">Tap the star on any subject to pin it here for quick access.</p>
             <button
               onClick={() => setFilterMode('all')}
               className="text-xs font-black text-primary hover:underline pt-1 block mx-auto"

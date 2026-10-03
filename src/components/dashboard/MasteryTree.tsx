@@ -192,7 +192,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
       {/* ── 1. HEADER ────────────────────── */}
       <header className="flex items-center justify-between pt-1">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none mb-1">
+          <h1 className="text-2xl font-black text-foreground tracking-tight leading-none mb-1">
             Progress
           </h1>
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
@@ -210,7 +210,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-black uppercase tracking-wider text-primary">Level {currentLevel.level}</span>
                 <span className="text-slate-300 dark:text-slate-600">•</span>
-                <span className="text-xs font-black text-gray-900 dark:text-gray-100">{currentLevel.title}</span>
+                <span className="text-xs font-black text-foreground">{currentLevel.title}</span>
               </div>
               <p className="text-caption font-bold text-slate-500 dark:text-slate-400">
                 {currentLevel.titleAmharic}
@@ -219,7 +219,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
           </div>
 
           <div className="text-right">
-            <span className="text-xs font-black text-gray-900 dark:text-gray-100 tabular-nums">
+            <span className="text-xs font-black text-foreground tabular-nums">
               {xp} XP
             </span>
             {nextLevel && (
@@ -359,7 +359,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                         {acc}% accuracy
                       </span>
                     </div>
-                    <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 truncate">
+                    <h3 className="text-sm font-black text-foreground truncate">
                       {weakestSubject.subject}
                     </h3>
                     <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
@@ -393,7 +393,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         >
           <div className="flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-primary" />
-            <h3 className="text-xs font-black uppercase tracking-wider text-gray-900 dark:text-gray-100">
+            <h3 className="text-xs font-black uppercase tracking-wider text-foreground">
               Exam Subjects Not Yet Practiced ({unpracticedSubjects.length})
             </h3>
           </div>
@@ -409,7 +409,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                   haptic.selection();
                   router.push('/practice');
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-control bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-2 hover:border-primary/40 text-xs font-black text-gray-800 dark:text-gray-200 transition-all active:translate-y-[1px]"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-control bg-ground border border-black/[0.08] dark:border-white/[0.08] border-b-2 hover:border-primary/40 text-xs font-black text-foreground transition-all active:translate-y-[1px]"
               >
                 <span>{getSubjectEmoji(sub)}</span>
                 <span>{sub}</span>
@@ -441,7 +441,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                 className={`px-3 py-1.5 rounded-xl text-xs font-black capitalize transition-all ${
                   filterMode === tab
                     ? 'bg-card text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white font-bold'
+                    : 'text-muted-foreground hover:text-foreground font-bold'
                 }`}
               >
                 {tab === 'needs_practice' ? 'Needs Work' : tab}
@@ -453,10 +453,10 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
         {/* Subject Cards */}
         {filteredStats.length === 0 ? (
           <div className="bg-card border-2 border-dashed border-black/10 dark:border-white/10 rounded-card-lg p-6 text-center space-y-1">
-            <p className="text-xs font-black text-gray-900 dark:text-gray-100">
+            <p className="text-xs font-black text-foreground">
               No subjects in this category
             </p>
-            <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
+            <p className="text-xs font-bold text-muted-foreground">
               {filterMode === 'needs_practice'
                 ? 'All your practiced subjects are currently at 65% accuracy or higher!'
                 : 'Solve more questions to build your subject scores.'}
@@ -497,7 +497,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                         {emoji}
                       </span>
                       <div className="min-w-0">
-                        <h4 className="text-sm font-black text-gray-900 dark:text-gray-100 truncate">
+                        <h4 className="text-sm font-black text-foreground truncate">
                           {stat.subject}
                         </h4>
                         <span className="text-caption font-bold text-slate-500 dark:text-slate-400">
@@ -507,7 +507,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                     </div>
 
                     <div className="text-right shrink-0">
-                      <span className="text-base font-black font-mono tracking-tight text-gray-900 dark:text-gray-100 block">
+                      <span className="text-base font-black font-mono tracking-tight text-foreground block">
                         {accuracy}%
                       </span>
                       <span className={`inline-block text-micro font-black px-2 py-0.5 rounded-full ${status.badge}`}>
@@ -550,7 +550,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
       {stats.length === 0 && (
         <section className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-hero p-8 text-center flex flex-col items-center shadow-tactile-sm">
           <TemariMascot mood="happy" size={90} className="mb-2" />
-          <h3 className="text-base font-black text-gray-900 dark:text-gray-100 mb-1">
+          <h3 className="text-base font-black text-foreground mb-1">
             Start Your Exam Prep!
           </h3>
           <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 max-w-xs mb-5">

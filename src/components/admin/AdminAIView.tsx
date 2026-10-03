@@ -122,10 +122,10 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
             <Bot className="w-4 h-4 text-accent" />
             <span>AI Operations &amp; Engine</span>
           </div>
-          <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
+          <h1 className="text-3xl font-black text-foreground tracking-tight">
             Gemini &amp; AI Usage Telemetry
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">
+          <p className="text-muted-foreground font-medium mt-1">
             Real-time tracking of Gemini model calls, key rotation pool, student quotas, and cache savings.
           </p>
         </div>
@@ -247,7 +247,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
               key={k.index} 
               className={`p-4 rounded-2xl border-2 border-b-[3px] transition-all shadow-2xs ${
                 k.status === 'ready' 
-                  ? 'border-emerald-500/40 bg-white dark:bg-black/40 text-gray-900 dark:text-gray-100 hover:border-emerald-500' 
+                  ? 'border-emerald-500/40 bg-white dark:bg-black/40 text-foreground hover:border-emerald-500' 
                   : 'border-amber-500/40 bg-tint-peach text-tint-peach-fg'
               }`}
             >
@@ -265,7 +265,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                   </span>
                 )}
               </div>
-              <p className="font-mono text-xs font-bold text-gray-800 dark:text-gray-200 truncate">
+              <p className="font-mono text-xs font-bold text-foreground truncate">
                 {k.maskedKey}
               </p>
             </div>
@@ -277,11 +277,11 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
       <div className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden flex flex-col">
         <div className="p-6 border-b border-black/[0.08] dark:border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-2">
+            <h2 className="text-xl font-black text-foreground tracking-tight flex items-center gap-2">
               <Flame className="w-5 h-5 text-accent" />
               Student AI Inquiries &amp; Weekly Quota ({filteredUsers.length})
             </h2>
-            <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mt-1">
+            <p className="text-xs font-bold text-muted-foreground mt-1">
               Free students are capped at 5/week; Premium students get 150/week.
             </p>
           </div>
@@ -293,7 +293,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
               placeholder="Search student name or @user..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full bg-ground border-2 border-black/[0.08] dark:border-white/[0.08] rounded-xl pl-9 pr-3.5 py-2 text-xs font-bold text-gray-900 dark:text-gray-100 focus:outline-none focus:border-primary transition-all shadow-2xs"
+              className="w-full bg-ground border-2 border-black/[0.08] dark:border-white/[0.08] rounded-xl pl-9 pr-3.5 py-2 text-xs font-bold text-foreground focus:outline-none focus:border-primary transition-all shadow-2xs"
             />
           </div>
         </div>
@@ -302,17 +302,17 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-ground/50 border-b border-black/[0.06] dark:border-white/[0.08]">
-                <th className="p-4 font-black text-gray-700 dark:text-gray-300 uppercase tracking-wider text-xs">Student</th>
-                <th className="p-4 font-black text-gray-700 dark:text-gray-300 uppercase tracking-wider text-xs">Plan</th>
-                <th className="p-4 font-black text-gray-700 dark:text-gray-300 uppercase tracking-wider text-xs">Weekly Inquiries</th>
-                <th className="p-4 font-black text-gray-700 dark:text-gray-300 uppercase tracking-wider text-xs">Quota Burn</th>
-                <th className="p-4 font-black text-gray-700 dark:text-gray-300 uppercase tracking-wider text-xs text-right">Actions</th>
+                <th className="p-4 font-black text-muted-foreground uppercase tracking-wider text-xs">Student</th>
+                <th className="p-4 font-black text-muted-foreground uppercase tracking-wider text-xs">Plan</th>
+                <th className="p-4 font-black text-muted-foreground uppercase tracking-wider text-xs">Weekly Inquiries</th>
+                <th className="p-4 font-black text-muted-foreground uppercase tracking-wider text-xs">Quota Burn</th>
+                <th className="p-4 font-black text-muted-foreground uppercase tracking-wider text-xs text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-sm font-bold text-gray-600 dark:text-gray-400">
+                  <td colSpan={5} className="p-8 text-center text-sm font-bold text-muted-foreground">
                     No active student AI usage found for this cycle.
                   </td>
                 </tr>
@@ -334,10 +334,10 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                             {user.full_name?.charAt(0).toUpperCase() || '?'}
                           </div>
                           <div>
-                            <p className="font-bold text-sm text-gray-900 dark:text-gray-100">
+                            <p className="font-bold text-sm text-foreground">
                               {user.full_name || 'Unknown Student'}
                             </p>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 font-mono font-medium">
+                            <p className="text-xs text-muted-foreground font-mono font-medium">
                               @{user.username || user.telegram_id}
                             </p>
                           </div>
@@ -348,15 +348,15 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                         <span className={`px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider inline-flex items-center gap-1 ${
                           isPrem 
                             ? 'bg-accent/15 text-accent border border-accent/20' 
-                            : 'bg-black/5 dark:bg-white/10 text-gray-800 dark:text-gray-200'
+                            : 'bg-black/5 dark:bg-white/10 text-foreground'
                         }`}>
                           {isPrem && <Award className="w-3 h-3 text-accent" />}
                           {user.subscription_status}
                         </span>
                       </td>
 
-                      <td className="p-4 font-mono font-black text-sm text-gray-900 dark:text-gray-100 tabular-nums">
-                        {user.ai_weekly_usage} <span className="text-gray-600 dark:text-gray-400 text-xs font-bold">/ {maxQuota}</span>
+                      <td className="p-4 font-mono font-black text-sm text-foreground tabular-nums">
+                        {user.ai_weekly_usage} <span className="text-muted-foreground text-xs font-bold">/ {maxQuota}</span>
                       </td>
 
                       <td className="p-4 w-44">
@@ -368,14 +368,14 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                             style={{ width: `${percent}%` }}
                           />
                         </div>
-                        <p className="text-micro font-black text-gray-700 dark:text-gray-300 mt-1 text-right font-mono tabular-nums">{percent}% used</p>
+                        <p className="text-micro font-black text-muted-foreground mt-1 text-right font-mono tabular-nums">{percent}% used</p>
                       </td>
 
                       <td className="p-4 text-right">
                         <button
                           onClick={() => handleReset(user.telegram_id, user.full_name || 'Student')}
                           disabled={resettingId === user.telegram_id || user.ai_weekly_usage === 0}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] text-xs font-black text-gray-900 dark:text-gray-100 hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all duration-150 shadow-2xs"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] text-xs font-black text-foreground hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all duration-150 shadow-2xs"
                         >
                           <RotateCcw className={`w-3.5 h-3.5 stroke-[2.5] ${resettingId === user.telegram_id ? 'animate-spin' : ''}`} />
                           <span>Reset</span>
@@ -410,7 +410,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                 <div key={s.id} className="p-3.5 rounded-2xl bg-white dark:bg-black/40 border-2 border-b-[3px] border-tint-purple-border flex items-center justify-between gap-3 shadow-2xs">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-black text-gray-900 dark:text-gray-100">
+                      <span className="text-xs font-black text-foreground">
                         {s.gemini_amount || 'Unrecognized amount'}
                       </span>
                       {s.gemini_flagged && (
@@ -419,7 +419,7 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
                         </span>
                       )}
                     </div>
-                    <p className="text-caption font-bold text-gray-700 dark:text-gray-300 mt-0.5">
+                    <p className="text-caption font-bold text-muted-foreground mt-0.5">
                       Sender: {s.gemini_sender || 'Unknown'} · {new Date(s.created_at).toLocaleDateString()}
                     </p>
                   </div>
@@ -451,11 +451,11 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
               stats.cache.recentEntries.slice(0, 5).map((c, idx) => (
                 <div key={idx} className="p-3.5 rounded-2xl bg-white dark:bg-black/40 border-2 border-b-[3px] border-tint-sky-border flex items-center justify-between gap-3 shadow-2xs">
                   <div className="min-w-0">
-                    <p className="text-xs font-black text-gray-900 dark:text-gray-100 truncate">
+                    <p className="text-xs font-black text-foreground truncate">
                       Q: {c.question_id}
                     </p>
-                    <p className="text-caption font-bold text-gray-700 dark:text-gray-300 mt-0.5">
-                      Type: <span className="font-mono font-black text-gray-900 dark:text-gray-100">{c.prompt_type}</span> · Cached: {new Date(c.created_at).toLocaleDateString()}
+                    <p className="text-caption font-bold text-muted-foreground mt-0.5">
+                      Type: <span className="font-mono font-black text-foreground">{c.prompt_type}</span> · Cached: {new Date(c.created_at).toLocaleDateString()}
                     </p>
                   </div>
                   <span className="text-micro font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 shrink-0">

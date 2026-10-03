@@ -55,7 +55,7 @@ export const CelebrationModal: React.FC = () => {
         </div>
 
         {/* Title & Subtitle */}
-        <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight leading-tight mb-1.5">
+        <h2 className="text-2xl font-black text-foreground tracking-tight leading-tight mb-1.5">
           {activeCelebration.title}
         </h2>
         <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs mx-auto mb-5">

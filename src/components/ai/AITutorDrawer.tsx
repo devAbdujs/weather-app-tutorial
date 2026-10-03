@@ -311,10 +311,10 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
               <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-accent-emerald rounded-full border-2 border-card" />
             </div>
             <div>
-              <h3 className="font-black text-gray-900 dark:text-gray-100 text-base flex items-center gap-1.5 tracking-tight">
+              <h3 className="font-black text-foreground text-base flex items-center gap-1.5 tracking-tight">
                 Temari AI <span className="text-primary">Tutor</span>
               </h3>
-              <p className="text-caption text-gray-700 dark:text-gray-300 font-bold flex items-center gap-1">
+              <p className="text-caption text-muted-foreground font-bold flex items-center gap-1">
                 <GraduationCap className="w-3.5 h-3.5 text-primary" /> {mode === 'exam' ? 'Exam Problem Solver' : 'Chapter Note Companion'}
               </p>
             </div>
@@ -325,7 +325,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
               haptic.selection();
               onClose();
             }}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-card border-2 border-black/[0.08] dark:border-white/[0.08] text-gray-800 dark:text-gray-200 hover:text-gray-950 dark:hover:text-white active:scale-95 shadow-2xs"
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-card border-2 border-black/[0.08] dark:border-white/[0.08] text-foreground hover:text-foreground active:scale-95 shadow-2xs"
             title="Close Tutor"
           >
             <X className="w-4 h-4 stroke-[2.5]" />
@@ -333,7 +333,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
         </div>
 
         {/* Chat Messages Area */}
-        <div className="flex-1 overflow-y-auto py-2 space-y-3.5 text-sm leading-relaxed text-gray-900 dark:text-gray-100 custom-scrollbar pr-1 mt-1">
+        <div className="flex-1 overflow-y-auto py-2 space-y-3.5 text-sm leading-relaxed text-foreground custom-scrollbar pr-1 mt-1">
           {messages.map((msg) => (
             <React.Fragment key={msg.id}>
               <div className={`flex w-full animate-fade-up ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -550,7 +550,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask Teme anything..."
               disabled={isLoading}
-              className="flex-1 bg-transparent py-2 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none font-medium"
+              className="flex-1 bg-transparent py-2 text-sm text-foreground placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none font-medium"
             />
           </div>
           <button
