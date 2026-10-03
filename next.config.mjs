@@ -11,6 +11,12 @@ const nextConfig = {
     // your project has type errors.
     ignoreBuildErrors: true,
   },
+  // Compress responses with Gzip/Brotli
+  compress: true,
+  // Tree-shake unused Lucide icons and date-fns helpers from all route bundles
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'date-fns'],
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**.supabase.co' },

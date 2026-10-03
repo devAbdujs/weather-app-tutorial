@@ -54,21 +54,30 @@ export const HomeHub: React.FC = () => {
 
   useEffect(() => {
     setBackButton(false);
-    updateDailyStreak().then(res => {
-      if (res.success) {
-        useAppStore.setState(state => ({
-          userProfile: state.userProfile
-            ? { ...state.userProfile, daily_streak: res.streak }
-            : null,
-        }));
-      }
-    }).catch(() => {});
+
+    // Only call updateDailyStreak if last_activity_date is not already today.
+    // This prevents a redundant Supabase read/write on every internal route
+    // navigation back to the Home tab (layout.tsx already set the streak on SSR).
+    const todayISO = new Date().toISOString().slice(0, 10);
+    const lastActivity = useAppStore.getState().userProfile?.last_activity_date;
+    if (lastActivity !== todayISO) {
+      updateDailyStreak().then(res => {
+        if (res.success) {
+          useAppStore.setState(state => ({
+            userProfile: state.userProfile
+              ? { ...state.userProfile, daily_streak: res.streak, last_activity_date: todayISO }
+              : null,
+          }));
+        }
+      }).catch(() => {});
+    }
 
     try {
       const stored = safeLocalStorage.getItem('temari_last_session');
       if (stored) setLastSession(JSON.parse(stored));
     } catch {}
   }, [setBackButton]);
+
 
   if (!profileLoaded) return null;
 

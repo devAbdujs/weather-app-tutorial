@@ -13,6 +13,7 @@ export interface UserProfile {
   target_exam: string | null;
   stream: string;
   daily_streak: number;
+  last_activity_date?: string | null;
   subscription_status?: string;
   ai_weekly_usage?: number;
   ai_quota_reset_at?: string;

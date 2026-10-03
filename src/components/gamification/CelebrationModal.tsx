@@ -4,7 +4,6 @@ import React from 'react';
 import { useGamificationStore } from '@/store/useGamificationStore';
 import { TemariMascot } from '@/components/mascot/TemariMascot';
 import { Zap, Target, Flame, ArrowRight, X } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { celebrationConfettiPalette } from '@/styles/tokens';
 import { sounds } from '@/lib/sounds';
 
@@ -14,14 +13,18 @@ export const CelebrationModal: React.FC = () => {
   React.useEffect(() => {
     if (activeCelebration) {
       sounds.playCelebration();
-      try {
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: [...celebrationConfettiPalette],
-        });
-      } catch {}
+      // Dynamically import canvas-confetti only when a celebration fires —
+      // keeps it out of the initial JS bundle for all dashboard routes.
+      import('canvas-confetti').then(({ default: confetti }) => {
+        try {
+          confetti({
+            particleCount: 80,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: [...celebrationConfettiPalette],
+          });
+        } catch {}
+      });
     }
   }, [activeCelebration]);
 

@@ -165,6 +165,32 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
     else              setBackButton(true, () => router.push('/'));
   }, [selectedNote, setBackButton, router, handleBackFromNote]);
 
+  // Lazy-load the note's full markdown content when a chapter is tapped.
+  // SSR only sends metadata (no content body) to keep the initial payload light.
+  // We fetch the full content from Supabase here, client-side, on demand.
+  useEffect(() => {
+    if (!selectedNote || selectedNote.content) return; // already loaded
+    let cancelled = false;
+
+    const fetchContent = async () => {
+      try {
+        const res = await fetch(`/api/notes/content?id=${encodeURIComponent(selectedNote.id)}`, {
+          cache: 'force-cache',
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled && data?.content) {
+          // Patch the note object in the chapter list too so re-opens are instant
+          setSelectedNote(prev => prev ? { ...prev, content: data.content } : null);
+        }
+      } catch { /* silently ignore — note stays blank until retry */ }
+    };
+
+    fetchContent();
+    return () => { cancelled = true; };
+  }, [selectedNote?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+
   // 1. Load highlights from localStorage instantly, then sync with server
   useEffect(() => {
     if (!selectedNote) {

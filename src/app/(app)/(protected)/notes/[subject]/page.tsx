@@ -34,12 +34,12 @@ export default async function NotesPage({
     ? urlExamType
     : (profile?.target_exam || 'entrance');
 
-  // 2. Fetch notes: match department name AND restrict by exam_type
-  //    This ensures a freshman NEVER sees exit exam notes and vice versa.
-
+  // 2. Fetch notes: select only metadata fields — the full markdown content body
+  //    is fetched on-demand when a student taps a chapter card.
+  //    Avoids serializing 1–2 MB of markdown into the initial SSR HTML payload.
   let query = supabase
     .from('study_notes')
-    .select('*')
+    .select('id, title, department, exam_type, content_url, created_at')
     .eq('exam_type', examType)
     .limit(200);
 
