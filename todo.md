@@ -409,3 +409,26 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [ ] L-09  Remove console.log from production routes
 [ ] L-10  Migrate auth/callback/page.tsx to server component
 ```
+
+---
+
+## 🚀 Future Features (Concept Only — No Implementation Yet)
+
+### [F-01] College Ambassador Referral Program
+
+**Concept:** Campus-based growth engine powered by student ambassadors at major Ethiopian universities. Each ambassador acts as the exclusive owner of their campus community, drives paid subscriptions through a unique referral link, and earns income through a commission + milestone bonus structure.
+
+**Core Components:**
+- **Ambassador Identity** — Each ambassador owns a single campus (AAU, Jimma, Bahir Dar, HU, MU, etc.). Unique referral link tied to their account. Dedicated ambassador profile visible to their campus community.
+- **Earnings Model** — Commission per paid subscriber (birr/month, recurring while subscriber is active) + milestone bonuses at thresholds (10, 25, 50, 100, 250 paid referrals). Transparent real-time earnings dashboard + pending payout tracker.
+- **Tier System** — Bronze (0–9 paid referrals) → Silver (10–24) → Gold (25–99) → Diamond (100+). Higher tiers unlock higher commission rates, priority support, and exclusive Temari branding kits.
+- **Ambassador Dashboard** — Personal analytics: total referrals, active paid subscribers, churned subscribers, total earnings, pending payout, tier progress, leaderboard rank.
+- **Leaderboard** — Public ranking of all ambassadors by active paid subscribers. Resets quarterly. Top 3 per quarter get bonus payouts. Competitive motivation across campuses.
+- **Admin Controls** — Approve/reject applications, per-campus growth view, payout management, commission rate config per tier, ambassador suspension.
+- **Phased Rollout** — Phase 1: Pilot 5 flagship universities (AAU, JU, BDU, HU, MU). Phase 2: All public universities. Phase 3: Private colleges and preparatory schools.
+
+**Key Metrics to Track:** Referral conversion rate, subscriber LTV per campus, ambassador retention, CAC vs organic, MRR per campus cluster, churn rate by referral cohort.
+
+**Tables Needed (concept):** `ambassadors`, `ambassador_referrals`, `ambassador_earnings`, `ambassador_payouts`, `ambassador_tiers`
+
+**Open Questions:** Payout mechanism (Telebirr? Bank transfer?), minimum payout threshold, cross-device referral attribution, churn clawback policy (commission reversed if subscriber churns within 30 days?), academic year vs calendar year leaderboard resets.
