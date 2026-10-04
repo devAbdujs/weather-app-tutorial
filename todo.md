@@ -326,7 +326,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] C-04  Force admin password migration; remove plaintext comparison branch (auto-migrates on login + constant-time comparison)
 [x] C-05  Make receipts storage bucket private; use signed URLs for admin review
 [x] C-06  Fix OG image path in layout.tsx (Verified existing image asset at /assets/New_temari_logo.png)
-[ ] H-04  Add .max() on noteText (50K) and chatHistory[].content (4K) in AI schema
+[x] H-04  Add .max() on noteText (50K) and chatHistory[].content (4K) in AI schema
 [ ] H-05  Add DOMPurify sanitization before dangerouslySetInnerHTML on KaTeX output
 [ ] H-07  Hardcode redirect_uri server-side in auth/oidc route
 [ ] M-04  Add rate limiting to admin login Server Action
@@ -364,13 +364,13 @@ Require all admin accounts to update password; remove plaintext comparison branc
 ════════════════════════════════════════
 
 [ ] H-01  Confirm increment_user_subject_stats RPC deployed; fix race condition fallback
-[ ] H-02  Fix AI cache insert: .upsert({ ignoreDuplicates: true })
-[ ] H-03  Add cache READ before Gemini call in AI tutor route
+[x] H-02  Fix AI cache insert: .upsert({ ignoreDuplicates: true })
+[x] H-03  Add cache READ before Gemini call in AI tutor route
 [ ] H-06  Replace in-memory rate limiter with Upstash Redis (shared across instances)
-[ ] H-11  Fix Cache-Control on /api/notes/content: public → private
-[ ] H-12  Split ExamWorkspace: extract ExamResultsView as dynamic import
+[x] H-11  Fix Cache-Control on /api/notes/content: public → private
+[x] H-12  Split ExamWorkspace: extract ExamResultsView as dynamic import
 [ ] H-13  Convert practice/sessions/page.tsx to async server component
-[ ] H-14  Serve question images via Next.js <Image> or CDN; add lazy loading
+[x] H-14  Serve question images via Next.js <Image> or CDN; add lazy loading (rewrites & normalized)
 [ ] H-15  Persist subdomain exam type to profile.target_exam on auth login
 
 ════════════════════════════════════════
@@ -385,7 +385,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [ ] M-07  Fix upsert conflict target: remove space → 'telegram_id,subject'
 [ ] M-09  Fix HomeHub streak date: use Africa/Addis_Ababa timezone for comparison
 [ ] M-10  Change Telegram SDK strategy: beforeInteractive → afterInteractive
-[ ] M-11  Remove ~80 duplicate question images from /public (free 9 MB)
+[x] M-11  Remove ~80 duplicate question images from /public (free 9 MB — removed 153 redundant files, saved 8.3 MB)
 [ ] M-12  Add aria-label to all icon-only buttons across all components
 [ ] M-13  Convert upgrade/page.tsx to server wrapper (fix PRO user flash)
 [ ] M-14  Add not-found.tsx with branded 404 page

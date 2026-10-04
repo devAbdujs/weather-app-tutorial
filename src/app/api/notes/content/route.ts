@@ -38,8 +38,8 @@ export async function GET(req: NextRequest) {
       { content: note.content ?? '' },
       {
         headers: {
-          // Cache aggressively on CDN — note content rarely changes
-          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+          // Cache in client browser for 1 hour; private ensures CDN/proxies don't leak authenticated data
+          'Cache-Control': 'private, max-age=3600, stale-while-revalidate=86400',
         },
       }
     );

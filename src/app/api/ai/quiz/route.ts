@@ -37,8 +37,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { noteText, noteId } = body;
     
-    if (!noteText || typeof noteText !== 'string') {
-      return NextResponse.json({ error: 'noteText is required' }, { status: 400 });
+    if (!noteText || typeof noteText !== 'string' || noteText.length > 50000) {
+      return NextResponse.json({ error: 'noteText must be a valid string under 50,000 characters' }, { status: 400 });
     }
 
     // SUBSCRIPTION GATE: Only premium users can generate AI quizzes from notes

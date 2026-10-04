@@ -11,7 +11,7 @@ import { checkRateLimit } from '@/lib/rateLimiter';
 
 const RequestSchema = z.object({
   mode:            z.enum(['exam', 'notes']).default('exam'),
-  noteText:        z.string().optional(),
+  noteText:        z.string().max(50000).optional(),
   selectedExcerpt: z.string().max(4000).optional(),
   questionId:      z.string().optional(),
   questionText:    z.string().max(2000).optional(),
@@ -25,8 +25,8 @@ const RequestSchema = z.object({
   studentAnswer:   z.string().nullable().optional(),
   chatHistory:     z.array(z.object({
     role: z.enum(['user', 'assistant']),
-    content: z.string()
-  })).optional(),
+    content: z.string().max(4000)
+  })).max(20).optional(),
 });
 
 function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string): { system: string; defaultUserPrompt: string } {
@@ -103,7 +103,7 @@ function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string
   };
 }
 
-import { createClient } from '@supabase/supabase-js';
+import { createAdminClient } from '@/utils/supabase/admin';
 
 export async function POST(req: NextRequest) {
   try {
@@ -131,9 +131,7 @@ export async function POST(req: NextRequest) {
     // Ensure chatHistory does not begin with an assistant greeting (Gemini requires starting with 'user')
     const cleanedHistory = rawHistory.filter((msg, idx) => !(idx === 0 && msg.role === 'assistant'));
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-    const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
+    const supabaseAdmin = await createAdminClient();
 
     // 1. INDIVIDUAL QUOTA & SUBSCRIPTION ENGINE (Parallelized with Cache Check)
     let profileContext = '';
@@ -276,11 +274,14 @@ export async function POST(req: NextRequest) {
 
             // 2. CACHE POPULATION: Save standard static responses (explain, eli5, amharic) for next students
             if (payload.questionId && payload.promptType !== 'chat' && cleanedHistory.length <= 1) {
-              await supabaseAdmin.from('ai_responses_cache').insert({
-                question_id: payload.questionId,
-                prompt_type: payload.promptType,
-                response: text
-              });
+              await supabaseAdmin.from('ai_responses_cache').upsert(
+                {
+                  question_id: payload.questionId,
+                  prompt_type: payload.promptType,
+                  response: text,
+                },
+                { onConflict: 'question_id,prompt_type', ignoreDuplicates: true }
+              );
             }
           }
         });

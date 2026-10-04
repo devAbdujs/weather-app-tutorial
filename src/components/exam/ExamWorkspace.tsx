@@ -7,26 +7,27 @@ import { ChevronLeft, ChevronRight, ChevronDown, Flag, Grid, Sparkles, CheckCirc
 import { Question } from '@/types';
 import Image from 'next/image';
 import { MathText } from '@/components/MathText';
-import { AIResponse } from '@/components/AIResponse';
 import dynamic from 'next/dynamic';
 import { ExamTimer } from './ExamTimer';
 import { useTelegram } from '@/hooks/useTelegram';
 import { sounds } from '@/lib/sounds';
 import { useGamificationStore } from '@/store/useGamificationStore';
-import { TemariMascot } from '@/components/mascot/TemariMascot';
 
 const AITutorDrawer = dynamic(() => import('@/components/ai/AITutorDrawer').then(m => m.AITutorDrawer), { ssr: false });
+const ExamResultsView = dynamic(() => import('./ExamResultsView').then(m => m.ExamResultsView), { ssr: false });
 import { toggleSavedMistake, updateDailyStreak, getSavedMistakes } from '@/app/actions/user';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
 const getImageUrl = (imageFilename: string) => {
   if (!imageFilename) return '';
   if (imageFilename.startsWith('http')) return imageFilename;
-  const baseName = imageFilename.split('/').pop()?.replace(/\.[^/.]+$/, "");
+  const fileNameWithoutDir = imageFilename.split('/').pop() || imageFilename;
+  const normalizedFilename = fileNameWithoutDir.replace(/^questions_/, '');
+  const baseName = normalizedFilename.replace(/\.[^/.]+$/, '');
   if (!baseName) return '';
   
   if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
-    return imageFilename.startsWith('/') ? imageFilename : `/assets/question_images/${imageFilename}`;
+    return `/assets/question_images/${normalizedFilename}`;
   }
   return getOptimizedImageUrl(`question_images/${baseName}`);
 };
@@ -239,58 +240,29 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     const isPassing = percentage >= 50;
 
     return (
-      <div className="min-h-screen bg-ground text-foreground p-5 flex flex-col justify-center items-center max-w-md mx-auto animate-fade-in font-sans">
-        <div className="w-full bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-hero p-6 text-center shadow-tactile-md space-y-5">
-          
-          <div className="flex flex-col items-center">
-            <TemariMascot expression={percentage >= 70 ? 'celebrating' : isPassing ? 'happy' : 'studying'} size={110} />
-            <span className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 text-xs font-black">
-              <Zap className="w-3.5 h-3.5 fill-current" />
-              +50 XP Earned
-            </span>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-black tracking-tight text-foreground">
-              {percentage >= 75 ? 'Incredible Work!' : isPassing ? 'Session Completed!' : 'Keep Practicing!'}
-            </h2>
-            <p className="text-xs font-black text-muted-foreground mt-1">{title}</p>
-          </div>
-
-          <div className="py-5 px-4 bg-ground rounded-card-sm border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-around">
-            <div className="text-center">
-              <div className="text-3xl font-black text-foreground tracking-tight tabular-nums">{percentage}%</div>
-              <p className="text-caption font-black text-muted-foreground uppercase tracking-wider mt-0.5">Accuracy</p>
-            </div>
-            <div className="h-10 w-[2px] bg-black/10 dark:bg-white/10" />
-            <div className="text-center">
-              <div className="text-3xl font-black text-accent-emerald tracking-tight tabular-nums">{score} <span className="text-base text-muted-foreground font-black">/ {questions.length}</span></div>
-              <p className="text-caption font-black text-muted-foreground uppercase tracking-wider mt-0.5">Correct</p>
-            </div>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <button 
-              onClick={() => { sounds.playTap(); haptic.impact('medium'); setIsFinished(false); setIsReviewMode(true); setCurrentIndex(0); }} 
-              className="btn-3d-primary w-full py-3.5 rounded-card-sm font-black text-sm flex items-center justify-center gap-2"
-            >
-              Review Answers
-            </button>
-            <button 
-              onClick={() => { sounds.playTap(); haptic.impact('medium'); setIsFinished(false); setIsReviewMode(false); setCurrentIndex(0); setSelectedAnswers({}); setFlagged(new Set()); startTimeRef.current = Date.now(); setHasRecordedCompletion(false); }} 
-              className="btn-3d-card w-full py-3.5 rounded-card-sm font-black text-sm text-foreground"
-            >
-              Retake Exam
-            </button>
-            <button 
-              onClick={() => { sounds.playTap(); onExit(); }} 
-              className="w-full py-2.5 text-xs font-black text-foreground hover:text-foreground transition-colors"
-            >
-              Exit to Dashboard
-            </button>
-          </div>
-        </div>
-      </div>
+      <ExamResultsView
+        score={score}
+        totalQuestions={questions.length}
+        percentage={percentage}
+        isPassing={isPassing}
+        title={title}
+        haptic={haptic}
+        onReviewAnswers={() => {
+          setIsFinished(false);
+          setIsReviewMode(true);
+          setCurrentIndex(0);
+        }}
+        onRetakeExam={() => {
+          setIsFinished(false);
+          setIsReviewMode(false);
+          setCurrentIndex(0);
+          setSelectedAnswers({});
+          setFlagged(new Set());
+          startTimeRef.current = Date.now();
+          setHasRecordedCompletion(false);
+        }}
+        onExit={onExit}
+      />
     );
   }
 

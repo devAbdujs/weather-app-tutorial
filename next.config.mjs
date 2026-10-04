@@ -25,5 +25,13 @@ const nextConfig = {
       { protocol: 'https', hostname: 'res.cloudinary.com' },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/assets/question_images/questions_:name',
+        destination: '/assets/question_images/:name',
+      },
+    ];
+  },
 };
 export default nextConfig;
