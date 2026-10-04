@@ -25,7 +25,15 @@ function hexToBuffer(hex: string): ArrayBuffer {
 
 /** Derives a 256-bit AES-GCM key from the bot token (same approach as session.ts) */
 async function getAdminSecretKey(): Promise<CryptoKey> {
-  const secret = (process.env.TELEGRAM_BOT_TOKEN || 'admin-fallback-secret-32-bytes!!');
+  const secret = process.env.ADMIN_SESSION_SECRET || process.env.TELEGRAM_BOT_TOKEN;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('[Security] ADMIN_SESSION_SECRET or TELEGRAM_BOT_TOKEN must be configured in production.');
+    }
+    console.warn('[Security] Using development fallback secret for admin session encryption.');
+    const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('admin-fallback-secret-32-bytes!!:admin'));
+    return crypto.subtle.importKey('raw', hash, 'AES-GCM', false, ['encrypt', 'decrypt']);
+  }
   const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(secret + ':admin'));
   return crypto.subtle.importKey('raw', hash, 'AES-GCM', false, ['encrypt', 'decrypt']);
 }
@@ -60,10 +68,27 @@ async function decryptAdminSession(token: string): Promise<{ id: string; usernam
  * The hash is salted with the username to prevent rainbow table attacks.
  */
 async function hashPasscode(username: string, passcode: string): Promise<string> {
-  const salt = process.env.TELEGRAM_BOT_TOKEN || 'admin-salt-fallback';
+  const salt = process.env.ADMIN_SALT || process.env.TELEGRAM_BOT_TOKEN;
+  if (!salt) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('[Security] ADMIN_SALT or TELEGRAM_BOT_TOKEN must be configured in production.');
+    }
+    const data = new TextEncoder().encode(`admin-salt-fallback:${username}:${passcode}`);
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    return bufferToHex(hash);
+  }
   const data = new TextEncoder().encode(`${salt}:${username}:${passcode}`);
   const hash = await crypto.subtle.digest('SHA-256', data);
   return bufferToHex(hash);
+}
+
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
 }
 
 // ─── Public Actions ────────────────────────────────────────────────────────────
@@ -82,14 +107,26 @@ export async function loginAdmin(username: string, passcode: string) {
   }
 
   // Compare using hashed passcode. Falls back to plaintext comparison for
-  // existing accounts that were created before hashing was introduced —
-  // those admins will need to reset their passcode via the Managers page.
+  // legacy accounts that were created before hashing, but automatically
+  // migrates them to the salted hash on successful login.
   const hashedInput = await hashPasscode(username, passcode);
-  const isHashMatch = admin.passcode === hashedInput;
-  const isPlaintextMatch = admin.passcode === passcode; // legacy fallback
+  const isHashMatch = constantTimeEqual(admin.passcode, hashedInput);
+  const isPlaintextMatch = constantTimeEqual(admin.passcode, passcode); // legacy fallback
 
   if (!isHashMatch && !isPlaintextMatch) {
     return { success: false, error: 'Invalid username or password' };
+  }
+
+  // Auto-upgrade legacy plaintext password to secure hash in DB
+  if (isPlaintextMatch && !isHashMatch) {
+    try {
+      await supabase
+        .from('admin_users')
+        .update({ passcode: hashedInput })
+        .eq('id', admin.id);
+    } catch (migrateErr) {
+      console.error('[Admin Auth] Failed to auto-migrate legacy password to hash:', migrateErr);
+    }
   }
 
   // Encrypt the session — no longer base64 encoded
@@ -104,7 +141,7 @@ export async function loginAdmin(username: string, passcode: string) {
     value: sessionToken,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    sameSite: 'strict',
     path: '/',
     maxAge: 60 * 60 * 24 // 1 day
   });

@@ -19,7 +19,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { createClient } from '@supabase/supabase-js';
+import { createAdminClient } from '@/utils/supabase/admin';
 import { sendStudentNotification } from '@/lib/paymentNotifier';
 import {
   sendTelegramMessage,
@@ -52,15 +52,13 @@ export async function POST(req: NextRequest) {
     // Verify secret header from Telegram
     const secretHeader = req.headers.get('X-Telegram-Bot-Api-Secret-Token');
     if (BOT_TOKEN && secretHeader && secretHeader !== getExpectedSecret()) {
-      console.warn('[BotWebhook] Invalid secret header received');
+      console.warn('[BotWebhook] Invalid secret header received — rejecting request.');
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     const update = await req.json();
 
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const supabaseAdmin = await createAdminClient();
 
     // ── Route 1: Message / Commands Handler ──────────────────────────────────
     if (update.message) {
@@ -172,7 +170,20 @@ export async function POST(req: NextRequest) {
       const rejectMatch = data.match(/^reject_payment:(.+)$/);
 
       if (approveMatch || rejectMatch) {
-        if (ADMIN_TELEGRAM_ID && String(fromUser?.id) !== ADMIN_TELEGRAM_ID) {
+        const callerId = fromUser ? String(fromUser.id) : '';
+        const isEnvAdmin = Boolean(ADMIN_TELEGRAM_ID && callerId === ADMIN_TELEGRAM_ID);
+        let isDbAdmin = false;
+
+        if (!isEnvAdmin && callerId) {
+          const { data: dbAdmin } = await supabaseAdmin
+            .from('admin_users')
+            .select('id, role')
+            .eq('telegram_id', callerId)
+            .maybeSingle();
+          isDbAdmin = Boolean(dbAdmin && dbAdmin.role !== 'readonly');
+        }
+
+        if (!isEnvAdmin && !isDbAdmin) {
           await answerCallbackQuery(callbackQuery.id, '⛔ Unauthorized', true);
           return NextResponse.json({ ok: true });
         }
@@ -222,6 +233,13 @@ export async function POST(req: NextRequest) {
 
           if (profileUpdateErr) {
             console.error('[BotWebhook] Profile upgrade failed:', profileUpdateErr.message);
+            // Revert receipt status to pending to avoid inconsistent state
+            await supabaseAdmin
+              .from('payment_receipts')
+              .update({ status: 'pending' })
+              .eq('id', receiptId);
+            await answerCallbackQuery(callbackQuery.id, `❌ Profile upgrade failed: ${profileUpdateErr.message}`, true);
+            return NextResponse.json({ ok: true });
           }
 
           // Auto-resolve any other duplicate pending receipts from this student
@@ -235,7 +253,8 @@ export async function POST(req: NextRequest) {
         // Auto-Purge receipt image from storage to keep Supabase free tier at ~0 MB
         if (receipt.receipt_url) {
           try {
-            const fileName = receipt.receipt_url.split('/receipts/')[1];
+            const rawPart = receipt.receipt_url.split('/receipts/')[1];
+            const fileName = rawPart ? rawPart.split('?')[0] : '';
             if (fileName) {
               await supabaseAdmin.storage.from('receipts').remove([decodeURIComponent(fileName)]);
             }

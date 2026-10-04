@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { getServerSession } from '@/lib/session';
-import { createClient } from '@supabase/supabase-js';
+import { createAdminClient } from '@/utils/supabase/admin';
 import { getNextGeminiKey } from '@/lib/geminiKeyRotation';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText } from 'ai';
 import { sendAdminPaymentAlert } from '@/lib/paymentNotifier';
+import { checkRateLimit } from '@/lib/rateLimiter';
 
 // NOTE: Node.js runtime required for Buffer (not Edge-compatible)
 export const runtime = 'nodejs';
@@ -12,16 +14,22 @@ export const runtime = 'nodejs';
 const PAYMENT_AMOUNT_ETB = 199; // Expected payment amount (matches 199 ETB in upgrade UI)
 
 export async function POST(req: NextRequest) {
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-
   try {
     const session = await getServerSession();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Rate limit: max 5 submissions per 10 minutes per student
+    const rateLimit = checkRateLimit(`payment_submit:${session.telegram_id}`, 5, 600_000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many submissions. Please wait a few minutes before trying again.' },
+        { status: 429 }
+      );
+    }
+
+    const supabaseAdmin = await createAdminClient();
 
     const formData = await req.formData();
     const file = formData.get('receipt') as File;
@@ -31,18 +39,61 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing receipt screenshot' }, { status: 400 });
     }
 
+    // Validate file type
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/jpg'];
+    if (file.type && !allowedMimes.includes(file.type.toLowerCase())) {
+      return NextResponse.json(
+        { error: 'Invalid file format. Only JPEG, PNG, and WebP images are accepted.' },
+        { status: 400 }
+      );
+    }
+
+    // Validate file size (max 10MB)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: 'Receipt screenshot is too large. Maximum size is 10MB.' },
+        { status: 400 }
+      );
+    }
+
+    // Guard: reject duplicate pending submissions from the same student
+    const { data: existingPending } = await supabaseAdmin
+      .from('payment_receipts')
+      .select('id, created_at')
+      .eq('telegram_id', session.telegram_id)
+      .eq('status', 'pending')
+      .maybeSingle();
+
+    if (existingPending) {
+      return NextResponse.json(
+        {
+          error: 'You already have a pending payment verification in progress. Our team will verify it shortly.',
+          receiptId: existingPending.id,
+        },
+        { status: 409 }
+      );
+    }
+
     // ── Step 1: Upload receipt image to Supabase Storage ─────────────────────
     const fileBuffer = await file.arrayBuffer();
     const cleanFileName = file.name.replace(/[^a-zA-Z0-9.\-]/g, '_');
-    const fileName = `${session.telegram_id}_${Date.now()}_${cleanFileName}`;
+    // Obscure telegram_id to prevent leaking raw user IDs in storage URLs
+    const hashPrefix = crypto.createHash('sha256').update(String(session.telegram_id)).digest('hex').slice(0, 10);
+    const fileName = `rcpt_${hashPrefix}_${Date.now()}_${cleanFileName}`;
 
     const { error: uploadError } = await supabaseAdmin.storage
       .from('receipts')
-      .upload(fileName, fileBuffer, { contentType: file.type, upsert: true });
+      .upload(fileName, fileBuffer, { contentType: file.type || 'image/jpeg', upsert: true });
 
     if (uploadError) throw new Error(`Upload Failed: ${uploadError.message}`);
 
-    const receiptUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/receipts/${fileName}`;
+    // Generate signed URL (7-day validity) for admin review if private bucket, fallback to public path
+    const { data: signedData } = await supabaseAdmin.storage
+      .from('receipts')
+      .createSignedUrl(fileName, 60 * 60 * 24 * 7);
+
+    const receiptUrl = signedData?.signedUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/receipts/${fileName}`;
 
     // ── Step 2: Save pending receipt to database ──────────────────────────────
     const { data: receiptRow, error: insertError } = await supabaseAdmin

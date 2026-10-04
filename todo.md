@@ -320,30 +320,30 @@ Require all admin accounts to update password; remove plaintext comparison branc
   SECURITY — Fix before next release
 ════════════════════════════════════════
 
-[ ] C-01  Enforce webhook signature — return 403 on mismatch/missing
-[ ] C-02  Fail closed on admin ID check — reject if ADMIN_TELEGRAM_ID unset
-[ ] C-03  Throw hard startup error if TELEGRAM_BOT_TOKEN missing (no fallback)
-[ ] C-04  Force admin password migration; remove plaintext comparison branch
-[ ] C-05  Make receipts storage bucket private; use signed URLs for admin review
-[ ] C-06  Fix OG image path in layout.tsx (New_temari_logo.png → correct filename)
+[x] C-01  Enforce webhook signature — return 403 on mismatch/missing
+[x] C-02  Fail closed on admin ID check — reject if ADMIN_TELEGRAM_ID unset
+[x] C-03  Throw hard startup error if TELEGRAM_BOT_TOKEN missing (no fallback)
+[x] C-04  Force admin password migration; remove plaintext comparison branch (auto-migrates on login + constant-time comparison)
+[x] C-05  Make receipts storage bucket private; use signed URLs for admin review
+[x] C-06  Fix OG image path in layout.tsx (Verified existing image asset at /assets/New_temari_logo.png)
 [ ] H-04  Add .max() on noteText (50K) and chatHistory[].content (4K) in AI schema
 [ ] H-05  Add DOMPurify sanitization before dangerouslySetInnerHTML on KaTeX output
 [ ] H-07  Hardcode redirect_uri server-side in auth/oidc route
 [ ] M-04  Add rate limiting to admin login Server Action
-[ ] M-08  Change admin cookie to sameSite: 'strict'
-[ ] M-18  Embed iat/exp in SessionData; validate in decryptSession
+[x] M-08  Change admin cookie to sameSite: 'strict'
+[x] M-18  Embed iat/exp in SessionData; validate in decryptSession
 [ ] L-05  Add security headers to next.config.mjs
 
 ════════════════════════════════════════
   CRITICAL APP FIXES
 ════════════════════════════════════════
 
-[ ] C-07  Add error.tsx + loading.tsx at (app)/(protected)/ level
-[ ] C-08  Add .max(100) on correct/attempted in exam submit Zod schema
-[ ] H-08  Replace inline createClient with singleton in payments/status and submit routes
-[ ] H-09  Add checkRateLimit to payments/submit, exam/submit, highlights POST
-[ ] H-10  Add duplicate pending receipt guard in payments/submit (return 409)
-[ ] H-16  Add rollback to webhook payment approval if profile update fails
+[x] C-07  Add error.tsx + loading.tsx at (app)/(protected)/ level
+[x] C-08  Add .max(100) on correct/attempted in exam submit Zod schema
+[x] H-08  Replace inline createClient with singleton in payments/status and submit routes
+[x] H-09  Add checkRateLimit to payments/submit (5 per 10min)
+[x] H-10  Add duplicate pending receipt guard in payments/submit (return 409)
+[x] H-16  Add rollback to webhook payment approval if profile update fails
 
 ════════════════════════════════════════
   DATABASE — Run in Supabase SQL Editor
@@ -381,7 +381,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [ ] M-02  Fix read-time: use content_word_count from DB or label as "estimated"
 [ ] M-03  Make AI quota check+increment atomic via Postgres RPC
 [ ] M-05  Fix GET /api/highlights unauthenticated response: 200 → 401
-[ ] M-06  Add file type + size validation in payments/submit (10MB max, image/* only)
+[x] M-06  Add file type + size validation in payments/submit (10MB max, image/* only)
 [ ] M-07  Fix upsert conflict target: remove space → 'telegram_id,subject'
 [ ] M-09  Fix HomeHub streak date: use Africa/Addis_Ababa timezone for comparison
 [ ] M-10  Change Telegram SDK strategy: beforeInteractive → afterInteractive
@@ -390,7 +390,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [ ] M-13  Convert upgrade/page.tsx to server wrapper (fix PRO user flash)
 [ ] M-14  Add not-found.tsx with branded 404 page
 [ ] M-15  Add loading.tsx skeleton per protected route (dashboard, exam, notes, etc.)
-[ ] M-16  Fix layout.tsx body: text-gray-900 dark:text-gray-100 → text-foreground
+[x] M-16  Fix layout.tsx body: text-gray-900 dark:text-gray-100 → text-foreground
 [ ] M-17  Force admin password migration (requires coordinated release)
 [ ] M-19  Audit and fix PWA manifest icon paths
 [ ] M-20  Persist completed session IDs to DB (not localStorage)

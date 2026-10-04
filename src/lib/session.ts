@@ -7,10 +7,20 @@ export interface SessionData {
   devMode?: boolean;
   target_exam?: string | null;
   stream?: string | null;
+  iat?: number;
+  exp?: number;
 }
 
 const getSecretKey = async (): Promise<CryptoKey> => {
-  const token = process.env.TELEGRAM_BOT_TOKEN || 'dev-fallback-secret-key-32-bytes!';
+  const token = process.env.SESSION_SECRET || process.env.TELEGRAM_BOT_TOKEN;
+  if (!token) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('[Security] TELEGRAM_BOT_TOKEN or SESSION_SECRET must be configured in production.');
+    }
+    console.warn('[Security] Neither TELEGRAM_BOT_TOKEN nor SESSION_SECRET is set. Using dev fallback.');
+    const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('dev-fallback-secret-key-32-bytes!'));
+    return crypto.subtle.importKey('raw', hash, 'AES-GCM', false, ['encrypt', 'decrypt']);
+  }
   const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
   return crypto.subtle.importKey('raw', hash, 'AES-GCM', false, ['encrypt', 'decrypt']);
 };
@@ -33,7 +43,14 @@ export async function encryptSession(data: SessionData): Promise<string> {
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const key = await getSecretKey();
   
-  const encoded = new TextEncoder().encode(JSON.stringify(data));
+  const now = Math.floor(Date.now() / 1000);
+  const payload: SessionData = {
+    ...data,
+    iat: data.iat || now,
+    exp: data.exp || (now + 60 * 60 * 24 * 30), // 30 days
+  };
+
+  const encoded = new TextEncoder().encode(JSON.stringify(payload));
   const encryptedBuf = await crypto.subtle.encrypt(
     { name: 'AES-GCM', iv },
     key,
@@ -59,7 +76,14 @@ export async function decryptSession(encryptedStr: string): Promise<SessionData 
     );
     
     const decryptedStr = new TextDecoder().decode(decryptedBuf);
-    return JSON.parse(decryptedStr) as SessionData;
+    const session = JSON.parse(decryptedStr) as SessionData;
+
+    // Validate embedded expiration if present
+    if (session.exp && Math.floor(Date.now() / 1000) > session.exp) {
+      return null;
+    }
+
+    return session;
   } catch (err) {
     return null;
   }

@@ -4,10 +4,16 @@ import { getServerSession } from '@/lib/session';
 import { z } from 'zod';
 
 const SubmitSchema = z.object({
-  subject: z.string().min(1),
-  attempted: z.number().int().nonnegative(),
-  correct: z.number().int().nonnegative(),
-  timeSpentSeconds: z.number().int().nonnegative().optional().default(0)
+  subject: z.string().min(1).max(100),
+  // Max 200 questions per session (realistic upper bound for a full exam).
+  // Prevents stat inflation exploit: POST { correct: 999999 } → instant Level 5.
+  attempted: z.number().int().min(0).max(200),
+  correct:   z.number().int().min(0).max(200),
+  // Max 4 hours (14400s) per session
+  timeSpentSeconds: z.number().int().min(0).max(14400).optional().default(0),
+}).refine(data => data.correct <= data.attempted, {
+  message: 'correct answers cannot exceed attempted questions',
+  path: ['correct'],
 });
 
 export async function POST(req: NextRequest) {
