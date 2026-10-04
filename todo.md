@@ -264,7 +264,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 | D-10 | `idx_otp_codes_lookup` | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
 | D-11 | RLS on `user_pins` table | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
 | D-12 | Make `receipts` storage bucket private | Supabase dashboard setting | ✅ Completed (Private bucket) |
-| D-13 | `check_and_increment_ai_quota` RPC | `supabase/migrations/20261004140000_atomic_ai_quota_rpc.sql` | 📄 Migration ready |
+| D-13 | `check_and_increment_ai_quota` RPC | `supabase/migrations/20261004140000_atomic_ai_quota_rpc.sql` | ✅ Executed & Live in Prod |
 
 ---
 
