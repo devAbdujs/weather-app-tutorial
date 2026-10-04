@@ -365,7 +365,8 @@ export async function updatePaymentStatus(paymentId: string, telegramId: string,
       .eq('id', paymentId)
       .single();
     if (receipt?.receipt_url) {
-      const fileName = receipt.receipt_url.split('/receipts/')[1];
+      const rawPart = receipt.receipt_url.split('/receipts/')[1];
+      const fileName = rawPart ? rawPart.split('?')[0] : '';
       if (fileName) {
         await supabase.storage.from('receipts').remove([decodeURIComponent(fileName)]);
       }

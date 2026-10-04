@@ -88,12 +88,17 @@ export async function POST(req: NextRequest) {
 
     if (uploadError) throw new Error(`Upload Failed: ${uploadError.message}`);
 
-    // Generate signed URL (7-day validity) for admin review if private bucket, fallback to public path
-    const { data: signedData } = await supabaseAdmin.storage
+    // Generate signed URL (7-day validity) for admin review
+    const { data: signedData, error: signError } = await supabaseAdmin.storage
       .from('receipts')
       .createSignedUrl(fileName, 60 * 60 * 24 * 7);
 
-    const receiptUrl = signedData?.signedUrl || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/receipts/${fileName}`;
+    if (signError || !signedData?.signedUrl) {
+      console.error('[Payment Submit] Failed to create signed URL for receipt:', signError);
+      throw new Error(`Failed to generate secure receipt access link: ${signError?.message || 'Storage error'}`);
+    }
+
+    const receiptUrl = signedData.signedUrl;
 
     // ── Step 2: Save pending receipt to database ──────────────────────────────
     const { data: receiptRow, error: insertError } = await supabaseAdmin

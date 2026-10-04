@@ -39,7 +39,9 @@ import {
 export const runtime = 'nodejs';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
-const ADMIN_TELEGRAM_ID = process.env.ADMIN_TELEGRAM_ID || '2111526264';
+// No hardcoded fallback — if env is unset, payment approvals are blocked for everyone.
+// Set ADMIN_TELEGRAM_ID in your deployment environment variables.
+const ADMIN_TELEGRAM_ID = process.env.ADMIN_TELEGRAM_ID || null;
 
 // ── Security: verify request is genuinely from Telegram ───────────────────────
 function getExpectedSecret(): string {
@@ -49,11 +51,15 @@ function getExpectedSecret(): string {
 // ── Main handler ──────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   try {
-    // Verify secret header from Telegram
+    // Verify secret header from Telegram.
+    // Block if: header is absent (null) OR header is present but wrong.
+    // Only allow if BOT_TOKEN is not configured (legacy webhook without secret).
     const secretHeader = req.headers.get('X-Telegram-Bot-Api-Secret-Token');
-    if (BOT_TOKEN && secretHeader && secretHeader !== getExpectedSecret()) {
-      console.warn('[BotWebhook] Invalid secret header received — rejecting request.');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    if (BOT_TOKEN) {
+      if (!secretHeader || secretHeader !== getExpectedSecret()) {
+        console.warn('[BotWebhook] Missing or invalid secret header — rejecting request.');
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      }
     }
 
     const update = await req.json();
@@ -130,7 +136,8 @@ export async function POST(req: NextRequest) {
       }
 
       // ── Handle Admin PDF Document Upload ──────────────────────────────────
-      if (message.document && telegramUser && String(telegramUser.id) === ADMIN_TELEGRAM_ID) {
+      const allowedAdminIds = (ADMIN_TELEGRAM_ID || '').split(',').map(s => s.trim()).filter(Boolean);
+      if (message.document && telegramUser && allowedAdminIds.includes(String(telegramUser.id))) {
         const docName = message.document.file_name || 'document.pdf';
         const caption = message.caption || '';
 
@@ -171,19 +178,10 @@ export async function POST(req: NextRequest) {
 
       if (approveMatch || rejectMatch) {
         const callerId = fromUser ? String(fromUser.id) : '';
-        const isEnvAdmin = Boolean(ADMIN_TELEGRAM_ID && callerId === ADMIN_TELEGRAM_ID);
-        let isDbAdmin = false;
+        const allowedAdminIds = (ADMIN_TELEGRAM_ID || '').split(',').map(s => s.trim()).filter(Boolean);
+        const isAuthorizedAdmin = Boolean(callerId && allowedAdminIds.includes(callerId));
 
-        if (!isEnvAdmin && callerId) {
-          const { data: dbAdmin } = await supabaseAdmin
-            .from('admin_users')
-            .select('id, role')
-            .eq('telegram_id', callerId)
-            .maybeSingle();
-          isDbAdmin = Boolean(dbAdmin && dbAdmin.role !== 'readonly');
-        }
-
-        if (!isEnvAdmin && !isDbAdmin) {
+        if (!isAuthorizedAdmin) {
           await answerCallbackQuery(callbackQuery.id, '⛔ Unauthorized', true);
           return NextResponse.json({ ok: true });
         }
