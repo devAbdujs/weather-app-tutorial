@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChevronLeft, Sun, Moon, Flame, Zap, Volume2, VolumeX } from 'lucide-react';
+import { ChevronLeft, Sun, Moon, Volume2, VolumeX } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTheme } from '@/hooks/useTheme';
 import { useGamificationStore } from '@/store/useGamificationStore';
@@ -23,7 +23,7 @@ export const TopHeader = () => {
   const router = useRouter();
   const userProfile = useAppStore(s => s.userProfile);
   const { resolvedTheme, toggle } = useTheme();
-  const { xp, soundEnabled, toggleSound } = useGamificationStore();
+  const { soundEnabled, toggleSound } = useGamificationStore();
 
   // Hide during full-focus screens (exam, notes, practice sessions)
   const isFocusMode =
@@ -36,7 +36,6 @@ export const TopHeader = () => {
   const isHome = pathname === '/' || pathname === '/dashboard';
   const showBack = !isHome && !Object.keys(ROUTE_TITLES).includes(pathname);
   const title = ROUTE_TITLES[pathname] ?? 'Temari';
-  const streak = userProfile?.daily_streak || 0;
 
   return (
     <header
@@ -80,28 +79,27 @@ export const TopHeader = () => {
         )}
       </div>
 
-      {/* Center: Live Gamification Telemetry (Streak & XP - High Contrast) */}
-      <div className="flex items-center gap-1.5 sm:gap-2">
-        {/* Streak Pill - Warm Gold Flame */}
-        <button
-          onClick={() => { sounds.playStreak(); router.push('/mastery'); }}
-          title={`${streak} Day Streak`}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/15 border-2 border-b-[3px] border-amber-500/30 text-amber-950 dark:text-amber-200 font-black text-xs active:translate-y-[1px] transition-all shadow-2xs"
-        >
-          <Flame className="w-4 h-4 fill-amber-500 text-amber-500" />
-          <span className="font-mono font-black tabular-nums" suppressHydrationWarning>{streak}</span>
-        </button>
-
-        {/* XP Counter Pill - High Contrast Gamification Gold */}
-        <button
-          onClick={() => { sounds.playCorrect(); router.push('/profile'); }}
-          title={`${xp} Total XP`}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent-gold/15 border-2 border-b-[3px] border-accent-gold/30 text-amber-950 dark:text-amber-200 font-black text-xs active:translate-y-[1px] transition-all shadow-2xs"
-        >
-          <Zap className="w-4 h-4 fill-accent-gold text-accent-gold" />
-          <span className="font-mono font-black tabular-nums" suppressHydrationWarning>{xp}</span>
-        </button>
-      </div>
+      {/* Center: Official Telegram Channel Link */}
+      <a
+        href="https://t.me/temari_App"
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => {
+          sounds.playTap();
+          try {
+            if ((window as any)?.Telegram?.WebApp?.openTelegramLink) {
+              (window as any).Telegram.WebApp.openTelegramLink('https://t.me/temari_App');
+            }
+          } catch {}
+        }}
+        title="Join Official Temari Telegram Channel"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0088cc]/10 hover:bg-[#0088cc]/20 border-2 border-b-[3px] border-[#0088cc]/30 text-[#0088cc] dark:text-[#38a9e6] font-black text-xs active:translate-y-[1px] transition-all shadow-2xs"
+      >
+        <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .36z" />
+        </svg>
+        <span className="font-black tracking-tight">Channel</span>
+      </a>
 
       {/* Right: Pro Subscribe Pill + Sound toggle + Theme toggle */}
       <div className="flex items-center gap-1.5 justify-end">

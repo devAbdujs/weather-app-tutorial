@@ -433,3 +433,16 @@ Require all admin accounts to update password; remove plaintext comparison branc
 **Tables Needed (concept):** `ambassadors`, `ambassador_referrals`, `ambassador_earnings`, `ambassador_payouts`, `ambassador_tiers`
 
 **Open Questions:** Payout mechanism (Telebirr? Bank transfer?), minimum payout threshold, cross-device referral attribution, churn clawback policy (commission reversed if subscriber churns within 30 days?), academic year vs calendar year leaderboard resets.
+
+---
+
+### [F-02] Monitoring & Analytics
+
+**Concept:** Centralized observability, operational telemetry, and student growth analytics for tracking app performance, revenue conversion, and AI infrastructure metrics.
+
+**Core Components:**
+- **AI Latency & Quota Observability:** Real-time metrics on Gemini API response times, TTFT (time-to-first-token), cache hit rates (Redis L1 & Supabase L2), weekly quota exhaustion rates, and error/cooldown events.
+- **Student Engagement & Funnel Telemetry:** Daily Active Users (DAU), question attempt volume per subject, average simulation score trends, chapter note completion depth, and streak retention.
+- **Payment & Conversion Analytics:** Submission volume for Telebirr / CBE payment receipts, Gemini Vision auto-verification accuracy rate, manual review queue turnaround time, and churn tracking.
+- **Error Tracking & Health Monitoring:** Runtime exception tracking (Sentry / Vercel Web Analytics), rate-limit trigger alerts, and database pool connection monitoring.
+

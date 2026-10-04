@@ -26,7 +26,11 @@ export async function POST(req: NextRequest) {
     }
 
     for (const note of notesToSave) {
-      const { examType, department, title, content } = note;
+      const examType = note.examType?.trim();
+      const department = note.department?.trim();
+      const title = note.title?.trim();
+      const content = note.content?.trim();
+
       if (!examType || !department || !title || !content) {
         continue;
       }

@@ -12,23 +12,52 @@ const MarkdownRenderer = dynamic(() => import('@/components/dashboard/MarkdownRe
   loading: () => <div className="animate-pulse h-40 bg-black/5 dark:bg-white/5 rounded-2xl" /> 
 });
 
-const FRESHMAN_COURSE_SUGGESTIONS = [
-  'Applied Mathematics I',
-  'Mathematics for Natural Sciences',
-  'Economics',
-  'General Physics',
-  'Emerging Technology',
-  'Logic & Critical Thinking',
-  'Communicative English',
-  'General Psychology',
-  'Geography of Ethiopia',
-  'History of Ethiopia',
-  'Moral & Civics',
-  'Global Trends',
-  'Inclusiveness',
-  'Entrepreneurship',
-  'Social Anthropology',
-];
+const COURSE_SUGGESTIONS: Record<string, string[]> = {
+  freshman: [
+    'Applied Mathematics I',
+    'Mathematics for Natural Sciences',
+    'Economics',
+    'General Physics',
+    'Emerging Technology',
+    'Logic & Critical Thinking',
+    'Communicative English',
+    'General Psychology',
+    'Geography of Ethiopia',
+    'History of Ethiopia',
+    'Moral & Civics',
+    'Global Trends',
+    'Inclusiveness',
+    'Entrepreneurship',
+    'Social Anthropology',
+  ],
+  entrance: [
+    'Mathematics (Natural)',
+    'Mathematics (Social)',
+    'Physics',
+    'Chemistry',
+    'Biology',
+    'English',
+    'Scholastic Aptitude (SAT)',
+    'History',
+    'Geography',
+    'Economics',
+    'Civics & Ethical Education',
+  ],
+  exit: [
+    'Computer Science',
+    'Software Engineering',
+    'Information Technology',
+    'Electrical & Computer Engineering',
+    'Civil Engineering',
+    'Mechanical Engineering',
+    'Law',
+    'Medicine & Health Sciences',
+    'Nursing',
+    'Accounting & Finance',
+    'Management',
+    'Economics',
+  ],
+};
 
 interface ChapterQueueItem {
   id: string;
@@ -55,6 +84,7 @@ export default function AdminUploadNotes() {
   const [manualContent, setManualContent] = useState('');
   const [manualStatus, setManualStatus] = useState('');
   const [manualLoading, setManualLoading] = useState(false);
+  const [manualMode, setManualMode] = useState<'write' | 'preview'>('write');
 
   // ── Drag & Drop / File Selection Handlers ────────────────────────────────────
   const handleFilesAdded = (files: FileList | null) => {
@@ -245,7 +275,14 @@ export default function AdminUploadNotes() {
             <label className="block text-xs font-bold text-foreground mb-1.5">Exam Target</label>
             <select
               value={examType}
-              onChange={(e) => setExamType(e.target.value)}
+              onChange={(e) => {
+                const nextType = e.target.value;
+                setExamType(nextType);
+                const nextSuggestions = COURSE_SUGGESTIONS[nextType] || [];
+                if (nextSuggestions.length > 0) {
+                  setDepartment(nextSuggestions[0]);
+                }
+              }}
               className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-bold text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all cursor-pointer"
             >
               <option value="freshman">University Freshman</option>
@@ -255,18 +292,18 @@ export default function AdminUploadNotes() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-foreground mb-1.5">Course / Department</label>
+            <label className="block text-xs font-bold text-foreground mb-1.5">Course / Department / Subject</label>
             <div className="relative">
               <input
                 type="text"
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
-                placeholder="e.g. Applied Mathematics I"
+                placeholder="e.g. Applied Mathematics I or Physics"
                 list="course-suggestions"
                 className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-bold text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               />
               <datalist id="course-suggestions">
-                {FRESHMAN_COURSE_SUGGESTIONS.map(c => (
+                {(COURSE_SUGGESTIONS[examType] || []).map(c => (
                   <option key={c} value={c} />
                 ))}
               </datalist>
@@ -277,7 +314,7 @@ export default function AdminUploadNotes() {
         {/* Quick Suggestion Pills */}
         <div className="flex flex-wrap gap-1.5 pt-1">
           <span className="text-[11px] font-bold text-muted self-center mr-1">Quick Picks:</span>
-          {FRESHMAN_COURSE_SUGGESTIONS.slice(0, 6).map(c => (
+          {(COURSE_SUGGESTIONS[examType] || []).slice(0, 8).map(c => (
             <button
               key={c}
               type="button"
@@ -413,6 +450,14 @@ export default function AdminUploadNotes() {
                           <span className="truncate max-w-[200px]">{item.file.name}</span>
                           <span>•</span>
                           <span>{(item.file.size / 1024).toFixed(0)} KB</span>
+                          {item.content && (
+                            <>
+                              <span>•</span>
+                              <span className="text-primary font-bold">
+                                ~{Math.max(1, Math.ceil((item.content.trim().match(/\S+/g) || []).length / 180))} min read
+                              </span>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -500,44 +545,108 @@ export default function AdminUploadNotes() {
       )}
 
       {/* ── TAB 2: MANUAL DIRECT PASTE ───────────────────────────────────────── */}
-      {activeTab === 'manual' && (
-        <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
-          <div>
-            <label className="block text-xs font-bold text-muted uppercase tracking-wider mb-1.5">Chapter Title</label>
-            <input 
-              type="text" 
-              value={manualTitle} 
-              onChange={(e) => setManualTitle(e.target.value)}
-              placeholder="e.g. Chapter 1: Introduction to Economics"
-              className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-medium text-foreground text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-muted uppercase tracking-wider mb-1.5">Raw Markdown / NotebookLM</label>
-            <textarea 
-              value={manualContent} 
-              onChange={(e) => setManualContent(e.target.value)}
-              placeholder="Paste raw markdown here..."
-              className="w-full p-4 border border-border rounded-xl bg-ground h-80 font-mono text-xs sm:text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none leading-relaxed"
-            />
-          </div>
-
-          <button 
-            onClick={handleManualUpload} 
-            disabled={manualLoading}
-            className="w-full py-3.5 bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 font-black text-sm rounded-2xl shadow-sm active:translate-y-0.5 border-2 border-b-[4px] border-black dark:border-white transition-all disabled:opacity-50"
-          >
-            {manualLoading ? 'Saving...' : 'Save Directly to Database'}
-          </button>
-
-          {manualStatus && (
-            <div className={`p-3 text-xs font-semibold rounded-xl text-center border ${manualStatus.includes('✅') ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-600 border-red-500/20'}`}>
-              {manualStatus}
+      {activeTab === 'manual' && (() => {
+        const manualWordCount = (manualContent.trim().match(/\S+/g) || []).length;
+        const manualReadTime = Math.max(1, Math.ceil(manualWordCount / 180));
+        return (
+          <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex-1">
+                <label className="block text-xs font-bold text-muted uppercase tracking-wider mb-1.5">Chapter Title</label>
+                <input 
+                  type="text" 
+                  value={manualTitle} 
+                  onChange={(e) => setManualTitle(e.target.value)}
+                  placeholder="e.g. Chapter 1: Introduction to Economics"
+                  className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-medium text-foreground text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+                />
+              </div>
+              <div className="sm:self-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setManualTitle('');
+                    setManualContent('');
+                    setManualStatus('');
+                  }}
+                  disabled={!manualTitle && !manualContent}
+                  className="px-3.5 py-2.5 rounded-xl border border-border text-xs font-bold text-muted hover:text-red-500 hover:border-red-500/30 transition-all disabled:opacity-40"
+                >
+                  Clear
+                </button>
+              </div>
             </div>
-          )}
-        </div>
-      )}
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-bold text-muted uppercase tracking-wider">
+                  Note Content (Markdown &amp; LaTeX)
+                </label>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center bg-ground border border-border p-0.5 rounded-lg text-xs font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setManualMode('write')}
+                      className={`px-3 py-1 rounded-md transition-all ${
+                        manualMode === 'write' ? 'bg-card text-foreground shadow-xs font-black' : 'text-muted hover:text-foreground'
+                      }`}
+                    >
+                      Write
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setManualMode('preview')}
+                      className={`px-3 py-1 rounded-md transition-all ${
+                        manualMode === 'preview' ? 'bg-card text-foreground shadow-xs font-black' : 'text-muted hover:text-foreground'
+                      }`}
+                    >
+                      Live Preview
+                    </button>
+                  </div>
+                  {manualContent && (
+                    <span className="text-[11px] font-semibold text-muted bg-ground px-2 py-1 rounded-md border border-border hidden sm:inline">
+                      {manualWordCount} words · ~{manualReadTime} min read
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {manualMode === 'write' ? (
+                <textarea 
+                  value={manualContent} 
+                  onChange={(e) => setManualContent(e.target.value)}
+                  placeholder="Paste raw markdown here (e.g. from NotebookLM, Lecture notes, or textbook summaries)..."
+                  className="w-full p-4 border border-border rounded-xl bg-ground h-80 font-mono text-xs sm:text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none leading-relaxed"
+                />
+              ) : (
+                <div className="w-full p-5 border border-border rounded-xl bg-ground min-h-[320px] max-h-[500px] overflow-y-auto leading-relaxed">
+                  {manualContent.trim() ? (
+                    <MarkdownRenderer content={manualContent} />
+                  ) : (
+                    <p className="text-xs text-muted italic">Type or paste markdown to see live preview with LaTeX formatting...</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <button 
+                onClick={handleManualUpload} 
+                disabled={manualLoading || !manualTitle.trim() || !manualContent.trim()}
+                className="w-full py-3.5 bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 font-black text-sm rounded-2xl shadow-sm active:translate-y-0.5 border-2 border-b-[4px] border-black dark:border-white transition-all disabled:opacity-40"
+              >
+                {manualLoading ? 'Saving...' : `Save Directly to ${department} (${examType})`}
+              </button>
+            </div>
+
+            {manualStatus && (
+              <div className={`p-3 text-xs font-semibold rounded-xl text-center border ${manualStatus.includes('✅') ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-600 border-red-500/20'}`}>
+                {manualStatus}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── LIVE PREVIEW MODAL ──────────────────────────────────────────────── */}
       {previewItem && previewItem.content && (
@@ -548,8 +657,14 @@ export default function AdminUploadNotes() {
                 <h3 className="font-black text-base text-foreground">
                   {previewItem.inferredTitle}
                 </h3>
-                <p className="text-xs font-semibold text-muted">
-                  {department} · Live LaTeX & Markdown Preview
+                <p className="text-xs font-semibold text-muted flex items-center gap-2 mt-0.5">
+                  <span>{department} · {examType}</span>
+                  <span>•</span>
+                  <span className="font-bold text-primary">
+                    ~{Math.max(1, Math.ceil((previewItem.content.trim().match(/\S+/g) || []).length / 180))} min read
+                  </span>
+                  <span>•</span>
+                  <span>{(previewItem.content.trim().match(/\S+/g) || []).length} words</span>
                 </p>
               </div>
               <button

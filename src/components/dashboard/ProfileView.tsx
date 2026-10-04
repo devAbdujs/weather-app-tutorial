@@ -428,7 +428,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
 
           {/* Help & Support */}
           <a
-            href="https://t.me/ethio_exam_bot" 
+            href="https://t.me/temari_support" 
             target="_blank" 
             rel="noopener noreferrer"
             onClick={() => { sounds.playTap(); haptic.selection(); }}
