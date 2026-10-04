@@ -357,7 +357,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] D-09  CREATE INDEX idx_payment_receipts_user_date ON payment_receipts(telegram_id, created_at DESC) (Executed & Live in Prod)
 [x] D-10  CREATE INDEX idx_otp_codes_lookup ON otp_codes(code) (Executed & Live in Prod)
 [x] D-11  Confirm + add RLS on user_pins table (Executed & Live in Prod)
-[ ] D-12  Make receipts storage bucket private in Supabase dashboard
+[x] D-12  Make receipts storage bucket private in Supabase dashboard (Completed)
 
 ════════════════════════════════════════
   HIGH — Fix this week
