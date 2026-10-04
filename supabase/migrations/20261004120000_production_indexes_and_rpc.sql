@@ -82,8 +82,12 @@ CREATE INDEX IF NOT EXISTS idx_payment_receipts_user_date
 ON public.payment_receipts(telegram_id, created_at DESC);
 
 -- ── 8. OTP Codes Index (D-10) ─────────────────────────────────────────────────
-CREATE INDEX IF NOT EXISTS idx_otp_codes_phone_created 
-ON public.otp_codes(phone, created_at DESC);
+DO $$ 
+BEGIN
+  IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'otp_codes') THEN
+    CREATE INDEX IF NOT EXISTS idx_otp_codes_lookup ON public.otp_codes(code) WHERE used = false;
+  END IF;
+END $$;
 
 -- ── 9. User Pins Table Indexes & RLS Policy (D-11) ────────────────────────────
 DO $$ 
