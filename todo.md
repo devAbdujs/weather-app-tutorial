@@ -349,21 +349,21 @@ Require all admin accounts to update password; remove plaintext comparison branc
   DATABASE — Run in Supabase SQL Editor
 ════════════════════════════════════════
 
-[ ] D-01  Run increment_user_subject_stats.sql RPC function
-[ ] D-02  Run ai_responses_cache.sql (table + composite index)
-[ ] D-03  Run database_indexes.sql (questions composite indexes)
-[ ] D-04  Run supabase_performance_indexes.sql (all performance indexes)
-[ ] D-05  Run performance_indexes.sql (study_notes, user_pins, saved_mistakes)
-[ ] D-09  CREATE INDEX idx_payment_receipts_user_date ON payment_receipts(telegram_id, created_at DESC)
-[ ] D-10  CREATE INDEX idx_otp_codes_phone_created ON otp_codes(phone, created_at DESC)
-[ ] D-11  Confirm + add RLS on user_pins table
+[x] D-01  Run increment_user_subject_stats.sql RPC function (Executed & Live in Prod)
+[x] D-02  Run ai_responses_cache.sql (table + composite index) (Executed & Live in Prod)
+[x] D-03  Run database_indexes.sql (questions composite indexes) (Executed & Live in Prod)
+[x] D-04  Run supabase_performance_indexes.sql (all performance indexes) (Executed & Live in Prod)
+[x] D-05  Run performance_indexes.sql (study_notes, user_pins, saved_mistakes) (Executed & Live in Prod)
+[x] D-09  CREATE INDEX idx_payment_receipts_user_date ON payment_receipts(telegram_id, created_at DESC) (Executed & Live in Prod)
+[x] D-10  CREATE INDEX idx_otp_codes_lookup ON otp_codes(code) (Executed & Live in Prod)
+[x] D-11  Confirm + add RLS on user_pins table (Executed & Live in Prod)
 [ ] D-12  Make receipts storage bucket private in Supabase dashboard
 
 ════════════════════════════════════════
   HIGH — Fix this week
 ════════════════════════════════════════
 
-[ ] H-01  Confirm increment_user_subject_stats RPC deployed; fix race condition fallback
+[x] H-01  Confirm increment_user_subject_stats RPC deployed; fix race condition fallback
 [x] H-02  Fix AI cache insert: .upsert({ ignoreDuplicates: true })
 [x] H-03  Add cache READ before Gemini call in AI tutor route
 [x] H-06  Replace in-memory rate limiter with Upstash Redis (shared across instances, with memory fallback)
