@@ -328,11 +328,11 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] C-06  Fix OG image path in layout.tsx (Verified existing image asset at /assets/New_temari_logo.png)
 [x] H-04  Add .max() on noteText (50K) and chatHistory[].content (4K) in AI schema
 [ ] H-05  Add DOMPurify sanitization before dangerouslySetInnerHTML on KaTeX output
-[ ] H-07  Hardcode redirect_uri server-side in auth/oidc route
-[ ] M-04  Add rate limiting to admin login Server Action
+[x] H-07  Hardcode redirect_uri server-side in auth/oidc route
+[x] M-04  Add rate limiting to admin login Server Action
 [x] M-08  Change admin cookie to sameSite: 'strict'
 [x] M-18  Embed iat/exp in SessionData; validate in decryptSession
-[ ] L-05  Add security headers to next.config.mjs
+[x] L-05  Add security headers to next.config.mjs
 
 ════════════════════════════════════════
   CRITICAL APP FIXES
@@ -369,7 +369,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] H-06  Replace in-memory rate limiter with Upstash Redis (shared across instances, with memory fallback)
 [x] H-11  Fix Cache-Control on /api/notes/content: public → private
 [x] H-12  Split ExamWorkspace: extract ExamResultsView as dynamic import
-[ ] H-13  Convert practice/sessions/page.tsx to async server component
+[x] H-13  Convert practice/sessions/page.tsx to async server component
 [x] H-14  Serve question images via Next.js <Image> or CDN; add lazy loading (rewrites & normalized)
 [x] H-15  Persist subdomain exam type to profile.target_exam on auth login
 
@@ -377,8 +377,8 @@ Require all admin accounts to update password; remove plaintext comparison branc
   MEDIUM — Fix this sprint
 ════════════════════════════════════════
 
-[ ] M-01  Add isContentLoading skeleton to StudyNotesView lazy note fetch
-[ ] M-02  Fix read-time: use content_word_count from DB or label as "estimated"
+[x] M-01  Add isContentLoading skeleton to StudyNotesView lazy note fetch
+[x] M-02  Fix read-time: use content_word_count from DB or label as "estimated"
 [ ] M-03  Make AI quota check+increment atomic via Postgres RPC
 [x] M-05  Fix GET /api/highlights unauthenticated response: 200 → 401
 [x] M-06  Add file type + size validation in payments/submit (10MB max, image/* only)
@@ -387,9 +387,9 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] M-10  Change Telegram SDK strategy: beforeInteractive → afterInteractive
 [x] M-11  Remove ~80 duplicate question images from /public (free 9 MB — removed 153 redundant files, saved 8.3 MB)
 [ ] M-12  Add aria-label to all icon-only buttons across all components
-[ ] M-13  Convert upgrade/page.tsx to server wrapper (fix PRO user flash)
-[ ] M-14  Add not-found.tsx with branded 404 page
-[ ] M-15  Add loading.tsx skeleton per protected route (dashboard, exam, notes, etc.)
+[x] M-13  Convert upgrade/page.tsx to server wrapper (fix PRO user flash)
+[x] M-14  Add not-found.tsx with branded 404 page
+[x] M-15  Add loading.tsx skeleton per protected route (dashboard, exam, notes, etc.)
 [x] M-16  Fix layout.tsx body: text-gray-900 dark:text-gray-100 → text-foreground
 [ ] M-17  Force admin password migration (requires coordinated release)
 [ ] M-19  Audit and fix PWA manifest icon paths
@@ -399,13 +399,13 @@ Require all admin accounts to update password; remove plaintext comparison branc
   LOW — Backlog
 ════════════════════════════════════════
 
-[ ] L-01  Document that x-temari-subdomain must not be used as auth boundary
-[ ] L-02  encodeURIComponent the receipt fileName before URL construction
+[x] L-01  Document that x-temari-subdomain must not be used as auth boundary
+[x] L-02  encodeURIComponent the receipt fileName before URL construction
 [ ] L-03  Switch GET /api/highlights to user-scoped client with RLS
-[ ] L-04  Move root-level SQL files into supabase/migrations/ with timestamps
-[ ] L-06  Fix exam timer zero-padding: display 1:09 not 1:9
-[ ] L-07  Fix WelcomeOnboarding stream default: '' → 'Natural Science' or null
-[ ] L-08  Skip Telegram SDK load on /admin/* routes
+[x] L-04  Move root-level SQL files into supabase/migrations/ with timestamps
+[x] L-06  Fix exam timer zero-padding: display 1:09 not 1:9 (verified padded)
+[x] L-07  Fix WelcomeOnboarding stream default: '' → 'Natural Science' or null
+[x] L-08  Skip Telegram SDK load on /admin/* routes
 [ ] L-09  Remove console.log from production routes
 [ ] L-10  Migrate auth/callback/page.tsx to server component
 ```

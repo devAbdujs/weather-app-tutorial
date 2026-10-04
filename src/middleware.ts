@@ -6,7 +6,9 @@ export function middleware(req: NextRequest) {
   const subdomain = parseSubdomain(host);
   const pathname = req.nextUrl.pathname;
 
-  // Clone the request headers so we can append custom subdomain metadata
+  // Clone the request headers so we can append custom subdomain metadata.
+  // NOTE: x-temari-subdomain is UX/routing metadata only. It must NEVER be used
+  // as a security or authorization boundary. Auth is strictly enforced by session tokens.
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set('x-temari-subdomain', subdomain);
   if (subdomain !== 'root') {

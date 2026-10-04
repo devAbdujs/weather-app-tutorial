@@ -5,7 +5,7 @@ import { parseSubdomain } from '@/lib/subdomains';
 
 export async function POST(req: NextRequest) {
   try {
-    const { code, code_verifier, redirect_uri } = await req.json();
+    const { code, code_verifier } = await req.json();
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
 
     const clientId = process.env.TELEGRAM_CLIENT_ID || (botToken ? botToken.split(':')[0] : '');
@@ -16,7 +16,9 @@ export async function POST(req: NextRequest) {
     }
 
     const tokenEndpoint = 'https://oauth.telegram.org/token';
-    const finalRedirectUri = redirect_uri || `${process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top'}/auth/callback`;
+    // Server-enforced redirect URI to prevent open-redirect / token interception attacks (H-07)
+    const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://temari.top')).replace(/\/$/, '');
+    const finalRedirectUri = `${baseUrl}/auth/callback`;
 
     // Telegram OIDC requires Basic Auth header: base64(client_id:client_secret)
     const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');

@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     const cleanFileName = file.name.replace(/[^a-zA-Z0-9.\-]/g, '_');
     // Obscure telegram_id to prevent leaking raw user IDs in storage URLs
     const hashPrefix = crypto.createHash('sha256').update(String(session.telegram_id)).digest('hex').slice(0, 10);
-    const fileName = `rcpt_${hashPrefix}_${Date.now()}_${cleanFileName}`;
+    const fileName = encodeURIComponent(`rcpt_${hashPrefix}_${Date.now()}_${cleanFileName}`);
 
     const { error: uploadError } = await supabaseAdmin.storage
       .from('receipts')

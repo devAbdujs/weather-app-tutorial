@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/session';
 import { createAdminClient } from '@/utils/supabase/admin';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/notes/content?id=<note_uuid>
  *

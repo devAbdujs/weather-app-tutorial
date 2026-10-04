@@ -11,7 +11,7 @@ export interface UserProfile {
   telegram_id?: string;
   first_name?: string;
   target_exam: string | null;
-  stream: string;
+  stream?: string | null;
   daily_streak: number;
   last_activity_date?: string | null;
   subscription_status?: string;
@@ -41,7 +41,7 @@ export const useAppStore = create<AppState>((set) => ({
   setUserProfile: (updates) => set((state) => ({
     userProfile: state.userProfile ? { ...state.userProfile, ...updates } : {
       target_exam: null,
-      stream: '',
+      stream: null,
       daily_streak: 0,
       ...updates
     },

@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
-import Script from 'next/script';
 import './globals.css';
 
 const geistSans = localFont({
@@ -82,11 +81,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* Anti-FOUC theme script — must run synchronously before first paint */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        {/* Telegram WebApp SDK */}
-        <Script
-          src="https://telegram.org/js/telegram-web-app.js"
-          strategy="afterInteractive"
-        />
       </head>
       <body className={`${geistSans.variable} font-sans bg-ground text-foreground min-h-screen antialiased overscroll-none`}>
         <Toaster position="top-center" toastOptions={{ className: 'font-sans font-bold shadow-2xl rounded-2xl border-none' }} />

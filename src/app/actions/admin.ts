@@ -1,9 +1,10 @@
 'use server';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { sendStudentNotification } from '@/lib/paymentNotifier';
 import { getKeyDetails } from '@/lib/geminiKeyRotation';
+import { checkRateLimit } from '@/lib/rateLimiter';
 
 const ADMIN_COOKIE_NAME = 'temari_admin_session';
 
@@ -94,12 +95,48 @@ function constantTimeEqual(a: string, b: string): boolean {
 // ─── Public Actions ────────────────────────────────────────────────────────────
 
 export async function loginAdmin(username: string, passcode: string) {
+  const normalizedUsername = (username || '').trim().toLowerCase();
+  if (!normalizedUsername || !passcode) {
+    return { success: false, error: 'Invalid username or password' };
+  }
+
+  // Rate limiting to mitigate brute-force attacks (M-04)
+  let clientIp = 'unknown';
+  try {
+    const headersList = headers();
+    clientIp = headersList.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+  } catch {
+    // Graceful fallback outside HTTP request context (e.g. tests)
+  }
+
+  // Max 5 attempts per 15 minutes per username + IP
+  const userRateLimit = await checkRateLimit(`admin_login:${normalizedUsername}:${clientIp}`, 5, 15 * 60_000);
+  if (!userRateLimit.allowed) {
+    const waitMinutes = Math.max(1, Math.ceil(userRateLimit.resetInMs / 60_000));
+    return {
+      success: false,
+      error: `Too many login attempts. Please try again in ${waitMinutes} minute${waitMinutes > 1 ? 's' : ''}.`
+    };
+  }
+
+  // Max 15 attempts per 15 minutes globally per IP to prevent multi-account spray
+  if (clientIp !== 'unknown') {
+    const ipRateLimit = await checkRateLimit(`admin_login:ip:${clientIp}`, 15, 15 * 60_000);
+    if (!ipRateLimit.allowed) {
+      const waitMinutes = Math.max(1, Math.ceil(ipRateLimit.resetInMs / 60_000));
+      return {
+        success: false,
+        error: `Too many login attempts from this network. Please try again in ${waitMinutes} minute${waitMinutes > 1 ? 's' : ''}.`
+      };
+    }
+  }
+
   const supabase = await createAdminClient();
   
   const { data: admin, error } = await supabase
     .from('admin_users')
     .select('id, username, role, passcode')
-    .eq('username', username)
+    .ilike('username', normalizedUsername)
     .single();
 
   if (error || !admin) {

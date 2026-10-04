@@ -105,6 +105,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
   const router = useRouter();
   const { user, haptic, setBackButton } = useTelegram();
   const [selectedNote, setSelectedNote] = useState<StudyNote | null>(null);
+  const [isContentLoading, setIsContentLoading] = useState(false);
   const [showTutor, setShowTutor] = useState(false);
   const [tutorExcerpt, setTutorExcerpt] = useState('');
 
@@ -169,8 +170,17 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
   // SSR only sends metadata (no content body) to keep the initial payload light.
   // We fetch the full content from Supabase here, client-side, on demand.
   useEffect(() => {
-    if (!selectedNote || selectedNote.content) return; // already loaded
+    if (!selectedNote) {
+      setIsContentLoading(false);
+      return;
+    }
+    if (selectedNote.content) {
+      setIsContentLoading(false);
+      return; // already loaded
+    }
+
     let cancelled = false;
+    setIsContentLoading(true);
 
     const fetchContent = async () => {
       try {
@@ -183,7 +193,13 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
           // Patch the note object in the chapter list too so re-opens are instant
           setSelectedNote(prev => prev ? { ...prev, content: data.content } : null);
         }
-      } catch { /* silently ignore — note stays blank until retry */ }
+      } catch {
+        /* silently ignore — note stays blank until retry */
+      } finally {
+        if (!cancelled) {
+          setIsContentLoading(false);
+        }
+      }
     };
 
     fetchContent();
@@ -761,7 +777,9 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                 </span>
                 <span className="text-gray-400 dark:text-gray-500 text-caption">·</span>
                 <Clock className="w-3 h-3 text-gray-400 dark:text-gray-500" />
-                <span className="text-caption font-semibold text-muted-foreground">{readMins} min read</span>
+                <span className="text-caption font-semibold text-muted-foreground">
+                  {isContentLoading ? 'Loading note...' : `${readMins} min read`}
+                </span>
               </div>
             </div>
 
@@ -796,13 +814,30 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
           className="flex flex-col px-2.5 sm:px-4 pt-4 animate-fade-in"
         >
           <div id="note-content" className="w-full ruled-paper rounded-card sm:rounded-hero border border-black/[0.06] dark:border-white/[0.08] shadow-sm overflow-hidden pt-4 pb-12 mb-4 note-reading-canvas select-text">
-            <MarkdownRenderer 
-              content={selectedNote.content || ''} 
-              accentBg={accentBg} 
-              accentText={accentText}
-              highlights={highlights}
-              onHighlightClick={handleHighlightClick}
-            />
+            {isContentLoading && !selectedNote.content ? (
+              <div className="p-6 space-y-4 animate-pulse">
+                <div className="h-6 bg-black/[0.08] dark:bg-white/[0.08] rounded-md w-3/4 mb-6" />
+                <div className="space-y-3">
+                  <div className="h-4 bg-black/[0.06] dark:bg-white/[0.06] rounded w-full" />
+                  <div className="h-4 bg-black/[0.06] dark:bg-white/[0.06] rounded w-5/6" />
+                  <div className="h-4 bg-black/[0.06] dark:bg-white/[0.06] rounded w-4/6" />
+                </div>
+                <div className="pt-6 space-y-3">
+                  <div className="h-5 bg-black/[0.08] dark:bg-white/[0.08] rounded-md w-1/2 mb-4" />
+                  <div className="h-4 bg-black/[0.06] dark:bg-white/[0.06] rounded w-full" />
+                  <div className="h-4 bg-black/[0.06] dark:bg-white/[0.06] rounded w-11/12" />
+                  <div className="h-4 bg-black/[0.06] dark:bg-white/[0.06] rounded w-3/4" />
+                </div>
+              </div>
+            ) : (
+              <MarkdownRenderer 
+                content={selectedNote.content || ''} 
+                accentBg={accentBg} 
+                accentText={accentText}
+                highlights={highlights}
+                onHighlightClick={handleHighlightClick}
+              />
+            )}
           </div>
         </div>
 
@@ -897,7 +932,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
           </div>
           <div className="flex items-center gap-1.5 text-xs font-black text-slate-600 dark:text-slate-400">
             <Clock className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-            {initialNotes.reduce((sum, n) => sum + calculateReadTime(n.content || ''), 0)} min total read
+            ~{initialNotes.reduce((sum, n) => sum + (n.content ? calculateReadTime(n.content) : 3), 0)} min total read
           </div>
         </div>
       )}
@@ -915,7 +950,8 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
           </div>
         ) : (
           sortedNotes.map((note, idx) => {
-            const mins = calculateReadTime(note.content || '');
+            const hasContent = Boolean(note.content);
+            const mins = hasContent ? calculateReadTime(note.content!) : 3;
             return (
               <button
                 key={note.id}
@@ -942,7 +978,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                         {note.department}
                       </span>
                       <span className="text-caption font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-slate-400 dark:text-slate-500" /> {mins} min
+                        <Clock className="w-3 h-3 text-slate-400 dark:text-slate-500" /> {hasContent ? `${mins} min` : '~3 min'}
                       </span>
                     </div>
                   </div>
