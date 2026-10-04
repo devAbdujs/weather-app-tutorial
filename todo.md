@@ -120,6 +120,15 @@
 **File:** `src/app/api/bot/webhook/route.ts` lines 206–218
 **Issue:** Receipt is marked `approved` before profile is updated to `premium`. If profile update fails, receipt shows approved but user is not premium. No rollback. (`admin.ts:updatePaymentStatus` does implement rollback — webhook path does not.)
 
+### [H-17] Progress Tracking Shows 0/0/0 When Practicing Partial Sessions
+**Files:** `src/components/exam/ExamWorkspace.tsx`, `src/app/api/exam/submit/route.ts`, `src/app/(app)/(protected)/mastery/page.tsx`, `src/app/(app)/(protected)/profile/page.tsx`
+**Issue:** Questions attempted, solved, and mastery percentages stayed at 0 even after practicing questions. Exiting via the `X` button called `router.back()` directly without saving progress to `user_subject_stats`. Also, questions 1–49 lacked an early finish button, and when finished, `attempted` was hardcoded to `questions.length` (e.g. 50), skewing accuracy.
+**Fix:**
+- Implemented Early Exit Confirmation Modal with Temari mascot ("Finish & Record Score", "Keep Practicing", "Exit Without Saving").
+- Added quick "Finish & Record Score ({answeredCount} Qs)" action inside Question Grid.
+- Calculated `attempted` and accuracy based on actual questions answered in practice mode (while keeping standard paper total evaluation for timed simulator mode).
+- Added `revalidatePath` on `/mastery`, `/profile`, `/dashboard` in `/api/exam/submit` and set `force-dynamic` with `revalidate = 0` on protected pages.
+
 ---
 
 ## 🟡 MEDIUM
@@ -377,6 +386,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] H-13  Convert practice/sessions/page.tsx to async server component
 [x] H-14  Serve question images via Next.js <Image> or CDN; add lazy loading (rewrites & normalized)
 [x] H-15  Persist subdomain & portal path exam type to profile.target_exam on auth login (bypasses onboarding)
+[x] H-17  Fix progress tracking: self-paced practice partial attempt saving, early exit confirmation modal, accurate percentage calculations, and cache revalidation
 
 ════════════════════════════════════════
   MEDIUM — Fix this sprint

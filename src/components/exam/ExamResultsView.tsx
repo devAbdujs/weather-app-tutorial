@@ -11,6 +11,7 @@ interface ExamResultsViewProps {
   percentage: number;
   isPassing: boolean;
   title: string;
+  xpEarned?: number;
   onReviewAnswers: () => void;
   onRetakeExam: () => void;
   onExit: () => void;
@@ -23,6 +24,7 @@ export const ExamResultsView: React.FC<ExamResultsViewProps> = ({
   percentage,
   isPassing,
   title,
+  xpEarned = 50,
   onReviewAnswers,
   onRetakeExam,
   onExit,
@@ -36,7 +38,7 @@ export const ExamResultsView: React.FC<ExamResultsViewProps> = ({
           <TemariMascot expression={percentage >= 70 ? 'celebrating' : isPassing ? 'happy' : 'studying'} size={110} />
           <span className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 text-xs font-black">
             <Zap className="w-3.5 h-3.5 fill-current" />
-            +50 XP Earned
+            +{xpEarned} XP Earned
           </span>
         </div>
 

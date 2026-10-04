@@ -125,7 +125,10 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
       timeLimitMinutes={mode === 'exam' ? (examType === 'entrance' && sessionSize === 100 ? 120 : 60) : undefined}
       examType={examType as any}
       subject={subject}
-      onExit={() => router.back()}
+      onExit={() => {
+        router.refresh();
+        router.back();
+      }}
     />
   );
 };

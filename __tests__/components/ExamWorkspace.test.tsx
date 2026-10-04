@@ -15,6 +15,15 @@ import { Question } from '@/types';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+    refresh: jest.fn(),
+  }),
+}));
+
 jest.mock('@/hooks/useTelegram', () => ({
   useTelegram: () => ({
     isTelegram: false,
@@ -176,6 +185,61 @@ describe('ExamWorkspace — navigation', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Submit')).toBeInTheDocument();
+    });
+  });
+});
+
+describe('ExamWorkspace — exit and early finish', () => {
+  it('calls onExit directly when exit button is clicked with 0 answered questions', async () => {
+    const onExitMock = jest.fn();
+    render(<ExamWorkspace {...DEFAULT_PROPS} onExit={onExitMock} />);
+
+    const exitBtn = screen.getByLabelText(/Exit exam/i);
+    fireEvent.click(exitBtn);
+
+    expect(onExitMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('prompts confirmation modal when exit button is clicked after answering questions', async () => {
+    const onExitMock = jest.fn();
+    render(<ExamWorkspace {...DEFAULT_PROPS} onExit={onExitMock} />);
+
+    await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('4'));
+
+    const exitBtn = screen.getByLabelText(/Exit exam/i);
+    fireEvent.click(exitBtn);
+
+    expect(onExitMock).not.toHaveBeenCalled();
+    expect(screen.getByText(/Leave Practice Session\?/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Finish & Record Score/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Keep Practicing/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Exit Without Saving/i })).toBeInTheDocument();
+  });
+
+  it('submits score and renders results view when Finish & Record Score is clicked in exit modal', async () => {
+    // Mock global fetch for submit
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true }),
+    } as any);
+
+    render(<ExamWorkspace {...DEFAULT_PROPS} />);
+
+    await waitFor(() => expect(screen.getByText('4')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('4'));
+
+    fireEvent.click(screen.getByLabelText(/Exit exam/i));
+
+    const finishBtn = screen.getByText(/Finish & Record Score/i);
+    fireEvent.click(finishBtn);
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith('/api/exam/submit', expect.objectContaining({
+        method: 'POST',
+      }));
+      expect(screen.getByText(/Review Answers/i)).toBeInTheDocument();
+      expect(screen.getByText(/Exit to Dashboard/i)).toBeInTheDocument();
     });
   });
 });

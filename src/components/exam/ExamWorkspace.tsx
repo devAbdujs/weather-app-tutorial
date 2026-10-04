@@ -3,6 +3,7 @@
 
 import { toast } from "sonner";
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, ChevronDown, Flag, Grid, Sparkles, CheckCircle2, XCircle, Bookmark, Award, X, Lock, Lightbulb, Clock, Maximize2, Zap, Bot, Check, Compass } from 'lucide-react';
 import { Question } from '@/types';
 import Image from 'next/image';
@@ -12,6 +13,7 @@ import { ExamTimer } from './ExamTimer';
 import { useTelegram } from '@/hooks/useTelegram';
 import { sounds } from '@/lib/sounds';
 import { useGamificationStore } from '@/store/useGamificationStore';
+import { TemariMascot } from '@/components/mascot/TemariMascot';
 
 const AITutorDrawer = dynamic(() => import('@/components/ai/AITutorDrawer').then(m => m.AITutorDrawer), { ssr: false });
 const ExamResultsView = dynamic(() => import('./ExamResultsView').then(m => m.ExamResultsView), { ssr: false });
@@ -43,6 +45,7 @@ interface ExamWorkspaceProps {
 }
 
 export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, isSimulator = false, timeLimitMinutes = 60, onExit, subject = 'unknown' }) => {
+  const router = useRouter();
   const { user, haptic, setFullscreen, setVerticalSwipes, setClosingConfirmation } = useTelegram();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, 'A' | 'B' | 'C' | 'D'>>({});
@@ -50,6 +53,9 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
   const [savedQuestions, setSavedQuestions] = useState<Set<string>>(new Set());
   const [showGrid, setShowGrid] = useState(false);
   const [showAI, setShowAI] = useState(false);
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [isSubmittingStats, setIsSubmittingStats] = useState(false);
+  const [earnedXp, setEarnedXp] = useState(50);
   const [isFinished, setIsFinished] = useState(false);
   const [isReviewMode, setIsReviewMode] = useState(false);
   const startTimeRef = React.useRef(Date.now());
@@ -151,59 +157,78 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
     setTimeSpentSeconds(elapsed);
 
-    // Calculate accuracy and correct count
-    let correctCount = 0;
-    questions.forEach((q, idx) => {
-      const norm = q.answer ? q.answer.trim().toUpperCase() : null;
-      if (norm && selectedAnswers[idx] === norm) correctCount++;
-    });
-    const percentage = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
+    // Calculate accuracy and correct count based on actual answered questions
+    const answeredIndices = Object.keys(selectedAnswers).map(Number);
+    const answeredCount = answeredIndices.length;
 
-    // Gamification: Award 50 XP and trigger celebration modal!
-    useGamificationStore.getState().addXp(50, 'Completed Exam Session');
+    let computedCorrect = 0;
+    answeredIndices.forEach((idx) => {
+      const q = questions[idx];
+      const norm = q?.answer ? q.answer.trim().toUpperCase() : null;
+      if (norm && selectedAnswers[idx] === norm) computedCorrect++;
+    });
+
+    // In simulator mode, unanswered questions count as unattempted/failed (out of full exam paper)
+    // In practice mode, only actually answered questions count as attempted
+    const attemptedCount = isSimulator ? questions.length : Math.max(answeredCount, 1);
+    const correctCount = computedCorrect;
+    const percentage = attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0;
+
+    // Gamification: Award XP proportional to answered questions
+    const xpReward = isSimulator ? 50 : Math.max(15, Math.min(50, answeredCount * 5));
+    setEarnedXp(xpReward);
+    useGamificationStore.getState().addXp(xpReward, 'Practice Session');
     useGamificationStore.getState().triggerCelebration({
       type: 'quiz_completed',
       title: percentage >= 75 ? 'Outstanding Performance!' : percentage >= 50 ? 'Great Practice Session!' : 'Keep Going, Gobeze!',
       subtitle: percentage >= 75 ? `You scored ${percentage}%! Outstanding work on ${title}.` : `You scored ${percentage}%. Review your mistakes to master every topic.`,
-      xpEarned: 50,
+      xpEarned: xpReward,
       accuracy: percentage,
       mascotMood: percentage >= 70 ? 'celebrating' : 'happy',
     });
 
     if (!hasRecordedCompletion) {
       setHasRecordedCompletion(true);
+      setIsSubmittingStats(true);
       try {
         await updateDailyStreak();
+
+        const resolvedSubject = (subject && subject !== 'unknown' && subject !== 'All')
+          ? subject
+          : (questions[0]?.subject || 'General');
 
         try {
           const res = await fetch('/api/exam/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              subject,
-              attempted: questions.length,
+              subject: resolvedSubject,
+              attempted: attemptedCount,
               correct: correctCount,
               timeSpentSeconds: elapsed
             })
           });
           if (!res.ok) throw new Error('Network response was not ok');
+          router.refresh();
         } catch (submitErr) {
           console.warn('Offline or server error, saving submission locally:', submitErr);
           const { saveOfflineSubmission } = await import('@/utils/offlineSync');
           await saveOfflineSubmission({
-            subject,
-            attempted: questions.length,
+            subject: resolvedSubject,
+            attempted: attemptedCount,
             correct: correctCount,
             timeSpentSeconds: elapsed
           });
-          toast.info("You're offline! Your exam score was saved locally and will sync when you reconnect.");
+          toast.info("Your exam score was saved locally and will sync when you reconnect.");
         }
 
       } catch (err) {
         console.error("Error saving exam stats:", err);
+      } finally {
+        setIsSubmittingStats(false);
       }
     }
-  }, [hasRecordedCompletion, questions, selectedAnswers, subject, title]);
+  }, [hasRecordedCompletion, isSimulator, questions, router, selectedAnswers, subject, title]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
@@ -230,22 +255,37 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     setTouchStart(null);
   };
 
+  const answeredIndices = Object.keys(selectedAnswers).map(Number);
+  const answeredCount = answeredIndices.length;
+
+  const handleExitClick = () => {
+    sounds.playTap();
+    if (answeredCount === 0 || hasRecordedCompletion || isFinished) {
+      onExit();
+      return;
+    }
+    setShowExitModal(true);
+  };
+
   if (isFinished) {
     let score = 0;
-    questions.forEach((q, idx) => {
-      const norm = q.answer ? q.answer.trim().toUpperCase() : null;
+    answeredIndices.forEach((idx) => {
+      const q = questions[idx];
+      const norm = q?.answer ? q.answer.trim().toUpperCase() : null;
       if (norm && selectedAnswers[idx] === norm) score++;
     });
-    const percentage = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+    const totalEvaluated = isSimulator ? questions.length : Math.max(answeredCount, 1);
+    const percentage = Math.round((score / totalEvaluated) * 100);
     const isPassing = percentage >= 50;
 
     return (
       <ExamResultsView
         score={score}
-        totalQuestions={questions.length}
+        totalQuestions={totalEvaluated}
         percentage={percentage}
         isPassing={isPassing}
         title={title}
+        xpEarned={earnedXp}
         haptic={haptic}
         onReviewAnswers={() => {
           setIsFinished(false);
@@ -261,7 +301,10 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           startTimeRef.current = Date.now();
           setHasRecordedCompletion(false);
         }}
-        onExit={onExit}
+        onExit={() => {
+          router.refresh();
+          onExit();
+        }}
       />
     );
   }
@@ -278,7 +321,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     <div className="min-h-screen bg-ground text-foreground flex flex-col justify-between max-w-md mx-auto pb-24 font-sans select-none relative">
       <header className="sticky top-0 z-30 bg-ground/90 backdrop-blur-xl pt-safe border-b border-black/[0.06] dark:border-white/[0.08] pb-3">
         <div className="px-5 pt-3 pb-2 flex justify-between items-center mb-1">
-          <button onClick={onExit} aria-label="Exit exam" className="w-10 h-10 flex items-center justify-center rounded-btn bg-card border border-black/[0.08] dark:border-white/[0.08] text-foreground hover:text-foreground active:scale-[0.98] transition-transform shadow-tactile-xs"><X className="w-5 h-5" /></button>
+          <button onClick={handleExitClick} aria-label="Exit exam" className="w-10 h-10 flex items-center justify-center rounded-btn bg-card border border-black/[0.08] dark:border-white/[0.08] text-foreground hover:text-foreground active:scale-[0.98] transition-transform shadow-tactile-xs"><X className="w-5 h-5" /></button>
           <div className="flex flex-col items-center">
             <span className="text-micro uppercase tracking-widest font-black text-muted-foreground">{title}</span>
             <div className="flex items-center gap-1.5 mt-0.5">
@@ -543,6 +586,26 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                 );
               })}
             </div>
+            {/* Session Progress & Finish Action */}
+            <div className="mt-4 pt-3 border-t border-black/5 dark:border-white/10 flex flex-col gap-2.5">
+              <div className="flex justify-between items-center text-xs font-bold text-muted-foreground px-1">
+                <span>Session Progress</span>
+                <span className="font-mono">{answeredCount} of {questions.length} answered</span>
+              </div>
+              {answeredCount > 0 && !isReviewMode && (
+                <button
+                  onClick={() => {
+                    sounds.playTap();
+                    setShowGrid(false);
+                    handleFinish();
+                  }}
+                  className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 border-2 border-b-[3px] border-emerald-800 shadow-tactile-xs active:translate-y-[1px] transition-all"
+                >
+                  <Check className="w-4 h-4 stroke-[3]" />
+                  Finish &amp; Record Score ({answeredCount} Qs)
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -575,6 +638,57 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
             <p className="text-white text-regular font-medium leading-relaxed">
               {questions[currentIndex]?.question}
             </p>
+          </div>
+        </div>
+      )}
+
+      {showExitModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center p-5 animate-fade-in" onClick={() => setShowExitModal(false)}>
+          <div className="w-full max-w-sm bg-card rounded-modal p-6 shadow-tactile-lg border border-black/10 dark:border-white/10 animate-scale-bounce text-center" onClick={e => e.stopPropagation()}>
+            <div className="w-16 h-16 mx-auto mb-3">
+              <TemariMascot mood="studying" size={64} />
+            </div>
+            <h3 className="font-black text-xl text-foreground mb-1">Leave Practice Session?</h3>
+            <p className="text-xs text-muted-foreground font-medium mb-6">
+              You&apos;ve answered <strong className="text-foreground font-black">{answeredCount}</strong> of <strong className="text-foreground font-black">{questions.length}</strong> questions.
+              Would you like to finish and record your score, keep practicing, or exit without saving?
+            </p>
+
+            <div className="space-y-2.5">
+              <button
+                onClick={async () => {
+                  setShowExitModal(false);
+                  sounds.playTap();
+                  await handleFinish();
+                }}
+                disabled={isSubmittingStats}
+                className="w-full h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm flex items-center justify-center gap-2 border-2 border-b-[4px] border-emerald-800 shadow-tactile-xs active:translate-y-[2px] transition-all disabled:opacity-50"
+              >
+                <Check className="w-4 h-4 stroke-[3]" />
+                Finish &amp; Record Score
+              </button>
+
+              <button
+                onClick={() => {
+                  sounds.playTap();
+                  setShowExitModal(false);
+                }}
+                className="w-full h-12 rounded-2xl bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] text-foreground font-bold text-sm hover:bg-black/5 dark:hover:bg-white/5 active:translate-y-[2px] transition-all"
+              >
+                Keep Practicing
+              </button>
+
+              <button
+                onClick={() => {
+                  sounds.playTap();
+                  setShowExitModal(false);
+                  onExit();
+                }}
+                className="w-full py-2 text-xs font-bold text-rose-500 hover:text-rose-600 transition-colors"
+              >
+                Exit Without Saving
+              </button>
+            </div>
           </div>
         </div>
       )}

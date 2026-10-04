@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { getServerSession } from '@/lib/session';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 const SubmitSchema = z.object({
@@ -92,6 +93,12 @@ export async function POST(req: NextRequest) {
     else if (newCorrect > 50) level = 4;
     else if (newCorrect > 25) level = 3;
     else if (newCorrect > 10) level = 2;
+
+    try {
+      revalidatePath('/mastery');
+      revalidatePath('/profile');
+      revalidatePath('/dashboard');
+    } catch {}
 
     return NextResponse.json({ 
       success: true, 
