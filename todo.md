@@ -460,3 +460,15 @@ Require all admin accounts to update password; remove plaintext comparison branc
 - **Payment & Conversion Analytics:** Submission volume for Telebirr / CBE payment receipts, Gemini Vision auto-verification accuracy rate, manual review queue turnaround time, and churn tracking.
 - **Error Tracking & Health Monitoring:** Runtime exception tracking (Sentry / Vercel Web Analytics), rate-limit trigger alerts, and database pool connection monitoring.
 
+---
+
+## 🎨 Polish & Upcoming Tasks
+
+### [P-01] Short Note Upload Interface & Functionality Polish
+**Files:** `src/app/admin/upload-notes/page.tsx`, `src/app/api/admin/notes/route.ts`, `src/app/api/admin/notes/transform/route.ts`
+**Goal:** Enhance the admin short note creation and management experience:
+- Clean multi-step or split-pane upload UI with live Markdown/KaTeX preview.
+- AI Note Transformer: Convert raw lecture notes, PDF extracts, or textbooks into high-yield Temari chapter summaries with key formulas, bullet takeaways, and mnemonics.
+- Subject & chapter hierarchy selector with automated order index assignment.
+- Validation, duplicate check, and graceful error handling during save/publish.
+
