@@ -7,7 +7,7 @@ import { checkRateLimit } from '@/lib/rateLimiter';
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
-    const rateLimit = checkRateLimit(`otp:${ip}`, 5, 60_000);
+    const rateLimit = await checkRateLimit(`otp:${ip}`, 5, 60_000);
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { error: 'Too many verification attempts. Please wait a minute before trying again.' },

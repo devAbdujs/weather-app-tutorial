@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     }
 
     const rateLimitKey = `quiz:${session.telegram_id}`;
-    const rateLimitInfo = checkRateLimit(rateLimitKey, 5, 60000);
+    const rateLimitInfo = await checkRateLimit(rateLimitKey, 5, 60000);
     
     if (!rateLimitInfo.allowed) {
       return NextResponse.json({ error: 'Too many quiz requests. Please wait a minute.' }, { status: 429 });

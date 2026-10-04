@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Rate limit: max 5 submissions per 10 minutes per student
-    const rateLimit = checkRateLimit(`payment_submit:${session.telegram_id}`, 5, 600_000);
+    const rateLimit = await checkRateLimit(`payment_submit:${session.telegram_id}`, 5, 600_000);
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { error: 'Too many submissions. Please wait a few minutes before trying again.' },

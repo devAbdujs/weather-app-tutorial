@@ -1,31 +1,30 @@
+import { redis } from './redis';
+
 /**
- * Sliding Window Rate Limiter
+ * Distributed Sliding Window Rate Limiter
  *
- * In-memory, per-identifier (IP or Telegram user ID).
- * Allows `maxRequests` per `windowMs` milliseconds.
+ * Uses Upstash Redis for distributed atomic rate limiting across all Vercel
+ * serverless and edge instances worldwide.
  *
- * NOTE: For a multi-instance / serverless deployment (Vercel), each cold-start
- * gets its own in-memory store. This is acceptable for beta — it is still
- * effective because each serverless instance handles many requests, and
- * combined with Gemini's own per-key quotas, abuse is naturally bounded.
- * When scaling, swap the Map for Upstash Redis using the same interface.
+ * If Redis is not configured (e.g. local dev without credentials or during CI),
+ * seamlessly falls back to the in-memory sliding window store.
  */
 
 interface RateLimitEntry {
-  timestamps: number[]; // timestamps of each request in the current window
+  timestamps: number[];
 }
 
-const store = new Map<string, RateLimitEntry>();
+const memoryStore = new Map<string, RateLimitEntry>();
 
 // Purge identifiers that haven't been seen in 10 minutes to prevent memory leak
 const cleanupInterval = setInterval(() => {
   const cutoff = Date.now() - 600_000;
-  store.forEach((entry, key) => {
+  memoryStore.forEach((entry, key) => {
     if (entry.timestamps.length === 0 || entry.timestamps[entry.timestamps.length - 1] < cutoff) {
-      store.delete(key);
+      memoryStore.delete(key);
     }
   });
-}, 300_000); // cleanup every 5 minutes
+}, 300_000);
 
 if (cleanupInterval.unref) {
   cleanupInterval.unref();
@@ -33,18 +32,14 @@ if (cleanupInterval.unref) {
 
 export interface RateLimitResult {
   allowed: boolean;
-  remaining: number;  // requests remaining in window
-  resetInMs: number;  // ms until oldest request falls out of window
+  remaining: number;
+  resetInMs: number;
 }
 
 /**
- * Check and record a request for the given identifier.
- *
- * @param identifier - IP address or Telegram user ID
- * @param maxRequests - max allowed in window (default: 15)
- * @param windowMs    - window duration in ms (default: 60 000 = 1 minute)
+ * In-memory sliding window rate limiter (fallback or standalone)
  */
-export function checkRateLimit(
+export function checkRateLimitMemory(
   identifier: string,
   maxRequests = 15,
   windowMs = 60_000,
@@ -52,13 +47,11 @@ export function checkRateLimit(
   const now = Date.now();
   const windowStart = now - windowMs;
 
-  if (!store.has(identifier)) {
-    store.set(identifier, { timestamps: [] });
+  if (!memoryStore.has(identifier)) {
+    memoryStore.set(identifier, { timestamps: [] });
   }
 
-  const entry = store.get(identifier)!;
-
-  // Drop timestamps outside the current window (sliding window)
+  const entry = memoryStore.get(identifier)!;
   entry.timestamps = entry.timestamps.filter(ts => ts > windowStart);
 
   const remaining = Math.max(0, maxRequests - entry.timestamps.length);
@@ -69,7 +62,6 @@ export function checkRateLimit(
     return { allowed: false, remaining: 0, resetInMs };
   }
 
-  // Record this request
   entry.timestamps.push(now);
 
   return {
@@ -77,4 +69,48 @@ export function checkRateLimit(
     remaining: remaining - 1,
     resetInMs: windowMs,
   };
+}
+
+/**
+ * Distributed atomic rate limiter.
+ *
+ * Primary: Upstash Redis (shared globally across all serverless instances).
+ * Fallback: Local memory store if Redis is unavailable.
+ */
+export async function checkRateLimit(
+  identifier: string,
+  maxRequests = 15,
+  windowMs = 60_000,
+): Promise<RateLimitResult> {
+  if (redis) {
+    try {
+      const now = Date.now();
+      const windowStart = now - windowMs;
+      const key = `ratelimit:${identifier}`;
+
+      // Redis sliding window using sorted sets
+      const p = redis.pipeline();
+      p.zremrangebyscore(key, 0, windowStart);
+      p.zcard(key);
+      p.zadd(key, { score: now, member: `${now}:${Math.random().toString(36).substring(2, 8)}` });
+      p.pexpire(key, windowMs);
+
+      const results = await p.exec<[number, number, number, number]>();
+      const currentCount = (results[1] as number) || 0;
+
+      if (currentCount >= maxRequests) {
+        return { allowed: false, remaining: 0, resetInMs: windowMs };
+      }
+
+      return {
+        allowed: true,
+        remaining: Math.max(0, maxRequests - currentCount - 1),
+        resetInMs: windowMs,
+      };
+    } catch (err) {
+      console.warn('[RateLimiter] Upstash Redis call failed, falling back to memory store:', err);
+    }
+  }
+
+  return checkRateLimitMemory(identifier, maxRequests, windowMs);
 }

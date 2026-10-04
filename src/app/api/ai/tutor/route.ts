@@ -6,6 +6,7 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { z } from 'zod';
 import { getNextGeminiKey, markKeyRateLimited, getKeyCount } from '@/lib/geminiKeyRotation';
 import { checkRateLimit } from '@/lib/rateLimiter';
+import { getCachedAIResponse, setCachedAIResponse } from '@/lib/redis';
 
 
 
@@ -113,7 +114,7 @@ export async function POST(req: NextRequest) {
     }
 
     const rateLimitKey = `tutor:${session.telegram_id}`;
-    const rateLimitInfo = checkRateLimit(rateLimitKey, 15, 60000);
+    const rateLimitInfo = await checkRateLimit(rateLimitKey, 15, 60000);
     
     if (!rateLimitInfo.allowed) {
       return new Response(JSON.stringify({ error: 'Too many AI requests. Please slow down a moment.' }), { status: 429 });
@@ -133,7 +134,7 @@ export async function POST(req: NextRequest) {
 
     const supabaseAdmin = await createAdminClient();
 
-    // 1. INDIVIDUAL QUOTA & SUBSCRIPTION ENGINE (Parallelized with Cache Check)
+    // 1. INDIVIDUAL QUOTA & SUBSCRIPTION ENGINE (Parallelized with Multi-Tier Cache Check)
     let profileContext = '';
     let currentUsage = 0;
     let isPremium = false;
@@ -142,16 +143,21 @@ export async function POST(req: NextRequest) {
     const shouldCheckCache = payload.questionId && payload.promptType !== 'chat' && cleanedHistory.length <= 1;
 
     let profile: any = null;
-    let cached: any = null;
+    let cachedResponseText: string | null = null;
 
     try {
+      // 1. Check L1 Redis Cache first (sub-10ms)
+      if (shouldCheckCache) {
+        cachedResponseText = await getCachedAIResponse(payload.questionId!, payload.promptType);
+      }
+
       const [profileRes, cacheRes] = await Promise.all([
         supabaseAdmin
           .from('profiles')
           .select('target_exam, stream, subscription_status, ai_weekly_usage, ai_quota_reset_at')
           .eq('telegram_id', session.telegram_id)
           .maybeSingle(),
-        shouldCheckCache
+        shouldCheckCache && !cachedResponseText
           ? supabaseAdmin
               .from('ai_responses_cache')
               .select('response')
@@ -162,7 +168,12 @@ export async function POST(req: NextRequest) {
       ]);
 
       profile = profileRes.data;
-      cached = cacheRes.data;
+      if (!cachedResponseText && cacheRes?.data?.response) {
+        const dbCachedText = cacheRes.data.response as string;
+        cachedResponseText = dbCachedText;
+        // Backfill L1 Redis Cache for subsequent instant hits
+        setCachedAIResponse(payload.questionId!, payload.promptType, dbCachedText);
+      }
     } catch (e) {
       console.error('[AI Parallel Lookup Error]', e);
     }
@@ -212,8 +223,8 @@ export async function POST(req: NextRequest) {
     else if (profile.target_exam === 'freshman') profileContext = `Student Profile: University Freshman (${profile.stream} track)`;
     else if (profile.target_exam === 'exit') profileContext = `Student Profile: University Exit Exam (${profile.stream} department)`;
 
-    // Check if cache hit
-    if (cached?.response) {
+    // Check if cache hit (L1 Redis or L2 Supabase)
+    if (cachedResponseText) {
       try {
         await supabaseAdmin
           .from('profiles')
@@ -227,7 +238,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Cache Hit! Return instantly.
-      return new Response(cached.response, { 
+      return new Response(cachedResponseText, { 
         headers: { 'Content-Type': 'text/plain; charset=utf-8' }
       });
     }
@@ -274,6 +285,7 @@ export async function POST(req: NextRequest) {
 
             // 2. CACHE POPULATION: Save standard static responses (explain, eli5, amharic) for next students
             if (payload.questionId && payload.promptType !== 'chat' && cleanedHistory.length <= 1) {
+              setCachedAIResponse(payload.questionId, payload.promptType, text);
               await supabaseAdmin.from('ai_responses_cache').upsert(
                 {
                   question_id: payload.questionId,

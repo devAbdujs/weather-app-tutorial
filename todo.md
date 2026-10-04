@@ -366,7 +366,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [ ] H-01  Confirm increment_user_subject_stats RPC deployed; fix race condition fallback
 [x] H-02  Fix AI cache insert: .upsert({ ignoreDuplicates: true })
 [x] H-03  Add cache READ before Gemini call in AI tutor route
-[ ] H-06  Replace in-memory rate limiter with Upstash Redis (shared across instances)
+[x] H-06  Replace in-memory rate limiter with Upstash Redis (shared across instances, with memory fallback)
 [x] H-11  Fix Cache-Control on /api/notes/content: public → private
 [x] H-12  Split ExamWorkspace: extract ExamResultsView as dynamic import
 [ ] H-13  Convert practice/sessions/page.tsx to async server component
