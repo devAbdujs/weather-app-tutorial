@@ -31,23 +31,30 @@ function CallbackContent() {
       return;
     }
 
+    const targetExam = safeSessionStorage.getItem('temari_target_exam');
+
     // Exchange the code for a token on our backend
     fetch('/api/auth/oidc', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        ...(targetExam ? { 'x-temari-target-exam': targetExam } : {})
+      },
       body: JSON.stringify({ 
         code, 
         code_verifier: codeVerifier,
+        targetExam: targetExam || undefined,
         redirect_uri: (process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top') + '/auth/callback'
       })
     })
     .then(res => res.json().then(data => ({ status: res.status, ok: res.ok, data })))
     .then(({ ok, data }) => {
       if (ok) {
-        // Cleanup storage and reload the main page
+        // Cleanup storage and redirect to dashboard
         safeSessionStorage.removeItem('tg_oidc_state');
         safeSessionStorage.removeItem('tg_oidc_verifier');
-        window.location.replace('/');
+        safeSessionStorage.removeItem('temari_target_exam');
+        window.location.replace('/dashboard');
       } else {
         setError(data.error || 'Failed to authenticate');
       }

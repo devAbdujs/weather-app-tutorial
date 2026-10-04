@@ -5,7 +5,7 @@ import { parseSubdomain } from '@/lib/subdomains';
 
 export async function POST(req: NextRequest) {
   try {
-    const { code, code_verifier } = await req.json();
+    const { code, code_verifier, targetExam } = await req.json();
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
 
     const clientId = process.env.TELEGRAM_CLIENT_ID || (botToken ? botToken.split(':')[0] : '');
@@ -65,16 +65,28 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error;
 
-    // Resolve subdomain target_exam if not already set on profile
+    // Resolve target_exam if not already set on profile
     let activeTargetExam = profile.target_exam;
     if (!activeTargetExam) {
+      const explicitTarget = targetExam;
+      const headerExam = req.headers.get('x-temari-target-exam');
+      const cookieExam = req.cookies.get('temari_portal')?.value;
       const host = req.headers.get('x-forwarded-host') || req.headers.get('host');
       const subdomain = parseSubdomain(host);
-      if (subdomain !== 'root') {
-        activeTargetExam = subdomain;
+
+      const candidate = (explicitTarget && ['entrance', 'freshman', 'exit'].includes(explicitTarget))
+        ? explicitTarget
+        : (headerExam && ['entrance', 'freshman', 'exit'].includes(headerExam))
+        ? headerExam
+        : (cookieExam && ['entrance', 'freshman', 'exit'].includes(cookieExam))
+        ? cookieExam
+        : (subdomain !== 'root' ? subdomain : null);
+
+      if (candidate) {
+        activeTargetExam = candidate;
         await supabase
           .from('profiles')
-          .update({ target_exam: subdomain })
+          .update({ target_exam: candidate })
           .eq('telegram_id', profile.telegram_id);
       }
     }

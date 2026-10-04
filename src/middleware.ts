@@ -15,6 +15,36 @@ export function middleware(req: NextRequest) {
     requestHeaders.set('x-temari-target-exam', subdomain);
   }
 
+  // Handle path-based dedicated exam landing pages (/entrance, /freshman, /exit)
+  if (pathname === '/entrance' || pathname === '/freshman' || pathname === '/exit') {
+    const track = pathname.slice(1);
+    requestHeaders.set('x-temari-subdomain', track);
+    requestHeaders.set('x-temari-target-exam', track);
+
+    const sessionCookie = req.cookies.get('es_session')?.value;
+    if (sessionCookie) {
+      const url = req.nextUrl.clone();
+      url.pathname = '/dashboard';
+      url.searchParams.set('target_exam', track);
+      return NextResponse.redirect(url);
+    }
+
+    const url = req.nextUrl.clone();
+    url.pathname = '/';
+    const response = NextResponse.rewrite(url, {
+      request: {
+        headers: requestHeaders,
+      },
+    });
+    response.cookies.set({
+      name: 'temari_portal',
+      value: track,
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+    });
+    return response;
+  }
+
   // Handle subdomain-specific routing for landing page
   if (pathname === '/') {
     const sessionCookie = req.cookies.get('es_session')?.value;

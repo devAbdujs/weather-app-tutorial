@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Send, Bot, BookOpen, Target, Sparkles, GraduationCap, ShieldCheck, Building2, UserCircle2, Zap, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
 import { safeSessionStorage } from '@/lib/safeStorage';
 import { TemariMascot, MascotBubble } from '@/components/mascot/TemariMascot';
-import { SubdomainType, SUBDOMAIN_CONFIGS, getSubdomainUrl } from '@/lib/subdomains';
+import { SubdomainType, SUBDOMAIN_CONFIGS, getSubdomainUrl, getExamPortalPath } from '@/lib/subdomains';
 
 interface LandingPageProps {
   initialPortal?: SubdomainType;
@@ -26,8 +27,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
     try {
       const res = await fetch('/api/auth/session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ initData })
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(activePortal !== 'root' ? { 'x-temari-target-exam': activePortal } : {})
+        },
+        body: JSON.stringify({ 
+          initData,
+          targetExam: activePortal !== 'root' ? activePortal : undefined
+        })
       });
       if (res.ok) { 
         window.location.replace('/dashboard'); 
@@ -73,6 +80,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
       const selected = targetPortal || activePortal;
       if (selected !== 'root') {
         safeSessionStorage.setItem('temari_target_exam', selected);
+      } else {
+        safeSessionStorage.removeItem('temari_target_exam');
       }
 
       const { generateRandomString, generateCodeChallenge } = await import('@/lib/pkce');
@@ -138,7 +147,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
       {/* 1. Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-ground/85 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06]">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+          <Link href="/" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
              <div className="w-9 h-9 rounded-2xl bg-primary/10 border-2 border-b-[3px] border-primary/25 dark:border-primary/40 flex items-center justify-center p-1 shadow-tactile-sm overflow-hidden">
                <Image 
                  src="/assets/temari_icon.png" 
@@ -150,9 +159,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
                />
              </div>
              <span className="font-black text-lg tracking-tight">Temari</span>
-          </div>
+          </Link>
           <button 
-            onClick={() => handleTelegramOIDCLogin()} 
+            onClick={() => handleTelegramOIDCLogin(activePortal !== 'root' ? activePortal : undefined)} 
             className="btn-3d-card text-xs font-black px-4 py-2 rounded-xl text-foreground"
           >
             Sign In
@@ -170,12 +179,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-black tracking-wide shadow-2xs">
               <span className="text-sm">{portalConfig.emoji}</span>
               <span>{portalConfig.tagline}</span>
-              <button 
-                onClick={() => setActivePortal('root')}
+              <Link 
+                href="/"
                 className="ml-2 text-[11px] underline text-muted-foreground hover:text-foreground font-semibold"
               >
                 (view all exams)
-              </button>
+              </Link>
             </div>
           ) : (
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 text-xs font-black uppercase tracking-wider">
@@ -195,12 +204,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
         </p>
 
         <button
-          onClick={() => handleTelegramOIDCLogin(activePortal)}
+          onClick={() => {
+            if (activePortal === 'root') {
+              sounds.playTap();
+              const el = document.getElementById('exam-portals');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              }
+            } else {
+              handleTelegramOIDCLogin(activePortal);
+            }
+          }}
           className="btn-3d-primary w-full max-w-[340px] py-4 rounded-2xl flex items-center justify-center gap-2.5 shadow-tactile-md text-sm font-black tracking-wide animate-fade-up z-10"
           style={{ animationDelay: '0.3s' }}
         >
-          <Send className="w-5 h-5 text-white" />
-          <span>{activePortal === 'root' ? 'Start Learning — Free' : `Start ${portalConfig.shortLabel} Prep — Free`}</span>
+          {activePortal === 'root' ? (
+            <>
+              <span>Select Your Exam Track</span>
+              <ArrowRight className="w-5 h-5 text-white" />
+            </>
+          ) : (
+            <>
+              <Send className="w-5 h-5 text-white" />
+              <span>{`Start ${portalConfig.shortLabel} Prep — Free`}</span>
+            </>
+          )}
         </button>
 
         {error && <p className="text-sm text-error font-bold mt-4">{error}</p>}
@@ -223,7 +251,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
       </header>
 
       {/* ── 3 DEDICATED EXAM PATH PORTALS (Multi-Subdomain Architecture) ── */}
-      <section className="w-full max-w-4xl mx-auto px-6 py-8">
+      <section id="exam-portals" className="w-full max-w-4xl mx-auto px-6 py-8">
         <div className="text-center mb-6">
           <span className="text-micro font-black tracking-widest uppercase text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
             Choose Your Exam Path
@@ -238,13 +266,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
 
         <div className="grid sm:grid-cols-3 gap-4">
           {/* Portal 1: Grade 12 EUEE */}
-          <div 
-            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+          <Link 
+            href={getExamPortalPath('entrance')}
+            onClick={() => sounds.playTap()}
+            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between group ${
               activePortal === 'entrance' 
                 ? 'bg-primary/5 border-primary shadow-tactile-sm ring-2 ring-primary/20' 
                 : 'bg-card border-black/[0.08] dark:border-white/[0.08] hover:border-primary/40 shadow-tactile-xs'
             }`}
-            onClick={() => { sounds.playTap(); setActivePortal('entrance'); }}
           >
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -253,7 +282,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
                   15,000+ Qs
                 </span>
               </div>
-              <h3 className="font-black text-base text-foreground mb-1">
+              <h3 className="font-black text-base text-foreground mb-1 group-hover:text-primary transition-colors">
                 Grade 12 Entrance (EUEE)
               </h3>
               <p className="text-xs text-muted-foreground font-semibold mb-3 leading-relaxed">
@@ -261,35 +290,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
               </p>
               <div className="flex flex-wrap gap-1 mb-4">
                 {['Math', 'Physics', 'Chem', 'Bio', 'SAT', 'Civics'].map(s => (
-                  <span key={s} className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-300">
+                  <span key={s} className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-muted-foreground">
                     {s}
                   </span>
                 ))}
               </div>
             </div>
-            <a
-              href={getSubdomainUrl('entrance')}
-              onClick={(e) => {
-                if (activePortal !== 'entrance') {
-                  e.preventDefault();
-                  setActivePortal('entrance');
-                }
-              }}
-              className="w-full py-2.5 rounded-xl font-black text-xs text-center flex items-center justify-center gap-1.5 transition-all bg-accent-blue/10 hover:bg-accent-blue/20 text-accent-blue border border-accent-blue/30 active:scale-95"
+            <div
+              className={`w-full py-2.5 rounded-xl font-black text-xs text-center flex items-center justify-center gap-1.5 transition-all ${
+                activePortal === 'entrance'
+                  ? 'bg-primary text-primary-foreground shadow-tactile-xs'
+                  : 'bg-accent-blue/10 group-hover:bg-accent-blue/20 text-accent-blue border border-accent-blue/30'
+              }`}
             >
-              <span>Explore Grade 12</span>
+              <span>{activePortal === 'entrance' ? 'Current Track' : 'Explore Grade 12'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </a>
-          </div>
+            </div>
+          </Link>
 
           {/* Portal 2: Freshman */}
-          <div 
-            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+          <Link 
+            href={getExamPortalPath('freshman')}
+            onClick={() => sounds.playTap()}
+            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between group ${
               activePortal === 'freshman' 
                 ? 'bg-primary/5 border-primary shadow-tactile-sm ring-2 ring-primary/20' 
                 : 'bg-card border-black/[0.08] dark:border-white/[0.08] hover:border-primary/40 shadow-tactile-xs'
             }`}
-            onClick={() => { sounds.playTap(); setActivePortal('freshman'); }}
           >
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -298,7 +325,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
                   8,000+ Qs
                 </span>
               </div>
-              <h3 className="font-black text-base text-foreground mb-1">
+              <h3 className="font-black text-base text-foreground mb-1 group-hover:text-primary transition-colors">
                 University Freshman
               </h3>
               <p className="text-xs text-muted-foreground font-semibold mb-3 leading-relaxed">
@@ -306,35 +333,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
               </p>
               <div className="flex flex-wrap gap-1 mb-4">
                 {['Logic', 'Applied Math', 'Psychology', 'Emerging Tech'].map(s => (
-                  <span key={s} className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-300">
+                  <span key={s} className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-muted-foreground">
                     {s}
                   </span>
                 ))}
               </div>
             </div>
-            <a
-              href={getSubdomainUrl('freshman')}
-              onClick={(e) => {
-                if (activePortal !== 'freshman') {
-                  e.preventDefault();
-                  setActivePortal('freshman');
-                }
-              }}
-              className="w-full py-2.5 rounded-xl font-black text-xs text-center flex items-center justify-center gap-1.5 transition-all bg-accent-purple/10 hover:bg-accent-purple/20 text-accent-purple border border-accent-purple/30 active:scale-95"
+            <div
+              className={`w-full py-2.5 rounded-xl font-black text-xs text-center flex items-center justify-center gap-1.5 transition-all ${
+                activePortal === 'freshman'
+                  ? 'bg-primary text-primary-foreground shadow-tactile-xs'
+                  : 'bg-accent-purple/10 group-hover:bg-accent-purple/20 text-accent-purple border border-accent-purple/30'
+              }`}
             >
-              <span>Explore Freshman</span>
+              <span>{activePortal === 'freshman' ? 'Current Track' : 'Explore Freshman'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </a>
-          </div>
+            </div>
+          </Link>
 
           {/* Portal 3: Exit */}
-          <div 
-            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+          <Link 
+            href={getExamPortalPath('exit')}
+            onClick={() => sounds.playTap()}
+            className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between group ${
               activePortal === 'exit' 
                 ? 'bg-primary/5 border-primary shadow-tactile-sm ring-2 ring-primary/20' 
                 : 'bg-card border-black/[0.08] dark:border-white/[0.08] hover:border-primary/40 shadow-tactile-xs'
             }`}
-            onClick={() => { sounds.playTap(); setActivePortal('exit'); }}
           >
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -343,7 +368,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
                   8,000+ Qs
                 </span>
               </div>
-              <h3 className="font-black text-base text-foreground mb-1">
+              <h3 className="font-black text-base text-foreground mb-1 group-hover:text-primary transition-colors">
                 University Exit Exam
               </h3>
               <p className="text-xs text-muted-foreground font-semibold mb-3 leading-relaxed">
@@ -351,26 +376,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
               </p>
               <div className="flex flex-wrap gap-1 mb-4">
                 {['CS/IT', 'Engineering', 'Accounting', 'Law', 'Medicine'].map(s => (
-                  <span key={s} className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-300">
+                  <span key={s} className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-muted-foreground">
                     {s}
                   </span>
                 ))}
               </div>
             </div>
-            <a
-              href={getSubdomainUrl('exit')}
-              onClick={(e) => {
-                if (activePortal !== 'exit') {
-                  e.preventDefault();
-                  setActivePortal('exit');
-                }
-              }}
-              className="w-full py-2.5 rounded-xl font-black text-xs text-center flex items-center justify-center gap-1.5 transition-all bg-accent-gold/10 hover:bg-accent-gold/20 text-accent-gold border border-accent-gold/30 active:scale-95"
+            <div
+              className={`w-full py-2.5 rounded-xl font-black text-xs text-center flex items-center justify-center gap-1.5 transition-all ${
+                activePortal === 'exit'
+                  ? 'bg-primary text-primary-foreground shadow-tactile-xs'
+                  : 'bg-accent-gold/10 group-hover:bg-accent-gold/20 text-accent-gold border border-accent-gold/30'
+              }`}
             >
-              <span>Explore Exit Exam</span>
+              <span>{activePortal === 'exit' ? 'Current Track' : 'Explore Exit Exam'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </a>
-          </div>
+            </div>
+          </Link>
         </div>
       </section>
 

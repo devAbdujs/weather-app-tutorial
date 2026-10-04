@@ -3,12 +3,15 @@ import { headers } from 'next/headers';
 import { getServerSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import { LandingPage } from '@/components/marketing/LandingPage';
-import { parseSubdomain, SUBDOMAIN_CONFIGS, getSubdomainUrl } from '@/lib/subdomains';
+import { parseSubdomain, SUBDOMAIN_CONFIGS, getSubdomainUrl, SubdomainType } from '@/lib/subdomains';
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
   const host = headersList.get('host');
-  const subdomain = parseSubdomain(host);
+  const headerSubdomain = headersList.get('x-temari-subdomain');
+  const subdomain = (headerSubdomain && ['entrance', 'freshman', 'exit'].includes(headerSubdomain))
+    ? (headerSubdomain as SubdomainType)
+    : parseSubdomain(host);
   const config = SUBDOMAIN_CONFIGS[subdomain];
   const url = getSubdomainUrl(subdomain);
 
@@ -44,7 +47,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function HomePage() {
   const headersList = await headers();
   const host = headersList.get('host');
-  const subdomain = parseSubdomain(host);
+  const headerSubdomain = headersList.get('x-temari-subdomain');
+  const subdomain = (headerSubdomain && ['entrance', 'freshman', 'exit'].includes(headerSubdomain))
+    ? (headerSubdomain as SubdomainType)
+    : parseSubdomain(host);
   const session = await getServerSession();
   
   if (session) {

@@ -145,3 +145,13 @@ export function getSubdomainUrl(type: SubdomainType, path = ''): string {
     return cleanPath || '/';
   }
 }
+
+/**
+ * Resolves local path route for the exam portal (e.g. /entrance, /freshman, /exit, /).
+ * Works immediately without requiring active DNS wildcard subdomains.
+ */
+export function getExamPortalPath(type: SubdomainType): string {
+  if (type === 'root') return '/';
+  return `/${type}`;
+}
+

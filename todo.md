@@ -268,16 +268,20 @@ Require all admin accounts to update password; remove plaintext comparison branc
 
 ---
 
-## Subdomain Routing Status
+## Dedicated Exam Portals & Subdomain Routing Status
 
-| Subdomain | Parsing | Middleware Header | Session Persistence | Deployed |
-|---|---|---|---|---|
-| `entrance.temari.top` | ✅ | ✅ `x-temari-subdomain` | ⚠️ Onboarding only | ❓ |
-| `freshman.temari.top` | ✅ | ✅ | ⚠️ | ❓ |
-| `exit.temari.top` | ✅ | ✅ | ⚠️ | ❓ |
-| Root `temari.top` | ✅ | ✅ | ✅ | ✅ |
+| Route / Subdomain | Parsing / Rewrite | Middleware Headers & Cookie | Session & DB Persistence | Direct Onboarding Bypass | Status |
+|---|---|---|---|---|---|
+| `/entrance` & `entrance.temari.top` | ✅ | ✅ `x-temari-subdomain`, `x-temari-target-exam`, `temari_portal` | ✅ Saved to `profiles.target_exam` & encrypted session | ✅ Bypasses onboarding modal | ✅ Live in Prod |
+| `/freshman` & `freshman.temari.top` | ✅ | ✅ `x-temari-subdomain`, `x-temari-target-exam`, `temari_portal` | ✅ Saved to `profiles.target_exam` & encrypted session | ✅ Bypasses onboarding modal | ✅ Live in Prod |
+| `/exit` & `exit.temari.top` | ✅ | ✅ `x-temari-subdomain`, `x-temari-target-exam`, `temari_portal` | ✅ Saved to `profiles.target_exam` & encrypted session | ✅ Bypasses onboarding modal | ✅ Live in Prod |
+| Root `/` (`temari.top`) | ✅ | ✅ Root hero guides to `#exam-portals` | ✅ Scoped login via portal cards | ✅ Modal only if root login without exam chosen | ✅ Live in Prod |
 
-**Gap:** Subdomain routing correctly parses hostname and passes it as a request header. But auth routes don't read this header to auto-populate `target_exam` on first login. Subdomains currently only affect landing page metadata — they do not configure the student's exam track.
+**Architecture Implemented:**
+- Root landing page features "Select Your Exam Track" CTA linking down to dedicated exam portals (`/entrance`, `/freshman`, `/exit`).
+- Clicking any exam portal redirects to that track's dedicated landing page with scoped branding, stats, and exam metadata.
+- Students logging in from a dedicated page (via Telegram WebApp or Telegram OIDC) have their choice persisted to `profiles.target_exam` and their session token.
+- Post-login onboarding (`WelcomeOnboarding`) is completely bypassed, immediately opening their track's dashboard, past papers, and study notes.
 
 ---
 
@@ -372,7 +376,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] H-12  Split ExamWorkspace: extract ExamResultsView as dynamic import
 [x] H-13  Convert practice/sessions/page.tsx to async server component
 [x] H-14  Serve question images via Next.js <Image> or CDN; add lazy loading (rewrites & normalized)
-[x] H-15  Persist subdomain exam type to profile.target_exam on auth login
+[x] H-15  Persist subdomain & portal path exam type to profile.target_exam on auth login (bypasses onboarding)
 
 ════════════════════════════════════════
   MEDIUM — Fix this sprint
