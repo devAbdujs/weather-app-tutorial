@@ -579,6 +579,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                 {HIGHLIGHT_PALETTE.map(col => (
                   <button
                     key={col.id}
+                    aria-label={`Highlight in ${col.name}`}
                     onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
@@ -611,6 +612,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
               </button>
               <div className="w-[1px] h-4 bg-black/10 dark:bg-white/10 mx-0.5" />
               <button
+                aria-label="Cancel text selection"
                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
@@ -643,6 +645,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                 {HIGHLIGHT_PALETTE.map(col => (
                   <button
                     key={col.id}
+                    aria-label={`Change highlight color to ${col.name}`}
                     onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
@@ -686,6 +689,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                 <span className="hidden xs:inline">Delete</span>
               </button>
               <button
+                aria-label="Close highlight popover"
                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}

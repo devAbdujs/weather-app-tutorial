@@ -184,39 +184,65 @@ export async function POST(req: NextRequest) {
 
     isPremium = profile.subscription_status === 'premium';
     quotaLimit = isPremium ? 150 : 5;
+    let atomicQuotaApplied = false;
 
-    // Check weekly reset (if reset_at is null or passed, reset usage to 0 and set 7-day rolling window)
-    const now = new Date();
-    const resetAt = profile.ai_quota_reset_at ? new Date(profile.ai_quota_reset_at) : null;
+    // Try atomic RPC increment first to prevent concurrent-tab TOCTOU bypasses (M-03)
+    const { data: rpcQuota, error: rpcError } = await supabaseAdmin.rpc('check_and_increment_ai_quota', {
+      p_telegram_id: session.telegram_id.toString(),
+      p_quota_limit: quotaLimit
+    });
 
-    if (!resetAt || now >= resetAt) {
-      const nextReset = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-      currentUsage = 0;
-      await supabaseAdmin
-        .from('profiles')
-        .update({
-          ai_weekly_usage: 0,
-          ai_quota_reset_at: nextReset.toISOString(),
-        })
-        .eq('telegram_id', session.telegram_id);
+    if (!rpcError && rpcQuota) {
+      atomicQuotaApplied = true;
+      if (!rpcQuota.allowed) {
+        return new Response(
+          JSON.stringify({
+            error: 'quota_exceeded',
+            isPremium,
+            usage: rpcQuota.usage ?? quotaLimit,
+            limit: quotaLimit,
+            message: isPremium
+              ? `You have reached your weekly allowance of ${quotaLimit} Temari AI inquiries. Your quota refreshes soon!`
+              : `You've used all ${quotaLimit} of your free Temari AI questions this week. Upgrade to Premium for 150 inquiries/week!`
+          }),
+          { status: 403 }
+        );
+      }
+      currentUsage = rpcQuota.usage ?? 0;
     } else {
-      currentUsage = profile.ai_weekly_usage || 0;
-    }
+      // Fallback if RPC is not yet created in the database
+      const now = new Date();
+      const resetAt = profile.ai_quota_reset_at ? new Date(profile.ai_quota_reset_at) : null;
 
-    // Check if user reached their weekly limit
-    if (currentUsage >= quotaLimit) {
-      return new Response(
-        JSON.stringify({
-          error: 'quota_exceeded',
-          isPremium,
-          usage: currentUsage,
-          limit: quotaLimit,
-          message: isPremium
-            ? `You have reached your weekly allowance of ${quotaLimit} Temari AI inquiries. Your quota refreshes soon!`
-            : `You've used all ${quotaLimit} of your free Temari AI questions this week. Upgrade to Premium for 150 inquiries/week!`
-        }),
-        { status: 403 }
-      );
+      if (!resetAt || now >= resetAt) {
+        const nextReset = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+        currentUsage = 0;
+        await supabaseAdmin
+          .from('profiles')
+          .update({
+            ai_weekly_usage: 0,
+            ai_quota_reset_at: nextReset.toISOString(),
+          })
+          .eq('telegram_id', session.telegram_id);
+      } else {
+        currentUsage = profile.ai_weekly_usage || 0;
+      }
+
+      // Check if user reached their weekly limit
+      if (currentUsage >= quotaLimit) {
+        return new Response(
+          JSON.stringify({
+            error: 'quota_exceeded',
+            isPremium,
+            usage: currentUsage,
+            limit: quotaLimit,
+            message: isPremium
+              ? `You have reached your weekly allowance of ${quotaLimit} Temari AI inquiries. Your quota refreshes soon!`
+              : `You've used all ${quotaLimit} of your free Temari AI questions this week. Upgrade to Premium for 150 inquiries/week!`
+          }),
+          { status: 403 }
+        );
+      }
     }
 
     if (profile.target_exam === 'entrance') profileContext = `Student Profile: Grade 12 (${profile.stream} track)`;
@@ -225,16 +251,18 @@ export async function POST(req: NextRequest) {
 
     // Check if cache hit (L1 Redis or L2 Supabase)
     if (cachedResponseText) {
-      try {
-        await supabaseAdmin
-          .from('profiles')
-          .update({
-            ai_weekly_usage: currentUsage + 1,
-            updated_at: new Date().toISOString()
-          })
-          .eq('telegram_id', session.telegram_id);
-      } catch (quotaErr) {
-        console.error('[AI Cache Quota Update Error]', quotaErr);
+      if (!atomicQuotaApplied) {
+        try {
+          await supabaseAdmin
+            .from('profiles')
+            .update({
+              ai_weekly_usage: currentUsage + 1,
+              updated_at: new Date().toISOString()
+            })
+            .eq('telegram_id', session.telegram_id);
+        } catch (quotaErr) {
+          console.error('[AI Cache Quota Update Error]', quotaErr);
+        }
       }
 
       // Cache Hit! Return instantly.
@@ -270,17 +298,19 @@ export async function POST(req: NextRequest) {
           messages: finalMessages,
           temperature: 0.5,
           onFinish: async ({ text }) => {
-            // Increment weekly quota usage
-            try {
-              await supabaseAdmin
-                .from('profiles')
-                .update({
-                  ai_weekly_usage: currentUsage + 1,
-                  updated_at: new Date().toISOString()
-                })
-                .eq('telegram_id', session.telegram_id);
-            } catch (quotaErr) {
-              console.error('[AI Quota Increment Error]', quotaErr);
+            // Increment weekly quota usage if atomic RPC wasn't applied
+            if (!atomicQuotaApplied) {
+              try {
+                await supabaseAdmin
+                  .from('profiles')
+                  .update({
+                    ai_weekly_usage: currentUsage + 1,
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq('telegram_id', session.telegram_id);
+              } catch (quotaErr) {
+                console.error('[AI Quota Increment Error]', quotaErr);
+              }
             }
 
             // 2. CACHE POPULATION: Save standard static responses (explain, eli5, amharic) for next students

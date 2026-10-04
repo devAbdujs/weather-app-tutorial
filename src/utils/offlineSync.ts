@@ -21,7 +21,6 @@ export const saveOfflineSubmission = async (submission: Omit<ExamSubmission, 'id
       timestamp: Date.now(),
     };
     await localforage.setItem(OFFLINE_STORE_KEY, [...existing, newSubmission]);
-    console.log('Submission saved offline successfully');
   } catch (error) {
     console.error('Failed to save offline submission', error);
   }

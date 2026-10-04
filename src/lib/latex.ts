@@ -4,8 +4,17 @@ import katex from 'katex';
 const mathCache = new Map<string, string>();
 const MAX_CACHE_SIZE = 2000;
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 /**
- * Safely renders LaTeX string to KaTeX HTML with memoization.
+ * Safely renders LaTeX string to KaTeX HTML with memoization and XSS protection.
  */
 export function renderKaTeX(tex: string, displayMode: boolean): string {
   const trimmed = tex.trim();
@@ -22,6 +31,7 @@ export function renderKaTeX(tex: string, displayMode: boolean): string {
       displayMode,
       throwOnError: false,
       strict: false,
+      trust: false, // Prevents \href and unsafe javascript execution
     });
     if (mathCache.size >= MAX_CACHE_SIZE) {
       // Clear oldest 25% of entries
@@ -31,7 +41,8 @@ export function renderKaTeX(tex: string, displayMode: boolean): string {
     mathCache.set(cacheKey, html);
     return html;
   } catch {
-    return trimmed;
+    // Sanitized escape fallback so corrupted formulas with raw HTML cannot execute
+    return escapeHtml(trimmed);
   }
 }
 

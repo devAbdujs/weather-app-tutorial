@@ -336,8 +336,32 @@ export async function getPendingPayments(page = 1, limit = 50) {
 
   if (error) throw error;
   
+  // Ensure all receipts (including older ones from when bucket was public) have valid signed URLs
+  const payments = await Promise.all(
+    (data || []).map(async (payment) => {
+      let url = payment.receipt_url;
+      if (url && (url.includes('/public/receipts/') || !url.includes('token='))) {
+        try {
+          const rawPart = url.split('/receipts/')[1];
+          const fileName = rawPart ? rawPart.split('?')[0] : '';
+          if (fileName) {
+            const { data: signed } = await supabase.storage
+              .from('receipts')
+              .createSignedUrl(decodeURIComponent(fileName), 60 * 60 * 24);
+            if (signed?.signedUrl) {
+              url = signed.signedUrl;
+            }
+          }
+        } catch {
+          // Keep original url if signed URL generation fails
+        }
+      }
+      return { ...payment, receipt_url: url };
+    })
+  );
+
   return {
-    payments: data || [],
+    payments,
     total: count || 0,
     page,
     totalPages: count ? Math.ceil(count / limit) : 0

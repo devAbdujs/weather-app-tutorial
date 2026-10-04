@@ -17,7 +17,6 @@ export function PWARegistry() {
       const registerSW = () => {
         navigator.serviceWorker
           .register('/sw.js')
-          .then(() => console.log('Service Worker registered successfully'))
           .catch((err) => console.error('PWA Registration failed:', err));
       };
 
@@ -115,11 +114,7 @@ export function PWARegistry() {
                     onClick={() => { 
                       toast.dismiss(t);
                       (e as any).prompt();
-                      (e as any).userChoice.then((choiceResult: any) => {
-                        if (choiceResult.outcome === 'accepted') {
-                          console.log('User accepted the A2HS prompt');
-                        }
-                      });
+                      (e as any).userChoice.catch(() => {});
                     }} 
                     className="bg-gray-950 hover:bg-black dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-950 text-xs font-black px-4 py-2 rounded-xl active:scale-95 transition-all shadow-tactile-xs border border-black/10 dark:border-white/10"
                   >

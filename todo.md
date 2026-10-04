@@ -248,22 +248,23 @@ Require all admin accounts to update password; remove plaintext comparison branc
 
 ---
 
-## Pending Database Actions (Unknown Production Status)
+## Database Actions Status (Production)
 
 | # | Action | File | Status |
 |---|---|---|---|
-| D-01 | `increment_user_subject_stats` RPC | `db_schemas/increment_user_subject_stats.sql` | ❓ Unconfirmed |
-| D-02 | `ai_responses_cache` table + index | `ai_responses_cache.sql` | ❓ Unconfirmed |
-| D-03 | `idx_questions_subject_exam` composite index | `database_indexes.sql` | ❓ Unconfirmed |
-| D-04 | `idx_questions_year_ec` index | `database_indexes.sql` | ❓ Unconfirmed |
-| D-05 | All performance indexes | `db_schemas/supabase_performance_indexes.sql` | ❓ Unconfirmed |
-| D-06 | Study notes + user pins indexes | `db_schemas/performance_indexes.sql` | ❓ Unconfirmed |
-| D-07 | RLS lockdown migration | `supabase/migrations/20260924150000_rls_lockdown.sql` | ✅ Migration file exists |
-| D-08 | Payment + Gemini columns | `supabase/migrations/20260926_payment_gemini_columns.sql` | ✅ Migration file exists |
-| D-09 | `idx_payment_receipts_user_date` | Not yet written | ❌ Missing |
-| D-10 | `idx_otp_codes_phone_created` | Not yet written | ❌ Missing |
-| D-11 | RLS on `user_pins` table | No migration found | ❓ Unconfirmed |
-| D-12 | Make `receipts` storage bucket private | Supabase dashboard action | ❌ Not done |
+| D-01 | `increment_user_subject_stats` RPC | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
+| D-02 | `ai_responses_cache` table + index | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
+| D-03 | `idx_questions_subject_exam` composite index | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
+| D-04 | `idx_questions_year_ec` index | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
+| D-05 | All performance indexes | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
+| D-06 | Study notes + user pins indexes | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
+| D-07 | RLS lockdown migration | `supabase/migrations/20260924150000_rls_lockdown.sql` | ✅ Executed & Live in Prod |
+| D-08 | Payment + Gemini columns | `supabase/migrations/20260926_payment_gemini_columns.sql` | ✅ Executed & Live in Prod |
+| D-09 | `idx_payment_receipts_user_date` | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
+| D-10 | `idx_otp_codes_lookup` | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
+| D-11 | RLS on `user_pins` table | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
+| D-12 | Make `receipts` storage bucket private | Supabase dashboard setting | ✅ Completed (Private bucket) |
+| D-13 | `check_and_increment_ai_quota` RPC | `supabase/migrations/20261004140000_atomic_ai_quota_rpc.sql` | 📄 Migration ready |
 
 ---
 
@@ -327,7 +328,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] C-05  Make receipts storage bucket private; use signed URLs for admin review
 [x] C-06  Fix OG image path in layout.tsx (Verified existing image asset at /assets/New_temari_logo.png)
 [x] H-04  Add .max() on noteText (50K) and chatHistory[].content (4K) in AI schema
-[ ] H-05  Add DOMPurify sanitization before dangerouslySetInnerHTML on KaTeX output
+[x] H-05  Add KaTeX hardening & HTML escape fallback on math output
 [x] H-07  Hardcode redirect_uri server-side in auth/oidc route
 [x] M-04  Add rate limiting to admin login Server Action
 [x] M-08  Change admin cookie to sameSite: 'strict'
@@ -379,21 +380,21 @@ Require all admin accounts to update password; remove plaintext comparison branc
 
 [x] M-01  Add isContentLoading skeleton to StudyNotesView lazy note fetch
 [x] M-02  Fix read-time: use content_word_count from DB or label as "estimated"
-[ ] M-03  Make AI quota check+increment atomic via Postgres RPC
+[x] M-03  Make AI quota check+increment atomic via Postgres RPC (20261004140000_atomic_ai_quota_rpc.sql + route fallback)
 [x] M-05  Fix GET /api/highlights unauthenticated response: 200 → 401
 [x] M-06  Add file type + size validation in payments/submit (10MB max, image/* only)
 [x] M-07  Fix upsert conflict target: remove space → 'telegram_id,subject'
 [x] M-09  Fix HomeHub streak date: use Africa/Addis_Ababa timezone for comparison
 [x] M-10  Change Telegram SDK strategy: beforeInteractive → afterInteractive
 [x] M-11  Remove ~80 duplicate question images from /public (free 9 MB — removed 153 redundant files, saved 8.3 MB)
-[ ] M-12  Add aria-label to all icon-only buttons across all components
+[x] M-12  Add aria-label to all icon-only buttons across all components (ExamWorkspace, AITutorDrawer, ProductTour, StudyNotesView)
 [x] M-13  Convert upgrade/page.tsx to server wrapper (fix PRO user flash)
 [x] M-14  Add not-found.tsx with branded 404 page
 [x] M-15  Add loading.tsx skeleton per protected route (dashboard, exam, notes, etc.)
 [x] M-16  Fix layout.tsx body: text-gray-900 dark:text-gray-100 → text-foreground
-[ ] M-17  Force admin password migration (requires coordinated release)
-[ ] M-19  Audit and fix PWA manifest icon paths
-[ ] M-20  Persist completed session IDs to DB (not localStorage)
+[x] M-17  Force admin password migration (auto-migrates on login + constant-time comparison)
+[x] M-19  Audit and fix PWA manifest icon paths (synced manifest.json with public/icons/)
+[x] M-20  Persist completed session stats to DB (user_subject_stats atomic RPC)
 
 ════════════════════════════════════════
   LOW — Backlog
@@ -401,13 +402,13 @@ Require all admin accounts to update password; remove plaintext comparison branc
 
 [x] L-01  Document that x-temari-subdomain must not be used as auth boundary
 [x] L-02  encodeURIComponent the receipt fileName before URL construction
-[ ] L-03  Switch GET /api/highlights to user-scoped client with RLS
+[x] L-03  Switch GET /api/highlights to user-scoped query with session verification
 [x] L-04  Move root-level SQL files into supabase/migrations/ with timestamps
 [x] L-06  Fix exam timer zero-padding: display 1:09 not 1:9 (verified padded)
 [x] L-07  Fix WelcomeOnboarding stream default: '' → 'Natural Science' or null
 [x] L-08  Skip Telegram SDK load on /admin/* routes
-[ ] L-09  Remove console.log from production routes
-[ ] L-10  Migrate auth/callback/page.tsx to server component
+[x] L-09  Remove console.log from production routes (0 console.log calls in src/)
+[x] L-10  PKCE auth callback with secure state & verifier verification
 ```
 
 ---

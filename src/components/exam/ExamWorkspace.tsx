@@ -278,7 +278,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
     <div className="min-h-screen bg-ground text-foreground flex flex-col justify-between max-w-md mx-auto pb-24 font-sans select-none relative">
       <header className="sticky top-0 z-30 bg-ground/90 backdrop-blur-xl pt-safe border-b border-black/[0.06] dark:border-white/[0.08] pb-3">
         <div className="px-5 pt-3 pb-2 flex justify-between items-center mb-1">
-          <button onClick={onExit} className="w-10 h-10 flex items-center justify-center rounded-btn bg-card border border-black/[0.08] dark:border-white/[0.08] text-foreground hover:text-foreground active:scale-[0.98] transition-transform shadow-tactile-xs"><X className="w-5 h-5" /></button>
+          <button onClick={onExit} aria-label="Exit exam" className="w-10 h-10 flex items-center justify-center rounded-btn bg-card border border-black/[0.08] dark:border-white/[0.08] text-foreground hover:text-foreground active:scale-[0.98] transition-transform shadow-tactile-xs"><X className="w-5 h-5" /></button>
           <div className="flex flex-col items-center">
             <span className="text-micro uppercase tracking-widest font-black text-muted-foreground">{title}</span>
             <div className="flex items-center gap-1.5 mt-0.5">
@@ -298,7 +298,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                )}
             </div>
           </div>
-          <button onClick={() => {
+          <button aria-label={flagged.has(currentIndex) ? "Unflag question" : "Flag question for review"} onClick={() => {
             haptic.selection();
             setFlagged((prev) => {
               const next = new Set(prev);
@@ -324,14 +324,14 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
 
       <main className="flex-1 px-5 py-5 space-y-5 relative">
         <div className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] rounded-card-lg p-5 md:p-6 shadow-tactile-xs relative mb-2">
-          <button onClick={toggleBookmark} className={`absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-xl transition-all active:scale-[0.98] shadow-2xs ${isSaved ? 'bg-accent-gold/20 text-accent-gold border border-accent-gold/40' : 'bg-black/5 dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.08] text-muted-foreground hover:text-foreground'}`}><Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} /></button>
+          <button aria-label={isSaved ? "Remove question bookmark" : "Bookmark question"} onClick={toggleBookmark} className={`absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-xl transition-all active:scale-[0.98] shadow-2xs ${isSaved ? 'bg-accent-gold/20 text-accent-gold border border-accent-gold/40' : 'bg-black/5 dark:bg-white/5 border border-black/[0.06] dark:border-white/[0.08] text-muted-foreground hover:text-foreground'}`}><Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} /></button>
           
           <div className="pr-8 text-base md:text-lg leading-relaxed font-bold text-foreground relative whitespace-pre-wrap">
             <MathText content={currentQ.question} />
           </div>
 
           {currentQ.image_url && (
-            <button onClick={() => { haptic.selection(); setZoomImage(currentQ.image_url || null); }} className="w-full mt-4 rounded-card-sm border border-black/5 dark:border-white/10 overflow-hidden bg-white dark:bg-card relative group active:scale-[0.98] transition-transform block focus-ring">
+            <button aria-label="Zoom question diagram" onClick={() => { haptic.selection(); setZoomImage(currentQ.image_url || null); }} className="w-full mt-4 rounded-card-sm border border-black/5 dark:border-white/10 overflow-hidden bg-white dark:bg-card relative group active:scale-[0.98] transition-transform block focus-ring">
               <Image priority={currentIndex === 0} width={800} height={400} src={getImageUrl(currentQ.image_url)} alt="Question diagram" className="w-full h-auto max-h-64 object-contain" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center justify-center">
                 <Maximize2 className="w-6 h-6 text-black/50 opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" />
@@ -527,7 +527,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           <div className="w-full max-w-sm bg-card rounded-modal p-6 shadow-tactile-lg animate-scale-bounce" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center pb-4 mb-4 border-b border-black/5 dark:border-white/10">
               <h3 className="font-bold tracking-tight text-xl text-foreground">Question Grid</h3>
-              <button onClick={() => setShowGrid(false)} className="w-10 h-10 flex justify-center items-center rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-foreground active:scale-[0.98] active:opacity-80 transition-all"><X className="w-5 h-5"/></button>
+              <button onClick={() => setShowGrid(false)} aria-label="Close question grid" className="w-10 h-10 flex justify-center items-center rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-foreground active:scale-[0.98] active:opacity-80 transition-all"><X className="w-5 h-5"/></button>
             </div>
             <div className="grid grid-cols-5 gap-3 max-h-[300px] overflow-y-auto no-scrollbar pb-2 pt-2">
               {questions.map((_, i) => {
@@ -562,7 +562,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
           className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 animate-fade-in"
           onClick={() => { haptic.selection(); setZoomImage(null); }}
         >
-          <button className="absolute top-8 right-6 w-12 h-12 flex items-center justify-center bg-white/10 text-white rounded-full transition-all active:scale-[0.98] shadow-lg z-10 backdrop-blur-md border border-white/20">
+          <button aria-label="Close image zoom" onClick={() => setZoomImage(null)} className="absolute top-8 right-6 w-12 h-12 flex items-center justify-center bg-white/10 text-white rounded-full transition-all active:scale-[0.98] shadow-lg z-10 backdrop-blur-md border border-white/20">
             <X className="w-6 h-6" />
           </button>
           

@@ -327,6 +327,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
             }}
             className="w-9 h-9 flex items-center justify-center rounded-xl bg-card border-2 border-black/[0.08] dark:border-white/[0.08] text-foreground hover:text-foreground active:scale-95 shadow-2xs"
             title="Close Tutor"
+            aria-label="Close Tutor"
           >
             <X className="w-4 h-4 stroke-[2.5]" />
           </button>
@@ -559,6 +560,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
             onClick={() => sounds.playTap()}
             className="w-12 h-12 rounded-full flex items-center justify-center bg-gray-950 hover:bg-black dark:bg-white dark:text-gray-950 dark:hover:bg-gray-100 text-white disabled:opacity-30 transition-all shrink-0 shadow-tactile-xs active:scale-95 border-2 border-b-[4px] border-black dark:border-white"
             title="Send query"
+            aria-label="Send query"
           >
             <Send className="w-4 h-4 ml-0.5" />
           </button>
