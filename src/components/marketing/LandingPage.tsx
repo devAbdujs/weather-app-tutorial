@@ -147,7 +147,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
       {/* 1. Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-ground/85 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06]">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
+          <Link href={getSubdomainUrl('root')} className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
              <div className="w-9 h-9 rounded-2xl bg-primary/10 border-2 border-b-[3px] border-primary/25 dark:border-primary/40 flex items-center justify-center p-1 shadow-tactile-sm overflow-hidden">
                <Image 
                  src="/assets/temari_icon.png" 
@@ -180,7 +180,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
               <span className="text-sm">{portalConfig.emoji}</span>
               <span>{portalConfig.tagline}</span>
               <Link 
-                href="/"
+                href={getSubdomainUrl('root')}
                 className="ml-2 text-[11px] underline text-muted-foreground hover:text-foreground font-semibold"
               >
                 (view all exams)

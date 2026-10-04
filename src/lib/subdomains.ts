@@ -147,11 +147,19 @@ export function getSubdomainUrl(type: SubdomainType, path = ''): string {
 }
 
 /**
- * Resolves local path route for the exam portal (e.g. /entrance, /freshman, /exit, /).
- * Works immediately without requiring active DNS wildcard subdomains.
+ * Resolves the URL for the exam portal.
+ * In production, returns the full dedicated subdomain (e.g. https://entrance.temari.top).
+ * In local dev, falls back to path routes (e.g. /entrance) for seamless offline testing.
  */
-export function getExamPortalPath(type: SubdomainType): string {
-  if (type === 'root') return '/';
-  return `/${type}`;
+export function getExamPortalPath(type: SubdomainType, path = ''): string {
+  const cleanPath = path ? (path.startsWith('/') ? path : `/${path}`) : '';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top';
+
+  if (siteUrl.includes('localhost') || siteUrl.includes('127.0.0.1')) {
+    if (type === 'root') return cleanPath || '/';
+    return `/${type}${cleanPath}`;
+  }
+
+  return getSubdomainUrl(type, path);
 }
 

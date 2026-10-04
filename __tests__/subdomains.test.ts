@@ -1,4 +1,4 @@
-import { parseSubdomain, getSubdomainUrl, SUBDOMAIN_CONFIGS } from '@/lib/subdomains';
+import { parseSubdomain, getSubdomainUrl, getExamPortalPath, SUBDOMAIN_CONFIGS } from '@/lib/subdomains';
 
 describe('Multi-Subdomain Architecture Suite', () => {
   describe('parseSubdomain', () => {
@@ -70,6 +70,30 @@ describe('Multi-Subdomain Architecture Suite', () => {
     it('appends path appropriately', () => {
       process.env.NEXT_PUBLIC_SITE_URL = 'https://temari.top';
       expect(getSubdomainUrl('entrance', '/dashboard')).toBe('https://entrance.temari.top/dashboard');
+    });
+  });
+
+  describe('getExamPortalPath', () => {
+    const originalEnv = process.env.NEXT_PUBLIC_SITE_URL;
+
+    afterEach(() => {
+      process.env.NEXT_PUBLIC_SITE_URL = originalEnv;
+    });
+
+    it('returns dedicated subdomains in production', () => {
+      process.env.NEXT_PUBLIC_SITE_URL = 'https://temari.top';
+      expect(getExamPortalPath('entrance')).toBe('https://entrance.temari.top');
+      expect(getExamPortalPath('freshman')).toBe('https://freshman.temari.top');
+      expect(getExamPortalPath('exit')).toBe('https://exit.temari.top');
+      expect(getExamPortalPath('root')).toBe('https://temari.top');
+    });
+
+    it('returns path fallbacks in local development', () => {
+      process.env.NEXT_PUBLIC_SITE_URL = 'http://localhost:3000';
+      expect(getExamPortalPath('entrance')).toBe('/entrance');
+      expect(getExamPortalPath('freshman')).toBe('/freshman');
+      expect(getExamPortalPath('exit')).toBe('/exit');
+      expect(getExamPortalPath('root')).toBe('/');
     });
   });
 });

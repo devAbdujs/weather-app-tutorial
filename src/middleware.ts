@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { parseSubdomain } from '@/lib/subdomains';
+import { parseSubdomain, getSubdomainUrl } from '@/lib/subdomains';
 
 export function middleware(req: NextRequest) {
   const host = req.headers.get('host') || '';
@@ -18,6 +18,30 @@ export function middleware(req: NextRequest) {
   // Handle path-based dedicated exam landing pages (/entrance, /freshman, /exit)
   if (pathname === '/entrance' || pathname === '/freshman' || pathname === '/exit') {
     const track = pathname.slice(1);
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top';
+    const isLocal = host.includes('localhost') || host.includes('127.0.0.1') || siteUrl.includes('localhost');
+
+    // In production, canonically redirect to the dedicated live subdomain
+    if (!isLocal) {
+      const subdomainUrl = getSubdomainUrl(track as any);
+      const sessionCookie = req.cookies.get('es_session')?.value;
+      const targetUrl = sessionCookie 
+        ? `${subdomainUrl}/dashboard?target_exam=${track}` 
+        : subdomainUrl;
+      
+      const response = NextResponse.redirect(targetUrl, 308);
+      response.cookies.set({
+        name: 'temari_portal',
+        value: track,
+        path: '/',
+        maxAge: 60 * 60 * 24 * 30,
+        domain: '.temari.top',
+        sameSite: 'none',
+        secure: true,
+      });
+      return response;
+    }
+
     requestHeaders.set('x-temari-subdomain', track);
     requestHeaders.set('x-temari-target-exam', track);
 
