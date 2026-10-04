@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { calculateNewStreak } from '@/lib/streak';
+import { calculateNewStreak, getAddisAbabaDate } from '@/lib/streak';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top';
@@ -499,7 +499,7 @@ export async function handleQuizAnswer(
         questions_correct: correct,
         total_time_spent_seconds: (existing?.total_time_spent_seconds || 0) + 15,
         last_practiced: new Date().toISOString(),
-      }, { onConflict: 'telegram_id, subject' });
+      }, { onConflict: 'telegram_id,subject' });
   } catch (statErr) {
     console.warn('[TelegramBot] Failed updating subject stats:', statErr);
   }
@@ -512,7 +512,7 @@ export async function handleQuizAnswer(
       .eq('telegram_id', telegramId)
       .maybeSingle();
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = getAddisAbabaDate();
     const { newStreak, isUpdated } = calculateNewStreak(
       profile?.daily_streak || 0,
       profile?.last_activity_date,

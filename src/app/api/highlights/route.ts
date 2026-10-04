@@ -5,7 +5,7 @@ import { getServerSession } from '@/lib/session';
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession();
-    if (!session) return NextResponse.json({ highlights: [] });
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { searchParams } = new URL(req.url);
     const subject = searchParams.get('subject');

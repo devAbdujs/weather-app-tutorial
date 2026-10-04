@@ -371,7 +371,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] H-12  Split ExamWorkspace: extract ExamResultsView as dynamic import
 [ ] H-13  Convert practice/sessions/page.tsx to async server component
 [x] H-14  Serve question images via Next.js <Image> or CDN; add lazy loading (rewrites & normalized)
-[ ] H-15  Persist subdomain exam type to profile.target_exam on auth login
+[x] H-15  Persist subdomain exam type to profile.target_exam on auth login
 
 ════════════════════════════════════════
   MEDIUM — Fix this sprint
@@ -380,11 +380,11 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [ ] M-01  Add isContentLoading skeleton to StudyNotesView lazy note fetch
 [ ] M-02  Fix read-time: use content_word_count from DB or label as "estimated"
 [ ] M-03  Make AI quota check+increment atomic via Postgres RPC
-[ ] M-05  Fix GET /api/highlights unauthenticated response: 200 → 401
+[x] M-05  Fix GET /api/highlights unauthenticated response: 200 → 401
 [x] M-06  Add file type + size validation in payments/submit (10MB max, image/* only)
-[ ] M-07  Fix upsert conflict target: remove space → 'telegram_id,subject'
-[ ] M-09  Fix HomeHub streak date: use Africa/Addis_Ababa timezone for comparison
-[ ] M-10  Change Telegram SDK strategy: beforeInteractive → afterInteractive
+[x] M-07  Fix upsert conflict target: remove space → 'telegram_id,subject'
+[x] M-09  Fix HomeHub streak date: use Africa/Addis_Ababa timezone for comparison
+[x] M-10  Change Telegram SDK strategy: beforeInteractive → afterInteractive
 [x] M-11  Remove ~80 duplicate question images from /public (free 9 MB — removed 153 redundant files, saved 8.3 MB)
 [ ] M-12  Add aria-label to all icon-only buttons across all components
 [ ] M-13  Convert upgrade/page.tsx to server wrapper (fix PRO user flash)

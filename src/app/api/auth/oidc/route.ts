@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { encryptSession, getSessionCookieOptions } from '@/lib/session';
+import { parseSubdomain } from '@/lib/subdomains';
 
 export async function POST(req: NextRequest) {
   try {
@@ -62,11 +63,25 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error;
 
+    // Resolve subdomain target_exam if not already set on profile
+    let activeTargetExam = profile.target_exam;
+    if (!activeTargetExam) {
+      const host = req.headers.get('x-forwarded-host') || req.headers.get('host');
+      const subdomain = parseSubdomain(host);
+      if (subdomain !== 'root') {
+        activeTargetExam = subdomain;
+        await supabase
+          .from('profiles')
+          .update({ target_exam: subdomain })
+          .eq('telegram_id', profile.telegram_id);
+      }
+    }
+
     const sessionToken = await encryptSession({
       telegram_id: telegramId.toString(),
       profile_id: profile.telegram_id,
       first_name: firstName,
-      target_exam: profile.target_exam,
+      target_exam: activeTargetExam,
       stream: profile.stream,
     });
 

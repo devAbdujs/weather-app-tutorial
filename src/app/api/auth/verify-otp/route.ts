@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { encryptSession, getSessionCookieOptions } from '@/lib/session';
 import { checkRateLimit } from '@/lib/rateLimiter';
+import { parseSubdomain } from '@/lib/subdomains';
 
 export async function POST(req: NextRequest) {
   try {
@@ -56,16 +57,30 @@ export async function POST(req: NextRequest) {
 
     if (profileError || !profile) throw profileError || new Error('Failed to create or update profile');
 
+    // Resolve subdomain target_exam if not already set on profile
+    let activeTargetExam = profile.target_exam;
+    if (!activeTargetExam) {
+      const host = req.headers.get('x-forwarded-host') || req.headers.get('host');
+      const subdomain = parseSubdomain(host);
+      if (subdomain !== 'root') {
+        activeTargetExam = subdomain;
+        await supabase
+          .from('profiles')
+          .update({ target_exam: subdomain })
+          .eq('telegram_id', profile.telegram_id);
+      }
+    }
+
     // Create encrypted session cookie
     const sessionToken = await encryptSession({
       telegram_id: String(telegramUser.id),
       profile_id: profile.telegram_id,
       first_name: telegramUser.first_name,
-      target_exam: profile.target_exam,
+      target_exam: activeTargetExam,
       stream: profile.stream,
     });
 
-    const response = NextResponse.json({ success: true, hasTargetExam: !!profile.target_exam });
+    const response = NextResponse.json({ success: true, hasTargetExam: !!activeTargetExam });
 
     response.cookies.set({
       name: 'es_session',

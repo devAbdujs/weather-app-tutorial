@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { useGamificationStore, getLevelForXp } from '@/store/useGamificationStore';
 import { sounds } from '@/lib/sounds';
 import { safeLocalStorage } from '@/lib/safeStorage';
+import { getAddisAbabaDate } from '@/lib/streak';
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -58,7 +59,7 @@ export const HomeHub: React.FC = () => {
     // Only call updateDailyStreak if last_activity_date is not already today.
     // This prevents a redundant Supabase read/write on every internal route
     // navigation back to the Home tab (layout.tsx already set the streak on SSR).
-    const todayISO = new Date().toISOString().slice(0, 10);
+    const todayISO = getAddisAbabaDate();
     const lastActivity = useAppStore.getState().userProfile?.last_activity_date;
     if (lastActivity !== todayISO) {
       updateDailyStreak().then(res => {

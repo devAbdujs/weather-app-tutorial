@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
+import { parseSubdomain } from '@/lib/subdomains';
 
 export async function POST(req: NextRequest) {
   try {
@@ -52,17 +53,31 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error;
 
-    // 4. Create Encrypted HTTP-Only Session Cookie
+    // 4. Resolve subdomain target_exam if not already set on profile
+    let activeTargetExam = profile.target_exam;
+    if (!activeTargetExam) {
+      const host = req.headers.get('x-forwarded-host') || req.headers.get('host');
+      const subdomain = parseSubdomain(host);
+      if (subdomain !== 'root') {
+        activeTargetExam = subdomain;
+        await supabase
+          .from('profiles')
+          .update({ target_exam: subdomain })
+          .eq('telegram_id', profile.telegram_id);
+      }
+    }
+
+    // 5. Create Encrypted HTTP-Only Session Cookie
     const { encryptSession, getSessionCookieOptions } = await import('@/lib/session');
     const sessionToken = await encryptSession({
       telegram_id: data.id.toString(),
       profile_id: profile.telegram_id,
       first_name: data.first_name || 'Scholar',
-      target_exam: profile.target_exam,
+      target_exam: activeTargetExam,
       stream: profile.stream,
     });
 
-    const response = NextResponse.json({ success: true, hasTargetExam: !!profile.target_exam });
+    const response = NextResponse.json({ success: true, hasTargetExam: !!activeTargetExam });
     response.cookies.set({
       name: 'es_session',
       value: sessionToken,

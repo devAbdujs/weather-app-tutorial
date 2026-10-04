@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
           questions_correct: newCorrect,
           total_time_spent_seconds: newTime,
           last_practiced: new Date().toISOString()
-        }, { onConflict: 'telegram_id, subject' });
+        }, { onConflict: 'telegram_id,subject' });
 
       if (upsertError) {
         console.error('Failed to upsert subject stats', upsertError);

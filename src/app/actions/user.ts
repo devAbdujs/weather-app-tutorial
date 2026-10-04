@@ -1,5 +1,5 @@
 'use server';
-import { calculateNewStreak } from '@/lib/streak';
+import { calculateNewStreak, getAddisAbabaDate } from '@/lib/streak';
 
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { getServerSession, encryptSession, getSessionCookieOptions } from '@/lib/session';
@@ -78,7 +78,7 @@ export async function updateDailyStreak() {
     .eq('telegram_id', session.telegram_id)
     .maybeSingle();
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = getAddisAbabaDate();
   
   const { newStreak, isUpdated } = calculateNewStreak(
     profile?.daily_streak || 0,
