@@ -256,8 +256,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 ### [M-24] 9 Uncached Parallel HEAD Queries on Practice Screen (getEntranceYearCounts)
 **File:** `src/app/actions/practice.ts` lines 41–58
 **Issue:** `getEntranceYearCounts()` fires 9 separate Supabase HEAD requests in parallel for years 2010 through 2018 on every page load.
-**Impact:** High request volume and latency waterfall on the practice screen for past paper question counts that are completely static.
-**Fix:** Cache results using Next.js `unstable_cache` or Redis with a 24-hour TTL and revalidation on question updates.
+**Fix:** Wrapped `getEntranceYearCounts()` using Next.js `unstable_cache` with a 24-hour TTL (`86400`) and the `questions_counts` revalidation tag, querying via Supabase singleton client without cookie overhead.
 
 ### [M-25] Gamification XP Desynchronization Between Web App and Telegram Bot
 **Files:** `src/store/useGamificationStore.ts` line 55, `src/lib/telegramBot.ts` lines 311–312
@@ -500,7 +499,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] M-21  Add last_activity_date to ProtectedLayout SSR query to prevent redundant streak writes on HomeHub
 [x] M-22  Add timeout and max retry ceiling to UpgradeFlow.tsx payment status polling loop
 [x] M-23  Add in-flight mutex / isSyncing guard to offlineSync.ts to prevent duplicate submissions
-[ ] M-24  Cache getEntranceYearCounts in practice.ts with unstable_cache to eliminate 9 parallel HEAD queries
+[x] M-24  Cache getEntranceYearCounts in practice.ts with unstable_cache to eliminate 9 parallel HEAD queries
 [ ] M-25  Synchronize gamification XP between Web app (localStorage) and Telegram Bot (user_subject_stats)
 [ ] M-26  Add Zod string length constraint (.max(2000)) on POST /api/highlights text payload
 [ ] M-27  Persist phone_number from Telegram OIDC id_token to profiles table during upsert
