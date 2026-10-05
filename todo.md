@@ -57,6 +57,12 @@
 3. **Broken Features:** Live AI Tutor streaming, AI Quiz generation from notes, Telebirr/CBE payment receipt OCR verification, and Admin note document transformation were all completely non-functional.
 **Verified Fix:** Upgrade model reference to `process.env.GEMINI_MODEL || 'gemini-3.8-flash'`, remove `404` from the rate-limit cooldown handler, and rollback weekly quota on unhandled stream errors.
 
+### [C-10] RLS Public SELECT on study_notes Bypasses Paywall via Anon Key
+**File:** `supabase/migrations/20260924150000_rls_lockdown.sql` line 21
+**Issue:** Policy `CREATE POLICY "Allow public SELECT on study_notes" ON study_notes FOR SELECT TO anon, authenticated USING (true);` grants full read access to all rows and columns in `study_notes` to anyone holding `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+**Impact:** Even if the Next.js API route (`api/notes/content`) and UI components (`StudyNotesView.tsx`) gate notes behind a premium subscription paywall (Task P-06), an attacker or free user can query PostgREST directly (`https://<project-ref>.supabase.co/rest/v1/study_notes?select=*`) using the public anon key bundled in client JavaScript, bypassing all paywalls and downloading the entire proprietary curriculum for free.
+**Fix:** Drop the public SELECT policy on `study_notes`. Create a restricted policy or use column security / security definer RPCs so that anon/unauthenticated clients can only select metadata (`id, title, subject, chapter_order, content_word_count`), while complete `content` requires `profile.subscription_status = 'premium'` or server-side Service Role access.
+
 ---
 
 ## 🟠 HIGH
@@ -137,6 +143,25 @@
 - Added quick "Finish & Record Score ({answeredCount} Qs)" action inside Question Grid.
 - Calculated `attempted` and accuracy based on actual questions answered in practice mode (while keeping standard paper total evaluation for timed simulator mode).
 - Added `revalidatePath` on `/mastery`, `/profile`, `/dashboard` in `/api/exam/submit` and set `force-dynamic` with `revalidate = 0` on protected pages.
+
+### [H-18] Telegram Mini App initData Missing auth_date Replay Protection & Vulnerable to Timing Attacks
+**Files:** `src/lib/telegramAuth.ts` lines 18, 38, `src/app/api/auth/session/route.ts` line 23
+**Issue:**
+1. `validateMiniAppInitData()` does not verify `auth_date`. According to Telegram Bot API specifications, `auth_date` must be verified against current server time to prevent replay attacks (`Math.floor(Date.now() / 1000) - auth_date < 86400`). An intercepted `initData` query string can currently be replayed indefinitely to forge a valid session.
+2. Hash comparison in both `validateMiniAppInitData` and `validateWebWidgetData` uses standard string equality (`calculatedHash !== hash`), which is susceptible to timing side-channel attacks.
+**Fix:** Validate that `auth_date` is present and within a 24-hour freshness window. Replace string `!==` with `crypto.timingSafeEqual(Buffer.from(calculatedHash, 'hex'), Buffer.from(hash, 'hex'))`.
+
+### [H-19] Missing Rate Limiting on POST /api/auth/session and POST /api/auth/oidc
+**Files:** `src/app/api/auth/session/route.ts`, `src/app/api/auth/oidc/route.ts`
+**Issue:** Zero request throttling or rate limiting on both primary authentication endpoints.
+**Impact:** Automated bots and malicious actors can flood Telegram HMAC/OIDC token exchanges, execute brute-force signature searches, and spam Supabase profile upserts with minimal latency cost.
+**Fix:** Enforce IP-based rate limiting via Upstash Redis (`checkRateLimit('auth-session:${ip}', 10, 60_000)` and `checkRateLimit('auth-oidc:${ip}', 10, 60_000)`).
+
+### [H-20] TOCTOU Race Condition in POST /api/auth/verify-otp
+**File:** `src/app/api/auth/verify-otp/route.ts` lines 28–41
+**Issue:** Code verification performs a two-step `SELECT` followed by `UPDATE ({ used: true })`. Two concurrent requests submitting the same code simultaneously can both read `used: false` before either executes the update.
+**Impact:** A single one-time passcode can be consumed multiple times to authenticate multiple sessions concurrently.
+**Fix:** Convert to an atomic single-statement query: `UPDATE otp_codes SET used = true WHERE code = $code AND used = false AND expires_at > now() RETURNING *`.
 
 ---
 
@@ -221,6 +246,48 @@ Require all admin accounts to update password; remove plaintext comparison branc
 **File:** `src/app/(app)/(protected)/practice/sessions/page.tsx`
 **Issue:** Completed session IDs persisted to `localStorage` only. Cleared on browser reset or missing when user switches device.
 
+### [M-21] last_activity_date Missing from ProtectedLayout SSR Query — Redundant Streak Writes on HomeHub
+**Files:** `src/app/(app)/(protected)/layout.tsx` lines 30, 38–47, `src/components/dashboard/HomeHub.tsx` lines 63–64
+**Issue:** `layout.tsx` omits `last_activity_date` from the Supabase profile select query and does not forward it into `formattedProfile`. Consequently, `userProfile.last_activity_date` in the client Zustand store is `undefined` on initial load.
+**Impact:** On every initial page load or browser refresh of `/dashboard` (HomeHub), `lastActivity !== todayISO` evaluates to `true`, triggering an unnecessary `updateDailyStreak()` mutation and database round-trip even when the student has already recorded activity today.
+**Fix:** Add `last_activity_date` to `layout.tsx` profile query and map it into `formattedProfile` for `StoreInitializer`.
+
+### [M-22] Unbounded Polling Loop in UpgradeFlow.tsx When Awaiting Payment Approval
+**File:** `src/components/upgrade/UpgradeFlow.tsx` lines 120–160
+**Issue:** When awaiting manual receipt verification, the polling loop repeats every 15 seconds indefinitely with no maximum retry ceiling or timeout.
+**Impact:** If admin review takes several hours or days and the student leaves the tab open, the client continuously fires GET requests to `/api/payments/status`, draining mobile device battery and consuming unnecessary serverless invocations.
+**Fix:** Cap active polling at 25 attempts (~6 minutes) with backoff, then transition the UI to a calm resting state ("Receipt in review queue — check Telegram for notification") with a manual "Refresh Status" button.
+
+### [M-23] Race Condition in offlineSync.ts Causes Duplicate Stats Submission on Network Reconnection
+**File:** `src/utils/offlineSync.ts` lines 29–65
+**Issue:** `syncOfflineSubmissions()` lacks an in-flight mutex or `isSyncing` guard. If multiple browser tabs are open or the `online` event fires in rapid succession during unstable connectivity, concurrent executions read the same queue from `localforage` and submit duplicate exam payloads to `/api/exam/submit`.
+**Impact:** Cumulative user statistics and XP (which increment atomically via RPC `increment_user_subject_stats`) are double-counted or multi-counted.
+**Fix:** Introduce an in-flight boolean mutex (`isSyncing`) and pop items atomically from storage.
+
+### [M-24] 9 Uncached Parallel HEAD Queries on Practice Screen (getEntranceYearCounts)
+**File:** `src/app/actions/practice.ts` lines 41–58
+**Issue:** `getEntranceYearCounts()` fires 9 separate Supabase HEAD requests in parallel for years 2010 through 2018 on every page load.
+**Impact:** High request volume and latency waterfall on the practice screen for past paper question counts that are completely static.
+**Fix:** Cache results using Next.js `unstable_cache` or Redis with a 24-hour TTL and revalidation on question updates.
+
+### [M-25] Gamification XP Desynchronization Between Web App and Telegram Bot
+**Files:** `src/store/useGamificationStore.ts` line 55, `src/lib/telegramBot.ts` lines 311–312
+**Issue:** The Web application manages XP in client `localStorage` (defaulting to 45 XP and lost on cache clear or device switch), whereas the Telegram bot calculates XP dynamically from `user_subject_stats.questions_correct * 10`.
+**Impact:** Students see inconsistent XP totals, levels, and milestone badges between the Telegram bot and the Web App.
+**Fix:** Synchronize initial Web gamification XP from the user's aggregate `user_subject_stats` or profile record during session initialization.
+
+### [M-26] Unbounded Text Input on POST /api/highlights (Storage Bomb)
+**File:** `src/app/api/highlights/route.ts` line 71
+**Issue:** The highlight creation endpoint validates `typeof text === 'string'` but enforces no character length limit (`.max(2000)` missing).
+**Impact:** Malicious or buggy clients can POST megabytes of text data directly into `user_pins.content`, creating bloat and potential denial of service during note rendering.
+**Fix:** Add Zod schema validation restricting `text` to `z.string().min(1).max(2000)` and strip excess markup.
+
+### [M-27] Telegram OIDC Token Drops Verified Phone Number on Profile Upsert
+**File:** `src/app/api/auth/oidc/route.ts` lines 50, 57–64
+**Issue:** `phone_number` is extracted from Telegram's OIDC `id_token` payload (`const phone = idTokenPayload.phone_number;`) but omitted from the `profiles` upsert payload.
+**Impact:** Verified student phone numbers provided during Telegram Web OAuth are discarded, leaving `profiles.phone_number` empty.
+**Fix:** Include `phone_number: phone || null` in the Supabase upsert payload.
+
 ---
 
 ## 🟢 LOW
@@ -264,6 +331,18 @@ Require all admin accounts to update password; remove plaintext comparison branc
 **File:** `src/app/(app)/auth/callback/page.tsx`
 **Issue:** OAuth callback handled client-side. Tokens briefly visible in browser JS context. Should be a server component using `searchParams`.
 
+### [L-11] Orphaned OTP Verification Flow & Missing Telegram Bot /code Command
+**Files:** `src/app/api/auth/verify-otp/route.ts`, `src/lib/telegramBot.ts`
+**Issue:** The route `POST /api/auth/verify-otp` and database table `otp_codes` exist in the codebase, but no Web UI component calls it and Telegram bot lacks a `/code` command to generate login passcodes.
+**Impact:** Orphaned attack surface and dead code.
+**Fix:** Either implement a `/code` command in the Telegram bot with a desktop OTP login dialog, or remove/deprecate the unused endpoint and table.
+
+### [L-12] Superadmin Account Management Lacks Delete/Deactivate Admin Server Action
+**Files:** `src/app/actions/admin.ts` lines 220–251, `src/app/admin/managers/page.tsx`
+**Issue:** Superadmins can create admin accounts and list them, but no Server Action exists to delete, deactivate, or revoke access for compromised admin accounts.
+**Impact:** Compromised admin credentials require manual SQL intervention in Supabase to revoke.
+**Fix:** Add `deleteAdminAccount(adminId)` and `toggleAdminActive(adminId)` Server Actions with Superadmin role verification.
+
 ---
 
 ## Database Actions Status (Production)
@@ -283,6 +362,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 | D-11 | RLS on `user_pins` table | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
 | D-12 | Make `receipts` storage bucket private | Supabase dashboard setting | ✅ Completed (Private bucket) |
 | D-13 | `check_and_increment_ai_quota` RPC | `supabase/migrations/20261004140000_atomic_ai_quota_rpc.sql` | ✅ Executed & Live in Prod |
+| D-14 | Restrict `study_notes` RLS SELECT policy (gate content from anon) | `supabase/migrations/20261005100000_secure_study_notes_rls.sql` | ⏳ Pending Supabase SQL Execution |
 
 ---
 
@@ -361,6 +441,10 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] M-08  Change admin cookie to sameSite: 'strict'
 [x] M-18  Embed iat/exp in SessionData; validate in decryptSession
 [x] L-05  Add security headers to next.config.mjs
+[ ] C-10  Lock down PostgREST RLS on study_notes: replace public SELECT with premium/authenticated check (or gate content via protected route)
+[ ] H-18  Telegram initData: enforce auth_date freshness check (24h) and use crypto.timingSafeEqual()
+[ ] H-19  Add distributed rate-limiting to auth/session and auth/oidc endpoints
+[ ] H-20  Fix TOCTOU race condition in api/auth/verify-otp with atomic UPDATE ... RETURNING
 
 ════════════════════════════════════════
   CRITICAL APP FIXES
@@ -387,6 +471,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] D-10  CREATE INDEX idx_otp_codes_lookup ON otp_codes(code) (Executed & Live in Prod)
 [x] D-11  Confirm + add RLS on user_pins table (Executed & Live in Prod)
 [x] D-12  Make receipts storage bucket private in Supabase dashboard (Completed)
+[ ] D-14  Lock down study_notes RLS policy (remove public SELECT on content)
 
 ════════════════════════════════════════
   HIGH — Fix this week
@@ -424,6 +509,13 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] M-17  Force admin password migration (auto-migrates on login + constant-time comparison)
 [x] M-19  Audit and fix PWA manifest icon paths (synced manifest.json with public/icons/)
 [x] M-20  Persist completed session stats to DB (user_subject_stats atomic RPC)
+[ ] M-21  Add last_activity_date to ProtectedLayout SSR query to prevent redundant streak writes on HomeHub
+[ ] M-22  Add timeout and max retry ceiling to UpgradeFlow.tsx payment status polling loop
+[ ] M-23  Add in-flight mutex / isSyncing guard to offlineSync.ts to prevent duplicate submissions
+[ ] M-24  Cache getEntranceYearCounts in practice.ts with unstable_cache to eliminate 9 parallel HEAD queries
+[ ] M-25  Synchronize gamification XP between Web app (localStorage) and Telegram Bot (user_subject_stats)
+[ ] M-26  Add Zod string length constraint (.max(2000)) on POST /api/highlights text payload
+[ ] M-27  Persist phone_number from Telegram OIDC id_token to profiles table during upsert
 
 ════════════════════════════════════════
   LOW — Backlog
@@ -438,6 +530,8 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] L-08  Skip Telegram SDK load on /admin/* routes
 [x] L-09  Remove console.log from production routes (0 console.log calls in src/)
 [x] L-10  PKCE auth callback with secure state & verifier verification
+[ ] L-11  Wire up or clean up orphaned OTP verification flow & add Telegram Bot /code command
+[ ] L-12  Add delete/deactivate admin Server Action and UI in superadmin managers panel
 ```
 
 ---
