@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { getNextGeminiKey, markKeyRateLimited, getKeyCount } from '@/lib/geminiKeyRotation';
 import { checkRateLimit } from '@/lib/rateLimiter';
 import { getCachedAIResponse, setCachedAIResponse } from '@/lib/redis';
+import { sendQuotaExhaustionNudge } from '@/lib/telegramBot';
 
 
 
@@ -195,6 +196,11 @@ export async function POST(req: NextRequest) {
     if (!rpcError && rpcQuota) {
       atomicQuotaApplied = true;
       if (!rpcQuota.allowed) {
+        if (!isPremium && session.telegram_id) {
+          sendQuotaExhaustionNudge(session.telegram_id, profile.full_name).catch(err => {
+            console.warn('[AI Tutor Quota Nudge Error]', err);
+          });
+        }
         return new Response(
           JSON.stringify({
             error: 'quota_exceeded',
@@ -230,6 +236,11 @@ export async function POST(req: NextRequest) {
 
       // Check if user reached their weekly limit
       if (currentUsage >= quotaLimit) {
+        if (!isPremium && session.telegram_id) {
+          sendQuotaExhaustionNudge(session.telegram_id, profile.full_name).catch(err => {
+            console.warn('[AI Tutor Quota Nudge Error]', err);
+          });
+        }
         return new Response(
           JSON.stringify({
             error: 'quota_exceeded',

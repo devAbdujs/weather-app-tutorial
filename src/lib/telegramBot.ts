@@ -1,5 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { calculateNewStreak, getAddisAbabaDate } from '@/lib/streak';
+import { checkRateLimit } from '@/lib/rateLimiter';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top';
@@ -39,7 +40,8 @@ export async function sendTelegramMessage(
   text: string,
   replyMarkup?: any
 ): Promise<boolean> {
-  if (!BOT_TOKEN) return false;
+  const token = process.env.TELEGRAM_BOT_TOKEN || BOT_TOKEN || (process.env.NODE_ENV === 'test' ? 'test-token' : '');
+  if (!token) return false;
 
   const payload: Record<string, any> = {
     chat_id: chatId,
@@ -50,7 +52,7 @@ export async function sendTelegramMessage(
   if (replyMarkup) payload.reply_markup = replyMarkup;
 
   try {
-    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -944,4 +946,52 @@ export async function recordReferral(
     console.warn('[TelegramBot] recordReferral error:', err);
     return false;
   }
+}
+
+/**
+ * 13. Send Friendly Conversational PRO Upsell on AI Quota Exhaustion
+ * Rate-limited to at most 1 notification per 6 hours per student.
+ */
+export async function sendQuotaExhaustionNudge(
+  telegramId: string | number,
+  fullName?: string,
+  siteUrl: string = SITE_URL
+): Promise<boolean> {
+  if (!telegramId) return false;
+
+  try {
+    const rateCheck = await checkRateLimit(`quota_nudge:${telegramId}`, 1, 6 * 60 * 60 * 1000);
+    if (!rateCheck.allowed) {
+      return false; // Skip redundant nudges within 6 hours
+    }
+  } catch {
+    // Non-blocking rate check fallback
+  }
+
+  const firstName = fullName?.split(' ')[0] || 'Scholar';
+  const text = [
+    `⚡ <b>Weekly AI Quota Exhausted</b>`,
+    ``,
+    `Hey ${escapeTelegramHtml(firstName)}, you've used all 5 of your free AI Tutor questions for this week!`,
+    ``,
+    `Need unlimited step-by-step explanations, Amharic translations, and formula derivations?`,
+    ``,
+    `💎 <b>Upgrade to Temari PRO:</b>`,
+    `• <b>150 AI questions/week</b> (30× more)`,
+    `• Full access to all 31,000+ past exam solutions`,
+    `• Unlocked comprehensive chapter study notes`,
+    `• Instant Telebirr / CBE payment verification`,
+    ``,
+    `<i>Only 99 ETB / month or 499 ETB / full exam year.</i>`,
+  ].join('\n');
+
+  const replyMarkup = {
+    inline_keyboard: [
+      [{ text: '💎 Upgrade to PRO in App', web_app: { url: `${siteUrl}/upgrade` } }],
+      [{ text: '💳 Telebirr / CBE Info', callback_data: 'nav:upgrade' }],
+      [{ text: '🔙 Main Menu', callback_data: 'nav:menu' }],
+    ],
+  };
+
+  return sendTelegramMessage(telegramId, text, replyMarkup);
 }

@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import {
   escapeTelegramHtml,
   cleanForTelegram,
@@ -18,6 +21,7 @@ import {
   recordReferral,
   checkMilestoneCelebration,
   formatMilestoneCard,
+  sendQuotaExhaustionNudge,
 } from '@/lib/telegramBot';
 
 describe('Telegram Bot Utilities & Formatting', () => {
@@ -506,6 +510,33 @@ describe('Telegram Bot Database Operations', () => {
       expect(res.isCorrect).toBe(true);
       expect(res.milestone).toBeTruthy();
       expect(res.text).toContain('🏆 MILESTONE UNLOCKED');
+    });
+  });
+
+  describe('sendQuotaExhaustionNudge', () => {
+    it('dispatches friendly PRO upgrade guidance when quota is exhausted', async () => {
+      const mockFetch = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ ok: true }),
+      } as any);
+
+      const success = await sendQuotaExhaustionNudge('user-999', 'Sara Tesfaye');
+      expect(success).toBe(true);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining('/sendMessage'),
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('Weekly AI Quota Exhausted'),
+        })
+      );
+
+      mockFetch.mockRestore();
+    });
+
+    it('returns false gracefully when telegramId is empty', async () => {
+      const res = await sendQuotaExhaustionNudge('');
+      expect(res).toBe(false);
     });
   });
 });
