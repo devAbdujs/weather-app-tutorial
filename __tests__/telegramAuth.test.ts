@@ -8,62 +8,124 @@ import crypto from 'crypto';
 describe('Telegram Auth Validation', () => {
   const BOT_TOKEN = '123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11';
 
-  it('should validate legitimate Mini App initData', () => {
-    // Generate valid signature mock
-    const initDataString = 'query_id=AAHdF6IQAAAAAN0XohC-1234&user=%7B%22id%22%3A123456789%2C%22first_name%22%3A%22John%22%2C%22last_name%22%3A%22Doe%22%2C%22username%22%3A%22johndoe%22%2C%22language_code%22%3A%22en%22%7D&auth_date=1610000000';
-    
-    // Calculate what the valid hash should be for this test string
-    const urlParams = new URLSearchParams(initDataString);
-    const params = Array.from(urlParams.entries());
-    params.sort((a, b) => a[0].localeCompare(b[0]));
-    const dataCheckString = params.map(([key, value]) => `${key}=${value}`).join('\n');
-    
-    const secretKey = crypto.createHmac('sha256', 'WebAppData').update(BOT_TOKEN).digest();
-    const validHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
+  function signMiniApp(paramsObj: Record<string, string>, token: string): string {
+    const params = Object.entries(paramsObj).sort((a, b) => a[0].localeCompare(b[0]));
+    const dataCheckString = params.map(([k, v]) => `${k}=${v}`).join('\n');
+    const secretKey = crypto.createHmac('sha256', 'WebAppData').update(token).digest();
+    const hash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
+    const qs = new URLSearchParams(paramsObj);
+    qs.set('hash', hash);
+    return qs.toString();
+  }
 
-    const finalInitData = `${initDataString}&hash=${validHash}`;
+  function signWebWidget(dataObj: Record<string, any>, token: string): any {
+    const checkString = Object.keys(dataObj)
+      .sort()
+      .map(k => `${k}=${dataObj[k]}`)
+      .join('\n');
+    const secretKey = crypto.createHash('sha256').update(token).digest();
+    const hash = crypto.createHmac('sha256', secretKey).update(checkString).digest('hex');
+    return { ...dataObj, hash };
+  }
 
-    const user = validateMiniAppInitData(finalInitData, BOT_TOKEN);
+  it('should validate legitimate Mini App initData with fresh auth_date', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const validInitData = signMiniApp({
+      query_id: 'AAHdF6IQAAAAAN0XohC-1234',
+      user: JSON.stringify({ id: 123456789, first_name: 'John', last_name: 'Doe', username: 'johndoe' }),
+      auth_date: String(now),
+    }, BOT_TOKEN);
+
+    const user = validateMiniAppInitData(validInitData, BOT_TOKEN);
     expect(user).toBeDefined();
     expect(user.id).toBe(123456789);
     expect(user.first_name).toBe('John');
   });
 
+  it('should reject expired Mini App initData (> 24 hours old)', () => {
+    const twoDaysAgo = Math.floor(Date.now() / 1000) - (2 * 86400);
+    const expiredInitData = signMiniApp({
+      query_id: 'AAHdF6IQAAAAAN0XohC-1234',
+      user: JSON.stringify({ id: 123456789, first_name: 'John' }),
+      auth_date: String(twoDaysAgo),
+    }, BOT_TOKEN);
+
+    const user = validateMiniAppInitData(expiredInitData, BOT_TOKEN);
+    expect(user).toBeNull();
+  });
+
+  it('should reject Mini App initData without auth_date', () => {
+    const paramsObj: Record<string, string> = {
+      query_id: 'AAHdF6IQAAAAAN0XohC-1234',
+      user: JSON.stringify({ id: 123456789, first_name: 'John' }),
+    };
+    const initDataWithoutAuthDate = signMiniApp(paramsObj, BOT_TOKEN);
+
+    const user = validateMiniAppInitData(initDataWithoutAuthDate, BOT_TOKEN);
+    expect(user).toBeNull();
+  });
+
   it('should reject tampered Mini App initData', () => {
-    const tamperedInitData = 'query_id=AAHdF6IQAAAAAN0XohC-1234&user=%7B%22id%22%3A999999999%7D&auth_date=1610000000&hash=fakehash123';
-    const user = validateMiniAppInitData(tamperedInitData, BOT_TOKEN);
+    const now = Math.floor(Date.now() / 1000);
+    const validInitData = signMiniApp({
+      query_id: 'AAHdF6IQAAAAAN0XohC-1234',
+      user: JSON.stringify({ id: 123456789, first_name: 'John' }),
+      auth_date: String(now),
+    }, BOT_TOKEN);
+
+    // Tamper with user payload
+    const tampered = validInitData.replace('123456789', '999999999');
+    const user = validateMiniAppInitData(tampered, BOT_TOKEN);
     expect(user).toBeNull();
   });
 
   it('should reject Mini App initData signed with wrong token', () => {
-    const initDataString = 'query_id=test&auth_date=123';
-    const secretKey = crypto.createHmac('sha256', 'WebAppData').update('WRONG_TOKEN').digest();
-    const hash = crypto.createHmac('sha256', secretKey).update('auth_date=123\nquery_id=test').digest('hex');
-    
-    const user = validateMiniAppInitData(`${initDataString}&hash=${hash}`, BOT_TOKEN);
+    const now = Math.floor(Date.now() / 1000);
+    const initDataWrongToken = signMiniApp({
+      query_id: 'test',
+      auth_date: String(now),
+    }, 'WRONG_BOT_TOKEN');
+
+    const user = validateMiniAppInitData(initDataWrongToken, BOT_TOKEN);
     expect(user).toBeNull();
   });
 
-  it('should validate legitimate Web Widget webData', () => {
-    const webData = {
+  it('should validate legitimate Web Widget webData with fresh auth_date', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const validWebData = signWebWidget({
       id: 123456789,
       first_name: 'John',
       username: 'johndoe',
-      auth_date: 1610000000,
-    };
-    
-    const checkString = Object.keys(webData)
-      .sort()
-      .map(k => `${k}=${webData[k as keyof typeof webData]}`)
-      .join('\n');
-      
-    const secretKey = crypto.createHash('sha256').update(BOT_TOKEN).digest();
-    const validHash = crypto.createHmac('sha256', secretKey).update(checkString).digest('hex');
+      auth_date: now,
+    }, BOT_TOKEN);
 
-    const finalWebData = { ...webData, hash: validHash };
-    
-    const user = validateWebWidgetData(finalWebData, BOT_TOKEN);
+    const user = validateWebWidgetData(validWebData, BOT_TOKEN);
     expect(user).toBeDefined();
     expect(user.id).toBe(123456789);
+  });
+
+  it('should reject expired Web Widget webData (> 24 hours old)', () => {
+    const twoDaysAgo = Math.floor(Date.now() / 1000) - (2 * 86400);
+    const expiredWebData = signWebWidget({
+      id: 123456789,
+      first_name: 'John',
+      auth_date: twoDaysAgo,
+    }, BOT_TOKEN);
+
+    const user = validateWebWidgetData(expiredWebData, BOT_TOKEN);
+    expect(user).toBeNull();
+  });
+
+  it('should reject Web Widget webData with invalid hash', () => {
+    const now = Math.floor(Date.now() / 1000);
+    const validWebData = signWebWidget({
+      id: 123456789,
+      first_name: 'John',
+      auth_date: now,
+    }, BOT_TOKEN);
+
+    validWebData.hash = '0000000000000000000000000000000000000000000000000000000000000000';
+    const user = validateWebWidgetData(validWebData, BOT_TOKEN);
+    expect(user).toBeNull();
   });
 });

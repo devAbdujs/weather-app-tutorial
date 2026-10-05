@@ -148,8 +148,7 @@
 **Files:** `src/lib/telegramAuth.ts` lines 18, 38, `src/app/api/auth/session/route.ts` line 23
 **Issue:**
 1. `validateMiniAppInitData()` does not verify `auth_date`. According to Telegram Bot API specifications, `auth_date` must be verified against current server time to prevent replay attacks (`Math.floor(Date.now() / 1000) - auth_date < 86400`). An intercepted `initData` query string can currently be replayed indefinitely to forge a valid session.
-2. Hash comparison in both `validateMiniAppInitData` and `validateWebWidgetData` uses standard string equality (`calculatedHash !== hash`), which is susceptible to timing side-channel attacks.
-**Fix:** Validate that `auth_date` is present and within a 24-hour freshness window. Replace string `!==` with `crypto.timingSafeEqual(Buffer.from(calculatedHash, 'hex'), Buffer.from(hash, 'hex'))`.
+**Fix:** Enforced 24-hour freshness on `auth_date` and constant-time buffer comparison via `crypto.timingSafeEqual` in `src/lib/telegramAuth.ts` for both `validateMiniAppInitData` and `validateWebWidgetData`. Verified with unit test suite in `__tests__/telegramAuth.test.ts`.
 
 ### [H-19] Missing Rate Limiting on POST /api/auth/session and POST /api/auth/oidc
 **Files:** `src/app/api/auth/session/route.ts`, `src/app/api/auth/oidc/route.ts`
@@ -436,7 +435,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] M-18  Embed iat/exp in SessionData; validate in decryptSession
 [x] L-05  Add security headers to next.config.mjs
 [x] C-10  Lock down PostgREST RLS on study_notes: drop public SELECT policy (supabase/migrations/20261005100000_secure_study_notes_rls.sql)
-[ ] H-18  Telegram initData: enforce auth_date freshness check (24h) and use crypto.timingSafeEqual()
+[x] H-18  Telegram initData: enforce auth_date freshness check (24h) and use crypto.timingSafeEqual()
 [ ] H-19  Add distributed rate-limiting to auth/session and auth/oidc endpoints
 
 ════════════════════════════════════════
