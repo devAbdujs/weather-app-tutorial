@@ -33,20 +33,33 @@ Temari is a Telegram Mini App and PWA that helps Ethiopian students practice pas
 
 ---
 
+## Dedicated Subdomains
+
+Temari routes multi-tenant exam tracks via edge middleware (`src/middleware.ts`):
+
+- **[entrance.temari.top](https://entrance.temari.top)** — Grade 12 Ethiopian University Entrance Exam (EUEE) drills, pass/fail historical trends, and Aptitude tests
+- **[freshman.temari.top](https://freshman.temari.top)** — University Freshman remedial courses, Calculus, Applied Mathematics, and General Physics
+- **[exit.temari.top](https://exit.temari.top)** — Ethiopian MoE National Exit Examination benchmarks for graduating university seniors
+- **[temari.top](https://temari.top)** — Platform home, cross-track overview, and shared student accounts
+
+Authentication cookies are scoped across `.temari.top` with wildcard domain sharing.
+
+---
+
 ## Tech stack
 
 | Layer | Technology |
 |---|---|
-| Framework | [Next.js 14](https://nextjs.org) (App Router) |
-| Database | [Supabase](https://supabase.com) (Postgres + RLS) |
+| Framework | [Next.js 14](https://nextjs.org) (App Router, Edge Middleware) |
+| Database | [Supabase](https://supabase.com) (Postgres + RLS + Storage) |
+| Caching | Dual-layer: [Upstash Redis](https://upstash.com) L1 + Supabase L2 |
 | Styling | [Tailwind CSS](https://tailwindcss.com) + custom CSS variables |
-| AI | [Google Gemini](https://ai.google.dev) via AI SDK |
+| AI | [Google Gemini](https://ai.google.dev) via AI SDK (OCR & Tutoring) |
 | Auth | Telegram Mini App initData + OIDC + Web Widget |
 | State | [Zustand](https://zustand-demo.pmnd.rs) |
 | Math rendering | [KaTeX](https://katex.org) |
 | Offline cache | [localforage](https://localforage.github.io/localForage/) (IndexedDB) |
 | Deployment | [Vercel](https://vercel.com) |
-| Image CDN | [Cloudinary](https://cloudinary.com) |
 
 ---
 
@@ -80,9 +93,10 @@ Open [http://localhost:3000](http://localhost:3000).
 
 > **Tip:** Telegram Mini App features (initData auth, haptics, back button) only work inside Telegram. Use the dev mode bypass (`devMode: true`) for local testing — see `src/app/api/auth/session/route.ts`.
 
-### 4. (Optional) Run type checks
+### 4. Run tests & type checks
 
 ```bash
+npm test
 npx tsc --noEmit
 ```
 
@@ -102,10 +116,9 @@ Copy `.env.example` to `.env.local` and fill in:
 | `NEXT_PUBLIC_TELEGRAM_CLIENT_ID` | ✅ | Telegram OIDC client ID (bot numeric ID) |
 | `TELEGRAM_CLIENT_SECRET` | ✅ | Telegram OIDC client secret |
 | `gemini_api_key1` … `gemini_api_keyN` | ✅ | Gemini API keys — add as many as you have |
-| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | ✅ | Cloudinary cloud name |
-| `CLOUDINARY_API_KEY` | optional | Cloudinary API key (admin upload) |
-| `CLOUDINARY_API_SECRET` | optional | Cloudinary API secret (admin upload) |
-| `NEXT_PUBLIC_SITE_URL` | optional | Production URL (for OIDC redirects) |
+| `UPSTASH_REDIS_REST_URL` | optional | Upstash Redis REST URL for distributed rate limiting & L1 cache |
+| `UPSTASH_REDIS_REST_TOKEN` | optional | Upstash Redis REST token |
+| `NEXT_PUBLIC_SITE_URL` | optional | Production URL (e.g. https://temari.top) |
 | `DATABASE_URL` | optional | Postgres connection string (for CLI migrations) |
 
 See `.env.example` for the full annotated list.
@@ -168,7 +181,7 @@ ethio-exam-app/
 │   ├── types/
 │   │   └── index.ts              # Shared TypeScript types
 │   └── utils/
-│       ├── cloudinary.ts         # Cloudinary image URL builder
+│       ├── offlineSync.ts        # Background IndexedDB exam submission queue
 │       └── supabase/
 │           ├── client.ts         # Browser Supabase client
 │           ├── server.ts         # Server Supabase client (SSR)

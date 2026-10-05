@@ -78,11 +78,32 @@ refactor(exam): extract question grid into its own component
 
 ---
 
+## Multi-Subdomain Local Testing
+
+Temari routes traffic based on the incoming `Host` header:
+- `entrance.temari.top`
+- `freshman.temari.top`
+- `exit.temari.top`
+- `temari.top`
+
+To test multi-subdomain routing locally:
+1. Map subdomains in `/etc/hosts`:
+   ```
+   127.0.0.1  temari.local entrance.temari.local freshman.temari.local exit.temari.local
+   ```
+2. Or use `lvh.me` (which resolves `*.lvh.me` to `127.0.0.1` automatically):
+   - `http://entrance.lvh.me:3000`
+   - `http://freshman.lvh.me:3000`
+   - `http://exit.lvh.me:3000`
+
+---
+
 ## Pull request process
 
 1. **Branch off `main`** — always start from an up-to-date main
 2. **Keep PRs small** — one concern per PR makes review faster
-3. **Pass CI checks:**
+3. **Pass CI & test checks:**
+   - `npm test` must pass (all 22+ suites green)
    - `npx tsc --noEmit` must pass with no errors
    - `npm run build` must succeed
 4. **Write a clear PR description:**

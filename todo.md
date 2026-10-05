@@ -628,11 +628,11 @@ Require all admin accounts to update password; remove plaintext comparison branc
    - Missing documentation for Jest unit tests (`npm test`) covering subdomains, session encryption, rate limiter, and streak calculators.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[DOC-01]` Update `README.md` with accurate file names, remove stale Cloudinary claims, and document multi-subdomains.
-- [ ] `[DOC-02]` Update `docs/api-routes.md` to document all active endpoints (`payments`, `transform`, `highlights`) and correct auth specs.
-- [ ] `[DOC-03]` Update `docs/database-schema.md` with `payment_receipts`, `ai_responses_cache`, new `profiles` columns, and RPC functions.
-- [ ] `[DOC-04]` Rewrite `ARCHITECTURE.md` with up-to-date system diagrams and caching hierarchy.
-- [ ] `[DOC-05]` Update `CONTRIBUTING.md` and `docs/testing.md` with current Jest test suite commands and multi-subdomain testing instructions.
+- [x] `[DOC-01]` Update `README.md` with accurate file names, remove stale Cloudinary claims, and document multi-subdomains. (Documented entrance/freshman/exit subdomains, removed Cloudinary, added Upstash Redis)
+- [x] `[DOC-02]` Update `docs/api-routes.md` to document all active endpoints (`payments`, `transform`, `highlights`) and correct auth specs. (Documented payment OCR, receipt polling, transform, highlights, streak reminder cron)
+- [x] `[DOC-03]` Update `docs/database-schema.md` with `payment_receipts`, `ai_responses_cache`, new `profiles` columns, and RPC functions. (Documented payment_receipts, ai_responses_cache, admin_audit_logs, RPCs, and RLS lockdown)
+- [x] `[DOC-04]` Rewrite `ARCHITECTURE.md` with up-to-date system diagrams and caching hierarchy. (Diagrammed multi-subdomain routing, dual-layer cache L1/L2, and Telegram Bot webhook architecture)
+- [x] `[DOC-05]` Update `CONTRIBUTING.md` and `docs/testing.md` with current Jest test suite commands and multi-subdomain testing instructions. (Documented 22 active test suites, lvh.me & /etc/hosts subdomain testing)
 
 ---
 

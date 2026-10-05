@@ -52,17 +52,17 @@ Exchanges a Telegram OIDC authorization code for a session. Part of the PKCE flo
 ```json
 {
   "code": "string",
-  "code_verifier": "string",
-  "redirect_uri": "string (optional, defaults to NEXT_PUBLIC_SITE_URL/auth/callback)"
+  "code_verifier": "string"
 }
 ```
+*Note: For security against open redirect attacks, `redirect_uri` is strictly constructed server-side from trusted host headers and `NEXT_PUBLIC_SITE_URL`.*
 
 **Flow:**
 1. POSTs to `https://oauth.telegram.org/token` with Basic auth (`client_id:client_secret`)
-2. Decodes the returned `id_token` JWT payload (base64 only — no signature verification needed since transport is TLS)
+2. Decodes the returned `id_token` JWT payload (base64 only — transport is TLS)
 3. Extracts `telegram_id`, `name`, `phone_number`
-4. Upserts profile into Supabase
-5. Issues session cookie
+4. Upserts profile into Supabase (including verified `phone_number`)
+5. Issues `es_session` cookie (AES-GCM encrypted, HttpOnly, 30 days)
 
 **Success response:** `{ success: true, phone: string }`
 
@@ -77,7 +77,7 @@ Exchanges a Telegram OIDC authorization code for a session. Part of the PKCE flo
 
 ### `POST /api/auth/telegram/web`
 
-Verifies a Telegram Web Widget login payload and upserts the user. Does **not** issue a session cookie — this is a profile-sync endpoint.
+Verifies a Telegram Web Widget login payload and authenticates the user. Issues a secure `es_session` cookie and automatically configures `target_exam` based on the active subdomain (`x-subdomain` header).
 
 **Auth required:** No
 
@@ -99,8 +99,8 @@ Verifies a Telegram Web Widget login payload and upserts the user. Does **not** 
 **Error responses:**
 | Status | Reason |
 |---|---|
-| 400 | Missing hash or id |
-| 403 | Invalid signature |
+| 400 | Missing required fields or payload expired (> 24 hours) |
+| 403 | Invalid HMAC signature |
 | 500 | Internal server error |
 
 ---
@@ -397,4 +397,140 @@ Uploads a new study note. Requires admin authentication via the separate admin s
 |---|---|
 | 400 | Missing required fields |
 | 401 | Not an admin |
+| 403 | Forbidden (readonly role blocked) |
 | 500 | Internal server error |
+
+---
+
+### `POST /api/admin/notes/transform`
+
+Transforms raw documents (PDF, DOCX, TXT) or raw study notes text into structured chapters using Gemini AI.
+
+**Auth required:** Admin session (`admin_session` cookie). `readonly` role accounts are rejected with HTTP 403.
+
+**Request body (JSON or multipart):**
+```json
+{
+  "text": "Raw curriculum text...",
+  "subject": "Mathematics",
+  "examType": "entrance"
+}
+```
+
+**Success response:**
+```json
+{
+  "success": true,
+  "chapters": [
+    {
+      "title": "Chapter 1: Limits & Continuity",
+      "summary": "Key concepts...",
+      "key_terms": ["Limit", "Continuity"],
+      "content": "Detailed markdown..."
+    }
+  ]
+}
+```
+
+---
+
+## Payment routes
+
+### `POST /api/payments/submit`
+
+Submits manual CBE or Telebirr payment receipt for verification. Uploads image to Supabase Storage `receipts` bucket, performs Gemini Vision OCR to parse transaction reference and amount, and registers a pending receipt.
+
+**Auth required:** Yes (`es_session` cookie)
+
+**Request body (FormData):**
+- `file`: Image file (PNG, JPEG, WebP)
+- `telegram_id`: User's Telegram ID
+- `tier`: `"premium"`
+
+**Success response:**
+```json
+{
+  "success": true,
+  "receiptId": "uuid",
+  "ocrStatus": "matched" | "manual_review",
+  "detectedReference": "TX12345678"
+}
+```
+
+---
+
+### `GET /api/payments/status`
+
+Retrieves the current status of the student's latest payment receipt. Polled by the client upgrade screen (capped at 25 attempts).
+
+**Auth required:** Yes (`es_session` cookie)
+
+**Success response:**
+```json
+{
+  "status": "pending" | "approved" | "rejected" | "none",
+  "isPremium": boolean,
+  "receiptId": "uuid | null"
+}
+```
+
+---
+
+## Study notes highlights routes
+
+### `GET /api/highlights?chapterId=<id>`
+
+Fetches all user highlights for a specific chapter in study notes.
+
+**Auth required:** Yes (`es_session` cookie)
+
+**Success response:**
+```json
+[
+  {
+    "id": "uuid",
+    "chapter_id": "string",
+    "color": "yellow | green | blue | pink",
+    "selected_text": "Highlighted phrase...",
+    "created_at": "ISO timestamp"
+  }
+]
+```
+
+---
+
+### `POST /api/highlights`
+
+Creates a new text highlight on a study note chapter. Enforces max 2000 characters per highlight.
+
+**Auth required:** Yes (`es_session` cookie)
+
+**Request body:**
+```json
+{
+  "chapterId": "string",
+  "color": "yellow | green | blue | pink",
+  "selectedText": "Text to highlight"
+}
+```
+
+**Success response:** `{ "success": true, "highlight": { ... } }`
+
+---
+
+## Scheduled cron jobs
+
+### `GET /api/cron/streak-reminder`
+
+Triggered daily at 20:00 EAT (17:00 UTC) via Vercel Cron. Queries active users whose last practice was yesterday and sends a personalized Telegram reminder to preserve their daily streak.
+
+**Auth required:** Verified via `Authorization: Bearer <CRON_SECRET>` header.
+
+**Success response:**
+```json
+{
+  "success": true,
+  "checked": 142,
+  "reminded": 38
+}
+```

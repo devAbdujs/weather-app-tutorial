@@ -1,100 +1,128 @@
 # Architecture — Temari
 
-This document describes the high-level system design, data flows, and key technical decisions.
+This document describes the high-level system design, multi-subdomain routing, dual-layer caching, auth flows, and AI pipeline.
 
 ---
 
-## System overview
+## System Overview & Multi-Subdomain Architecture
+
+Temari operates a multi-tenant exam platform across dedicated subdomains, sharing a unified database, authentication session, and design tokens:
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        CLIENTS                                  │
-│                                                                 │
-│  ┌───────────────────┐       ┌─────────────────────────────┐   │
-│  │  Telegram Mini App │       │  Web browser (temari.top)   │   │
-│  │  (iOS / Android)   │       │  (PWA-installable)          │   │
-│  └────────┬──────────┘       └──────────────┬──────────────┘   │
-│           │ initData auth                    │ OIDC or Widget   │
-└───────────┼──────────────────────────────────┼──────────────────┘
-            │                                  │
-            ▼                                  ▼
-┌───────────────────────────────────────────────────────────────┐
-│                   Next.js App (Vercel)                         │
-│                                                                │
-│  ┌─────────────────────────────────────────────────────────┐  │
-│  │  Route Groups                                           │  │
-│  │  (app)/(public)/page.tsx     — High-converting Landing  │  │
-│  │  (app)/(protected)/*         — Protected authenticated  │  │
-│  │  • /dashboard, /practice, /exam/session, /profile       │  │
-│  └─────────────────────────────────────────────────────────┘  │
-│                                                                │
-│  ┌─────────────────────────────────────────────────────────┐  │
-│  │  API Routes                                              │  │
-│  │  POST /api/auth/session       — Mini App + Web Widget    │  │
-│  │  POST /api/auth/oidc          — Telegram OIDC code flow  │  │
-│  │  GET /auth/callback           — OIDC redirect handler    │  │
-│  │  POST /api/ai/tutor           — Streaming AI explanation │  │
-│  │  POST /api/ai/quiz            — AI quiz generation       │  │
-│  │  POST /api/ai/tip             — Daily motivational tip   │  │
-│  │  POST /api/exam/submit        — Save exam stats          │  │
-│  │  GET|POST|DELETE /api/pins    — Notebook pin CRUD        │  │
-│  │  POST /api/bot/webhook        — Telegram bot handler     │  │
-│  │  POST /api/admin/notes        — Admin note upload        │  │
-│  └─────────────────────────────────────────────────────────┘  │
-│                                                                │
-│  ┌──────────────────────┐   ┌──────────────────────────────┐  │
-│  │   Server Actions     │   │   Lib / Utilities            │  │
-│  │ • updateProfilePrefs │   │ • session.ts (AES-GCM)       │  │
-│  │ • toggleSavedMistake │   │ • geminiKeyRotation.ts       │  │
-│  │ • updateDailyStreak  │   │ • rateLimiter.ts             │  │
-│  │ • getSavedMistakes   │   │ • telegramAuth.ts            │  │
-│  │ • logout             │   │ • cache.ts (IndexedDB)       │  │
-│  └──────────────────────┘   └──────────────────────────────┘  │
-└────────────────────────────────────────────────────────────────┘
-            │                        │
-            ▼                        ▼
-┌─────────────────────┐   ┌──────────────────────────────────────┐
-│  Supabase (Postgres) │   │  Google Gemini API                   │
-│  • profiles          │   │  Multiple keys, round-robin rotation │
-│  • questions         │   │  Models: gemini-1.5-flash-8b         │
-│  • study_notes       │   │          gemini-3.6-flash            │
-│  • user_subject_stats│   └──────────────────────────────────────┘
-│  • saved_mistakes    │
-│  • user_pins         │   ┌──────────────────────────────────────┐
-│  • otp_codes         │   │  n8n Backend (Local / Cloudflare)    │
-│  • admin_users       │   │  Automates PDF Ingestion via Gemini  │
-│  • flashcards        │   │  and Telegram CRM workflows          │
-└─────────────────────┘   └──────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────┐
+│                                CLIENTS                                 │
+│                                                                        │
+│  ┌──────────────────────┐   ┌────────────────────────────────────────┐ │
+│  │  Telegram Mini App   │   │  Web Browsers (Subdomains & PWA)       │ │
+│  │  (Android / iOS / PC)│   │  • entrance.temari.top (Grade 12 EUEE) │ │
+│  │                      │   │  • freshman.temari.top (University)    │ │
+│  │                      │   │  • exit.temari.top (National Exit)     │ │
+│  │                      │   │  • temari.top (Hub / Shared Overview)  │ │
+│  └──────────┬───────────┘   └───────────────────┬────────────────────┘ │
+│             │ initData auth                     │ OIDC / Web Widget    │
+└─────────────┼───────────────────────────────────┼──────────────────────┘
+              │                                   │
+              ▼                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                   Next.js 14 App Router (Vercel)                       │
+│                                                                        │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │  Edge Middleware (src/middleware.ts)                             │  │
+│  │  • Host-based subdomain extraction (`x-subdomain` header)        │  │
+│  │  • Wildcard cookie scoping (`.temari.top`) for SSO auth          │  │
+│  │  • Canonical 308 redirects for naked domain / legacy routes      │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+│                                                                        │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │  Route Groups & Server-Rendered Hubs                             │  │
+│  │  (app)/(public)/page.tsx     — High-converting Landing + Mockup  │  │
+│  │  (app)/(protected)/*         — Auth-guarded student dashboard    │  │
+│  │  • /dashboard, /practice, /exam/session, /notes, /mastery        │  │
+│  │  /admin/*                    — Scoped sub-admin management       │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+│                                                                        │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │  Dual-Layer Caching & Data Acceleration                          │  │
+│  │  • L1 Cache: Upstash Redis (Distributed rate limits & counters)  │  │
+│  │  • L2 Cache: Supabase `ai_responses_cache` (Instant AI answers)  │  │
+│  │  • Client Cache: IndexedDB via localforage (Offline simulator)   │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+│                                                                        │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │  API Routes & Background Schedulers                              │  │
+│  │  POST /api/auth/session       — Mini App + Web Widget auth       │  │
+│  │  POST /api/auth/oidc          — Telegram OIDC PKCE exchange      │  │
+│  │  POST /api/ai/tutor           — Streaming Gemini tutor           │  │
+│  │  POST /api/payments/submit    — CBE / Telebirr receipt OCR       │  │
+│  │  GET  /api/payments/status    — Real-time approval polling       │  │
+│  │  GET  /api/highlights         — User note highlight sync         │  │
+│  │  POST /api/bot/webhook        — Telegram bot event pipeline      │  │
+│  │  GET  /api/cron/streak-reminder — 20:00 EAT streak nudge cron    │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+          ┌─────────────────────────┴────────────────────────┐
+          ▼                                                  ▼
+┌─────────────────────────────────┐   ┌──────────────────────────────────┐
+│  Supabase (PostgreSQL + RLS)    │   │  External Cloud Services         │
+│  • profiles (streak, AI quota)  │   │  • Google Gemini API (3.8-flash) │
+│  • questions (31,000+ bank)     │   │    Vision OCR + Tutoring         │
+│  • payment_receipts             │   │  • Upstash Redis (L1 rate limit) │
+│  • study_notes (paywall-locked) │   │  • Telegram Bot API              │
+│  • user_subject_stats           │   │    Webhooks, deep-links, alerts  │
+│  • admin_audit_logs             │   │  • Vercel Edge Network           │
+└─────────────────────────────────┘   └──────────────────────────────────┘
 ```
 
 ---
 
-## Main folders and their purpose
+## Caching Hierarchy
 
-| Path | Purpose |
-|---|---|
-| `src/app/(app)/(protected)/` | Authenticated page routes — all protected by `layout.tsx` which checks the session cookie server-side |
-| `src/app/(app)/(public)/` | Unauthenticated / Landing pages. |
-| `src/app/api/` | API route handlers — REST endpoints consumed by client components |
-| `src/app/actions/` | Next.js Server Actions — called directly from client components, run on the server |
-| `src/app/admin/` | Admin dashboard — separate auth system using base64-encoded admin session cookie |
-| `src/components/` | Reusable React components (UI, Auth, Exam, Practice, Dashboard) |
-| `src/lib/` | Core backend utilities (encryption, session, cache, gemini rotation) |
+To maximize performance under unstable mobile networks (2G/3G in Ethiopia) while capping Gemini API costs:
 
----
-
-## Security (RLS) & Auth
-Auth is heavily customized. Temari uses a custom AES-GCM encrypted HTTP-only session cookie (`es_session`) instead of standard Supabase Auth to seamlessly bridge the Telegram Mini App and Web environments.
-
-Because `es_session` hides user identity from the Supabase client, the Postgres database is completely locked down using strict **Row Level Security (RLS)**. 
-- The `anon` role is explicitly DENIED from all `INSERT`/`UPDATE`/`DELETE` operations.
-- All mutations are handled securely by Next.js Server Actions and API routes running with the Supabase Service Role key.
+1. **Client Level (Offline-First):**
+   - Questions and chapter drills are cached in browser `IndexedDB` (`localforage`).
+   - If internet connectivity drops mid-test, `src/utils/offlineSync.ts` stores answers and synchronizes progress upon reconnection.
+2. **Edge L1 Cache (Upstash Redis):**
+   - High-frequency rate limits (Auth brute force, AI quota requests, OCR uploads).
+   - Instant in-memory counters shared across all serverless Vercel function instances.
+3. **Database L2 Cache (`ai_responses_cache`):**
+   - When a student asks the AI Tutor to explain, simplify (`eli5`), translate (`amharic`), or hint a popular exam question, the rendered markdown/KaTeX response is saved in `ai_responses_cache(question_id, prompt_type)`.
+   - Subsequent students asking the same prompt receive instant (sub-50ms) cached answers without burning Gemini API tokens.
 
 ---
 
-## Offline PWA architecture
+## Telegram Bot Pipeline & Webhook Architecture
 
-To combat unstable Ethiopian network conditions:
-1. `ExamSessionLoader.tsx` heavily leverages Next.js Server Components for instantaneous initial loads.
-2. `IndexedDB` (`localforage`) is used to store fetched exam questions.
-3. If the user disconnects mid-exam, the offline Service Worker serves the cached app shell, and `utils/offlineSync.ts` queues the score submission until a network connection is re-established.
+The Telegram Bot (`@toptemari_bot`) is tightly coupled to the application via `POST /api/bot/webhook`:
+
+1. **Channel Verification & Mandatory Join:**
+   - Bot verifies student membership in `@temari_App` using `getChatMember`.
+2. **Deep-Linking Engine:**
+   - `ref_<telegram_id>` — tracks viral referral signups and grants bonus study days.
+   - `track_<exam_type>` — routes new users directly to their target exam track (`entrance`, `freshman`, `exit`).
+   - `q_<question_id>` — opens the Mini App directly to an individual question.
+3. **Automated Cron Nudges:**
+   - Vercel Cron triggers `/api/cron/streak-reminder` daily at 20:00 EAT to alert active students at risk of breaking their streak.
+4. **Milestone Celebrations:**
+   - Generates ASCII trophy cards for streak milestones (7, 14, 30 days) and questions solved (50, 100, 500 Qs).
+5. **AI Quota Telegram Upsell:**
+   - When free-tier users exhaust their 15-question weekly AI quota, a friendly conversational bot message guides them to upgrade via Telebirr or CBE.
+
+---
+
+## Security Model & Sub-Admin Delegation
+
+1. **Session Security:**
+   - Custom AES-GCM encrypted HTTP-only `es_session` cookie valid for 30 days.
+   - OIDC code exchange enforces server-side `redirect_uri` construction to prevent open redirect vulnerabilities.
+2. **Row Level Security (RLS):**
+   - `anon` access is strictly revoked on `study_notes`, `payment_receipts`, and `profiles`.
+   - All mutations run through `createAdminClient()` (Service Role) inside authenticated Server Actions.
+3. **4-Tier Sub-Admin Delegation:**
+   - `superadmin`: Full unrestricted control across users, payments, and system settings.
+   - `financial_admin`: Restricted to `/admin/payments`, Telebirr/CBE verification, and student subscription upgrades.
+   - `content_editor`: Restricted to Note Studio (`/admin/upload-notes`) and Question Studio (`/admin/questions`).
+   - `reviewer` & `readonly`: Read-only curriculum quality audit.
+4. **Audit Logging:**
+   - Every administrative mutation (payment approval, question creation/deletion, account deactivation) is logged with timestamp, admin ID, and metadata into `admin_audit_logs`.

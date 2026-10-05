@@ -23,18 +23,32 @@ npm run test:ci
 
 ```
 __tests__/
+├── api/
+│   ├── highlights.test.ts        # Note highlights schema validation & CRUD
+│   ├── notesContent.test.ts      # Study notes paywall enforcement (403 teaser)
+│   └── streakReminder.test.ts    # Scheduled daily streak cron endpoint
 ├── components/
-│   └── ExamWorkspace.test.tsx   # Component render + interaction tests
+│   ├── AdminAccountsTable.test.tsx # Admin deactivation & deletion modal
+│   ├── ExamWorkspace.test.tsx    # Live exam, timer, flag colors, question grid
+│   ├── MarkdownRenderer.test.tsx # KaTeX math & highlighted term renderer
+│   ├── MarketingStoryboard.test.tsx # Exam pass rate charts & mobile mockup
+│   ├── PWARegistry.test.tsx      # Bottom-docked PWA prompt with 7-day cooldown
+│   └── QuestionStudio.test.tsx   # Question bank editor, KaTeX preview & bulk import
 ├── lib/
-│   ├── geminiKeyRotation.test.ts # AI key rotation logic
+│   ├── adminPermissions.test.ts  # 4-tier sub-admin permissions & audit logger
+│   ├── geminiKeyRotation.test.ts # AI key rotation, 404 recovery, and cooldown
 │   ├── rateLimiter.test.ts       # Sliding-window rate limiter
 │   └── session.test.ts           # AES-GCM session encryption ← security-critical
+├── store/
+│   └── gamificationStore.test.ts # Zustand offline score & XP syncing
 ├── cache.test.ts                 # IndexedDB question cache
+├── latex.test.ts                 # KaTeX syntax parsing & error boundary
+├── practice.test.ts              # Early exit score recording & practice state
 ├── streak.test.ts                # Daily streak calculation
+├── subdomains.test.ts            # Multi-subdomain edge routing & headers
 ├── supabase-rls.test.ts          # ⚠️ Integration test — see below
-└── telegramAuth.test.ts          # HMAC signature validation
-e2e/
-└── critical-flow.spec.ts         # Playwright end-to-end flow
+├── telegramAuth.test.ts          # HMAC signature & 24h replay attack guard
+└── telegramBot.test.ts           # Channel check, deep-links, trophies & bot webhook
 ```
 
 ### Two environments
@@ -42,7 +56,7 @@ e2e/
 | Suite | Environment | Why |
 |---|---|---|
 | `__tests__/components/` | `jsdom` | Component rendering needs a browser-like DOM |
-| `__tests__/lib/` + root `__tests__/*.ts` | `node` | Uses `crypto.subtle`, `TextEncoder`, full Node APIs |
+| `__tests__/lib/`, `__tests__/api/`, + root `__tests__/*.ts` | `node` | Uses `crypto.subtle`, `TextEncoder`, NextRequest, full Node APIs |
 
 ---
 
@@ -51,14 +65,39 @@ e2e/
 | Area | Tests | Notes |
 |---|---|---|
 | Session encryption (AES-GCM) | `session.test.ts` | Round-trip, tamper detection, random IV |
-| Telegram auth validation | `telegramAuth.test.ts` | Valid/invalid HMAC for Mini App + Web Widget |
+| Telegram auth validation | `telegramAuth.test.ts` | Valid/invalid HMAC, constant-time comparison, 24h replay guard |
+| Telegram Bot engine | `telegramBot.test.ts` | Channel gatekeeper, deep-links, trophy card milestone generator |
+| Subdomain Edge routing | `subdomains.test.ts` | `entrance`, `freshman`, `exit` mapping, canonical 308 redirects |
+| Question Studio | `QuestionStudio.test.tsx` | Filter by track/subject, KaTeX live preview, bulk JSON/CSV import |
+| Admin permissions | `adminPermissions.test.ts` | 4-tier role enforcement, `hasPermission`, audit trail logging |
+| Notes paywall | `notesContent.test.ts` | Free teaser excerpt, 403 status, premium full text unlock |
+| Study highlights | `highlights.test.ts` | Zod 2000-char max payload validation, user isolation |
+| Streak reminders | `streakReminder.test.ts` | Bearer auth, at-risk user calculation, 20:00 EAT cron |
 | Rate limiter | `rateLimiter.test.ts` | Allow, block, sliding window, per-user isolation |
 | Gemini key rotation | `geminiKeyRotation.test.ts` | Round-robin, cooldown, recovery after 60s |
 | Streak calculation | `streak.test.ts` | All state transitions including edge cases |
 | Question cache | `cache.test.ts` | Hit, miss, expiry, write |
-| ExamWorkspace UI | `ExamWorkspace.test.tsx` | Render, answer reveal, navigation |
+| ExamWorkspace UI | `ExamWorkspace.test.tsx` | Render, answer reveal, navigation, gold flags, early exit score |
+| PWA Registry | `PWARegistry.test.tsx` | Bottom banner position, localStorage 7-day dismissal cooldown |
 | Supabase RLS | `supabase-rls.test.ts` | ⚠️ Integration — needs live credentials |
-| Auth → exam → submit | `e2e/critical-flow.spec.ts` | ⚠️ Requires running app |
+
+---
+
+## Multi-Subdomain Testing Locally
+
+To test exam-specific subdomains locally without DNS configuration:
+
+```bash
+# 1. Option A: /etc/hosts
+127.0.0.1  temari.local entrance.temari.local freshman.temari.local exit.temari.local
+
+# 2. Option B: lvh.me (resolves any subdomain to 127.0.0.1 automatically)
+curl -H "Host: entrance.temari.top" http://localhost:3000
+# Or open in browser:
+http://entrance.lvh.me:3000
+http://freshman.lvh.me:3000
+http://exit.lvh.me:3000
+```
 
 ---
 
