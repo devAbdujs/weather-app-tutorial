@@ -61,7 +61,7 @@
 **File:** `supabase/migrations/20260924150000_rls_lockdown.sql` line 21
 **Issue:** Policy `CREATE POLICY "Allow public SELECT on study_notes" ON study_notes FOR SELECT TO anon, authenticated USING (true);` grants full read access to all rows and columns in `study_notes` to anyone holding `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 **Impact:** Even if the Next.js API route (`api/notes/content`) and UI components (`StudyNotesView.tsx`) gate notes behind a premium subscription paywall (Task P-06), an attacker or free user can query PostgREST directly (`https://<project-ref>.supabase.co/rest/v1/study_notes?select=*`) using the public anon key bundled in client JavaScript, bypassing all paywalls and downloading the entire proprietary curriculum for free.
-**Fix:** Drop the public SELECT policy on `study_notes`. Create a restricted policy or use column security / security definer RPCs so that anon/unauthenticated clients can only select metadata (`id, title, subject, chapter_order, content_word_count`), while complete `content` requires `profile.subscription_status = 'premium'` or server-side Service Role access.
+**Fix:** Created migration `supabase/migrations/20261005100000_secure_study_notes_rls.sql` dropping `Allow public SELECT on study_notes`. Since all study note queries in SSR and API routes run through `createAdminClient()` (Service Role), RLS now completely denies public anon PostgREST queries while server-side authenticated reading functions normally.
 
 ---
 
@@ -435,7 +435,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] M-08  Change admin cookie to sameSite: 'strict'
 [x] M-18  Embed iat/exp in SessionData; validate in decryptSession
 [x] L-05  Add security headers to next.config.mjs
-[ ] C-10  Lock down PostgREST RLS on study_notes: replace public SELECT with premium/authenticated check (or gate content via protected route)
+[x] C-10  Lock down PostgREST RLS on study_notes: drop public SELECT policy (supabase/migrations/20261005100000_secure_study_notes_rls.sql)
 [ ] H-18  Telegram initData: enforce auth_date freshness check (24h) and use crypto.timingSafeEqual()
 [ ] H-19  Add distributed rate-limiting to auth/session and auth/oidc endpoints
 
