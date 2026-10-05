@@ -1,7 +1,8 @@
 /**
  * @jest-environment node
  */
-import { hasPermission, logAdminAction } from '@/app/actions/admin';
+import { logAdminAction } from '@/app/actions/admin';
+import { hasPermission } from '@/lib/adminPermissions';
 
 const mockInsert = jest.fn();
 
