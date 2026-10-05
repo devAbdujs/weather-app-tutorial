@@ -472,3 +472,42 @@ Require all admin accounts to update password; remove plaintext comparison branc
 - Subject & chapter hierarchy selector with automated order index assignment.
 - Validation, duplicate check, and graceful error handling during save/publish.
 
+---
+
+### [P-02] 7. Bot Interactivity
+**Files:** `src/app/api/bot/webhook/route.ts`, Telegram Bot flows
+**Goal:** Elevate Telegram bot conversational UX and retention loops:
+- Review the Telegram bot's current UX end-to-end.
+- Identify where it lacks interactivity, personalization, or clarity.
+- Flag missing flows: welcome sequence, channel join nudge, premium subscription upsell, daily streak reminders, milestone celebrations (e.g., 50 questions answered, streak records).
+- Report what's missing vs. what was originally planned.
+
+---
+
+### [P-03] 8. Documentation Update
+**Files:** `README.md`, `CONTRIBUTING.md`, `ARCHITECTURE.md`, `docs/*`
+**Goal:** Comprehensive documentation audit and alignment with current architecture:
+- Review every document (`README.md`, `CONTRIBUTING.md`, `ARCHITECTURE.md`, `docs/api-routes.md`, `docs/database-schema.md`, `docs/DEBUGGING.md`, `docs/exam-types.md`, `docs/testing.md`).
+- Flag anything outdated, incomplete, or inconsistent with the current codebase (e.g. multi-subdomain routing, Upstash Redis L1 cache, atomic RPCs, new security headers).
+- List what needs to be updated or added.
+
+---
+
+### [P-04] 9. Design & Color
+**Files:** `tailwind.config.ts`, `src/app/globals.css`, core UI components
+**Goal:** Visual identity and contrast audit:
+- Audit the current color combination across the app (light mode, dark mode, Telegram WebApp theme matching).
+- Flag anything that feels off-brand, low-contrast, or visually inconsistent (WCAG AA accessibility, muted badge readability, dark mode borders).
+- Propose structured improvements (without changing anything yet).
+
+---
+
+### [P-05] 10. File Upload Access & Delegation
+**Files:** `src/app/admin/*`, `src/app/actions/admin.ts`, `src/app/api/admin/*`, Supabase RLS / Storage policies
+**Goal:** Multi-role admin and content contributor access control:
+- Audit how content upload currently works (questions, notes, diagrams).
+- Identify who has access and who doesn't.
+- Plan a secure way to delegate file and content upload permissions to sub-admins (so data entry and note drafting tasks can be offloaded safely without sharing primary admin credentials).
+- Flag any security or permissions concerns (RLS policies, bucket write rules, audit logs).
+
+
