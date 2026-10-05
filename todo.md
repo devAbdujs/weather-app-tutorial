@@ -657,19 +657,21 @@ Require all admin accounts to update password; remove plaintext comparison branc
 
 ---
 
-### [P-09] Free User Email Lead Capture & Security Architecture
-**Files:** `src/components/dashboard/EmailCaptureModal.tsx`, `src/app/api/user/email/route.ts`, Supabase `profiles`
+### [P-09] Free User Email & Account Password Linking (Hashed Web Login)
+**Files:** `src/components/dashboard/EmailAccountLinkModal.tsx`, `src/app/api/user/link-credentials/route.ts`, `src/app/api/auth/email/login/route.ts`, Supabase `profiles`
 
 **Current State & Audit Findings:**
 - Authentication is currently passwordless via Telegram Mini App initData or Web Phone OTP.
-- Free users onboard with no email captured, limiting retention campaigns, exam date reminder broadcasts, and off-Telegram re-engagement.
-- 🔴 **Security Constraint & Policy Advisory**: An application must **never** request or collect a user's personal email account password (which constitutes credential harvesting / phishing). Furthermore, storing passwords in plaintext / unhashed format is a severe security vulnerability that violates OWASP standards and exposes users to account compromise.
+- Free users onboard without email or password credentials, preventing them from logging into Temari directly from standard web/desktop browsers outside of Telegram.
+- Free users should receive a non-intrusive post-login modal to link an email and create a password for web login backup.
+- **Security Standard**: Passwords must strictly be hashed on the server using `bcrypt` (salt rounds: 10+) before saving to `profiles.password_hash` (never stored in plaintext). The form clearly indicates that the user is setting a new password for their Temari account for web access.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[LEAD-01]` Create a non-blocking post-login **Email Capture Modal** that triggers for free users after their first completed quiz or 3rd session ("Save Your Progress & Get Exam Alerts").
-- [ ] `[LEAD-02]` Add `email` column validation and endpoint `POST /api/user/email` to update the student's profile (with deduplication and email format verification).
-- [ ] `[LEAD-03]` Support voluntary email verification via 6-digit OTP code or magic link for account recovery (never asking for or storing third-party email passwords).
-- [ ] `[LEAD-04]` Add "Skip for now" / dismiss action with 14-day re-prompt cooldown so the learning flow is not blocked.
+- [ ] `[LEAD-01]` Create non-blocking post-login **Email & Password Setup Modal** (`EmailAccountLinkModal.tsx`) triggering for free users after their 1st completed quiz or 3rd session ("Unlock Web Login — Link Your Email & Create Password").
+- [ ] `[LEAD-02]` Add `email` and `password_hash` columns to `profiles` table via Supabase migration, with a unique index on `lower(email)`.
+- [ ] `[LEAD-03]` Build `POST /api/user/link-credentials` route: validates email and password (minimum 8 characters), securely hashes the password with `bcryptjs`, and updates the student's profile.
+- [ ] `[LEAD-04]` Build direct email + password login handler `POST /api/auth/email/login` to allow desktop web login with encrypted `es_session` cookie issuance.
+- [ ] `[LEAD-05]` Add "Skip for now" dismissal with a 14-day re-prompt cooldown so the learning flow is never blocked.
 
 
 
