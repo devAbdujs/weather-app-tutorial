@@ -1,6 +1,7 @@
 'use server';
 
 import { cookies, headers } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { sendStudentNotification } from '@/lib/paymentNotifier';
 import { getKeyDetails } from '@/lib/geminiKeyRotation';
@@ -135,12 +136,16 @@ export async function loginAdmin(username: string, passcode: string) {
   
   const { data: admin, error } = await supabase
     .from('admin_users')
-    .select('id, username, role, passcode')
+    .select('id, username, role, passcode, is_active')
     .ilike('username', normalizedUsername)
     .single();
 
   if (error || !admin) {
     return { success: false, error: 'Invalid username or password' };
+  }
+
+  if (admin.is_active === false) {
+    return { success: false, error: 'This account has been deactivated. Please contact a superadmin.' };
   }
 
   // Compare using hashed passcode. Falls back to plaintext comparison for
@@ -197,11 +202,13 @@ export async function verifyAdmin() {
   const supabase = await createAdminClient();
   const { data: admin } = await supabase
     .from('admin_users')
-    .select('id, username, role')
+    .select('id, username, role, is_active')
     .eq('id', session.id)
     .single();
   
-  return admin || null;
+  if (!admin || admin.is_active === false) return null;
+
+  return admin;
 }
 
 export async function logoutAdmin() {
@@ -243,11 +250,67 @@ export async function getAdmins() {
   const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from('admin_users')
-    .select('id, username, role, created_at')
+    .select('id, username, role, is_active, created_at')
     .order('created_at', { ascending: true });
 
   if (error) throw error;
   return data || [];
+}
+
+/**
+ * Deletes an admin account. Requires superadmin role.
+ * Superadmins cannot delete their own account.
+ */
+export async function deleteAdminAccount(targetAdminId: string) {
+  const admin = await verifyAdmin();
+  if (admin?.role !== 'superadmin') {
+    throw new Error('Unauthorized: Only Superadmins can delete accounts.');
+  }
+
+  if (admin.id === targetAdminId) {
+    return { success: false, error: 'You cannot delete your own admin account.' };
+  }
+
+  const supabase = await createAdminClient();
+  const { error } = await supabase
+    .from('admin_users')
+    .delete()
+    .eq('id', targetAdminId);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath('/admin/managers');
+  return { success: true };
+}
+
+/**
+ * Toggles an admin account active/deactivated status. Requires superadmin role.
+ * Superadmins cannot deactivate their own account.
+ */
+export async function toggleAdminActive(targetAdminId: string, isActive: boolean) {
+  const admin = await verifyAdmin();
+  if (admin?.role !== 'superadmin') {
+    throw new Error('Unauthorized: Only Superadmins can modify account status.');
+  }
+
+  if (admin.id === targetAdminId && !isActive) {
+    return { success: false, error: 'You cannot deactivate your own admin account.' };
+  }
+
+  const supabase = await createAdminClient();
+  const { error } = await supabase
+    .from('admin_users')
+    .update({ is_active: isActive })
+    .eq('id', targetAdminId);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath('/admin/managers');
+  return { success: true };
 }
 export async function getAdminStats() {
 

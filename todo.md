@@ -515,7 +515,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] L-09  Remove console.log from production routes (0 console.log calls in src/)
 [x] L-10  PKCE auth callback with secure state & verifier verification
 [x] L-11  Delete deprecated api/auth/verify-otp route and drop legacy otp_codes table (deleted route & created drop_otp_codes migration)
-[ ] L-12  Add delete/deactivate admin Server Action and UI in superadmin managers panel
+[x] L-12  Add delete/deactivate admin Server Action and UI in superadmin managers panel (deleteAdminAccount, toggleAdminActive, AdminAccountsTable)
 ```
 
 ---
