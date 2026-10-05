@@ -285,12 +285,14 @@ Require all admin accounts to update password; remove plaintext comparison branc
 | `/freshman` & `freshman.temari.top` | ✅ | ✅ `x-temari-subdomain`, `x-temari-target-exam`, `temari_portal` | ✅ Saved to `profiles.target_exam` & encrypted session | ✅ Bypasses onboarding modal | ✅ Live in Prod |
 | `/exit` & `exit.temari.top` | ✅ | ✅ `x-temari-subdomain`, `x-temari-target-exam`, `temari_portal` | ✅ Saved to `profiles.target_exam` & encrypted session | ✅ Bypasses onboarding modal | ✅ Live in Prod |
 | Root `/` (`temari.top`) | ✅ | ✅ Root hero guides to `#exam-portals` | ✅ Scoped login via portal cards | ✅ Modal only if root login without exam chosen | ✅ Live in Prod |
+| Telegram Mini App Logout | ✅ | ✅ Session cookie wiped with `.temari.top` domain | ✅ `temari_manual_logout` in sessionStorage | ✅ Prevents auto-login loop + provides "Exit App" button | ✅ Live in Prod |
 
 **Architecture Implemented:**
 - Root landing page features "Select Your Exam Track" CTA linking down to dedicated exam portals (`/entrance`, `/freshman`, `/exit`).
 - Clicking any exam portal redirects to that track's dedicated landing page with scoped branding, stats, and exam metadata.
 - Students logging in from a dedicated page (via Telegram WebApp or Telegram OIDC) have their choice persisted to `profiles.target_exam` and their session token.
 - Post-login onboarding (`WelcomeOnboarding`) is completely bypassed, immediately opening their track's dashboard, past papers, and study notes.
+- Users can log out cleanly in Telegram Mini App or Web, expiring the `.temari.top` wildcard domain cookie and preventing auto-login loops.
 
 ---
 
@@ -474,40 +476,122 @@ Require all admin accounts to update password; remove plaintext comparison branc
 
 ---
 
-### [P-02] 7. Bot Interactivity
-**Files:** `src/app/api/bot/webhook/route.ts`, Telegram Bot flows
-**Goal:** Elevate Telegram bot conversational UX and retention loops:
-- Review the Telegram bot's current UX end-to-end.
-- Identify where it lacks interactivity, personalization, or clarity.
-- Flag missing flows: welcome sequence, channel join nudge, premium subscription upsell, daily streak reminders, milestone celebrations (e.g., 50 questions answered, streak records).
-- Report what's missing vs. what was originally planned.
+### [P-02] 7. Bot Interactivity & Retention Engine (Full Audit & Actionable Plan)
+**Files:** `src/app/api/bot/webhook/route.ts`, `src/lib/telegramBot.ts`
+
+**Current State & Audit Findings:**
+1. **Existing Features (Working):**
+   - Commands `/start`, `/menu`, `/quiz`, `/stats`, `/upgrade`, `/help`.
+   - In-chat micro-quiz drill with 4 inline choice buttons (`quiz:questionId:option`) awarding +10 XP and updating `user_subject_stats` and streak atomically.
+   - Scholar stats card displaying level, accuracy, streak, and top subjects.
+   - Admin payment verification via inline buttons (`approve_payment:id`, `reject_payment:id`).
+   - Admin PDF document upload auto-forwarded to n8n webhook.
+
+2. **Identified Deficiencies & Missing Flows vs. Plan:**
+   - 🔴 **Missing Channel Join Nudge:** When a student enters `/start`, the bot displays the portal options but **does not prompt or incentivize joining the official Telegram Channel** (`https://t.me/temari_App`). Missing a primary viral growth and retention channel.
+   - 🔴 **Missing Deep-Link Expansion:** `/start` only checks `arg === 'quiz'`, `arg === 'stats'`, `arg === 'upgrade'`. It does NOT parse deep link parameters:
+     - `ref_<ambassador_id>`: Necessary for the College Ambassador referral program (`F-01`).
+     - `track_<exam>`: Direct deep link from Telegram channels to pre-configure Grade 12, Freshman, or Exit Exam.
+     - `q_<uuid>`: Direct link to challenge a friend to solve a specific exam question in chat.
+   - 🟠 **Missing Daily Streak Protection Reminders:** No automated reminder job runs to notify students who haven't practiced today that their streak will reset at midnight East Africa Time (EAT).
+   - 🟠 **Missing Milestone Celebrations:** When a student achieves high scores (>80%) on mock exams, reaches 50+ solved questions, or maintains a 7-day streak, the bot sends no congratulatory message or in-chat trophy badge.
+   - 🟠 **Missing AI Quota Exhaustion Upsell Trigger:** When a student exhausts their weekly 5-question AI quota in the web app, no bot message is sent offering a PRO upgrade or Telebirr payment guide.
+   - 🟡 **Missing Persistent Reply Keyboard:** The bot currently uses inline keyboards only. If a user types free text or enters an invalid command, the bot silently ignores it. A persistent reply keyboard (`[ 🚀 Open Temari App ]`, `[ 🎯 Daily Quiz ]`, `[ 📊 My Stats ]`) is missing.
+   - 🟡 **Missing Chat Menu Button API Call:** The bot does not invoke Telegram's `setChatMenuButton` API to configure the WebApp button next to the chat input field on first `/start`.
+
+**Action Items & Implementation Roadmap:**
+- [ ] `[B-01]` Implement Channel Join Verification & Welcome Flow (`getChatMember` check on `@temari_App` with "Join Channel & Unlock Free AI Pass" CTA).
+- [ ] `[B-02]` Extend `/start` deep-link parser to support `ref_<id>` (referrals), `track_<exam>` (exam onboarding), and `q_<uuid>` (single question drills).
+- [ ] `[B-03]` Build cron notification endpoint (`/api/cron/streak-reminder`) using Vercel Cron or GitHub Actions to alert at-risk streaks at 20:00 EAT.
+- [ ] `[B-04]` Add milestone celebration trigger: generate visual ASCII / HTML trophy card in chat when a student achieves a streak or mastery record.
+- [ ] `[B-05]` Connect AI Quota exhaustion event in `src/app/api/ai/tutor/route.ts` to trigger a friendly conversational upsell message in Telegram.
+- [ ] `[B-06]` Add persistent reply keyboard for zero-friction navigation on all unrecognized text inputs.
 
 ---
 
-### [P-03] 8. Documentation Update
+### [P-03] 8. Documentation Update & Architecture Synchronization (Full Audit & Actionable Plan)
 **Files:** `README.md`, `CONTRIBUTING.md`, `ARCHITECTURE.md`, `docs/*`
-**Goal:** Comprehensive documentation audit and alignment with current architecture:
-- Review every document (`README.md`, `CONTRIBUTING.md`, `ARCHITECTURE.md`, `docs/api-routes.md`, `docs/database-schema.md`, `docs/DEBUGGING.md`, `docs/exam-types.md`, `docs/testing.md`).
-- Flag anything outdated, incomplete, or inconsistent with the current codebase (e.g. multi-subdomain routing, Upstash Redis L1 cache, atomic RPCs, new security headers).
-- List what needs to be updated or added.
+
+**Current State & Audit Findings:**
+1. **`README.md` Inconsistencies:**
+   - Folder structure references `next.config.js` instead of `next.config.mjs`.
+   - Lists Cloudinary CDN (`src/utils/cloudinary.ts`) as primary image CDN, but 170+ question diagrams are served locally from `/public/assets/question_images/`.
+   - Missing documentation for the dedicated multi-subdomain routing (`entrance.temari.top`, `freshman.temari.top`, `exit.temari.top`).
+   - Missing documentation of Upstash Redis L1 caching and dual-layer AI response caching.
+2. **`docs/api-routes.md` Inconsistencies & Omissions:**
+   - Erroneously states `POST /api/auth/telegram/web` does *not* set a session cookie (it now issues `es_session` cookie).
+   - States `POST /api/auth/oidc` accepts `redirect_uri` in client request body (hardened server-side for security).
+   - Completely missing documentation for `POST /api/admin/notes/transform` (Gemini document AI parser).
+   - Completely missing documentation for `GET /api/payments/status` and `POST /api/payments/submit` (CBE / Telebirr receipt OCR verification).
+   - Completely missing documentation for `GET /api/highlights`.
+3. **`docs/database-schema.md` Inconsistencies & Omissions:**
+   - Completely missing `payment_receipts` table specification (with OCR amounts, sender names, status, and verification flags).
+   - Completely missing `ai_responses_cache` table specification (prompt/answer caching).
+   - Missing `profiles` columns: `ai_weekly_usage`, `ai_quota_reset_at`, `phone_number`.
+   - Missing database RPC functions: `increment_user_subject_stats` and `check_and_increment_ai_quota`.
+4. **`ARCHITECTURE.md` Inconsistencies & Omissions:**
+   - Outdated system diagram: does not reflect multi-subdomain routing, canonical 308 redirects, and wildcard `.temari.top` cookie scoping.
+   - Missing dual-layer caching architecture (Upstash Redis L1 + Supabase L2).
+   - Missing Telegram Webhook bot architecture and admin verification pipeline.
+5. **`CONTRIBUTING.md` & `docs/testing.md` Inconsistencies:**
+   - Missing documentation for Jest unit tests (`npm test`) covering subdomains, session encryption, rate limiter, and streak calculators.
+
+**Action Items & Implementation Roadmap:**
+- [ ] `[DOC-01]` Update `README.md` with accurate file names, remove stale Cloudinary claims, and document multi-subdomains.
+- [ ] `[DOC-02]` Update `docs/api-routes.md` to document all active endpoints (`payments`, `transform`, `highlights`) and correct auth specs.
+- [ ] `[DOC-03]` Update `docs/database-schema.md` with `payment_receipts`, `ai_responses_cache`, new `profiles` columns, and RPC functions.
+- [ ] `[DOC-04]` Rewrite `ARCHITECTURE.md` with up-to-date system diagrams and caching hierarchy.
+- [ ] `[DOC-05]` Update `CONTRIBUTING.md` and `docs/testing.md` with current Jest test suite commands and multi-subdomain testing instructions.
 
 ---
 
-### [P-04] 9. Design & Color
-**Files:** `tailwind.config.ts`, `src/app/globals.css`, core UI components
-**Goal:** Visual identity and contrast audit:
-- Audit the current color combination across the app (light mode, dark mode, Telegram WebApp theme matching).
-- Flag anything that feels off-brand, low-contrast, or visually inconsistent (WCAG AA accessibility, muted badge readability, dark mode borders).
-- Propose structured improvements (without changing anything yet).
+### [P-04] 9. Design, Color, Contrast & Visual Identity Audit (Full Audit & Proposals)
+**Files:** `tailwind.config.ts`, `src/styles/tokens.ts`, `src/app/globals.css`, UI components
+
+**Current State & Audit Findings:**
+1. **Hardcoded Gray vs. Semantic Design Token Inconsistency:**
+   - `src/styles/tokens.ts` defined semantic text tokens: `foreground`, `muted-foreground`, and `subtle-foreground` specifically to eliminate paired `text-gray-900 dark:text-gray-100`.
+   - Over 40 instances of hardcoded `text-gray-900 dark:text-gray-100`, `text-gray-500`, and `text-slate-400` persist across `UpgradeFlow.tsx`, `Admin` views, `PWARegistry.tsx`, and `AITutorDrawer.tsx`.
+2. **Low-Contrast Dark Mode Borders:**
+   - In `UpgradeFlow.tsx`, several card containers use `border-black/5` or `border-black/10` without a dark mode equivalent (e.g. `dark:border-white/10`), causing cards to lose their bounding edges in dark mode.
+3. **Accent Standardization Mismatch:**
+   - `ExamWorkspace.tsx` uses `text-amber-500` for flagged questions instead of the standardized brand token `text-accent-gold`.
+4. **Telegram Client Theme Harmonization:**
+   - Certain popups and alerts use hardcoded Tailwind slate colors that clash with custom Telegram themes when running inside Telegram Mini App.
+
+**Proposed Improvements (Audit Only — No Code Changes Yet):**
+- [ ] `[DES-01]` Replace all remaining `text-gray-900 dark:text-gray-100` instances with `text-foreground`.
+- [ ] `[DES-02]` Replace `text-gray-500 dark:text-gray-400` with `text-muted-foreground`.
+- [ ] `[DES-03]` Ensure all borders use semantic `border-border` / `border-black/[0.08] dark:border-white/[0.08]` so dark mode boundaries are crisp.
+- [ ] `[DES-04]` Align question flag and highlight colors with `text-accent-gold`.
+- [ ] `[DES-05]` Map Telegram client theme variables (`bg_color`, `secondary_bg_color`, `text_color`) to CSS custom properties for pixel-perfect Mini App integration.
 
 ---
 
-### [P-05] 10. File Upload Access & Delegation
+### [P-05] 10. Content Upload, Access Control & Sub-Admin Delegation (Full Audit & Architecture)
 **Files:** `src/app/admin/*`, `src/app/actions/admin.ts`, `src/app/api/admin/*`, Supabase RLS / Storage policies
-**Goal:** Multi-role admin and content contributor access control:
-- Audit how content upload currently works (questions, notes, diagrams).
-- Identify who has access and who doesn't.
-- Plan a secure way to delegate file and content upload permissions to sub-admins (so data entry and note drafting tasks can be offloaded safely without sharing primary admin credentials).
-- Flag any security or permissions concerns (RLS policies, bucket write rules, audit logs).
+
+**Current State & Audit Findings:**
+1. **Current Upload Workflows:**
+   - **Study Notes:** Admin can paste text or upload documents (.pdf, .docx, .txt) at `/admin/upload-notes`, where an AI transformer parses chapters and saves them to `study_notes`.
+   - **Questions:** Currently completely static / offline. Ingested via local scripts (`scripts/ingest_chapters.js`, `data/ethio_exam_vault.db`). `/admin/questions` is read-only (displays 100 questions with zero edit/upload controls).
+2. **Privilege & Security Vulnerabilities:**
+   - 🔴 **Readonly Admin Note Upload Exploit:** `src/app/api/admin/notes/route.ts` and `transform/route.ts` only check `const isAdmin = await verifyAdmin()`. They DO NOT check `admin.role !== 'readonly'`. A readonly admin can send POST requests directly to create, overwrite, or transform notes!
+   - 🔴 **Editor Role Privilege Escalation in Payments:** In `src/app/actions/admin.ts`, `updatePaymentStatus()` only blocks `readonly`. Accounts with `role: 'editor'` (intended for content entry) can approve/reject financial payments, view student bank screenshots, and upgrade subscriptions!
+   - 🟠 **No Sub-Admin Role for Delegated Content Entry:** There is no scoped role for school teachers, university course reps, or student contributors who should only be able to draft notes or review questions without seeing analytics or admin accounts.
+
+**Proposed 4-Tier Sub-Admin Delegation Architecture:**
+1. **`superadmin`**: Full access to all modules, admin management, API keys, and database actions.
+2. **`financial_admin`**: Exclusive access to Payments Queue (`/admin/payments`), Telebirr/CBE verification, and student subscription management.
+3. **`content_editor`**: Access to Note Upload Studio (`/admin/upload-notes`) and Question Bank Studio (`/admin/questions`). Zero access to payments or user management.
+4. **`reviewer`**: Read-only access across study notes, questions, and curriculum stats for quality audit.
+
+**Action Items & Implementation Roadmap:**
+- [ ] `[ADM-01]` Patch `src/app/api/admin/notes/route.ts` and `transform/route.ts` to reject `readonly` admins with 403 Forbidden.
+- [ ] `[ADM-02]` Patch `updatePaymentStatus()` in `src/app/actions/admin.ts` to require `role === 'superadmin' || role === 'financial_admin'`.
+- [ ] `[ADM-03]` Build Web Question Bank Upload & Editor Studio in `/admin/questions` (bulk JSON/CSV import, KaTeX live preview, answer key editor).
+- [ ] `[ADM-04]` Create `admin_audit_logs` table to track who approved payments, published notes, or modified questions.
+- [ ] `[ADM-05]` Implement granular scoped permissions in `src/app/actions/admin.ts` (`hasPermission(admin, 'notes:write' | 'payments:approve' | ...)`).
+
 
 
