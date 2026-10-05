@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { getServerSession } from '@/lib/session';
+
+const createHighlightSchema = z.object({
+  subject: z.string().trim().max(100).optional().default('General'),
+  chapter_title: z.string().trim().max(200).optional().default('General'),
+  text: z.string().trim().min(1, 'Missing text content').max(2000, 'Highlight text cannot exceed 2000 characters'),
+  color: z.string().trim().max(30).optional().default('yellow'),
+});
+
+const patchHighlightSchema = z.object({
+  id: z.union([z.string(), z.number()]),
+  text: z.string().trim().max(2000, 'Highlight text cannot exceed 2000 characters').optional(),
+  color: z.string().trim().max(30),
+});
 
 export async function GET(req: NextRequest) {
   try {
@@ -65,12 +79,17 @@ export async function POST(req: NextRequest) {
     const session = await getServerSession();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const body = await req.json();
-    const { subject, chapter_title, text, color } = body;
+    const rawBody = await req.json().catch(() => ({}));
+    const parseResult = createHighlightSchema.safeParse(rawBody);
 
-    if (!text || typeof text !== 'string') {
-      return NextResponse.json({ error: 'Missing text content' }, { status: 400 });
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: parseResult.error.issues[0]?.message || 'Invalid highlight data' },
+        { status: 400 }
+      );
     }
+
+    const { subject, chapter_title, text, color } = parseResult.data;
 
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -78,9 +97,9 @@ export async function POST(req: NextRequest) {
       .insert([
         {
           telegram_id: session.telegram_id,
-          subject: subject || 'General',
-          chapter_title: chapter_title || 'General',
-          content: JSON.stringify({ text: text.trim(), color: color || 'yellow' }),
+          subject,
+          chapter_title,
+          content: JSON.stringify({ text, color }),
         },
       ])
       .select()
@@ -93,8 +112,8 @@ export async function POST(req: NextRequest) {
         id: data.id,
         subject: data.subject,
         chapter_title: data.chapter_title,
-        text: text.trim(),
-        color: color || 'yellow',
+        text,
+        color,
         created_at: data.created_at,
       },
     });
@@ -110,7 +129,7 @@ export async function DELETE(req: NextRequest) {
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { searchParams } = new URL(req.url);
-    let id = searchParams.get('id');
+    let id: any = searchParams.get('id');
 
     if (!id) {
       const body = await req.json().catch(() => ({}));
@@ -141,12 +160,17 @@ export async function PATCH(req: NextRequest) {
     const session = await getServerSession();
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const body = await req.json();
-    const { id, text, color } = body;
+    const rawBody = await req.json().catch(() => ({}));
+    const parseResult = patchHighlightSchema.safeParse(rawBody);
 
-    if (!id || !color) {
-      return NextResponse.json({ error: 'Missing id or color' }, { status: 400 });
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: parseResult.error.issues[0]?.message || 'Invalid patch data' },
+        { status: 400 }
+      );
     }
+
+    const { id, text, color } = parseResult.data;
 
     const supabase = await createClient();
     const { error } = await supabase

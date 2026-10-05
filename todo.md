@@ -266,8 +266,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 ### [M-26] Unbounded Text Input on POST /api/highlights (Storage Bomb)
 **File:** `src/app/api/highlights/route.ts` line 71
 **Issue:** The highlight creation endpoint validates `typeof text === 'string'` but enforces no character length limit (`.max(2000)` missing).
-**Impact:** Malicious or buggy clients can POST megabytes of text data directly into `user_pins.content`, creating bloat and potential denial of service during note rendering.
-**Fix:** Add Zod schema validation restricting `text` to `z.string().min(1).max(2000)` and strip excess markup.
+**Fix:** Added Zod schemas (`createHighlightSchema`, `patchHighlightSchema`) in `src/app/api/highlights/route.ts` restricting text to `z.string().min(1).max(2000)`, trimming whitespace and validating color strings.
 
 ### [M-27] Telegram OIDC Token Drops Verified Phone Number on Profile Upsert
 **File:** `src/app/api/auth/oidc/route.ts` lines 50, 57–64
@@ -500,7 +499,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] M-23  Add in-flight mutex / isSyncing guard to offlineSync.ts to prevent duplicate submissions
 [x] M-24  Cache getEntranceYearCounts in practice.ts with unstable_cache to eliminate 9 parallel HEAD queries
 [x] M-25  Synchronize gamification XP between Web app (localStorage) and Telegram Bot (user_subject_stats)
-[ ] M-26  Add Zod string length constraint (.max(2000)) on POST /api/highlights text payload
+[x] M-26  Add Zod string length constraint (.max(2000)) on POST /api/highlights text payload
 [ ] M-27  Persist phone_number from Telegram OIDC id_token to profiles table during upsert
 
 ════════════════════════════════════════
