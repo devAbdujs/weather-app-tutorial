@@ -64,7 +64,7 @@ describe('GET /api/cron/streak-reminder', () => {
         {
           telegram_id: '12345',
           full_name: 'Abebe Bikila',
-          streak: 5,
+          daily_streak: 5,
           last_activity_date: yesterdayEAT,
         },
       ],

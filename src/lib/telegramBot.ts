@@ -448,6 +448,128 @@ export async function getQuizPayload(
   return { text, reply_markup };
 }
 
+export interface MilestoneCelebration {
+  title: string;
+  badge: string;
+  quote: string;
+  type: 'streak' | 'solved';
+  count: number;
+}
+
+export function checkMilestoneCelebration(
+  streak: number,
+  totalCorrect: number
+): MilestoneCelebration | null {
+  if (streak === 3) {
+    return {
+      title: 'Bronze Scholar',
+      badge: '🥉',
+      quote: 'Consistency is unlocking your exam potential! 3 days unbroken.',
+      type: 'streak',
+      count: 3,
+    };
+  }
+  if (streak === 7) {
+    return {
+      title: 'Silver Scholar',
+      badge: '🥈',
+      quote: '1 full week of daily mastery! Momentum is your competitive edge.',
+      type: 'streak',
+      count: 7,
+    };
+  }
+  if (streak === 14) {
+    return {
+      title: 'Gold Scholar',
+      badge: '🥇',
+      quote: '2 solid weeks! Habits like this build top matriculation marks.',
+      type: 'streak',
+      count: 14,
+    };
+  }
+  if (streak === 30) {
+    return {
+      title: 'Diamond Scholar',
+      badge: '💎',
+      quote: '1 month of unwavering discipline! Elite university material.',
+      type: 'streak',
+      count: 30,
+    };
+  }
+  if (streak === 50) {
+    return {
+      title: 'Grandmaster Scholar',
+      badge: '👑',
+      quote: '50 unbroken days! You are leading by example nationwide.',
+      type: 'streak',
+      count: 50,
+    };
+  }
+
+  if (totalCorrect === 10) {
+    return {
+      title: 'Drill Apprentice',
+      badge: '🎯',
+      quote: 'First 10 questions conquered. The journey to the top has begun.',
+      type: 'solved',
+      count: 10,
+    };
+  }
+  if (totalCorrect === 25) {
+    return {
+      title: 'Knowledge Seeker',
+      badge: '📚',
+      quote: '25 concepts mastered! Your speed and precision are climbing.',
+      type: 'solved',
+      count: 25,
+    };
+  }
+  if (totalCorrect === 50) {
+    return {
+      title: 'Exam Warrior',
+      badge: '🏆',
+      quote: '50 exam questions solved! You are outpacing 90% of peers.',
+      type: 'solved',
+      count: 50,
+    };
+  }
+  if (totalCorrect === 100) {
+    return {
+      title: 'Centurion Scholar',
+      badge: '🌟',
+      quote: '100 exam questions mastered! You are in the top tier.',
+      type: 'solved',
+      count: 100,
+    };
+  }
+  if (totalCorrect === 250) {
+    return {
+      title: 'Academic Titan',
+      badge: '👑',
+      quote: '250 national exam questions solved! Unstoppable exam readiness.',
+      type: 'solved',
+      count: 250,
+    };
+  }
+
+  return null;
+}
+
+export function formatMilestoneCard(milestone: MilestoneCelebration): string {
+  const border = '═'.repeat(26);
+  const tag = milestone.type === 'streak' ? `🔥 ${milestone.count}-DAY STREAK` : `🎯 ${milestone.count} QUESTIONS MASTERED`;
+
+  return [
+    `<code>╔${border}╗`,
+    `║   🏆 MILESTONE UNLOCKED  ║`,
+    `╚${border}╝</code>`,
+    `${milestone.badge} <b>${milestone.title}</b>`,
+    `<i>${tag}</i>`,
+    `<i>"${milestone.quote}"</i>`,
+    ``,
+  ].join('\n');
+}
+
 /**
  * 6. Handle Quiz Answer Selection & Award XP
  */
@@ -480,6 +602,7 @@ export async function handleQuizAnswer(
   const isCorrect = normSelected === correctAnswer;
 
   // 1. Update user_subject_stats
+  let totalCorrect = 0;
   try {
     const { data: existing } = await supabaseAdmin
       .from('user_subject_stats')
@@ -501,11 +624,20 @@ export async function handleQuizAnswer(
         total_time_spent_seconds: (existing?.total_time_spent_seconds || 0) + 15,
         last_practiced: new Date().toISOString(),
       }, { onConflict: 'telegram_id,subject' });
+
+    // Aggregate total correct across all subjects for milestones
+    const { data: allStats } = await supabaseAdmin
+      .from('user_subject_stats')
+      .select('questions_correct')
+      .eq('telegram_id', telegramId);
+
+    totalCorrect = (allStats || []).reduce((sum: number, r: any) => sum + (r.questions_correct || 0), 0);
   } catch (statErr) {
     console.warn('[TelegramBot] Failed updating subject stats:', statErr);
   }
 
   // 2. Update Streak in profiles
+  let finalStreak = 0;
   try {
     const { data: profile } = await supabaseAdmin
       .from('profiles')
@@ -519,6 +651,8 @@ export async function handleQuizAnswer(
       profile?.last_activity_date,
       today
     );
+
+    finalStreak = newStreak;
 
     if (isUpdated) {
       await supabaseAdmin
@@ -537,7 +671,14 @@ export async function handleQuizAnswer(
   const aiTutorUrl = `${siteUrl}/practice?subject=${encodeURIComponent(q.subject)}`;
 
   if (isCorrect) {
-    const text = [
+    const milestone = checkMilestoneCelebration(finalStreak, totalCorrect);
+    const milestoneCard = milestone ? formatMilestoneCard(milestone) : '';
+
+    const textLines: string[] = [];
+    if (milestoneCard) {
+      textLines.push(milestoneCard);
+    }
+    textLines.push(
       `🎉 <b>CORRECT! +10 XP</b> ⭐️`,
       ``,
       `<b>Your Answer:</b> [${normSelected}] ✅`,
@@ -546,8 +687,10 @@ export async function handleQuizAnswer(
       explanation,
       ``,
       `━━━━━━━━━━━━━━━━━━━━`,
-      `<i>🔥 Great job! Keep your streak alive with another question!</i>`,
-    ].join('\n');
+      `<i>🔥 Great job! Keep your streak alive with another question!</i>`
+    );
+
+    const text = textLines.join('\n');
 
     const reply_markup = {
       inline_keyboard: [
@@ -560,7 +703,7 @@ export async function handleQuizAnswer(
       ],
     };
 
-    return { text, reply_markup, isCorrect: true };
+    return { text, reply_markup, isCorrect: true, milestone };
   } else {
     const text = [
       `❌ <b>INCORRECT</b>`,

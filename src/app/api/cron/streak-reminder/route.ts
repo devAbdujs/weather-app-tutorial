@@ -31,8 +31,8 @@ export async function GET(req: NextRequest) {
     // 3. Find profiles whose streak is active from yesterday but who haven't practiced today
     const { data: atRiskUsers, error } = await supabase
       .from('profiles')
-      .select('telegram_id, full_name, streak, last_activity_date')
-      .gt('streak', 0)
+      .select('telegram_id, full_name, daily_streak, last_activity_date')
+      .gt('daily_streak', 0)
       .eq('last_activity_date', yesterdayEAT)
       .not('telegram_id', 'is', null)
       .limit(100);
@@ -60,10 +60,10 @@ export async function GET(req: NextRequest) {
       if (!user.telegram_id) continue;
 
       const firstName = user.full_name?.split(' ')[0] || 'Temari Scholar';
-      const streakEmoji = user.streak >= 7 ? '⚡' : '🔥';
+      const streakEmoji = (user.daily_streak || 0) >= 7 ? '⚡' : '🔥';
 
       const messageText = 
-        `${streakEmoji} <b>Don't Lose Your ${user.streak}-Day Streak!</b>\n\n` +
+        `${streakEmoji} <b>Don't Lose Your ${user.daily_streak}-Day Streak!</b>\n\n` +
         `Hey ${escapeTelegramHtml(firstName)}! You haven't completed your daily drill today.\n` +
         `Only a few hours remain before your streak resets at midnight (East Africa Time)!\n\n` +
         `Solve 1 quick question now to keep your study streak alive.`;

@@ -16,6 +16,8 @@ import {
   getSingleQuestionPayload,
   getPersistentReplyKeyboard,
   recordReferral,
+  checkMilestoneCelebration,
+  formatMilestoneCard,
 } from '@/lib/telegramBot';
 
 describe('Telegram Bot Utilities & Formatting', () => {
@@ -418,6 +420,92 @@ describe('Telegram Bot Database Operations', () => {
 
       expect(await recordReferral(mockSupabase, 'user-1', 'user-1')).toBe(false);
       expect(await recordReferral(mockSupabase, 'user-2', 'user-3')).toBe(false);
+    });
+  });
+
+  describe('Milestone Celebrations', () => {
+    it('detects streak milestones correctly', () => {
+      expect(checkMilestoneCelebration(3, 5)?.title).toBe('Bronze Scholar');
+      expect(checkMilestoneCelebration(7, 5)?.title).toBe('Silver Scholar');
+      expect(checkMilestoneCelebration(14, 5)?.title).toBe('Gold Scholar');
+      expect(checkMilestoneCelebration(30, 5)?.title).toBe('Diamond Scholar');
+      expect(checkMilestoneCelebration(50, 5)?.title).toBe('Grandmaster Scholar');
+    });
+
+    it('detects question count milestones correctly', () => {
+      expect(checkMilestoneCelebration(1, 10)?.title).toBe('Drill Apprentice');
+      expect(checkMilestoneCelebration(1, 25)?.title).toBe('Knowledge Seeker');
+      expect(checkMilestoneCelebration(1, 50)?.title).toBe('Exam Warrior');
+      expect(checkMilestoneCelebration(1, 100)?.title).toBe('Centurion Scholar');
+      expect(checkMilestoneCelebration(1, 250)?.title).toBe('Academic Titan');
+    });
+
+    it('returns null when no milestone is reached', () => {
+      expect(checkMilestoneCelebration(2, 4)).toBeNull();
+      expect(checkMilestoneCelebration(5, 12)).toBeNull();
+    });
+
+    it('formats a milestone card with ASCII trophy border and details', () => {
+      const milestone = checkMilestoneCelebration(7, 0)!;
+      const card = formatMilestoneCard(milestone);
+
+      expect(card).toContain('🏆 MILESTONE UNLOCKED');
+      expect(card).toContain('Silver Scholar');
+      expect(card).toContain('7-DAY STREAK');
+      expect(card).toContain('<code>╔');
+    });
+
+    it('includes milestone card in handleQuizAnswer text when milestone is unlocked', async () => {
+      const mockSupabase: any = {
+        from: jest.fn((table: string) => {
+          if (table === 'questions') {
+            return {
+              select: jest.fn().mockReturnThis(),
+              eq: jest.fn().mockReturnThis(),
+              maybeSingle: jest.fn().mockResolvedValue({
+                data: {
+                  id: 'q-mile-1',
+                  subject: 'Biology',
+                  answer: 'B',
+                  explanation: 'Explanation text',
+                },
+              }),
+            };
+          }
+          if (table === 'user_subject_stats') {
+            return {
+              select: jest.fn().mockReturnThis(),
+              eq: jest.fn().mockImplementation(() => ({
+                eq: jest.fn().mockReturnThis(),
+                maybeSingle: jest.fn().mockResolvedValue({
+                  data: { questions_attempted: 9, questions_correct: 9 },
+                }),
+                // for allStats aggregate
+                then: (resolve: any) => resolve({ data: [{ questions_correct: 10 }] }),
+              })),
+              upsert: jest.fn().mockResolvedValue({ error: null }),
+            };
+          }
+          if (table === 'profiles') {
+            return {
+              select: jest.fn().mockReturnThis(),
+              eq: jest.fn().mockReturnThis(),
+              maybeSingle: jest.fn().mockResolvedValue({
+                data: { daily_streak: 2, last_activity_date: null },
+              }),
+              update: jest.fn().mockReturnValue({
+                eq: jest.fn().mockResolvedValue({ error: null }),
+              }),
+            };
+          }
+          return {};
+        }),
+      };
+
+      const res = await handleQuizAnswer(mockSupabase, 'user-1', 'q-mile-1', 'B');
+      expect(res.isCorrect).toBe(true);
+      expect(res.milestone).toBeTruthy();
+      expect(res.text).toContain('🏆 MILESTONE UNLOCKED');
     });
   });
 });
