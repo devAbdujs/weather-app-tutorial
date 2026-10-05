@@ -251,8 +251,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 ### [M-23] Race Condition in offlineSync.ts Causes Duplicate Stats Submission on Network Reconnection
 **File:** `src/utils/offlineSync.ts` lines 29–65
 **Issue:** `syncOfflineSubmissions()` lacks an in-flight mutex or `isSyncing` guard. If multiple browser tabs are open or the `online` event fires in rapid succession during unstable connectivity, concurrent executions read the same queue from `localforage` and submit duplicate exam payloads to `/api/exam/submit`.
-**Impact:** Cumulative user statistics and XP (which increment atomically via RPC `increment_user_subject_stats`) are double-counted or multi-counted.
-**Fix:** Introduce an in-flight boolean mutex (`isSyncing`) and pop items atomically from storage.
+**Fix:** Added an in-flight `isSyncing` boolean mutex to `src/utils/offlineSync.ts` preventing simultaneous execution from multiple tabs or rapid `online` event firing.
 
 ### [M-24] 9 Uncached Parallel HEAD Queries on Practice Screen (getEntranceYearCounts)
 **File:** `src/app/actions/practice.ts` lines 41–58
@@ -500,7 +499,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] M-20  Persist completed session stats to DB (user_subject_stats atomic RPC)
 [x] M-21  Add last_activity_date to ProtectedLayout SSR query to prevent redundant streak writes on HomeHub
 [x] M-22  Add timeout and max retry ceiling to UpgradeFlow.tsx payment status polling loop
-[ ] M-23  Add in-flight mutex / isSyncing guard to offlineSync.ts to prevent duplicate submissions
+[x] M-23  Add in-flight mutex / isSyncing guard to offlineSync.ts to prevent duplicate submissions
 [ ] M-24  Cache getEntranceYearCounts in practice.ts with unstable_cache to eliminate 9 parallel HEAD queries
 [ ] M-25  Synchronize gamification XP between Web app (localStorage) and Telegram Bot (user_subject_stats)
 [ ] M-26  Add Zod string length constraint (.max(2000)) on POST /api/highlights text payload

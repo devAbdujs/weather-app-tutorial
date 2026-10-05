@@ -1,5 +1,6 @@
 import localforage from 'localforage';
 import { toast } from 'sonner';
+import { useEffect } from 'react';
 
 interface ExamSubmission {
   id: string;
@@ -11,6 +12,9 @@ interface ExamSubmission {
 }
 
 const OFFLINE_STORE_KEY = 'temari_offline_submissions';
+
+// Mutex flag preventing concurrent in-flight syncs (e.g. multiple tabs or rapid online events)
+let isSyncing = false;
 
 export const saveOfflineSubmission = async (submission: Omit<ExamSubmission, 'id' | 'timestamp'>) => {
   try {
@@ -28,13 +32,15 @@ export const saveOfflineSubmission = async (submission: Omit<ExamSubmission, 'id
 
 export const syncOfflineSubmissions = async () => {
   if (typeof window === 'undefined' || !navigator.onLine) return;
+  if (isSyncing) return;
 
+  isSyncing = true;
   try {
     const pending = (await localforage.getItem<ExamSubmission[]>(OFFLINE_STORE_KEY)) || [];
     if (pending.length === 0) return;
 
     let syncedCount = 0;
-    const remaining = [];
+    const remaining: ExamSubmission[] = [];
 
     for (const sub of pending) {
       try {
@@ -52,14 +58,13 @@ export const syncOfflineSubmissions = async () => {
         if (res.ok) {
           syncedCount++;
         } else {
-          // If the server explicitly rejected it (e.g. 400 Bad Request), we might want to discard it anyway
-          // But for now, let's keep it if it's a 500 error
+          // If server rejected with a 500 error, keep in retry queue; discard if 4xx bad request
           if (res.status >= 500) {
             remaining.push(sub);
           }
         }
       } catch (err) {
-        // Network error still, keep in queue
+        // Network failure, keep in queue
         remaining.push(sub);
       }
     }
@@ -71,11 +76,17 @@ export const syncOfflineSubmissions = async () => {
     }
   } catch (err) {
     console.error('Failed to process offline sync', err);
+  } finally {
+    isSyncing = false;
   }
 };
 
 export const useOfflineSyncObserver = () => {
-  if (typeof window !== 'undefined') {
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     window.addEventListener('online', syncOfflineSubmissions);
-  }
+    return () => {
+      window.removeEventListener('online', syncOfflineSubmissions);
+    };
+  }, []);
 };
