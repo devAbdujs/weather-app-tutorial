@@ -271,8 +271,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 ### [M-27] Telegram OIDC Token Drops Verified Phone Number on Profile Upsert
 **File:** `src/app/api/auth/oidc/route.ts` lines 50, 57–64
 **Issue:** `phone_number` is extracted from Telegram's OIDC `id_token` payload (`const phone = idTokenPayload.phone_number;`) but omitted from the `profiles` upsert payload.
-**Impact:** Verified student phone numbers provided during Telegram Web OAuth are discarded, leaving `profiles.phone_number` empty.
-**Fix:** Include `phone_number: phone || null` in the Supabase upsert payload.
+**Fix:** Created migration `supabase/migrations/20261005110000_add_phone_number_to_profiles.sql` adding `phone_number` to `profiles` and forwarded `phone_number: phone` in the upsert payload in `src/app/api/auth/oidc/route.ts`.
 
 ---
 
@@ -500,7 +499,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] M-24  Cache getEntranceYearCounts in practice.ts with unstable_cache to eliminate 9 parallel HEAD queries
 [x] M-25  Synchronize gamification XP between Web app (localStorage) and Telegram Bot (user_subject_stats)
 [x] M-26  Add Zod string length constraint (.max(2000)) on POST /api/highlights text payload
-[ ] M-27  Persist phone_number from Telegram OIDC id_token to profiles table during upsert
+[x] M-27  Persist phone_number from Telegram OIDC id_token to profiles table during upsert
 
 ════════════════════════════════════════
   LOW — Backlog

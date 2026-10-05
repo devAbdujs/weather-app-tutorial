@@ -63,13 +63,18 @@ export async function POST(req: NextRequest) {
 
     if (!telegramId) return NextResponse.json({ error: 'Invalid ID token payload' }, { status: 400 });
 
+    const upsertPayload: Record<string, any> = { 
+      telegram_id: telegramId.toString(),
+      full_name: fullName,
+    };
+    if (phone) {
+      upsertPayload.phone_number = phone;
+    }
+
     const supabase = await createClient();
     const { data: profile, error } = await supabase
       .from('profiles')
-      .upsert({ 
-        telegram_id: telegramId.toString(),
-        full_name: fullName,
-      }, { onConflict: 'telegram_id' })
+      .upsert(upsertPayload, { onConflict: 'telegram_id' })
       .select('telegram_id, target_exam, stream')
       .single();
 
