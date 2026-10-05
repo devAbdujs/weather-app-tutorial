@@ -31,6 +31,7 @@ import { WelcomeOnboarding } from './WelcomeOnboarding';
 import { useGamificationStore, getLevelForXp } from '@/store/useGamificationStore';
 import { sounds } from '@/lib/sounds';
 import { TemariMascot } from '@/components/mascot/TemariMascot';
+import { safeSessionStorage, safeLocalStorage } from '@/lib/safeStorage';
 
 interface ProfileViewProps {
   profile: any;
@@ -56,6 +57,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
     sounds.playTap();
     haptic.impact('heavy');
     try {
+      safeSessionStorage.setItem('temari_manual_logout', 'true');
+      safeLocalStorage.removeItem('tg_web_user');
       await logout();
       window.location.href = '/';
     } catch (e) {
@@ -474,22 +477,20 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
         </section>
 
         {/* ── 7. SIGN OUT BUTTON (ui_inspiration3.png: FULL WIDTH PILL) ── */}
-        {!isTelegram && (
-          <div className="pt-2">
-            <button 
-              disabled={isLoggingOut} 
-              onClick={handleLogout} 
-              className="w-full py-4 bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center justify-center gap-2.5 text-foreground hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-400 font-black text-sm shadow-2xs transition-all active:translate-y-0.5 disabled:opacity-50"
-            >
-              {isLoggingOut ? (
-                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <LogOut className="w-4 h-4 stroke-[2.5]" />
-              )}
-              <span>{isLoggingOut ? 'Signing out...' : 'Sign Out'}</span>
-            </button>
-          </div>
-        )}
+        <div className="pt-2">
+          <button 
+            disabled={isLoggingOut} 
+            onClick={handleLogout} 
+            className="w-full py-4 bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center justify-center gap-2.5 text-foreground hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-400 font-black text-sm shadow-2xs transition-all active:translate-y-0.5 disabled:opacity-50"
+          >
+            {isLoggingOut ? (
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <LogOut className="w-4 h-4 stroke-[2.5]" />
+            )}
+            <span>{isLoggingOut ? 'Signing out...' : 'Sign Out'}</span>
+          </button>
+        </div>
 
       </div>
     </>

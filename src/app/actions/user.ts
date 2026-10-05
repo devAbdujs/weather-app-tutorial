@@ -113,9 +113,17 @@ export async function getSavedMistakes() {
 }
 
 /**
- * Logs out the user by clearing the HttpOnly session cookie.
+ * Logs out the user by clearing the HttpOnly session cookie across root and subdomains.
  */
 export async function logout() {
+  const cookieOptions = getSessionCookieOptions();
+  cookies().set({
+    name: 'es_session',
+    value: '',
+    ...cookieOptions,
+    maxAge: 0,
+    expires: new Date(0),
+  });
   cookies().delete('es_session');
   return { success: true };
 }

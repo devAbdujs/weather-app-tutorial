@@ -55,6 +55,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
     const checkTelegram = () => {
       const tg = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp : null;
       if (tg && tg.initData) {
+        // If user manually logged out in this session, do not auto-authenticate
+        if (safeSessionStorage.getItem('temari_manual_logout') === 'true') {
+          return;
+        }
         setIsWebApp(true);
         try { tg.ready?.(); tg.expand?.(); } catch (e) {}
         authenticateWithTelegram(tg.initData);
@@ -71,6 +75,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
     };
     checkTelegram();
   }, []);
+
+  const handlePrimaryAuth = (targetPortal?: SubdomainType) => {
+    sounds.playTap();
+    const tg = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp : null;
+    if (tg?.initData) {
+      safeSessionStorage.removeItem('temari_manual_logout');
+      authenticateWithTelegram(tg.initData);
+    } else {
+      handleTelegramOIDCLogin(targetPortal || (activePortal !== 'root' ? activePortal : undefined));
+    }
+  };
 
   const handleTelegramOIDCLogin = async (targetPortal?: SubdomainType) => {
     sounds.playTap();
@@ -160,12 +175,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
              </div>
              <span className="font-black text-lg tracking-tight">Temari</span>
           </Link>
-          <button 
-            onClick={() => handleTelegramOIDCLogin(activePortal !== 'root' ? activePortal : undefined)} 
-            className="btn-3d-card text-xs font-black px-4 py-2 rounded-xl text-foreground"
-          >
-            Sign In
-          </button>
+          <div className="flex items-center gap-2">
+            {typeof window !== 'undefined' && Boolean((window as any).Telegram?.WebApp?.initData) && (
+              <button 
+                onClick={() => {
+                  try { (window as any).Telegram.WebApp.close(); } catch {}
+                }} 
+                className="text-xs font-bold px-3 py-1.5 rounded-xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground transition-colors"
+              >
+                Exit App
+              </button>
+            )}
+            <button 
+              onClick={() => handlePrimaryAuth(activePortal !== 'root' ? activePortal : undefined)} 
+              className="btn-3d-card text-xs font-black px-4 py-2 rounded-xl text-foreground"
+            >
+              Sign In
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -212,7 +239,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
                 el.scrollIntoView({ behavior: 'smooth' });
               }
             } else {
-              handleTelegramOIDCLogin(activePortal);
+              handlePrimaryAuth(activePortal);
             }
           }}
           className="btn-3d-primary w-full max-w-[340px] py-4 rounded-2xl flex items-center justify-center gap-2.5 shadow-tactile-md text-sm font-black tracking-wide animate-fade-up z-10"
@@ -268,7 +295,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
           {/* Portal 1: Grade 12 EUEE */}
           <Link 
             href={getExamPortalPath('entrance')}
-            onClick={() => sounds.playTap()}
+            onClick={() => {
+              sounds.playTap();
+              safeSessionStorage.removeItem('temari_manual_logout');
+            }}
             className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between group ${
               activePortal === 'entrance' 
                 ? 'bg-primary/5 border-primary shadow-tactile-sm ring-2 ring-primary/20' 
@@ -311,7 +341,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
           {/* Portal 2: Freshman */}
           <Link 
             href={getExamPortalPath('freshman')}
-            onClick={() => sounds.playTap()}
+            onClick={() => {
+              sounds.playTap();
+              safeSessionStorage.removeItem('temari_manual_logout');
+            }}
             className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between group ${
               activePortal === 'freshman' 
                 ? 'bg-primary/5 border-primary shadow-tactile-sm ring-2 ring-primary/20' 
@@ -354,7 +387,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
           {/* Portal 3: Exit */}
           <Link 
             href={getExamPortalPath('exit')}
-            onClick={() => sounds.playTap()}
+            onClick={() => {
+              sounds.playTap();
+              safeSessionStorage.removeItem('temari_manual_logout');
+            }}
             className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between group ${
               activePortal === 'exit' 
                 ? 'bg-primary/5 border-primary shadow-tactile-sm ring-2 ring-primary/20' 
