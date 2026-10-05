@@ -737,6 +737,6 @@ Require all admin accounts to update password; remove plaintext comparison branc
 - For optimal mobile thumb ergonomics, install prompts should float at the bottom of the viewport, just above the bottom navigation bar.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[PWA-01]` Decouple the PWA prompt from the top-center sonner toast in `src/components/layout/PWARegistry.tsx`.
-- [ ] `[PWA-02]` Implement a dedicated fixed bottom banner styled with `fixed bottom-20 left-1/2 -translate-x-1/2 z-40 max-w-[92vw] w-[360px]` floating directly above the bottom navigation bar (`bottom-16`).
-- [ ] `[PWA-03]` Add touch-friendly dismissal with `localStorage` cooldown (don't re-prompt for 7 days if dismissed).
+- [x] `[PWA-01]` Decouple the PWA prompt from the top-center sonner toast in `src/components/layout/PWARegistry.tsx`.
+- [x] `[PWA-02]` Implement a dedicated fixed bottom banner styled with `fixed bottom-20 left-1/2 -translate-x-1/2 z-40 max-w-[92vw] w-[360px]` floating directly above the bottom navigation bar (`bottom-16`).
+- [x] `[PWA-03]` Add touch-friendly dismissal with `localStorage` cooldown (don't re-prompt for 7 days if dismissed).
