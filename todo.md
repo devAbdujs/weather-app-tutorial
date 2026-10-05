@@ -606,5 +606,71 @@ Require all admin accounts to update password; remove plaintext comparison branc
 - [ ] `[ADM-04]` Create `admin_audit_logs` table to track who approved payments, published notes, or modified questions.
 - [ ] `[ADM-05]` Implement granular scoped permissions in `src/app/actions/admin.ts` (`hasPermission(admin, 'notes:write' | 'payments:approve' | ...)`).
 
+---
+
+### [P-06] Study Notes Premium Paywall Hardening
+**Files:** `src/app/(app)/(protected)/notes/[subject]/page.tsx`, `src/components/dashboard/StudyNotesView.tsx`, `src/app/api/notes/content/route.ts`
+
+**Current State & Audit Findings:**
+- Currently, short notes and summary chapters are accessible to all authenticated users regardless of subscription tier.
+- In `src/app/api/notes/content/route.ts`, any user with an active session can fetch the complete markdown content of any note.
+- Free users can read the entire curriculum notes without upgrading to Premium.
+
+**Action Items & Implementation Roadmap:**
+- [ ] `[NOTE-01]` Update `src/app/api/notes/content/route.ts` to verify `profile.subscription_status === 'premium'`. For free users, return only a teaser paragraph / summary excerpt with `is_locked: true` and 403 status.
+- [ ] `[NOTE-02]` Update `src/components/dashboard/StudyNotesView.tsx` with a blurred teaser view, locked badge icons on chapter cards, and a prominent "Upgrade to Premium to Unlock Complete Notes & AI Quizzes" modal.
+- [ ] `[NOTE-03]` Pass `isPremium` from server component in `src/app/(app)/(protected)/notes/[subject]/page.tsx` down to `StudyNotesView` to avoid client-side auth flash.
+
+---
+
+### [P-07] Subdomain Landing Pages: Historical Exam Statistics & Visual Storyboard
+**Files:** `src/components/marketing/LandingPage.tsx`, `src/components/marketing/ExamLandingHero.tsx`, marketing charts
+
+**Current State & Audit Findings:**
+- Subdomain landing pages (`entrance.temari.top`, `freshman.temari.top`, `exit.temari.top`) currently feature hero text, subject pills, and key stats counters (15,000+ questions, matric badges).
+- They lack dramatic contextual data, historical exam pass/fail rates, and visual storytelling that highlights the high-stakes reality of Ethiopian national exams.
+
+**Action Items & Implementation Roadmap:**
+- [ ] `[MKT-01]` Add an interactive **National Exam Statistics & Reality Check** section for `entrance.temari.top`:
+  - Visual 3-year pass/fail rate chart (highlighting that only ~3.2% to 5.4% of Grade 12 students achieved university passing marks in recent EUEE exams).
+  - Subject difficulty breakdown (e.g. Natural Science Mathematics vs. Physics vs. Aptitude pass rates).
+- [ ] `[MKT-02]` Add **Freshman Academic Survival Storyboard** for `freshman.temari.top`:
+  - First-year university retention statistics, common GPA pitfalls in Calculus/Applied Math and General Physics, and how chapter drills prevent academic probation.
+- [ ] `[MKT-03]` Add **National Exit Exam Benchmark Storyboard** for `exit.temari.top`:
+  - MoE department passing requirements, question bank coverage by discipline, and graduation qualification benchmarks.
+- [ ] `[MKT-04]` Create reusable responsive charts/infographics (SVG / CSS bar meters) optimized for low-bandwidth mobile devices.
+
+---
+
+### [P-08] PWA Install Banner Repositioning & Ergonomics
+**Files:** `src/components/layout/PWARegistry.tsx`, `src/app/layout.tsx`
+
+**Current State & Audit Findings:**
+- The PWA install banner is currently triggered via `toast.custom` with `Toaster position="top-center"`.
+- It appears at the top of the mobile screen, covering headers, back buttons, and profile avatars.
+- For optimal mobile thumb ergonomics, install prompts should float at the bottom of the viewport, just above the bottom navigation bar.
+
+**Action Items & Implementation Roadmap:**
+- [ ] `[PWA-01]` Decouple the PWA prompt from the top-center sonner toast in `src/components/layout/PWARegistry.tsx`.
+- [ ] `[PWA-02]` Implement a dedicated fixed bottom banner styled with `fixed bottom-20 left-1/2 -translate-x-1/2 z-40 max-w-[92vw] w-[360px]` floating directly above the bottom navigation bar (`bottom-16`).
+- [ ] `[PWA-03]` Add touch-friendly dismissal with `localStorage` cooldown (don't re-prompt for 7 days if dismissed).
+
+---
+
+### [P-09] Free User Email Lead Capture & Security Architecture
+**Files:** `src/components/dashboard/EmailCaptureModal.tsx`, `src/app/api/user/email/route.ts`, Supabase `profiles`
+
+**Current State & Audit Findings:**
+- Authentication is currently passwordless via Telegram Mini App initData or Web Phone OTP.
+- Free users onboard with no email captured, limiting retention campaigns, exam date reminder broadcasts, and off-Telegram re-engagement.
+- 🔴 **Security Constraint & Policy Advisory**: An application must **never** request or collect a user's personal email account password (which constitutes credential harvesting / phishing). Furthermore, storing passwords in plaintext / unhashed format is a severe security vulnerability that violates OWASP standards and exposes users to account compromise.
+
+**Action Items & Implementation Roadmap:**
+- [ ] `[LEAD-01]` Create a non-blocking post-login **Email Capture Modal** that triggers for free users after their first completed quiz or 3rd session ("Save Your Progress & Get Exam Alerts").
+- [ ] `[LEAD-02]` Add `email` column validation and endpoint `POST /api/user/email` to update the student's profile (with deduplication and email format verification).
+- [ ] `[LEAD-03]` Support voluntary email verification via 6-digit OTP code or magic link for account recovery (never asking for or storing third-party email passwords).
+- [ ] `[LEAD-04]` Add "Skip for now" / dismiss action with 14-day re-prompt cooldown so the learning flow is not blocked.
+
+
 
 
