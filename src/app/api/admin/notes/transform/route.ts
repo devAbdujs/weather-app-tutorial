@@ -28,6 +28,9 @@ export async function POST(req: NextRequest) {
     if (!admin) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
+    if (admin.role === 'readonly') {
+      return NextResponse.json({ success: false, error: 'Forbidden: Read-only accounts cannot transform notes' }, { status: 403 });
+    }
 
     const formData = await req.formData();
     const file = formData.get('file') as File | null;

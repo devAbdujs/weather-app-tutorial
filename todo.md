@@ -685,7 +685,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 4. **`reviewer`**: Read-only access across study notes, questions, and curriculum stats for quality audit.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[ADM-01]` Patch `src/app/api/admin/notes/route.ts` and `transform/route.ts` to reject `readonly` admins with 403 Forbidden.
+- [x] `[ADM-01]` Patch `src/app/api/admin/notes/route.ts` and `transform/route.ts` to reject `readonly` admins with 403 Forbidden. (Patched & verified)
 - [ ] `[ADM-02]` Patch `updatePaymentStatus()` in `src/app/actions/admin.ts` to require `role === 'superadmin' || role === 'financial_admin'`.
 - [ ] `[ADM-03]` Build Web Question Bank Upload & Editor Studio in `/admin/questions` (bulk JSON/CSV import, KaTeX live preview, answer key editor).
 - [ ] `[ADM-04]` Create `admin_audit_logs` table to track who approved payments, published notes, or modified questions.

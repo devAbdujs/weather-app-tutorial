@@ -9,6 +9,9 @@ export async function POST(req: NextRequest) {
     if (!isAdmin) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
+    if (isAdmin.role === 'readonly') {
+      return NextResponse.json({ success: false, error: 'Forbidden: Read-only accounts cannot modify notes' }, { status: 403 });
+    }
 
     const body = await req.json();
     const supabase = await createAdminClient();
