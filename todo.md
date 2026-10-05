@@ -153,8 +153,7 @@
 ### [H-19] Missing Rate Limiting on POST /api/auth/session and POST /api/auth/oidc
 **Files:** `src/app/api/auth/session/route.ts`, `src/app/api/auth/oidc/route.ts`
 **Issue:** Zero request throttling or rate limiting on both primary authentication endpoints.
-**Impact:** Automated bots and malicious actors can flood Telegram HMAC/OIDC token exchanges, execute brute-force signature searches, and spam Supabase profile upserts with minimal latency cost.
-**Fix:** Enforce IP-based rate limiting via Upstash Redis (`checkRateLimit('auth-session:${ip}', 10, 60_000)` and `checkRateLimit('auth-oidc:${ip}', 10, 60_000)`).
+**Fix:** Enforced distributed IP-based rate limiting via Upstash Redis (`checkRateLimit('auth_session:${ip}', 15, 60_000)` and `checkRateLimit('auth_oidc:${ip}', 15, 60_000)`) in both `src/app/api/auth/session/route.ts` and `src/app/api/auth/oidc/route.ts`, returning 429 Too Many Requests if flooded.
 
 ---
 
@@ -436,7 +435,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] L-05  Add security headers to next.config.mjs
 [x] C-10  Lock down PostgREST RLS on study_notes: drop public SELECT policy (supabase/migrations/20261005100000_secure_study_notes_rls.sql)
 [x] H-18  Telegram initData: enforce auth_date freshness check (24h) and use crypto.timingSafeEqual()
-[ ] H-19  Add distributed rate-limiting to auth/session and auth/oidc endpoints
+[x] H-19  Add distributed rate-limiting to auth/session and auth/oidc endpoints
 
 ════════════════════════════════════════
   CRITICAL APP FIXES

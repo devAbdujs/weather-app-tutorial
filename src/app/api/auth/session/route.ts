@@ -5,9 +5,19 @@ import { encryptSession, getSessionCookieOptions } from '@/lib/session';
 import { parseSubdomain } from '@/lib/subdomains';
 
 import { validateMiniAppInitData, validateWebWidgetData } from '@/lib/telegramAuth';
+import { checkRateLimit } from '@/lib/rateLimiter';
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+    const rateLimit = await checkRateLimit(`auth_session:${ip}`, 15, 60_000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many authentication attempts. Please try again shortly.' },
+        { status: 429 }
+      );
+    }
+
     const data = await req.json();
     const { initData, webData } = data;
     const botToken = process.env.TELEGRAM_BOT_TOKEN;

@@ -2,9 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { encryptSession, getSessionCookieOptions } from '@/lib/session';
 import { parseSubdomain } from '@/lib/subdomains';
+import { checkRateLimit } from '@/lib/rateLimiter';
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+    const rateLimit = await checkRateLimit(`auth_oidc:${ip}`, 15, 60_000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many authorization attempts. Please try again shortly.' },
+        { status: 429 }
+      );
+    }
+
     const { code, code_verifier, targetExam } = await req.json();
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
 
