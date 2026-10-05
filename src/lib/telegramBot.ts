@@ -219,6 +219,7 @@ export function getMainMenuPayload(firstName: string, siteUrl: string = SITE_URL
         { text: '🔄 Change Track', callback_data: 'nav:tracks' },
         { text: '👑 PRO Upgrade', callback_data: 'nav:upgrade' },
       ],
+      [{ text: '📢 Join Community (@temari_App)', callback_data: 'nav:channel' }],
       [{ text: '🚀 Open Full Temari App', web_app: { url: siteUrl } }],
     ],
   };
@@ -649,4 +650,155 @@ export function getHelpPayload(siteUrl: string = SITE_URL) {
   };
 
   return { text, reply_markup };
+}
+
+/**
+ * 9. Channel Join Verification & Community Welcome Flow
+ */
+export async function checkChannelMembership(
+  userId: number | string,
+  channelUsername = '@temari_App'
+): Promise<boolean> {
+  if (!BOT_TOKEN) return false;
+  try {
+    const res = await fetch(
+      `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=${encodeURIComponent(
+        channelUsername
+      )}&user_id=${userId}`
+    );
+    if (!res.ok) return false;
+    const data = await res.json();
+    if (!data.ok || !data.result) return false;
+    const status = data.result.status;
+    return ['creator', 'administrator', 'member', 'restricted'].includes(status);
+  } catch (err) {
+    console.warn('[TelegramBot] checkChannelMembership error:', err);
+    return false;
+  }
+}
+
+export function getChannelJoinPayload(siteUrl: string = SITE_URL) {
+  const text = [
+    `📢 <b>Join the Official Temari Community!</b>`,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `Stay ahead with daily exam question drops, national matric schedule updates, and university scholarship announcements.`,
+    ``,
+    `✨ <b>Join @temari_App to unlock your bonus AI Tutor questions!</b>`,
+  ].join('\n');
+
+  const reply_markup = {
+    inline_keyboard: [
+      [{ text: '📢 Join @temari_App Channel', url: 'https://t.me/temari_App' }],
+      [{ text: '✅ Verify Channel Membership', callback_data: 'channel:verify' }],
+      [{ text: '🔙 Main Menu', callback_data: 'nav:menu' }],
+    ],
+  };
+
+  return { text, reply_markup };
+}
+
+/**
+ * 10. Targeted Single Question Drill (/start q_<uuid>)
+ */
+export async function getSingleQuestionPayload(
+  supabaseAdmin: SupabaseClient,
+  questionId: string,
+  siteUrl: string = SITE_URL
+) {
+  const { data: q } = await supabaseAdmin
+    .from('questions')
+    .select('id, question, option_a, option_b, option_c, option_d, subject, year_ec')
+    .eq('id', questionId)
+    .maybeSingle();
+
+  if (!q) {
+    return {
+      text: '⚠️ <b>Question Not Found</b>\n\nThis specific question is no longer available in the question bank.',
+      reply_markup: {
+        inline_keyboard: [[{ text: '🎲 Practice Random Question', callback_data: 'nav:quiz' }]],
+      },
+    };
+  }
+
+  const subjectHeader = `🏷️ <b>Subject:</b> ${escapeTelegramHtml(q.subject)}${q.year_ec ? ` (${q.year_ec} E.C.)` : ''}`;
+  const questionText = cleanForTelegram(q.question);
+  const optA = cleanForTelegram(q.option_a || 'Option A');
+  const optB = cleanForTelegram(q.option_b || 'Option B');
+  const optC = cleanForTelegram(q.option_c || 'Option C');
+  const optD = cleanForTelegram(q.option_d || 'Option D');
+
+  const text = [
+    `🎯 <b>Targeted Question Drill</b>`,
+    subjectHeader,
+    ``,
+    questionText,
+    ``,
+    `<b>A)</b> ${optA}`,
+    `<b>B)</b> ${optB}`,
+    `<b>C)</b> ${optC}`,
+    `<b>D)</b> ${optD}`,
+  ].join('\n');
+
+  const reply_markup = {
+    inline_keyboard: [
+      [
+        { text: 'A', callback_data: `quiz:${q.id}:A` },
+        { text: 'B', callback_data: `quiz:${q.id}:B` },
+        { text: 'C', callback_data: `quiz:${q.id}:C` },
+        { text: 'D', callback_data: `quiz:${q.id}:D` },
+      ],
+      [{ text: '🧠 Ask Temari AI in App', web_app: { url: `${siteUrl}/practice?subject=${encodeURIComponent(q.subject)}` } }],
+      [{ text: '🎲 More Questions', callback_data: 'nav:quiz' }, { text: '🔙 Menu', callback_data: 'nav:menu' }],
+    ],
+  };
+
+  return { text, reply_markup };
+}
+
+/**
+ * 11. Persistent Reply Keyboard for Bottom Thumb Navigation
+ */
+export function getPersistentReplyKeyboard() {
+  return {
+    keyboard: [
+      [{ text: '🎯 Daily Quiz Drill' }, { text: '📊 My Scholar Stats' }],
+      [{ text: '🚀 Open Web App' }, { text: '⭐ Upgrade to PRO' }],
+      [{ text: '📢 Official Channel' }, { text: '📖 Help Guide' }],
+    ],
+    resize_keyboard: true,
+    is_persistent: true,
+  };
+}
+
+/**
+ * 12. Record Referral Deep-Link
+ */
+export async function recordReferral(
+  supabaseAdmin: SupabaseClient,
+  newUserId: string | number,
+  referrerId: string | number
+): Promise<boolean> {
+  try {
+    const sNewUser = String(newUserId);
+    const sReferrer = String(referrerId);
+    if (sNewUser === sReferrer) return false;
+
+    const { data: existing } = await supabaseAdmin
+      .from('profiles')
+      .select('referred_by')
+      .eq('telegram_id', sNewUser)
+      .maybeSingle();
+
+    if (existing?.referred_by) return false;
+
+    await supabaseAdmin
+      .from('profiles')
+      .update({ referred_by: sReferrer })
+      .eq('telegram_id', sNewUser);
+
+    return true;
+  } catch (err) {
+    console.warn('[TelegramBot] recordReferral error:', err);
+    return false;
+  }
 }

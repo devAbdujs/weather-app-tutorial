@@ -591,12 +591,12 @@ Require all admin accounts to update password; remove plaintext comparison branc
    - 🟡 **Missing Chat Menu Button API Call:** The bot does not invoke Telegram's `setChatMenuButton` API to configure the WebApp button next to the chat input field on first `/start`.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[B-01]` Implement Channel Join Verification & Welcome Flow (`getChatMember` check on `@temari_App` with "Join Channel & Unlock Free AI Pass" CTA).
-- [ ] `[B-02]` Extend `/start` deep-link parser to support `ref_<id>` (referrals), `track_<exam>` (exam onboarding), and `q_<uuid>` (single question drills).
+- [x] `[B-01]` Implement Channel Join Verification & Welcome Flow (`getChatMember` check on `@temari_App` with "Join Channel & Unlock Free AI Pass" CTA).
+- [x] `[B-02]` Extend `/start` deep-link parser to support `ref_<id>` (referrals), `track_<exam>` (exam onboarding), and `q_<uuid>` (single question drills).
 - [ ] `[B-03]` Build cron notification endpoint (`/api/cron/streak-reminder`) using Vercel Cron or GitHub Actions to alert at-risk streaks at 20:00 EAT.
 - [ ] `[B-04]` Add milestone celebration trigger: generate visual ASCII / HTML trophy card in chat when a student achieves a streak or mastery record.
 - [ ] `[B-05]` Connect AI Quota exhaustion event in `src/app/api/ai/tutor/route.ts` to trigger a friendly conversational upsell message in Telegram.
-- [ ] `[B-06]` Add persistent reply keyboard for zero-friction navigation on all unrecognized text inputs.
+- [x] `[B-06]` Add persistent reply keyboard for zero-friction navigation on all unrecognized text inputs.
 
 ---
 

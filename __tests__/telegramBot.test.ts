@@ -11,6 +11,11 @@ import {
   getQuizPayload,
   handleQuizAnswer,
   setTargetExamTrack,
+  checkChannelMembership,
+  getChannelJoinPayload,
+  getSingleQuestionPayload,
+  getPersistentReplyKeyboard,
+  recordReferral,
 } from '@/lib/telegramBot';
 
 describe('Telegram Bot Utilities & Formatting', () => {
@@ -75,7 +80,7 @@ describe('Telegram Bot Utilities & Formatting', () => {
       const { text, reply_markup } = getMainMenuPayload('Abebe', 'https://temari.top');
       expect(text).toContain('Welcome to Temari AI, Abebe!');
       expect(text).toContain('31,000+');
-      expect(reply_markup.inline_keyboard.length).toBe(6);
+      expect(reply_markup.inline_keyboard.length).toBe(7);
       
       // Check entrance button
       const entranceBtn = reply_markup.inline_keyboard[0][0];
@@ -339,5 +344,80 @@ describe('Telegram Bot Database Operations', () => {
     const label = await setTargetExamTrack(mockSupabase, '123456', 'freshman');
     expect(label).toBe('🏛️ University Freshman');
     expect(updateMock).toHaveBeenCalledWith({ target_exam: 'freshman' });
+  });
+
+  describe('Bot Extended Feature Helpers', () => {
+    it('returns a persistent reply keyboard for zero-friction navigation', () => {
+      const keyboard = getPersistentReplyKeyboard();
+      expect(keyboard.is_persistent).toBe(true);
+      expect(keyboard.resize_keyboard).toBe(true);
+      expect(keyboard.keyboard.length).toBe(3);
+      expect(keyboard.keyboard[0][0].text).toBe('🎯 Daily Quiz Drill');
+    });
+
+    it('generates channel join verification payload', () => {
+      const { text, reply_markup } = getChannelJoinPayload();
+      expect(text).toContain('@temari_App');
+      expect(reply_markup.inline_keyboard[0][0].url).toBe('https://t.me/temari_App');
+      expect(reply_markup.inline_keyboard[1][0].callback_data).toBe('channel:verify');
+    });
+
+    it('returns targeted single question payload for /start q_<uuid>', async () => {
+      const mockSupabase: any = {
+        from: jest.fn(() => ({
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          maybeSingle: jest.fn().mockResolvedValue({
+            data: {
+              id: 'q-target-1',
+              question: 'Target question text?',
+              option_a: 'A1',
+              option_b: 'B1',
+              option_c: 'C1',
+              option_d: 'D1',
+              subject: 'History',
+              year_ec: 2015,
+            },
+          }),
+        })),
+      };
+
+      const res = await getSingleQuestionPayload(mockSupabase, 'q-target-1');
+      expect(res.text).toContain('Targeted Question Drill');
+      expect(res.text).toContain('History (2015 E.C.)');
+      expect(res.text).toContain('Target question text?');
+      expect(res.reply_markup.inline_keyboard[0][0].callback_data).toBe('quiz:q-target-1:A');
+    });
+
+    it('records referral attribution when new user has no existing referrer', async () => {
+      const updateMock = jest.fn().mockReturnValue({
+        eq: jest.fn().mockResolvedValue({ error: null }),
+      });
+      const mockSupabase: any = {
+        from: jest.fn(() => ({
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          maybeSingle: jest.fn().mockResolvedValue({ data: { referred_by: null } }),
+          update: updateMock,
+        })),
+      };
+
+      const success = await recordReferral(mockSupabase, 'user-2', 'user-1');
+      expect(success).toBe(true);
+      expect(updateMock).toHaveBeenCalledWith({ referred_by: 'user-1' });
+    });
+
+    it('does not record referral if user refers themselves or already has referrer', async () => {
+      const mockSupabase: any = {
+        from: jest.fn(() => ({
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          maybeSingle: jest.fn().mockResolvedValue({ data: { referred_by: 'original-referrer' } }),
+        })),
+      };
+
+      expect(await recordReferral(mockSupabase, 'user-1', 'user-1')).toBe(false);
+      expect(await recordReferral(mockSupabase, 'user-2', 'user-3')).toBe(false);
+    });
   });
 });

@@ -34,6 +34,12 @@ import {
   handleQuizAnswer,
   getUpgradePayload,
   getHelpPayload,
+  getChannelJoinPayload,
+  checkChannelMembership,
+  getSingleQuestionPayload,
+  getPersistentReplyKeyboard,
+  recordReferral,
+  escapeTelegramHtml,
 } from '@/lib/telegramBot';
 
 export const runtime = 'nodejs';
@@ -80,7 +86,61 @@ export async function POST(req: NextRequest) {
         // Command: /start or /menu
         if (text.startsWith('/start') || text.startsWith('/menu')) {
           const parts = text.split(/\s+/);
-          const arg = (parts[1] || '').toLowerCase();
+          const rawArg = parts[1] || '';
+          const arg = rawArg.toLowerCase();
+
+          // 1. Referral deep-link: /start ref_<id>
+          if (arg.startsWith('ref_')) {
+            const referrerId = rawArg.slice(4).trim();
+            if (referrerId) {
+              await recordReferral(supabaseAdmin, telegramUser.id, referrerId);
+            }
+            const { text: menuText, reply_markup } = getMainMenuPayload(telegramUser.first_name || 'Scholar');
+            await sendTelegramMessage(
+              chatId,
+              `🎁 <i>Referral invite activated! Welcome to Temari.</i>\n\n` + menuText,
+              reply_markup
+            );
+            return NextResponse.json({ ok: true });
+          }
+
+          // 2. Exam track onboarding: /start track_<exam>
+          if (arg.startsWith('track_')) {
+            const track = arg.slice(6).trim();
+            if (['entrance', 'freshman', 'exit'].includes(track)) {
+              await setTargetExamTrack(supabaseAdmin, String(telegramUser.id), track as any);
+              const label =
+                track === 'entrance'
+                  ? 'Grade 12 Entrance (EUEE)'
+                  : track === 'freshman'
+                  ? 'University Freshman'
+                  : 'University Exit Exam';
+
+              await sendTelegramMessage(
+                chatId,
+                `🎯 <b>Target Exam Configured: ${label}</b>\n\nYour question bank, curriculum notes, and micro-drills have been scoped to ${label}.\n\nTap below to take your first practice drill!`,
+                {
+                  inline_keyboard: [
+                    [{ text: '🎯 Start Daily Drill (+10 XP)', callback_data: 'nav:quiz' }],
+                    [{ text: '🚀 Open Web App', web_app: { url: SITE_URL } }],
+                    [{ text: '🔙 Main Menu', callback_data: 'nav:menu' }],
+                  ],
+                }
+              );
+              return NextResponse.json({ ok: true });
+            }
+          }
+
+          // 3. Question drill deep-link: /start q_<uuid>
+          if (arg.startsWith('q_')) {
+            const questionId = rawArg.slice(2).trim();
+            const { text: qText, reply_markup } = await getSingleQuestionPayload(
+              supabaseAdmin,
+              questionId
+            );
+            await sendTelegramMessage(chatId, qText, reply_markup);
+            return NextResponse.json({ ok: true });
+          }
 
           if (arg === 'quiz') {
             const { text: quizText, reply_markup } = await getQuizPayload(supabaseAdmin, String(telegramUser.id));
@@ -95,6 +155,9 @@ export async function POST(req: NextRequest) {
           } else if (arg === 'upgrade' || arg === 'pro') {
             const { text: upText, reply_markup } = getUpgradePayload();
             await sendTelegramMessage(chatId, upText, reply_markup);
+          } else if (arg === 'channel' || arg === 'community') {
+            const { text: chText, reply_markup } = getChannelJoinPayload();
+            await sendTelegramMessage(chatId, chText, reply_markup);
           } else {
             const { text: menuText, reply_markup } = getMainMenuPayload(telegramUser.first_name || 'Scholar');
             await sendTelegramMessage(chatId, menuText, reply_markup);
@@ -102,15 +165,15 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ ok: true });
         }
 
-        // Command: /quiz (Instant Micro-Drill)
-        if (text.startsWith('/quiz')) {
+        // Command: /quiz or Persistent Reply Button
+        if (text.startsWith('/quiz') || text === '🎯 Daily Quiz Drill') {
           const { text: quizText, reply_markup } = await getQuizPayload(supabaseAdmin, String(telegramUser.id));
           await sendTelegramMessage(chatId, quizText, reply_markup);
           return NextResponse.json({ ok: true });
         }
 
-        // Command: /stats (Scholar Stats Card)
-        if (text.startsWith('/stats')) {
+        // Command: /stats or Persistent Reply Button
+        if (text.startsWith('/stats') || text === '📊 My Scholar Stats') {
           const { text: statsText, reply_markup } = await getStatsPayload(
             supabaseAdmin,
             String(telegramUser.id),
@@ -120,17 +183,51 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ ok: true });
         }
 
-        // Command: /upgrade or /pro
-        if (text.startsWith('/upgrade') || text.startsWith('/pro')) {
+        // Command: /upgrade, /pro or Persistent Reply Button
+        if (text.startsWith('/upgrade') || text.startsWith('/pro') || text === '⭐ Upgrade to PRO') {
           const { text: upText, reply_markup } = getUpgradePayload();
           await sendTelegramMessage(chatId, upText, reply_markup);
           return NextResponse.json({ ok: true });
         }
 
-        // Command: /help
-        if (text.startsWith('/help')) {
+        // Command: /channel, /community or Persistent Reply Button
+        if (text.startsWith('/channel') || text === '📢 Official Channel') {
+          const { text: chText, reply_markup } = getChannelJoinPayload();
+          await sendTelegramMessage(chatId, chText, reply_markup);
+          return NextResponse.json({ ok: true });
+        }
+
+        // Open Web App Persistent Reply Button
+        if (text === '🚀 Open Web App') {
+          await sendTelegramMessage(
+            chatId,
+            `🚀 <b>Launch Temari Web App:</b>\n\nPractice full timed exams, read chapter notes, and get AI reasoning on any browser or mobile device:\n\n👉 <a href="${SITE_URL}">${SITE_URL}</a>`,
+            {
+              inline_keyboard: [
+                [{ text: '🚀 Launch Web App', web_app: { url: SITE_URL } }],
+              ],
+            }
+          );
+          return NextResponse.json({ ok: true });
+        }
+
+        // Command: /help or Persistent Reply Button
+        if (text.startsWith('/help') || text === '📖 Help Guide') {
           const { text: helpText, reply_markup } = getHelpPayload();
           await sendTelegramMessage(chatId, helpText, reply_markup);
+          return NextResponse.json({ ok: true });
+        }
+
+        // Unrecognized free text input — Send helpful prompt with persistent reply keyboard
+        if (!text.startsWith('/')) {
+          const replyKeyboard = getPersistentReplyKeyboard();
+          await sendTelegramMessage(
+            chatId,
+            `👋 Hello <b>${escapeTelegramHtml(
+              telegramUser.first_name || 'Scholar'
+            )}</b>! Choose an option below or tap a quick action to continue your exam preparation:`,
+            replyKeyboard
+          );
           return NextResponse.json({ ok: true });
         }
       }
@@ -356,6 +453,41 @@ export async function POST(req: NextRequest) {
         const result = await handleQuizAnswer(supabaseAdmin, String(fromUser?.id), questionId, option);
         await answerCallbackQuery(callbackQuery.id, result.isCorrect ? '🎉 Correct! +10 XP' : '❌ Not quite!');
         await editTelegramMessage(chatId, messageId, result.text, result.reply_markup);
+        return NextResponse.json({ ok: true });
+      }
+
+      // 9. Navigation: Official Channel Community
+      if (data === 'nav:channel') {
+        await answerCallbackQuery(callbackQuery.id);
+        const { text, reply_markup } = getChannelJoinPayload();
+        await editTelegramMessage(chatId, messageId, text, reply_markup);
+        return NextResponse.json({ ok: true });
+      }
+
+      // 10. Action: Verify Channel Membership
+      if (data === 'channel:verify') {
+        const isMember = await checkChannelMembership(fromUser?.id || '', '@temari_App');
+        if (isMember) {
+          await answerCallbackQuery(callbackQuery.id, '🎉 Channel membership verified! Bonus unlocked.', true);
+          await editTelegramMessage(
+            chatId,
+            messageId,
+            `🎉 <b>Channel Membership Verified!</b>\n\nWelcome to the @temari_App community! Your Scholar profile is verified with community perks.\n\nReady to test your knowledge? Tap below to start today's quiz drill!`,
+            {
+              inline_keyboard: [
+                [{ text: '🎯 Launch Daily Quiz (+10 XP)', callback_data: 'nav:quiz' }],
+                [{ text: '🚀 Open Web App', web_app: { url: SITE_URL } }],
+                [{ text: '🔙 Main Menu', callback_data: 'nav:menu' }],
+              ],
+            }
+          );
+        } else {
+          await answerCallbackQuery(
+            callbackQuery.id,
+            '⚠️ Please join @temari_App first, then tap Verify!',
+            true
+          );
+        }
         return NextResponse.json({ ok: true });
       }
 
