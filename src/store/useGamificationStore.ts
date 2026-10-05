@@ -44,6 +44,7 @@ interface GamificationState {
   activeCelebration: CelebrationPayload | null;
 
   addXp: (amount: number, reason?: string) => void;
+  syncFromDb: (totalCorrect: number) => void;
   triggerCelebration: (payload: CelebrationPayload) => void;
   dismissCelebration: () => void;
   toggleSound: () => void;
@@ -52,7 +53,7 @@ interface GamificationState {
 const STORAGE_KEY = 'temari_gamification_v1';
 
 function loadPersistedState() {
-  if (typeof window === 'undefined') return { xp: 45, dailyXp: 15, dailyXpGoal: 50 };
+  if (typeof window === 'undefined') return { xp: 0, dailyXp: 0, dailyXpGoal: 50 };
   try {
     const raw = safeLocalStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -66,7 +67,7 @@ function loadPersistedState() {
       return data;
     }
   } catch {}
-  return { xp: 45, dailyXp: 15, dailyXpGoal: 50 };
+  return { xp: 0, dailyXp: 0, dailyXpGoal: 50 };
 }
 
 function persistState(xp: number, dailyXp: number, dailyXpGoal: number) {
@@ -84,11 +85,20 @@ function persistState(xp: number, dailyXp: number, dailyXpGoal: number) {
 const initial = loadPersistedState();
 
 export const useGamificationStore = create<GamificationState>((set, get) => ({
-  xp: initial.xp || 45,
-  dailyXp: initial.dailyXp || 15,
+  xp: initial.xp || 0,
+  dailyXp: initial.dailyXp || 0,
   dailyXpGoal: initial.dailyXpGoal || 50,
   soundEnabled: sounds.isEnabled(),
   activeCelebration: null,
+
+  syncFromDb: (totalCorrect: number) => {
+    const canonicalXp = totalCorrect * 10;
+    const currentXp = get().xp;
+    // Canonical DB calculation (totalCorrect * 10). If user is fresh with legacy 45 XP, overwrite.
+    const syncedXp = (totalCorrect === 0 && currentXp <= 45) ? 0 : Math.max(currentXp, canonicalXp);
+    persistState(syncedXp, get().dailyXp, get().dailyXpGoal);
+    set({ xp: syncedXp });
+  },
 
   addXp: (amount, reason) => {
     const currentXp = get().xp;

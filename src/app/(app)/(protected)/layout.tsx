@@ -23,15 +23,25 @@ export default async function ProtectedLayout({ children }: { children: React.Re
     ai_weekly_usage?: number;
     ai_quota_reset_at?: string;
   } | null = null;
+  let totalCorrect = 0;
 
   try {
     const supabase = await createClient();
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('daily_streak, last_activity_date, subscription_status, stream, target_exam, ai_weekly_usage, ai_quota_reset_at')
-      .eq('telegram_id', session.telegram_id)
-      .maybeSingle();
+    const [{ data: profile }, { data: stats }] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('daily_streak, last_activity_date, subscription_status, stream, target_exam, ai_weekly_usage, ai_quota_reset_at')
+        .eq('telegram_id', session.telegram_id)
+        .maybeSingle(),
+      supabase
+        .from('user_subject_stats')
+        .select('questions_correct')
+        .eq('telegram_id', session.telegram_id),
+    ]);
     dbProfile = profile;
+    if (stats && Array.isArray(stats)) {
+      totalCorrect = stats.reduce((acc, curr) => acc + (curr.questions_correct || 0), 0);
+    }
   } catch (err) {
     console.error('[Layout Profile Fetch Error]', err);
   }
@@ -50,7 +60,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
 
   return (
     <DashboardShell>
-      <StoreInitializer profile={formattedProfile} />
+      <StoreInitializer profile={formattedProfile} totalCorrect={totalCorrect} />
       <PWARegistry />
       {children}
     </DashboardShell>

@@ -261,8 +261,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 ### [M-25] Gamification XP Desynchronization Between Web App and Telegram Bot
 **Files:** `src/store/useGamificationStore.ts` line 55, `src/lib/telegramBot.ts` lines 311–312
 **Issue:** The Web application manages XP in client `localStorage` (defaulting to 45 XP and lost on cache clear or device switch), whereas the Telegram bot calculates XP dynamically from `user_subject_stats.questions_correct * 10`.
-**Impact:** Students see inconsistent XP totals, levels, and milestone badges between the Telegram bot and the Web App.
-**Fix:** Synchronize initial Web gamification XP from the user's aggregate `user_subject_stats` or profile record during session initialization.
+**Fix:** Synchronized Web gamification XP with `user_subject_stats` by querying aggregate `questions_correct` in `ProtectedLayout`, passing it through `StoreInitializer` into `useGamificationStore.syncFromDb(totalCorrect)` (which calculates canonical XP via `totalCorrect * 10`, resetting arbitrary default values).
 
 ### [M-26] Unbounded Text Input on POST /api/highlights (Storage Bomb)
 **File:** `src/app/api/highlights/route.ts` line 71
@@ -500,7 +499,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] M-22  Add timeout and max retry ceiling to UpgradeFlow.tsx payment status polling loop
 [x] M-23  Add in-flight mutex / isSyncing guard to offlineSync.ts to prevent duplicate submissions
 [x] M-24  Cache getEntranceYearCounts in practice.ts with unstable_cache to eliminate 9 parallel HEAD queries
-[ ] M-25  Synchronize gamification XP between Web app (localStorage) and Telegram Bot (user_subject_stats)
+[x] M-25  Synchronize gamification XP between Web app (localStorage) and Telegram Bot (user_subject_stats)
 [ ] M-26  Add Zod string length constraint (.max(2000)) on POST /api/highlights text payload
 [ ] M-27  Persist phone_number from Telegram OIDC id_token to profiles table during upsert
 
