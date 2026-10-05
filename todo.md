@@ -623,12 +623,13 @@ Require all admin accounts to update password; remove plaintext comparison branc
 
 ---
 
-### [P-07] Subdomain Landing Pages: Historical Exam Statistics & Visual Storyboard
-**Files:** `src/components/marketing/LandingPage.tsx`, `src/components/marketing/ExamLandingHero.tsx`, marketing charts
+### [P-07] Subdomain Landing Pages: Historical Exam Statistics, Storyboard & Mobile UI Mockups
+**Files:** `src/components/marketing/LandingPage.tsx`, `src/components/marketing/ExamLandingHero.tsx`, `src/components/marketing/MobileDeviceMockup.tsx`, marketing charts
 
 **Current State & Audit Findings:**
 - Subdomain landing pages (`entrance.temari.top`, `freshman.temari.top`, `exit.temari.top`) currently feature hero text, subject pills, and key stats counters (15,000+ questions, matric badges).
-- They lack dramatic contextual data, historical exam pass/fail rates, and visual storytelling that highlights the high-stakes reality of Ethiopian national exams.
+- They lack dramatic contextual data, historical exam pass/fail rates, and visual storytelling highlighting the high-stakes reality of Ethiopian national exams.
+- They lack real in-app visual previews, leaving prospective students to guess what the actual study experience looks like before creating an account.
 
 **Action Items & Implementation Roadmap:**
 - [ ] `[MKT-01]` Add an interactive **National Exam Statistics & Reality Check** section for `entrance.temari.top`:
@@ -639,6 +640,13 @@ Require all admin accounts to update password; remove plaintext comparison branc
 - [ ] `[MKT-03]` Add **National Exit Exam Benchmark Storyboard** for `exit.temari.top`:
   - MoE department passing requirements, question bank coverage by discipline, and graduation qualification benchmarks.
 - [ ] `[MKT-04]` Create reusable responsive charts/infographics (SVG / CSS bar meters) optimized for low-bandwidth mobile devices.
+- [ ] `[MKT-05]` Add **Mobile-Framed In-App Product Screenshots & Interactive Preview**:
+  - Build a responsive CSS/SVG mobile device mockup (`MobileDeviceMockup.tsx`) with realistic bezel, status bar, and dynamic shadow.
+  - Tailor high-fidelity in-app screen previews for each subdomain:
+    - **`entrance.temari.top`**: Mobile frame displaying a Grade 12 EUEE exam question with KaTeX math formula rendering, timer, option select, and AI Tutor explanation drawer.
+    - **`freshman.temari.top`**: Mobile frame displaying Freshman course notes, Applied Math formulas, and chapter mastery progression.
+    - **`exit.temari.top`**: Mobile frame displaying MoE Exit Exam timed mock simulation with department benchmark scoring.
+  - Add interactive micro-interactions (e.g. tapping an option in the mockup triggers an answer reveal or opens a sample AI explanation).
 
 ---
 
