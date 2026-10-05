@@ -91,7 +91,7 @@ The options must be highly plausible to challenge the student. Ensure the correc
 
       try {
         const google = createGoogleGenerativeAI({ apiKey: geminiKey });
-        const model = google('gemini-1.5-flash');
+        const model = google(process.env.GEMINI_MODEL || 'gemini-3.8-flash');
 
         const { object } = await generateObject({
           model,
@@ -119,7 +119,7 @@ The options must be highly plausible to challenge the student. Ensure the correc
         return NextResponse.json({ success: true, quiz: object.questions });
 
       } catch (err: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
-        if (err?.message?.includes('429') || err?.message?.includes('quota')) {
+        if (err?.message?.includes('429') || err?.message?.includes('quota') || err?.message?.includes('RESOURCE_EXHAUSTED')) {
           markKeyRateLimited(geminiKey);
           attempt++;
           continue; 

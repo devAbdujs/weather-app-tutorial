@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
       uploadUri = uploadRes.file.uri;
       fileResourceName = uploadRes.file.name;
 
-      const model = ai.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = ai.getGenerativeModel({ model: process.env.GEMINI_MODEL || 'gemini-3.8-flash' });
 
       const prompt = `
 You are an expert curriculum summarizer and university tutor for Ethiopian students.
@@ -148,7 +148,7 @@ Return the response strictly as a JSON object with this exact structure:
       });
 
     } catch (err: any) {
-      if (err.status === 429) {
+      if (err.status === 429 || err?.message?.includes('429') || err?.message?.includes('RESOURCE_EXHAUSTED')) {
         markKeyRateLimited(geminiKey);
       }
       throw err;

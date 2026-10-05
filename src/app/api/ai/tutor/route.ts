@@ -279,18 +279,35 @@ export async function POST(req: NextRequest) {
       ? cleanedHistory 
       : [{ role: 'user' as const, content: defaultUserPrompt }];
 
+    const rollbackQuotaIfApplied = async () => {
+      if (atomicQuotaApplied) {
+        try {
+          await supabaseAdmin
+            .from('profiles')
+            .update({
+              ai_weekly_usage: Math.max(0, currentUsage - 1),
+              updated_at: new Date().toISOString()
+            })
+            .eq('telegram_id', session.telegram_id);
+        } catch (rollbackErr) {
+          console.error('[AI Quota Rollback Error]', rollbackErr);
+        }
+      }
+    };
+
     let attempt = 0;
     const maxRetries = Math.min(3, getKeyCount());
 
     while (attempt < maxRetries) {
       const geminiKey = getNextGeminiKey();
       if (!geminiKey) {
+        await rollbackQuotaIfApplied();
         return new Response(JSON.stringify({ error: 'No API keys available.' }), { status: 503 });
       }
 
       try {
         const google = createGoogleGenerativeAI({ apiKey: geminiKey });
-        const model = google('gemini-1.5-flash');
+        const model = google(process.env.GEMINI_MODEL || 'gemini-3.8-flash');
 
         const stream = await streamText({
           model,
@@ -330,7 +347,7 @@ export async function POST(req: NextRequest) {
 
         return stream.toTextStreamResponse();
       } catch (err: unknown) {
-        if ((err as Error)?.message?.includes('429') || (err as Error)?.message?.includes('quota') || (err as Error)?.message?.includes('404')) {
+        if ((err as Error)?.message?.includes('429') || (err as Error)?.message?.includes('quota') || (err as Error)?.message?.includes('RESOURCE_EXHAUSTED')) {
           markKeyRateLimited(geminiKey);
           attempt++;
           continue; 
@@ -339,6 +356,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    await rollbackQuotaIfApplied();
     return new Response(JSON.stringify({ error: 'All API keys are currently rate-limited. Try again in a minute.' }), { status: 429 });
 
   } catch (err: unknown) {

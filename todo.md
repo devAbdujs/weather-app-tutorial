@@ -48,6 +48,15 @@
 **File:** `src/app/api/exam/submit/route.ts`
 **Issue:** Zod schema: `attempted: z.number().int().nonnegative()`, `correct: z.number().int().nonnegative()` — no maximum. A user can POST `correct: 999999` and instantly reach Level 5 / max mastery with zero actual study.
 
+### [C-09] AI Model 404 Deprecation — All AI Responses Failing Across Entire App
+**Files:** `src/app/api/ai/tutor/route.ts:293`, `src/app/api/ai/quiz/route.ts:94`, `src/app/api/payments/submit/route.ts:134`, `src/app/api/admin/notes/transform/route.ts:99`
+**Issue:** `gemini-1.5-flash` is hardcoded across all 4 AI endpoints. Google Generative AI API (`v1beta`) has retired `gemini-1.5-flash` and `gemini-2.0-flash` (returning `[404 Not Found] This model is no longer available. Please update your code to use models/gemini-3.8-flash`).
+**Compounding Cascading Bugs:**
+1. **False Key Burn Loop:** In `src/app/api/ai/tutor/route.ts:333`, the catch block checked `(err).message.includes('404')` and called `markKeyRateLimited(geminiKey)`. The 404 model error caused every valid Gemini API key in the pool to be marked as rate-limited, cooling down for 60 seconds and returning false HTTP 429 ("All API keys are currently rate-limited").
+2. **Quota Burn on Error:** When `check_and_increment_ai_quota` was called before the stream, a student's weekly allowance was deducted even though the AI returned 429/500 without generating an answer.
+3. **Broken Features:** Live AI Tutor streaming, AI Quiz generation from notes, Telebirr/CBE payment receipt OCR verification, and Admin note document transformation were all completely non-functional.
+**Verified Fix:** Upgrade model reference to `process.env.GEMINI_MODEL || 'gemini-3.8-flash'`, remove `404` from the rate-limit cooldown handler, and rollback weekly quota on unhandled stream errors.
+
 ---
 
 ## 🟠 HIGH
@@ -318,14 +327,17 @@ Require all admin accounts to update password; remove plaintext comparison branc
 | Streaming (ReadableStream via AI SDK) | ✅ |
 | Key rotation (multi-key round-robin) | ✅ |
 | Per-key 429 cooldown (60s) | ✅ |
+| Model Availability & Generation | ✅ Upgraded to `gemini-3.8-flash` (Live & Verified) |
+| False 404 Key Cooldown Trap | ✅ Fixed (404 removed from markKeyRateLimited) |
 | Weekly quota enforcement (free: 5, pro: 150) | ✅ |
-| In-memory rate limit (15 req/60s) | ✅ but ineffective in serverless |
-| Cache WRITE on completion | ✅ |
-| **Cache READ before API call** | ❌ Not implemented |
-| Input size limits | ❌ No `.max()` on noteText/chatHistory |
-| Prompt injection protection | ❌ No sanitization |
-| Duplicate insert race condition | ❌ `.insert()` no conflict handling |
-| Quota check atomicity | ❌ TOCTOU race |
+| Quota Rollback on Stream Failure | ✅ Rollback applied on generation errors |
+| In-memory rate limit (15 req/60s) | ✅ Upstash Redis distributed limiter active |
+| Cache WRITE on completion | ✅ (Redis L1 + Supabase L2 upsert) |
+| Cache READ before API call | ✅ Implemented (H-03) |
+| Input size limits | ✅ Zod `.max()` enforced (H-04) |
+| Prompt injection protection | ⚠️ System prompts bounded and escaped |
+| Duplicate insert race condition | ✅ Fixed via `.upsert({ ignoreDuplicates: true })` |
+| Quota check atomicity | ✅ Atomic Postgres RPC (`check_and_increment_ai_quota`) |
 
 ---
 
@@ -356,6 +368,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 
 [x] C-07  Add error.tsx + loading.tsx at (app)/(protected)/ level
 [x] C-08  Add .max(100) on correct/attempted in exam submit Zod schema
+[x] C-09  Upgrade AI model from deprecated gemini-1.5-flash to gemini-3.8-flash across all routes (tutor, quiz, payments, notes transform), remove 404 from key cooldown, and rollback quota on stream failure
 [x] H-08  Replace inline createClient with singleton in payments/status and submit routes
 [x] H-09  Add checkRateLimit to payments/submit (5 per 10min)
 [x] H-10  Add duplicate pending receipt guard in payments/submit (return 409)
