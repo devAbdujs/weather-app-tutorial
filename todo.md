@@ -90,7 +90,7 @@
 
 ### [H-06] In-Memory Rate Limiter Is Bypassed in Multi-Instance Serverless Deployments
 **File:** `src/lib/rateLimiter.ts`
-**Issue:** Module-level `Map` — per-instance, not shared. Every new Vercel function instance has a clean slate. OTP brute force, AI spam, and other rate-limited endpoints are only protected per-instance.
+**Issue:** Module-level `Map` — per-instance, not shared. Every new Vercel function instance has a clean slate. Auth brute force, AI spam, and other rate-limited endpoints are only protected per-instance.
 **Impact:** On a busy deployment with 5 concurrent instances, effective rate limit is 5× the configured value.
 
 ### [H-07] Client-Supplied `redirect_uri` Passed to OAuth Token Exchange
@@ -156,12 +156,6 @@
 **Issue:** Zero request throttling or rate limiting on both primary authentication endpoints.
 **Impact:** Automated bots and malicious actors can flood Telegram HMAC/OIDC token exchanges, execute brute-force signature searches, and spam Supabase profile upserts with minimal latency cost.
 **Fix:** Enforce IP-based rate limiting via Upstash Redis (`checkRateLimit('auth-session:${ip}', 10, 60_000)` and `checkRateLimit('auth-oidc:${ip}', 10, 60_000)`).
-
-### [H-20] TOCTOU Race Condition in POST /api/auth/verify-otp
-**File:** `src/app/api/auth/verify-otp/route.ts` lines 28–41
-**Issue:** Code verification performs a two-step `SELECT` followed by `UPDATE ({ used: true })`. Two concurrent requests submitting the same code simultaneously can both read `used: false` before either executes the update.
-**Impact:** A single one-time passcode can be consumed multiple times to authenticate multiple sessions concurrently.
-**Fix:** Convert to an atomic single-statement query: `UPDATE otp_codes SET used = true WHERE code = $code AND used = false AND expires_at > now() RETURNING *`.
 
 ---
 
@@ -331,11 +325,11 @@ Require all admin accounts to update password; remove plaintext comparison branc
 **File:** `src/app/(app)/auth/callback/page.tsx`
 **Issue:** OAuth callback handled client-side. Tokens briefly visible in browser JS context. Should be a server component using `searchParams`.
 
-### [L-11] Orphaned OTP Verification Flow & Missing Telegram Bot /code Command
-**Files:** `src/app/api/auth/verify-otp/route.ts`, `src/lib/telegramBot.ts`
-**Issue:** The route `POST /api/auth/verify-otp` and database table `otp_codes` exist in the codebase, but no Web UI component calls it and Telegram bot lacks a `/code` command to generate login passcodes.
-**Impact:** Orphaned attack surface and dead code.
-**Fix:** Either implement a `/code` command in the Telegram bot with a desktop OTP login dialog, or remove/deprecate the unused endpoint and table.
+### [L-11] Purge Deprecated OTP Route (POST /api/auth/verify-otp) and Drop Legacy otp_codes Table
+**Files:** `src/app/api/auth/verify-otp/route.ts`, Supabase database schema
+**Issue:** Temari authenticates users strictly via Telegram (Telegram Mini App `initData`, Telegram Login Widget `webData`, and Telegram OIDC). Direct phone auth is disabled, and SMS/OTP verification is completely unnecessary. The endpoint `POST /api/auth/verify-otp` and database table `otp_codes` are obsolete dead code and unnecessary attack surface.
+**Impact:** Dead routes and unused database schema cluttering the project.
+**Fix:** Delete `src/app/api/auth/verify-otp/route.ts` and drop table `otp_codes` from the database schema.
 
 ### [L-12] Superadmin Account Management Lacks Delete/Deactivate Admin Server Action
 **Files:** `src/app/actions/admin.ts` lines 220–251, `src/app/admin/managers/page.tsx`
@@ -358,7 +352,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 | D-07 | RLS lockdown migration | `supabase/migrations/20260924150000_rls_lockdown.sql` | ✅ Executed & Live in Prod |
 | D-08 | Payment + Gemini columns | `supabase/migrations/20260926_payment_gemini_columns.sql` | ✅ Executed & Live in Prod |
 | D-09 | `idx_payment_receipts_user_date` | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
-| D-10 | `idx_otp_codes_lookup` | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
+| D-10 | Drop deprecated `otp_codes` table & index | Supabase migration cleanup | ⏳ Pending cleanup (OTP removed in favor of Telegram Login Widget) |
 | D-11 | RLS on `user_pins` table | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
 | D-12 | Make `receipts` storage bucket private | Supabase dashboard setting | ✅ Completed (Private bucket) |
 | D-13 | `check_and_increment_ai_quota` RPC | `supabase/migrations/20261004140000_atomic_ai_quota_rpc.sql` | ✅ Executed & Live in Prod |
@@ -444,7 +438,6 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [ ] C-10  Lock down PostgREST RLS on study_notes: replace public SELECT with premium/authenticated check (or gate content via protected route)
 [ ] H-18  Telegram initData: enforce auth_date freshness check (24h) and use crypto.timingSafeEqual()
 [ ] H-19  Add distributed rate-limiting to auth/session and auth/oidc endpoints
-[ ] H-20  Fix TOCTOU race condition in api/auth/verify-otp with atomic UPDATE ... RETURNING
 
 ════════════════════════════════════════
   CRITICAL APP FIXES
@@ -468,7 +461,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] D-04  Run supabase_performance_indexes.sql (all performance indexes) (Executed & Live in Prod)
 [x] D-05  Run performance_indexes.sql (study_notes, user_pins, saved_mistakes) (Executed & Live in Prod)
 [x] D-09  CREATE INDEX idx_payment_receipts_user_date ON payment_receipts(telegram_id, created_at DESC) (Executed & Live in Prod)
-[x] D-10  CREATE INDEX idx_otp_codes_lookup ON otp_codes(code) (Executed & Live in Prod)
+[ ] D-10  Drop legacy otp_codes table and index (OTP deprecated — Telegram Widget & Mini App used)
 [x] D-11  Confirm + add RLS on user_pins table (Executed & Live in Prod)
 [x] D-12  Make receipts storage bucket private in Supabase dashboard (Completed)
 [ ] D-14  Lock down study_notes RLS policy (remove public SELECT on content)
@@ -530,7 +523,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] L-08  Skip Telegram SDK load on /admin/* routes
 [x] L-09  Remove console.log from production routes (0 console.log calls in src/)
 [x] L-10  PKCE auth callback with secure state & verifier verification
-[ ] L-11  Wire up or clean up orphaned OTP verification flow & add Telegram Bot /code command
+[ ] L-11  Delete deprecated api/auth/verify-otp route and drop legacy otp_codes table
 [ ] L-12  Add delete/deactivate admin Server Action and UI in superadmin managers panel
 ```
 
