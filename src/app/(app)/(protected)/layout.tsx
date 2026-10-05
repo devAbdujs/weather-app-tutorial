@@ -16,6 +16,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
 
   let dbProfile: {
     daily_streak?: number;
+    last_activity_date?: string | null;
     subscription_status?: string;
     stream?: string;
     target_exam?: string | null;
@@ -27,7 +28,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
     const supabase = await createClient();
     const { data: profile } = await supabase
       .from('profiles')
-      .select('daily_streak, subscription_status, stream, target_exam, ai_weekly_usage, ai_quota_reset_at')
+      .select('daily_streak, last_activity_date, subscription_status, stream, target_exam, ai_weekly_usage, ai_quota_reset_at')
       .eq('telegram_id', session.telegram_id)
       .maybeSingle();
     dbProfile = profile;
@@ -41,6 +42,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
     target_exam: dbProfile?.target_exam || session.target_exam || null,
     stream: dbProfile?.stream || session.stream || '',
     daily_streak: dbProfile?.daily_streak ?? 0,
+    last_activity_date: dbProfile?.last_activity_date || null,
     subscription_status: dbProfile?.subscription_status || 'free',
     ai_weekly_usage: dbProfile?.ai_weekly_usage ?? 0,
     ai_quota_reset_at: dbProfile?.ai_quota_reset_at || undefined,

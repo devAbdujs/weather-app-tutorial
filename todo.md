@@ -241,8 +241,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 ### [M-21] last_activity_date Missing from ProtectedLayout SSR Query — Redundant Streak Writes on HomeHub
 **Files:** `src/app/(app)/(protected)/layout.tsx` lines 30, 38–47, `src/components/dashboard/HomeHub.tsx` lines 63–64
 **Issue:** `layout.tsx` omits `last_activity_date` from the Supabase profile select query and does not forward it into `formattedProfile`. Consequently, `userProfile.last_activity_date` in the client Zustand store is `undefined` on initial load.
-**Impact:** On every initial page load or browser refresh of `/dashboard` (HomeHub), `lastActivity !== todayISO` evaluates to `true`, triggering an unnecessary `updateDailyStreak()` mutation and database round-trip even when the student has already recorded activity today.
-**Fix:** Add `last_activity_date` to `layout.tsx` profile query and map it into `formattedProfile` for `StoreInitializer`.
+**Fix:** Added `last_activity_date` to `src/app/(app)/(protected)/layout.tsx` profile query and forwarded it into `formattedProfile`, properly hydrating `useAppStore` during SSR and preventing redundant client streak writes.
 
 ### [M-22] Unbounded Polling Loop in UpgradeFlow.tsx When Awaiting Payment Approval
 **File:** `src/components/upgrade/UpgradeFlow.tsx` lines 120–160
@@ -500,7 +499,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] M-17  Force admin password migration (auto-migrates on login + constant-time comparison)
 [x] M-19  Audit and fix PWA manifest icon paths (synced manifest.json with public/icons/)
 [x] M-20  Persist completed session stats to DB (user_subject_stats atomic RPC)
-[ ] M-21  Add last_activity_date to ProtectedLayout SSR query to prevent redundant streak writes on HomeHub
+[x] M-21  Add last_activity_date to ProtectedLayout SSR query to prevent redundant streak writes on HomeHub
 [ ] M-22  Add timeout and max retry ceiling to UpgradeFlow.tsx payment status polling loop
 [ ] M-23  Add in-flight mutex / isSyncing guard to offlineSync.ts to prevent duplicate submissions
 [ ] M-24  Cache getEntranceYearCounts in practice.ts with unstable_cache to eliminate 9 parallel HEAD queries
