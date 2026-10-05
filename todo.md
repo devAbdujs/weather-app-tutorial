@@ -695,9 +695,9 @@ Require all admin accounts to update password; remove plaintext comparison branc
 - Free users can read the entire curriculum notes without upgrading to Premium.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[NOTE-01]` Update `src/app/api/notes/content/route.ts` to verify `profile.subscription_status === 'premium'`. For free users, return only a teaser paragraph / summary excerpt with `is_locked: true` and 403 status.
-- [ ] `[NOTE-02]` Update `src/components/dashboard/StudyNotesView.tsx` with a blurred teaser view, locked badge icons on chapter cards, and a prominent "Upgrade to Premium to Unlock Complete Notes & AI Quizzes" modal.
-- [ ] `[NOTE-03]` Pass `isPremium` from server component in `src/app/(app)/(protected)/notes/[subject]/page.tsx` down to `StudyNotesView` to avoid client-side auth flash.
+- [x] `[NOTE-01]` Update `src/app/api/notes/content/route.ts` to verify `profile.subscription_status === 'premium'`. For free users, return only a teaser paragraph / summary excerpt with `is_locked: true` and 403 status.
+- [x] `[NOTE-02]` Update `src/components/dashboard/StudyNotesView.tsx` with a blurred teaser view, locked badge icons on chapter cards, and a prominent "Upgrade to Premium to Unlock Complete Notes & AI Quizzes" modal.
+- [x] `[NOTE-03]` Pass `isPremium` from server component in `src/app/(app)/(protected)/notes/[subject]/page.tsx` down to `StudyNotesView` to avoid client-side auth flash.
 
 ---
 

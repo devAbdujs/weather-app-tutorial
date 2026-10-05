@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
-import { Clock, Sparkles, List, ChevronRight, ChevronLeft, Layers, Trash2, X, PenLine, Zap } from 'lucide-react';
+import { Clock, Sparkles, List, ChevronRight, ChevronLeft, Layers, Trash2, X, PenLine, Zap, Lock } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { StudyNote, NoteHighlight, HighlightColor } from '@/types';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,7 @@ import { getSubjectTheme } from '@/components/practice/PracticeHub';
 import { sounds } from '@/lib/sounds';
 import { safeLocalStorage } from '@/lib/safeStorage';
 import { useGamificationStore } from '@/store/useGamificationStore';
+import { useAppStore } from '@/store/useAppStore';
 import { MascotBubble } from '@/components/mascot/TemariMascot';
 
 const HIGHLIGHT_PALETTE: {
@@ -33,6 +34,7 @@ interface StudyNotesViewProps {
   subject: string;
   examType: string;
   initialNotes: StudyNote[];
+  isPremium?: boolean;
 }
 
 // Maps subject names to emoji for visual identity on chapter cards
@@ -101,10 +103,18 @@ const computePopupCoords = (rect: DOMRect) => {
   return { top, left };
 };
 
-export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examType, initialNotes }) => {
+export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ 
+  subject, 
+  examType, 
+  initialNotes,
+  isPremium: isPremiumProp 
+}) => {
   const router = useRouter();
   const { user, haptic, setBackButton } = useTelegram();
+  const userProfile = useAppStore((state) => state.userProfile);
+  const isPremium = isPremiumProp ?? (userProfile?.subscription_status === 'premium');
   const [selectedNote, setSelectedNote] = useState<StudyNote | null>(null);
+  const [isNoteLocked, setIsNoteLocked] = useState(false);
   const [isContentLoading, setIsContentLoading] = useState(false);
   const [showTutor, setShowTutor] = useState(false);
   const [tutorExcerpt, setTutorExcerpt] = useState('');
@@ -151,6 +161,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
 
   const handleBackFromNote = useCallback(() => {
     setSelectedNote(null);
+    setIsNoteLocked(false);
     setShowTutor(false);
     setTutorExcerpt('');
     selectedTextRef.current = '';
@@ -187,8 +198,16 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         const res = await fetch(`/api/notes/content?id=${encodeURIComponent(selectedNote.id)}`, {
           cache: 'force-cache',
         });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 403 || data?.is_locked) {
+          setIsNoteLocked(true);
+          if (!cancelled && data?.content) {
+            setSelectedNote(prev => prev ? { ...prev, content: data.content } : null);
+          }
+          return;
+        }
         if (!res.ok) return;
-        const data = await res.json();
+        setIsNoteLocked(false);
         if (!cancelled && data?.content) {
           // Patch the note object in the chapter list too so re-opens are instant
           setSelectedNote(prev => prev ? { ...prev, content: data.content } : null);
@@ -834,13 +853,44 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                 </div>
               </div>
             ) : (
-              <MarkdownRenderer 
-                content={selectedNote.content || ''} 
-                accentBg={accentBg} 
-                accentText={accentText}
-                highlights={highlights}
-                onHighlightClick={handleHighlightClick}
-              />
+              <>
+                <div className={isNoteLocked ? 'relative select-none pointer-events-none filter blur-[0.5px]' : ''}>
+                  <MarkdownRenderer 
+                    content={selectedNote.content || ''} 
+                    accentBg={accentBg} 
+                    accentText={accentText}
+                    highlights={highlights}
+                    onHighlightClick={handleHighlightClick}
+                  />
+                </div>
+
+                {isNoteLocked && (
+                  <div className="mt-6 mx-2 p-6 rounded-card border border-amber-500/30 bg-gradient-to-b from-amber-500/10 via-card to-card text-center shadow-lg animate-fade-in relative z-10">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-amber-500/20 to-amber-500/5 text-amber-500 flex items-center justify-center mx-auto mb-3.5 border border-amber-500/30 shadow-inner">
+                      <Lock className="w-7 h-7" />
+                    </div>
+                    <span className="inline-block text-micro font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 bg-amber-500/15 px-2.5 py-0.5 rounded-full mb-2">
+                      Temari Premium
+                    </span>
+                    <h3 className="text-base font-black text-foreground mb-1.5">
+                      Unlock Complete Study Notes & AI Quizzes
+                    </h3>
+                    <p className="text-xs font-semibold text-muted-foreground max-w-xs mx-auto mb-5 leading-relaxed">
+                      Upgrade to unlock complete chapter summaries, high-yield cheat sheets, and AI Tutor drill sessions for {selectedNote.department}.
+                    </p>
+                    <button
+                      onClick={() => {
+                        sounds.playCelebration();
+                        router.push('/upgrade');
+                      }}
+                      className="w-full max-w-xs mx-auto h-12 rounded-btn font-black text-xs flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-tactile-sm active:scale-[0.98] transition-all"
+                    >
+                      <Zap className="w-4 h-4 fill-current" />
+                      Upgrade to Unlock — 99 ETB / mo
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -848,11 +898,28 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
         {/* Footer Action Bar */}
         <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-ground/90 backdrop-blur-xl border-t border-black/[0.06] dark:border-white/[0.08] p-3.5 z-30 flex gap-2.5 pb-safe">
           <button
-            onClick={() => { sounds.playTap(); haptic.impact('light'); setShowTutor(true); }}
+            onClick={() => { 
+              sounds.playTap(); 
+              haptic.impact('light'); 
+              if (isNoteLocked || !isPremium) {
+                router.push('/upgrade');
+              } else {
+                setShowTutor(true); 
+              }
+            }}
             className="btn-3d-card flex-1 h-12 rounded-card-sm font-black text-xs flex items-center justify-center gap-2 text-foreground"
           >
-            <Sparkles className="w-4 h-4 text-accent-gold" />
-            Ask AI Tutor
+            {isNoteLocked || !isPremium ? (
+              <>
+                <Lock className="w-4 h-4 text-amber-500" />
+                Unlock AI Tutor
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 text-accent-gold" />
+                Ask AI Tutor
+              </>
+            )}
           </button>
           <button
             onClick={() => { sounds.playTap(); handleBackFromNote(); }}
@@ -962,7 +1029,9 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                 onClick={() => {
                   sounds.playTap();
                   haptic.selection();
-                  useGamificationStore.getState().addXp(15, 'Read Study Note');
+                  if (isPremium) {
+                    useGamificationStore.getState().addXp(15, 'Read Study Note');
+                  }
                   setSelectedNote(note);
                 }}
                 className="w-full bg-card rounded-card-lg border border-black/[0.08] dark:border-white/[0.08] border-b-bevel border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-primary/40 active:translate-y-[1px] shadow-sm transition-all text-left group overflow-hidden animate-fade-up"
@@ -988,10 +1057,17 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({ subject, examTyp
                   </div>
 
                   <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="inline-flex items-center gap-0.5 text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
-                      <Zap className="w-2.5 h-2.5 fill-current" />
-                      +15 XP
-                    </span>
+                    {!isPremium ? (
+                      <span className="inline-flex items-center gap-1 text-micro font-black px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                        <Lock className="w-2.5 h-2.5" />
+                        PRO
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-0.5 text-micro font-black px-2 py-0.5 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30">
+                        <Zap className="w-2.5 h-2.5 fill-current" />
+                        +15 XP
+                      </span>
+                    )}
                     <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                   </div>
                 </div>

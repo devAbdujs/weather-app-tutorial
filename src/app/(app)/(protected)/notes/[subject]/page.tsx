@@ -23,9 +23,11 @@ export default async function NotesPage({
   const supabase = await createClient();
   const { data: profile } = await supabase
     .from('profiles')
-    .select('target_exam, stream')
+    .select('target_exam, stream, subscription_status')
     .eq('telegram_id', session.telegram_id)
     .maybeSingle();
+
+  const isPremium = profile?.subscription_status === 'premium';
     
   // Use URL param if valid, otherwise fall back to profile (prevents manual URL tampering)
   const validExamTypes = ['entrance', 'freshman', 'exit'];
@@ -120,6 +122,7 @@ export default async function NotesPage({
       subject={subject} 
       examType={examType} 
       initialNotes={notes || []} 
+      isPremium={isPremium}
     />
   );
 }
