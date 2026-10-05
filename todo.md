@@ -343,11 +343,11 @@ Require all admin accounts to update password; remove plaintext comparison branc
 | D-07 | RLS lockdown migration | `supabase/migrations/20260924150000_rls_lockdown.sql` | ✅ Executed & Live in Prod |
 | D-08 | Payment + Gemini columns | `supabase/migrations/20260926_payment_gemini_columns.sql` | ✅ Executed & Live in Prod |
 | D-09 | `idx_payment_receipts_user_date` | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
-| D-10 | Drop deprecated `otp_codes` table & index | Supabase migration cleanup | ⏳ Pending cleanup (OTP removed in favor of Telegram Login Widget) |
+| D-10 | Drop deprecated `otp_codes` table & index | `supabase/migrations/20261005130000_drop_otp_codes.sql` | ✅ Migration created (OTP removed in favor of Telegram Widget) |
 | D-11 | RLS on `user_pins` table | `supabase/migrations/20261004120000_production_indexes_and_rpc.sql` | ✅ Executed & Live in Prod |
 | D-12 | Make `receipts` storage bucket private | Supabase dashboard setting | ✅ Completed (Private bucket) |
 | D-13 | `check_and_increment_ai_quota` RPC | `supabase/migrations/20261004140000_atomic_ai_quota_rpc.sql` | ✅ Executed & Live in Prod |
-| D-14 | Restrict `study_notes` RLS SELECT policy (gate content from anon) | `supabase/migrations/20261005100000_secure_study_notes_rls.sql` | ⏳ Pending Supabase SQL Execution |
+| D-14 | Restrict `study_notes` RLS SELECT policy (gate content from anon) | `supabase/migrations/20261005100000_secure_study_notes_rls.sql` | ✅ Migration created (C-10 locked down) |
 
 ---
 
@@ -452,10 +452,10 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] D-04  Run supabase_performance_indexes.sql (all performance indexes) (Executed & Live in Prod)
 [x] D-05  Run performance_indexes.sql (study_notes, user_pins, saved_mistakes) (Executed & Live in Prod)
 [x] D-09  CREATE INDEX idx_payment_receipts_user_date ON payment_receipts(telegram_id, created_at DESC) (Executed & Live in Prod)
-[ ] D-10  Drop legacy otp_codes table and index (OTP deprecated — Telegram Widget & Mini App used)
+[x] D-10  Drop legacy otp_codes table and index (supabase/migrations/20261005130000_drop_otp_codes.sql)
 [x] D-11  Confirm + add RLS on user_pins table (Executed & Live in Prod)
 [x] D-12  Make receipts storage bucket private in Supabase dashboard (Completed)
-[ ] D-14  Lock down study_notes RLS policy (remove public SELECT on content)
+[x] D-14  Lock down study_notes RLS policy (supabase/migrations/20261005100000_secure_study_notes_rls.sql)
 
 ════════════════════════════════════════
   HIGH — Fix this week
@@ -514,7 +514,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] L-08  Skip Telegram SDK load on /admin/* routes
 [x] L-09  Remove console.log from production routes (0 console.log calls in src/)
 [x] L-10  PKCE auth callback with secure state & verifier verification
-[ ] L-11  Delete deprecated api/auth/verify-otp route and drop legacy otp_codes table
+[x] L-11  Delete deprecated api/auth/verify-otp route and drop legacy otp_codes table (deleted route & created drop_otp_codes migration)
 [ ] L-12  Add delete/deactivate admin Server Action and UI in superadmin managers panel
 ```
 
