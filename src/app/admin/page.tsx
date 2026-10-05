@@ -23,8 +23,8 @@ export default async function AdminDashboard() {
   return (
     <div>
       <header className="mb-8">
-        <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Overview Dashboard</h1>
-        <p className="text-gray-700 dark:text-gray-300 font-bold mt-1">Welcome back. Here is what is happening across the platform.</p>
+        <h1 className="text-3xl font-black text-foreground tracking-tight">Overview Dashboard</h1>
+        <p className="text-muted-foreground font-bold mt-1">Welcome back. Here is what is happening across the platform.</p>
       </header>
 
       {error && (

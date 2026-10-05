@@ -65,6 +65,15 @@
   /* Neutral shadow tokens */
   --shadow-sm:     0 1px 2px hsla(24, 15%, 15%, 0.05);
   --shadow-md:     0 4px 12px hsla(24, 15%, 15%, 0.07);
+
+  /* Telegram Client Theme Mapping Defaults (Light) */
+  --tg-theme-bg-color: var(--background);
+  --tg-theme-secondary-bg-color: var(--surface-2);
+  --tg-theme-text-color: var(--foreground);
+  --tg-theme-hint-color: var(--text-secondary);
+  --tg-theme-link-color: var(--primary);
+  --tg-theme-button-color: var(--primary);
+  --tg-theme-button-text-color: var(--primary-foreground);
 }
 
 .dark {

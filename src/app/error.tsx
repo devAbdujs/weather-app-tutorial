@@ -46,18 +46,18 @@ export default function ErrorBoundary({
           <AlertTriangle className="w-7 h-7 text-red-500" />
         </div>
 
-        <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight mb-2">
+        <h2 className="text-xl font-black text-foreground tracking-tight mb-2">
           Something went wrong
         </h2>
 
-        <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+        <p className="text-xs font-semibold text-muted-foreground mb-4 leading-relaxed">
           {error?.message && error.message !== 'An error occurred in the Server Components render. The specific message is omitted in production builds to avoid leaking sensitive details. A hash of the error is shown below.'
             ? error.message
             : 'We encountered an unexpected error while loading this screen.'}
         </p>
 
         {error?.digest && (
-          <div className="w-full mb-3 p-2 rounded-xl bg-black/[0.04] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] text-[11px] font-mono text-gray-500 dark:text-gray-400 break-all select-all">
+          <div className="w-full mb-3 p-2 rounded-xl bg-black/[0.04] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] text-[11px] font-mono text-muted-foreground break-all select-all">
             Ref: {error.digest}
           </div>
         )}
@@ -67,13 +67,13 @@ export default function ErrorBoundary({
             <button
               type="button"
               onClick={() => setShowDetails(!showDetails)}
-              className="text-[11px] font-bold text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1 mx-auto hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+              className="text-[11px] font-bold text-muted-foreground flex items-center justify-center gap-1 mx-auto hover:text-foreground transition-colors"
             >
               <span>{showDetails ? 'Hide Diagnostics' : 'Show Diagnostics'}</span>
               {showDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </button>
             {showDetails && (
-              <div className="mt-2 p-2.5 rounded-xl bg-black/[0.04] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] text-[10px] font-mono text-left text-gray-600 dark:text-gray-300 overflow-x-auto max-h-40 whitespace-pre-wrap select-all">
+              <div className="mt-2 p-2.5 rounded-xl bg-black/[0.04] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] text-[10px] font-mono text-left text-muted-foreground overflow-x-auto max-h-40 whitespace-pre-wrap select-all">
                 {error.stack || error.message}
               </div>
             )}

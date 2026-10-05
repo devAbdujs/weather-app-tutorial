@@ -11,8 +11,8 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
     <div>
       <header className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">User Management</h1>
-          <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">View and manage all registered students.</p>
+          <h1 className="text-3xl font-black text-foreground tracking-tight">User Management</h1>
+          <p className="text-muted-foreground font-medium mt-1">View and manage all registered students.</p>
         </div>
         <div className="bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-tint-sky-border px-4 py-2 rounded-2xl font-black flex items-center gap-2 shadow-2xs">
           <Users className="w-5 h-5" />
@@ -25,10 +25,10 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-ground/50 border-b border-black/[0.06] dark:border-white/[0.08]">
-                <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Student</th>
-                <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Target Exam</th>
-                <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Streak</th>
-                <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Joined</th>
+                <th className="p-4 font-bold text-muted-foreground uppercase tracking-wider text-xs">Student</th>
+                <th className="p-4 font-bold text-muted-foreground uppercase tracking-wider text-xs">Target Exam</th>
+                <th className="p-4 font-bold text-muted-foreground uppercase tracking-wider text-xs">Streak</th>
+                <th className="p-4 font-bold text-muted-foreground uppercase tracking-wider text-xs">Joined</th>
               </tr>
             </thead>
             <tbody>
@@ -40,8 +40,8 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
                         {user.full_name?.charAt(0).toUpperCase() || '?'}
                       </div>
                       <div>
-                        <p className="font-bold text-gray-900 dark:text-gray-100">{user.full_name || 'Unknown'}</p>
-                        <p className="text-xs text-gray-400 font-mono">@{user.username || user.telegram_id}</p>
+                        <p className="font-bold text-foreground">{user.full_name || 'Unknown'}</p>
+                        <p className="text-xs text-muted-foreground font-mono">@{user.username || user.telegram_id}</p>
                       </div>
                     </div>
                   </td>
@@ -51,7 +51,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
                         {user.target_exam}
                       </span>
                     ) : (
-                      <span className="text-gray-400 text-xs">Not set</span>
+                      <span className="text-muted-foreground text-xs">Not set</span>
                     )}
                   </td>
                   <td className="p-4">
@@ -60,7 +60,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
                       {user.daily_streak || 0}
                     </div>
                   </td>
-                  <td className="p-4 text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <td className="p-4 text-sm font-medium text-muted-foreground">
                     {new Date(user.created_at).toLocaleDateString()}
                   </td>
                 </tr>
@@ -68,7 +68,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
               
               {users.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-gray-500 dark:text-gray-400 font-bold">
+                  <td colSpan={4} className="p-8 text-center text-muted-foreground font-bold">
                     No users found.
                   </td>
                 </tr>
@@ -79,27 +79,27 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
 
         {totalPages > 1 && (
           <div className="flex items-center justify-between p-4 bg-ground/50 border-t border-black/[0.06] dark:border-white/[0.08]">
-            <span className="text-sm font-bold text-gray-500 dark:text-gray-400 tabular-nums">
+            <span className="text-sm font-bold text-muted-foreground tabular-nums">
               Page {currentPage} of {totalPages}
             </span>
             <div className="flex gap-2">
               {currentPage > 1 ? (
                 <Link href={`/admin/users?page=${currentPage - 1}`} className="p-2 bg-card rounded-lg border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/5 dark:hover:bg-white/5 transition-colors shadow-tactile-sm">
-                  <ChevronLeft className="w-5 h-5 text-gray-900 dark:text-gray-100" />
+                  <ChevronLeft className="w-5 h-5 text-foreground" />
                 </Link>
               ) : (
                 <div className="p-2 bg-card/50 rounded-lg border border-black/[0.06] dark:border-white/[0.08] opacity-50 cursor-not-allowed">
-                  <ChevronLeft className="w-5 h-5 text-gray-400" />
+                  <ChevronLeft className="w-5 h-5 text-muted-foreground" />
                 </div>
               )}
               
               {currentPage < totalPages ? (
                 <Link href={`/admin/users?page=${currentPage + 1}`} className="p-2 bg-card rounded-lg border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/5 dark:hover:bg-white/5 transition-colors shadow-tactile-sm">
-                  <ChevronRight className="w-5 h-5 text-gray-900 dark:text-gray-100" />
+                  <ChevronRight className="w-5 h-5 text-foreground" />
                 </Link>
               ) : (
                 <div className="p-2 bg-card/50 rounded-lg border border-primary/5 opacity-50 cursor-not-allowed">
-                  <ChevronRight className="w-5 h-5 text-gray-500" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </div>
               )}
             </div>

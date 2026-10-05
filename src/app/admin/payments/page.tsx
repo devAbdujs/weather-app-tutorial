@@ -12,8 +12,8 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
     <div>
       <header className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Payments Queue</h1>
-          <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">Review and approve manual payment receipts.</p>
+          <h1 className="text-3xl font-black text-foreground tracking-tight">Payments Queue</h1>
+          <p className="text-muted-foreground font-medium mt-1">Review and approve manual payment receipts.</p>
         </div>
         <div className="bg-tint-purple text-tint-purple-fg px-4 py-2 rounded-2xl font-black flex items-center gap-2 border-2 border-b-[3px] border-tint-purple-border shadow-2xs">
           <CreditCard className="w-5 h-5" />
@@ -26,11 +26,11 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-ground/50 border-b border-black/[0.06] dark:border-white/[0.08]">
-                <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">User</th>
-                <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Transaction ID</th>
-                <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Submitted At</th>
-                <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs">Receipt</th>
-                <th className="p-4 font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-xs text-right">Actions</th>
+                <th className="p-4 font-bold text-muted-foreground uppercase tracking-wider text-xs">User</th>
+                <th className="p-4 font-bold text-muted-foreground uppercase tracking-wider text-xs">Transaction ID</th>
+                <th className="p-4 font-bold text-muted-foreground uppercase tracking-wider text-xs">Submitted At</th>
+                <th className="p-4 font-bold text-muted-foreground uppercase tracking-wider text-xs">Receipt</th>
+                <th className="p-4 font-bold text-muted-foreground uppercase tracking-wider text-xs text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -42,15 +42,15 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
                         {payment.profiles?.full_name?.charAt(0).toUpperCase() || '?'}
                       </div>
                       <div>
-                        <p className="font-bold text-gray-900 dark:text-gray-100">{payment.profiles?.full_name || 'Unknown'}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">@{payment.profiles?.username || payment.telegram_id}</p>
+                        <p className="font-bold text-foreground">{payment.profiles?.full_name || 'Unknown'}</p>
+                        <p className="text-xs text-muted-foreground">@{payment.profiles?.username || payment.telegram_id}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="p-4 font-mono text-sm font-bold text-gray-700 dark:text-gray-300">
-                    {payment.transaction_id || <span className="text-gray-400 font-sans italic">Not provided</span>}
+                  <td className="p-4 font-mono text-sm font-bold text-foreground/80">
+                    {payment.transaction_id || <span className="text-muted-foreground font-sans italic">Not provided</span>}
                   </td>
-                  <td className="p-4 text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <td className="p-4 text-sm font-medium text-muted-foreground">
                     {new Date(payment.created_at).toLocaleString()}
                   </td>
                   <td className="p-4">
@@ -71,12 +71,12 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
               
               {payments.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="p-12 text-center text-gray-500 dark:text-gray-400 font-bold">
+                  <td colSpan={5} className="p-12 text-center text-muted-foreground font-bold">
                     <div className="flex flex-col items-center justify-center">
                       <div className="w-16 h-16 bg-ground rounded-full flex items-center justify-center mb-4 border border-black/[0.06] dark:border-white/[0.08]">
                         <CheckCircle2 className="w-8 h-8 text-accent-emerald opacity-70" />
                       </div>
-                      <p className="text-lg text-gray-900 dark:text-gray-100">All caught up!</p>
+                      <p className="text-lg text-foreground">All caught up!</p>
                       <p className="text-sm font-medium mt-1">There are no pending payments to review.</p>
                     </div>
                   </td>
@@ -88,27 +88,27 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
 
         {totalPages > 1 && (
           <div className="flex items-center justify-between p-4 bg-ground/50 border-t-2 border-primary/10">
-            <span className="text-sm font-bold text-gray-500 dark:text-gray-400">
+            <span className="text-sm font-bold text-muted-foreground">
               Page {currentPage} of {totalPages}
             </span>
             <div className="flex gap-2">
               {currentPage > 1 ? (
                 <Link href={`/admin/payments?page=${currentPage - 1}`} className="p-2 bg-card rounded-lg border border-primary/10 hover:bg-primary/5 transition-colors">
-                  <ChevronLeft className="w-5 h-5 text-gray-900 dark:text-gray-100" />
+                  <ChevronLeft className="w-5 h-5 text-foreground" />
                 </Link>
               ) : (
                 <div className="p-2 bg-card/50 rounded-lg border border-primary/5 opacity-50 cursor-not-allowed">
-                  <ChevronLeft className="w-5 h-5 text-gray-500" />
+                  <ChevronLeft className="w-5 h-5 text-muted-foreground" />
                 </div>
               )}
               
               {currentPage < totalPages ? (
                 <Link href={`/admin/payments?page=${currentPage + 1}`} className="p-2 bg-card rounded-lg border border-primary/10 hover:bg-primary/5 transition-colors">
-                  <ChevronRight className="w-5 h-5 text-gray-900 dark:text-gray-100" />
+                  <ChevronRight className="w-5 h-5 text-foreground" />
                 </Link>
               ) : (
                 <div className="p-2 bg-card/50 rounded-lg border border-primary/5 opacity-50 cursor-not-allowed">
-                  <ChevronRight className="w-5 h-5 text-gray-500" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </div>
               )}
             </div>

@@ -349,12 +349,12 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
               else next.add(currentIndex);
               return next;
             });
-          }} className={`w-10 h-10 flex items-center justify-center rounded-btn border transition-all active:scale-[0.98] shadow-tactile-xs ${flagged.has(currentIndex) ? 'bg-error/10 border-error/30 text-error' : 'bg-card border-black/[0.08] dark:border-white/[0.08] text-foreground hover:text-foreground'}`}><Flag className="w-4 h-4" fill={flagged.has(currentIndex) ? 'currentColor' : 'none'} /></button>
+          }} className={`w-10 h-10 flex items-center justify-center rounded-btn border transition-all active:scale-[0.98] shadow-tactile-xs ${flagged.has(currentIndex) ? 'bg-accent-gold/15 border-accent-gold/40 text-accent-gold' : 'bg-card border-black/[0.08] dark:border-white/[0.08] text-foreground hover:text-foreground'}`}><Flag className="w-4 h-4" fill={flagged.has(currentIndex) ? 'currentColor' : 'none'} /></button>
         </div>
         
         {/* Chunky Duolingo Progress Bar */}
         <div className="px-5">
-          <div className="h-3 w-full bg-black/[0.08] dark:bg-white/[0.08] rounded-full p-0.5 border border-black/[0.08] overflow-hidden shadow-inner">
+          <div className="h-3 w-full bg-black/[0.08] dark:bg-white/[0.08] rounded-full p-0.5 border border-black/[0.08] dark:border-white/[0.08] overflow-hidden shadow-inner">
              <div 
                className="h-full bg-gradient-to-r from-primary to-accent-blue transition-all duration-300 ease-out rounded-full relative overflow-hidden" 
                style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
@@ -579,7 +579,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                 const isFlg = flagged.has(i);
                 
                 return (
-                  <button key={i} onClick={() => { setCurrentIndex(i); setShowGrid(false); }} className={`relative h-12 rounded-card-sm border text-sm font-bold tabular-nums transition-all active:scale-[0.98] ${currentIndex === i ? 'bg-primary border-primary text-white font-black shadow-tactile-xs -translate-y-0.5' : isFlg ? 'bg-accent-rose/10 border-accent-rose/30 text-accent-rose shadow-tactile-xs' : selectedAnswers[i] ? 'bg-black/5 dark:bg-white/5 border-transparent text-foreground font-bold' : 'bg-card border-black/[0.08] dark:border-white/[0.08] text-slate-600 dark:text-slate-400 hover:border-primary/50'}`}>
+                  <button key={i} onClick={() => { setCurrentIndex(i); setShowGrid(false); }} className={`relative h-12 rounded-card-sm border text-sm font-bold tabular-nums transition-all active:scale-[0.98] ${currentIndex === i ? 'bg-primary border-primary text-white font-black shadow-tactile-xs -translate-y-0.5' : isFlg ? 'bg-accent-gold/15 border-accent-gold/40 text-accent-gold shadow-tactile-xs' : selectedAnswers[i] ? 'bg-black/5 dark:bg-white/5 border-transparent text-foreground font-bold' : 'bg-card border-black/[0.08] dark:border-white/[0.08] text-muted-foreground hover:border-primary/50'}`}>
                     {i + 1}
                     {isBkmrk && <div className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-accent-gold rounded-full border-2 border-card" />}
                   </button>

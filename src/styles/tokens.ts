@@ -43,6 +43,15 @@ export const tokens = {
     'border-default': 'var(--border)',
     'border-strong': 'var(--border-strong)',
 
+    // Telegram Mini App Client Theme Tokens
+    'tg-bg': 'var(--tg-theme-bg-color, var(--background))',
+    'tg-secondary-bg': 'var(--tg-theme-secondary-bg-color, var(--surface-2))',
+    'tg-text': 'var(--tg-theme-text-color, var(--foreground))',
+    'tg-hint': 'var(--tg-theme-hint-color, var(--text-secondary))',
+    'tg-link': 'var(--tg-theme-link-color, var(--primary))',
+    'tg-button': 'var(--tg-theme-button-color, var(--primary))',
+    'tg-button-text': 'var(--tg-theme-button-text-color, var(--primary-foreground))',
+
     // Colorful Card & Pill Tints (Inspiration: Lavender, Mint, Peach, Sky, Rose, Cream)
     'tint-purple': 'var(--tint-purple)',
     'tint-purple-fg': 'var(--tint-purple-fg)',

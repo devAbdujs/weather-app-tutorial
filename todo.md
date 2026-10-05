@@ -650,12 +650,12 @@ Require all admin accounts to update password; remove plaintext comparison branc
 4. **Telegram Client Theme Harmonization:**
    - Certain popups and alerts use hardcoded Tailwind slate colors that clash with custom Telegram themes when running inside Telegram Mini App.
 
-**Proposed Improvements (Audit Only — No Code Changes Yet):**
-- [ ] `[DES-01]` Replace all remaining `text-gray-900 dark:text-gray-100` instances with `text-foreground`.
-- [ ] `[DES-02]` Replace `text-gray-500 dark:text-gray-400` with `text-muted-foreground`.
-- [ ] `[DES-03]` Ensure all borders use semantic `border-border` / `border-black/[0.08] dark:border-white/[0.08]` so dark mode boundaries are crisp.
-- [ ] `[DES-04]` Align question flag and highlight colors with `text-accent-gold`.
-- [ ] `[DES-05]` Map Telegram client theme variables (`bg_color`, `secondary_bg_color`, `text_color`) to CSS custom properties for pixel-perfect Mini App integration.
+**Action Items & Implementation Roadmap:**
+- [x] `[DES-01]` Replace all remaining `text-gray-900 dark:text-gray-100` instances with `text-foreground`. (Eliminated all instances across UpgradeFlow, Admin views, error page)
+- [x] `[DES-02]` Replace `text-gray-500 dark:text-gray-400` with `text-muted-foreground`. (Replaced across UpgradeFlow, Admin views, error and loading pages)
+- [x] `[DES-03]` Ensure all borders use semantic `border-border` / `border-black/[0.08] dark:border-white/[0.08]` so dark mode boundaries are crisp. (Standardized in ExamWorkspace, UpgradeFlow, and Admin views)
+- [x] `[DES-04]` Align question flag and highlight colors with `text-accent-gold`. (Standardized flagged state in ExamWorkspace question header and 50-question grid)
+- [x] `[DES-05]` Map Telegram client theme variables (`bg_color`, `secondary_bg_color`, `text_color`) to CSS custom properties for pixel-perfect Mini App integration. (Mapped in globals.css, layout.tsx anti-FOUC script, useTelegram hook, and tokens.ts)
 
 ---
 

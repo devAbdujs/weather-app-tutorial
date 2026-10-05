@@ -66,10 +66,22 @@ const themeScript = `
     if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
     }
-    // Apply Telegram theme color if in Mini App
+    // Apply Telegram theme colors to CSS variables if in Mini App
     if (window.Telegram && window.Telegram.WebApp) {
-      var tgBg = window.Telegram.WebApp.backgroundColor || (window.Telegram.WebApp.themeParams && window.Telegram.WebApp.themeParams.bg_color);
-      if (tgBg) document.documentElement.style.backgroundColor = tgBg;
+      var tg = window.Telegram.WebApp;
+      var params = tg.themeParams;
+      var doc = document.documentElement;
+      var tgBg = tg.backgroundColor || (params && params.bg_color);
+      if (tgBg) doc.style.backgroundColor = tgBg;
+      if (params) {
+        if (params.bg_color) doc.style.setProperty('--tg-theme-bg-color', params.bg_color);
+        if (params.secondary_bg_color) doc.style.setProperty('--tg-theme-secondary-bg-color', params.secondary_bg_color);
+        if (params.text_color) doc.style.setProperty('--tg-theme-text-color', params.text_color);
+        if (params.hint_color) doc.style.setProperty('--tg-theme-hint-color', params.hint_color);
+        if (params.link_color) doc.style.setProperty('--tg-theme-link-color', params.link_color);
+        if (params.button_color) doc.style.setProperty('--tg-theme-button-color', params.button_color);
+        if (params.button_text_color) doc.style.setProperty('--tg-theme-button-text-color', params.button_text_color);
+      }
     }
   } catch (e) {}
 })();

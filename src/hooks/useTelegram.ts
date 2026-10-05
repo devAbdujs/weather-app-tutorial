@@ -49,6 +49,17 @@ export function useTelegram() {
           if (tg?.colorScheme) {
             setColorScheme(tg.colorScheme);
           }
+          if (tg?.themeParams && typeof document !== 'undefined') {
+            const p = tg.themeParams;
+            const doc = document.documentElement;
+            if (p.bg_color) doc.style.setProperty('--tg-theme-bg-color', p.bg_color);
+            if (p.secondary_bg_color) doc.style.setProperty('--tg-theme-secondary-bg-color', p.secondary_bg_color);
+            if (p.text_color) doc.style.setProperty('--tg-theme-text-color', p.text_color);
+            if (p.hint_color) doc.style.setProperty('--tg-theme-hint-color', p.hint_color);
+            if (p.link_color) doc.style.setProperty('--tg-theme-link-color', p.link_color);
+            if (p.button_color) doc.style.setProperty('--tg-theme-button-color', p.button_color);
+            if (p.button_text_color) doc.style.setProperty('--tg-theme-button-text-color', p.button_text_color);
+          }
           setIsLoadingAuth(false);
         } else {
           // 2. We are on a Web Browser
