@@ -8,6 +8,8 @@ import { sounds } from '@/lib/sounds';
 import { safeSessionStorage } from '@/lib/safeStorage';
 import { TemariMascot, MascotBubble } from '@/components/mascot/TemariMascot';
 import { SubdomainType, SUBDOMAIN_CONFIGS, getSubdomainUrl, getExamPortalPath } from '@/lib/subdomains';
+import { MobileDeviceMockup } from '@/components/marketing/MobileDeviceMockup';
+import { ExamStoryboard } from '@/components/marketing/ExamStoryboard';
 
 interface LandingPageProps {
   initialPortal?: SubdomainType;
@@ -275,6 +277,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
              Join 5,000+ Ethiopian scholars
           </div>
         </div>
+
+        {/* Interactive In-App Mobile Frame Preview */}
+        <div className="mt-8 mb-2 w-full flex flex-col items-center animate-fade-up" style={{ animationDelay: '0.45s' }}>
+          <div className="text-center mb-3">
+            <span className="text-micro font-black tracking-widest uppercase text-muted-foreground bg-black/5 dark:bg-white/5 px-3 py-1 rounded-full border border-black/10 dark:border-white/10">
+              Interactive In-App Preview
+            </span>
+            <p className="text-[11px] font-semibold text-muted-foreground mt-1">
+              Tap options inside the phone screen below to test instant grading &amp; AI explanations
+            </p>
+          </div>
+          <MobileDeviceMockup portal={activePortal} />
+        </div>
       </header>
 
       {/* ── 3 DEDICATED EXAM PATH PORTALS (Multi-Subdomain Architecture) ── */}
@@ -431,6 +446,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
           </Link>
         </div>
       </section>
+
+      {/* ── HISTORICAL EXAM STATISTICS & SUBDOMAIN STORYBOARDS ── */}
+      <ExamStoryboard portal={activePortal} />
 
       {/* 4. Gamified Pillars Section */}
       <section className="px-6 py-12 bg-card border-t border-black/[0.08] dark:border-white/[0.08]">

@@ -710,21 +710,17 @@ Require all admin accounts to update password; remove plaintext comparison branc
 - They lack real in-app visual previews, leaving prospective students to guess what the actual study experience looks like before creating an account.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[MKT-01]` Add an interactive **National Exam Statistics & Reality Check** section for `entrance.temari.top`:
+- [x] `[MKT-01]` Add an interactive **National Exam Statistics & Reality Check** section for `entrance.temari.top`:
   - Visual 3-year pass/fail rate chart (highlighting that only ~3.2% to 5.4% of Grade 12 students achieved university passing marks in recent EUEE exams).
   - Subject difficulty breakdown (e.g. Natural Science Mathematics vs. Physics vs. Aptitude pass rates).
-- [ ] `[MKT-02]` Add **Freshman Academic Survival Storyboard** for `freshman.temari.top`:
+- [x] `[MKT-02]` Add **Freshman Academic Survival Storyboard** for `freshman.temari.top`:
   - First-year university retention statistics, common GPA pitfalls in Calculus/Applied Math and General Physics, and how chapter drills prevent academic probation.
-- [ ] `[MKT-03]` Add **National Exit Exam Benchmark Storyboard** for `exit.temari.top`:
+- [x] `[MKT-03]` Add **National Exit Exam Benchmark Storyboard** for `exit.temari.top`:
   - MoE department passing requirements, question bank coverage by discipline, and graduation qualification benchmarks.
-- [ ] `[MKT-04]` Create reusable responsive charts/infographics (SVG / CSS bar meters) optimized for low-bandwidth mobile devices.
-- [ ] `[MKT-05]` Add **Mobile-Framed In-App Product Screenshots & Interactive Preview**:
-  - Build a responsive CSS/SVG mobile device mockup (`MobileDeviceMockup.tsx`) with realistic bezel, status bar, and dynamic shadow.
-  - Tailor high-fidelity in-app screen previews for each subdomain:
-    - **`entrance.temari.top`**: Mobile frame displaying a Grade 12 EUEE exam question with KaTeX math formula rendering, timer, option select, and AI Tutor explanation drawer.
-    - **`freshman.temari.top`**: Mobile frame displaying Freshman course notes, Applied Math formulas, and chapter mastery progression.
-    - **`exit.temari.top`**: Mobile frame displaying MoE Exit Exam timed mock simulation with department benchmark scoring.
-  - Add interactive micro-interactions (e.g. tapping an option in the mockup triggers an answer reveal or opens a sample AI explanation).
+- [x] `[MKT-04]` Create reusable responsive charts/infographics (SVG / CSS bar meters) optimized for low-bandwidth mobile devices.
+- [x] `[MKT-05]` Add **Mobile-Framed In-App Product Screenshots & Interactive Preview**:
+  - Built responsive CSS/SVG mobile device mockup (`MobileDeviceMockup.tsx`) with realistic bezel, status bar, and dynamic shadow.
+  - Tailored high-fidelity in-app screen previews for each subdomain (`entrance`, `freshman`, `exit`) with interactive option grading and AI Tutor explanations.
 
 ---
 
