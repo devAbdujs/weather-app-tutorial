@@ -221,12 +221,75 @@ export async function logoutAdmin() {
   return { success: true };
 }
 
+// ─── Scoped Permissions & Audit Logging (ADM-04, ADM-05) ─────────────────────
+
+export type AdminPermission =
+  | 'admin:manage'
+  | 'payments:view'
+  | 'payments:approve'
+  | 'payments:reject'
+  | 'notes:read'
+  | 'notes:write'
+  | 'questions:read'
+  | 'questions:write'
+  | 'analytics:read';
+
+export function hasPermission(admin: { role: string } | null | undefined, permission: AdminPermission): boolean {
+  if (!admin) return false;
+  if (admin.role === 'superadmin') return true;
+
+  switch (permission) {
+    case 'admin:manage':
+      return admin.role === 'superadmin';
+
+    case 'payments:view':
+    case 'payments:approve':
+    case 'payments:reject':
+      return admin.role === 'financial_admin';
+
+    case 'notes:read':
+    case 'questions:read':
+    case 'analytics:read':
+      return ['financial_admin', 'editor', 'content_editor', 'readonly', 'reviewer'].includes(admin.role);
+
+    case 'notes:write':
+    case 'questions:write':
+      return ['editor', 'content_editor'].includes(admin.role);
+
+    default:
+      return false;
+  }
+}
+
+export async function logAdminAction(
+  admin: { id: string; username: string },
+  action: string,
+  options?: { target_resource?: string; target_id?: string; details?: any; ip_address?: string }
+) {
+  try {
+    const supabase = await createAdminClient();
+    await supabase.from('admin_audit_logs').insert({
+      admin_id: admin.id,
+      admin_username: admin.username,
+      action,
+      target_resource: options?.target_resource,
+      target_id: options?.target_id,
+      details: options?.details || {},
+      ip_address: options?.ip_address,
+    });
+  } catch (err) {
+    console.warn('[AdminAudit] Failed recording audit log:', err);
+  }
+}
+
 /**
  * Creates a new admin account. Passcode is stored as a salted SHA-256 hash.
  */
 export async function createAdminAccount(username: string, passcode: string, role: string) {
   const admin = await verifyAdmin();
-  if (admin?.role !== 'superadmin') throw new Error('Unauthorized: Only Superadmins can create accounts.');
+  if (!hasPermission(admin, 'admin:manage')) {
+    throw new Error('Unauthorized: Only Superadmins can create accounts.');
+  }
 
   const hashedPasscode = await hashPasscode(username, passcode);
 
@@ -240,12 +303,18 @@ export async function createAdminAccount(username: string, passcode: string, rol
     return { success: false, error: error.message };
   }
 
+  await logAdminAction(admin!, 'admin:create', {
+    target_resource: 'admin_users',
+    target_id: username,
+    details: { role },
+  });
+
   return { success: true };
 }
 
 export async function getAdmins() {
   const admin = await verifyAdmin();
-  if (admin?.role !== 'superadmin') throw new Error('Unauthorized');
+  if (!hasPermission(admin, 'admin:manage')) throw new Error('Unauthorized');
 
   const supabase = await createAdminClient();
   const { data, error } = await supabase
@@ -263,11 +332,11 @@ export async function getAdmins() {
  */
 export async function deleteAdminAccount(targetAdminId: string) {
   const admin = await verifyAdmin();
-  if (admin?.role !== 'superadmin') {
+  if (!hasPermission(admin, 'admin:manage')) {
     throw new Error('Unauthorized: Only Superadmins can delete accounts.');
   }
 
-  if (admin.id === targetAdminId) {
+  if (admin?.id === targetAdminId) {
     return { success: false, error: 'You cannot delete your own admin account.' };
   }
 
@@ -281,6 +350,11 @@ export async function deleteAdminAccount(targetAdminId: string) {
     return { success: false, error: error.message };
   }
 
+  await logAdminAction(admin!, 'admin:delete', {
+    target_resource: 'admin_users',
+    target_id: targetAdminId,
+  });
+
   revalidatePath('/admin/managers');
   return { success: true };
 }
@@ -291,11 +365,11 @@ export async function deleteAdminAccount(targetAdminId: string) {
  */
 export async function toggleAdminActive(targetAdminId: string, isActive: boolean) {
   const admin = await verifyAdmin();
-  if (admin?.role !== 'superadmin') {
+  if (!hasPermission(admin, 'admin:manage')) {
     throw new Error('Unauthorized: Only Superadmins can modify account status.');
   }
 
-  if (admin.id === targetAdminId && !isActive) {
+  if (admin?.id === targetAdminId && !isActive) {
     return { success: false, error: 'You cannot deactivate your own admin account.' };
   }
 
@@ -308,6 +382,12 @@ export async function toggleAdminActive(targetAdminId: string, isActive: boolean
   if (error) {
     return { success: false, error: error.message };
   }
+
+  await logAdminAction(admin!, isActive ? 'admin:activate' : 'admin:deactivate', {
+    target_resource: 'admin_users',
+    target_id: targetAdminId,
+    details: { is_active: isActive },
+  });
 
   revalidatePath('/admin/managers');
   return { success: true };
@@ -435,7 +515,7 @@ export async function updatePaymentStatus(paymentId: string, telegramId: string,
   const admin = await verifyAdmin();
   if (!admin) throw new Error('Unauthorized');
   
-  if (admin.role !== 'superadmin' && admin.role !== 'financial_admin') {
+  if (!hasPermission(admin, status === 'approved' ? 'payments:approve' : 'payments:reject')) {
     throw new Error('Unauthorized: Only superadmin or financial_admin accounts can approve or reject payments.');
   }
 
@@ -500,6 +580,13 @@ export async function updatePaymentStatus(paymentId: string, telegramId: string,
   } catch (storageErr) {
     console.warn('[Admin Update Payment] Storage image purge error:', storageErr);
   }
+
+  // 5. Record Audit Log
+  await logAdminAction(admin, `payment:${status}`, {
+    target_resource: 'payment_receipts',
+    target_id: paymentId,
+    details: { telegram_id: telegramId, status },
+  });
 
   return { success: true };
 }
