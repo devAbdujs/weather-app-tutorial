@@ -439,16 +439,160 @@ export async function getUsers(page = 1, limit = 50) {
 
 export async function getQuestions(limit = 100) {
   const admin = await verifyAdmin();
-  if (!admin) throw new Error('Unauthorized');
+  if (!hasPermission(admin, 'questions:read')) throw new Error('Unauthorized');
 
   const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from('questions')
-    .select('id, exam_type, subject, year_ec, question')
+    .select('id, exam_type, subject, year_ec, question, option_a, option_b, option_c, option_d, answer, explanation')
     .limit(limit);
 
   if (error) throw error;
   return data || [];
+}
+
+export async function saveQuestion(payload: {
+  id?: string;
+  exam_type: string;
+  subject: string;
+  year_ec?: number | null;
+  question: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  answer: string;
+  explanation?: string | null;
+}) {
+  const admin = await verifyAdmin();
+  if (!hasPermission(admin, 'questions:write')) {
+    throw new Error('Unauthorized: Only editors and superadmins can save questions.');
+  }
+
+  const supabase = await createAdminClient();
+  const normalizedAnswer = (payload.answer || 'A').trim().toUpperCase();
+
+  const questionData = {
+    exam_type: payload.exam_type,
+    subject: payload.subject,
+    year_ec: payload.year_ec ? Number(payload.year_ec) : null,
+    question: (payload.question || '').trim(),
+    option_a: (payload.option_a || '').trim(),
+    option_b: (payload.option_b || '').trim(),
+    option_c: (payload.option_c || '').trim(),
+    option_d: (payload.option_d || '').trim(),
+    answer: normalizedAnswer,
+    explanation: payload.explanation?.trim() || null,
+  };
+
+  if (payload.id) {
+    const { error } = await supabase
+      .from('questions')
+      .update(questionData)
+      .eq('id', payload.id);
+
+    if (error) return { success: false, error: error.message };
+
+    await logAdminAction(admin!, 'question:update', {
+      target_resource: 'questions',
+      target_id: payload.id,
+      details: { subject: payload.subject, exam_type: payload.exam_type },
+    });
+  } else {
+    const { data, error } = await supabase
+      .from('questions')
+      .insert(questionData)
+      .select('id')
+      .single();
+
+    if (error) return { success: false, error: error.message };
+
+    await logAdminAction(admin!, 'question:create', {
+      target_resource: 'questions',
+      target_id: data?.id,
+      details: { subject: payload.subject, exam_type: payload.exam_type },
+    });
+  }
+
+  revalidatePath('/admin/questions');
+  return { success: true };
+}
+
+export async function deleteQuestion(questionId: string) {
+  const admin = await verifyAdmin();
+  if (!hasPermission(admin, 'questions:write')) {
+    throw new Error('Unauthorized: Only editors and superadmins can delete questions.');
+  }
+
+  const supabase = await createAdminClient();
+  const { error } = await supabase
+    .from('questions')
+    .delete()
+    .eq('id', questionId);
+
+  if (error) return { success: false, error: error.message };
+
+  await logAdminAction(admin!, 'question:delete', {
+    target_resource: 'questions',
+    target_id: questionId,
+  });
+
+  revalidatePath('/admin/questions');
+  return { success: true };
+}
+
+export async function bulkImportQuestions(questions: Array<{
+  exam_type: string;
+  subject: string;
+  year_ec?: number | null;
+  question: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  answer: string;
+  explanation?: string | null;
+}>) {
+  const admin = await verifyAdmin();
+  if (!hasPermission(admin, 'questions:write')) {
+    throw new Error('Unauthorized: Only editors and superadmins can import questions.');
+  }
+
+  if (!Array.isArray(questions) || questions.length === 0) {
+    return { success: false, error: 'No valid questions provided for import.' };
+  }
+
+  const validRows = questions
+    .filter(q => q.question && q.subject && q.exam_type && q.option_a && q.option_b && q.answer)
+    .map(q => ({
+      exam_type: q.exam_type,
+      subject: q.subject,
+      year_ec: q.year_ec ? Number(q.year_ec) : null,
+      question: q.question.trim(),
+      option_a: q.option_a.trim(),
+      option_b: q.option_b.trim(),
+      option_c: (q.option_c || '').trim(),
+      option_d: (q.option_d || '').trim(),
+      answer: (q.answer || 'A').trim().toUpperCase(),
+      explanation: q.explanation?.trim() || null,
+    }));
+
+  if (validRows.length === 0) {
+    return { success: false, error: 'All rows were missing required fields.' };
+  }
+
+  const supabase = await createAdminClient();
+  const { error } = await supabase.from('questions').insert(validRows);
+
+  if (error) return { success: false, error: error.message };
+
+  await logAdminAction(admin!, 'question:bulk_import', {
+    target_resource: 'questions',
+    details: { count: validRows.length },
+  });
+
+  revalidatePath('/admin/questions');
+  return { success: true, count: validRows.length };
 }
 
 export async function getPendingPayments(page = 1, limit = 50) {

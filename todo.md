@@ -680,7 +680,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 **Action Items & Implementation Roadmap:**
 - [x] `[ADM-01]` Patch `src/app/api/admin/notes/route.ts` and `transform/route.ts` to reject `readonly` admins with 403 Forbidden. (Patched & verified)
 - [x] `[ADM-02]` Patch `updatePaymentStatus()` in `src/app/actions/admin.ts` to require `role === 'superadmin' || role === 'financial_admin'`. (Patched & verified)
-- [ ] `[ADM-03]` Build Web Question Bank Upload & Editor Studio in `/admin/questions` (bulk JSON/CSV import, KaTeX live preview, answer key editor).
+- [x] `[ADM-03]` Build Web Question Bank Upload & Editor Studio in `/admin/questions` (bulk JSON/CSV import, KaTeX live preview, answer key editor). (Built `QuestionStudio.tsx`, server actions `saveQuestion`/`deleteQuestion`/`bulkImportQuestions`, mounted in `/admin/questions`, verified with unit tests)
 - [x] `[ADM-04]` Create `admin_audit_logs` table to track who approved payments, published notes, or modified questions (supabase/migrations/20261005150000_create_admin_audit_logs.sql & logAdminAction).
 - [x] `[ADM-05]` Implement granular scoped permissions in `src/app/actions/admin.ts` (`hasPermission(admin, 'notes:write' | 'payments:approve' | ...)`).
 
