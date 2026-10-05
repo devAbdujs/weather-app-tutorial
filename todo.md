@@ -246,8 +246,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 ### [M-22] Unbounded Polling Loop in UpgradeFlow.tsx When Awaiting Payment Approval
 **File:** `src/components/upgrade/UpgradeFlow.tsx` lines 120–160
 **Issue:** When awaiting manual receipt verification, the polling loop repeats every 15 seconds indefinitely with no maximum retry ceiling or timeout.
-**Impact:** If admin review takes several hours or days and the student leaves the tab open, the client continuously fires GET requests to `/api/payments/status`, draining mobile device battery and consuming unnecessary serverless invocations.
-**Fix:** Cap active polling at 25 attempts (~6 minutes) with backoff, then transition the UI to a calm resting state ("Receipt in review queue — check Telegram for notification") with a manual "Refresh Status" button.
+**Fix:** Capped active polling at 25 attempts (~6 minutes) with backoff in `src/components/upgrade/UpgradeFlow.tsx`. When paused, the UI transitions to a calm resting state ("In Admin Review Queue") with a manual "Check Status Now" action, protecting device battery and preventing infinite serverless loops.
 
 ### [M-23] Race Condition in offlineSync.ts Causes Duplicate Stats Submission on Network Reconnection
 **File:** `src/utils/offlineSync.ts` lines 29–65
@@ -500,7 +499,7 @@ Require all admin accounts to update password; remove plaintext comparison branc
 [x] M-19  Audit and fix PWA manifest icon paths (synced manifest.json with public/icons/)
 [x] M-20  Persist completed session stats to DB (user_subject_stats atomic RPC)
 [x] M-21  Add last_activity_date to ProtectedLayout SSR query to prevent redundant streak writes on HomeHub
-[ ] M-22  Add timeout and max retry ceiling to UpgradeFlow.tsx payment status polling loop
+[x] M-22  Add timeout and max retry ceiling to UpgradeFlow.tsx payment status polling loop
 [ ] M-23  Add in-flight mutex / isSyncing guard to offlineSync.ts to prevent duplicate submissions
 [ ] M-24  Cache getEntranceYearCounts in practice.ts with unstable_cache to eliminate 9 parallel HEAD queries
 [ ] M-25  Synchronize gamification XP between Web app (localStorage) and Telegram Bot (user_subject_stats)

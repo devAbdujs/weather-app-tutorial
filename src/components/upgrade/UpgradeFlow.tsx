@@ -18,6 +18,7 @@ import {
   Copy,
   Check,
   ImageIcon,
+  RefreshCw,
   X
 } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
@@ -49,6 +50,8 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
 
   // 5-minute countdown (300 seconds)
   const [secondsLeft, setSecondsLeft] = useState(300);
+  const [isPollingPaused, setIsPollingPaused] = useState(false);
+  const [isManualChecking, setIsManualChecking] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -112,16 +115,20 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
   }, [phase]);
 
   // Real-time polling logic with exponential backoff to detect admin approval.
-  // Backoff sequence: 3s → 5s → 8s → 15s → 15s (caps at 15s).
-  // This reduces serverless calls from ~85 (fixed interval) to ~12 over 5 minutes.
+  // Backoff sequence: 3s → 5s → 8s → 15s → 15s (caps at 15s, max 25 attempts ~6 min).
+  // Automatically pauses after 25 attempts to save mobile battery and avoid spamming serverless.
   useEffect(() => {
     if (phase === 'verifying') {
       let isCancelled = false;
-      // Delay sequence in ms: 3s, 5s, 8s, 15s, then repeating 15s
       const delays = [3000, 5000, 8000, 15000];
+      const MAX_ATTEMPTS = 25;
       let attempt = 0;
 
       const scheduleNext = () => {
+        if (attempt >= MAX_ATTEMPTS) {
+          setIsPollingPaused(true);
+          return;
+        }
         const delay = delays[Math.min(attempt, delays.length - 1)];
         attempt++;
         pollingRef.current = setTimeout(poll, delay);
@@ -163,6 +170,32 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
       };
     }
   }, [phase, receiptId, haptic]);
+
+  const checkStatusNow = async () => {
+    setIsManualChecking(true);
+    try {
+      const url = receiptId
+        ? `/api/payments/status?receiptId=${receiptId}`
+        : '/api/payments/status';
+      const res = await fetch(url, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.studentName) setStudentName(data.studentName);
+        if (data.isApproved || data.subscriptionStatus === 'premium' || data.receiptStatus === 'approved') {
+          setPhase('approved');
+          haptic.notification('success');
+          triggerConfetti();
+          return;
+        } else if (data.receiptStatus === 'rejected') {
+          setPhase('rejected');
+          haptic.notification('error');
+          return;
+        }
+      }
+    } catch {} finally {
+      setIsManualChecking(false);
+    }
+  };
 
 
   // Trigger high-energy confetti burst — lazily loaded so canvas-confetti
@@ -452,11 +485,31 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
               />
             </div>
 
-            {/* Real-time Status Badge */}
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-accent-emerald bg-accent-emerald/10 px-3 py-1.5 rounded-full border border-accent-emerald/20">
-              <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
-              Listening for approval live...
-            </div>
+            {/* Real-time Status Badge or Review Queue State */}
+            {isPollingPaused ? (
+              <div className="space-y-2.5 mt-2">
+                <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-500 bg-amber-500/10 px-3 py-1.5 rounded-full border border-amber-500/20">
+                  <Clock className="w-3.5 h-3.5" />
+                  In Admin Review Queue
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    onClick={checkStatusNow}
+                    disabled={isManualChecking}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline px-3 py-1 disabled:opacity-50"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isManualChecking ? 'animate-spin' : ''}`} />
+                    {isManualChecking ? 'Checking...' : 'Check Status Now'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 text-xs font-bold text-accent-emerald bg-accent-emerald/10 px-3 py-1.5 rounded-full border border-accent-emerald/20">
+                <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
+                Listening for approval live...
+              </div>
+            )}
           </div>
 
           {/* 3 Step Interactive Progress */}
