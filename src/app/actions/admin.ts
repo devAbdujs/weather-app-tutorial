@@ -372,7 +372,9 @@ export async function updatePaymentStatus(paymentId: string, telegramId: string,
   const admin = await verifyAdmin();
   if (!admin) throw new Error('Unauthorized');
   
-  if (admin.role === 'readonly') throw new Error('Unauthorized: Readonly admins cannot modify payments.');
+  if (admin.role !== 'superadmin' && admin.role !== 'financial_admin') {
+    throw new Error('Unauthorized: Only superadmin or financial_admin accounts can approve or reject payments.');
+  }
 
   const supabase = await createAdminClient();
   

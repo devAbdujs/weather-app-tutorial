@@ -65,6 +65,7 @@ export function CreateAdminForm() {
           >
             <option value="readonly">Read-Only Viewer</option>
             <option value="editor">Content Editor</option>
+            <option value="financial_admin">Financial Admin</option>
             <option value="superadmin">Super Admin</option>
           </select>
         </div>
