@@ -15,6 +15,11 @@ export const metadata: Metadata = {
   keywords: ['Ethiopia', 'EUEE', 'Grade 12 Entrance Exam', 'Ethiopian University Exit Exam', 'Freshman courses', 'Temari App', 'Ethiopian exam prep'],
   authors: [{ name: 'Temari' }],
   manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Temari',
+  },
   icons: {
     icon: '/assets/temari_icon_192.png',
     apple: '/assets/temari_icon.png',
