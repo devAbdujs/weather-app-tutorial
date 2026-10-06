@@ -41,7 +41,14 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
                       </div>
                       <div>
                         <p className="font-bold text-foreground">{user.full_name || 'Unknown'}</p>
-                        <p className="text-xs text-muted-foreground font-mono">@{user.username || user.telegram_id}</p>
+                        <p className="text-xs text-muted-foreground font-mono flex items-center gap-1.5 flex-wrap">
+                          <span>@{user.username || user.telegram_id}</span>
+                          {user.phone_number && (
+                            <span className="font-sans font-semibold text-primary/90 bg-primary/10 px-1.5 py-0.5 rounded text-[11px]">
+                              {user.phone_number}
+                            </span>
+                          )}
+                        </p>
                       </div>
                     </div>
                   </td>

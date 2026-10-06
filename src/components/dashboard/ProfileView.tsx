@@ -220,11 +220,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
                 )}
               </div>
 
-              {profile.username && (
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mb-2 truncate">
-                  @{profile.username}
-                </p>
-              )}
+              <div className="flex items-center gap-2 mb-2 text-xs text-slate-500 dark:text-slate-400 font-semibold truncate flex-wrap">
+                {profile.username && <span>@{profile.username}</span>}
+                {profile.phone_number && (
+                  <span className="font-mono text-primary/90 bg-primary/10 px-1.5 py-0.5 rounded text-[11px]">
+                    {profile.phone_number}
+                  </span>
+                )}
+              </div>
 
               {/* Target Track Button */}
               <div>
