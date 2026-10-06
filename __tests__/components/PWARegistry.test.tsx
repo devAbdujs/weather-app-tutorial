@@ -25,7 +25,7 @@ describe('PWARegistry', () => {
       (event as any).prompt = jest.fn();
       (event as any).userChoice = Promise.resolve({ outcome: 'accepted' });
       window.dispatchEvent(event);
-      jest.advanceTimersByTime(5000);
+      jest.advanceTimersByTime(2000);
     });
 
     expect(screen.getByRole('banner', { name: /install temari pwa/i })).toBeInTheDocument();
@@ -33,36 +33,27 @@ describe('PWARegistry', () => {
     expect(screen.getByRole('button', { name: /^install$/i })).toBeInTheDocument();
   });
 
-  it('dismisses banner and sets 7-day cooldown in localStorage when dismissed', () => {
+  it('renders banner automatically on visit even without beforeinstallprompt event', () => {
     render(<PWARegistry />);
 
     act(() => {
-      const event = new Event('beforeinstallprompt');
-      (event as any).prompt = jest.fn();
-      window.dispatchEvent(event);
-      jest.advanceTimersByTime(5000);
+      jest.advanceTimersByTime(2000);
+    });
+
+    expect(screen.getByRole('banner', { name: /install temari pwa/i })).toBeInTheDocument();
+  });
+
+  it('dismisses banner on click without setting a 7-day cooldown', () => {
+    render(<PWARegistry />);
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
     });
 
     const dismissBtn = screen.getByRole('button', { name: /dismiss install prompt/i });
     fireEvent.click(dismissBtn);
 
     expect(screen.queryByRole('banner', { name: /install temari pwa/i })).not.toBeInTheDocument();
-    expect(localStorage.getItem('temari_pwa_dismissed_at')).toBeTruthy();
-  });
-
-  it('does not prompt if dismissed within 7 days', () => {
-    // Set dismissal timestamp to 1 day ago
-    const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
-    localStorage.setItem('temari_pwa_dismissed_at', oneDayAgo.toString());
-
-    render(<PWARegistry />);
-
-    act(() => {
-      const event = new Event('beforeinstallprompt');
-      window.dispatchEvent(event);
-      jest.advanceTimersByTime(5000);
-    });
-
-    expect(screen.queryByRole('banner', { name: /install temari pwa/i })).not.toBeInTheDocument();
+    expect(localStorage.getItem('temari_pwa_dismissed_at')).toBeNull();
   });
 });

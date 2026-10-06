@@ -4,34 +4,10 @@ import { useEffect, useState, useRef } from 'react';
 import { syncOfflineSubmissions } from '@/utils/offlineSync';
 import { X, Download, Share } from 'lucide-react';
 
-const PWA_DISMISS_KEY = 'temari_pwa_dismissed_at';
-const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
-
-function isDismissedRecently(): boolean {
-  if (typeof window === 'undefined') return true;
-  try {
-    const raw = localStorage.getItem(PWA_DISMISS_KEY);
-    if (!raw) return false;
-    const dismissedAt = parseInt(raw, 10);
-    if (isNaN(dismissedAt)) return false;
-    return Date.now() - dismissedAt < SEVEN_DAYS_MS;
-  } catch {
-    return false;
-  }
-}
-
-function recordDismissal() {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(PWA_DISMISS_KEY, Date.now().toString());
-  } catch {}
-}
-
 export function PWARegistry() {
   const [showBanner, setShowBanner] = useState(false);
   const [isIosDevice, setIsIosDevice] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const hasPrompted = useRef(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -54,12 +30,12 @@ export function PWARegistry() {
     syncOfflineSubmissions();
     window.addEventListener('online', syncOfflineSubmissions);
     
-    // 2. Install Banner Prompts (Skip inside Telegram WebApp, standalone mode, or if dismissed recently)
+    // 2. Install Banner Prompts (Skip only inside Telegram WebApp or already installed standalone mode)
     const isTelegram = Boolean((window as any).Telegram?.WebApp?.initData);
     const isStandalone = ('standalone' in window.navigator && (window.navigator as any).standalone) || 
                          window.matchMedia('(display-mode: standalone)').matches;
     
-    if (isTelegram || isStandalone || isDismissedRecently()) {
+    if (isTelegram || isStandalone) {
       return () => {
         window.removeEventListener('online', syncOfflineSubmissions);
       };
@@ -69,61 +45,44 @@ export function PWARegistry() {
     const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
     setIsIosDevice(isIos);
 
-    if (isIos) {
-      // --- iOS FALLBACK LOGIC ---
-      if (hasPrompted.current) {
-        return () => {
-          window.removeEventListener('online', syncOfflineSubmissions);
-        };
-      }
-      hasPrompted.current = true;
+    // Popup every time user visits the site
+    const timer = setTimeout(() => {
+      setShowBanner(true);
+    }, 1500);
 
-      const timer = setTimeout(() => {
-        setShowBanner(true);
-      }, 5000);
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowBanner(true);
+    };
 
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener('online', syncOfflineSubmissions);
-      };
-    } else {
-      // --- STANDARD ANDROID/DESKTOP LOGIC ---
-      const handleBeforeInstallPrompt = (e: Event) => {
-        e.preventDefault();
-        setDeferredPrompt(e);
-        
-        if (hasPrompted.current) return;
-        hasPrompted.current = true;
-        
-        setTimeout(() => {
-          setShowBanner(true);
-        }, 5000);
-      };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-      return () => {
-        window.removeEventListener('online', syncOfflineSubmissions);
-        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      };
-    }
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('online', syncOfflineSubmissions);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
 
   const handleDismiss = () => {
-    recordDismissal();
     setShowBanner(false);
   };
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
-    try {
-      await deferredPrompt.prompt();
-      const choice = await deferredPrompt.userChoice;
-      if (choice?.outcome === 'accepted') {
+    if (deferredPrompt) {
+      try {
+        await deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        if (choice?.outcome === 'accepted') {
+          setShowBanner(false);
+        }
+      } catch {
         setShowBanner(false);
       }
-    } catch {
-      setShowBanner(false);
+    } else {
+      // Fallback instruction for browsers without programmatic prompt
+      setIsIosDevice(true);
     }
   };
 
