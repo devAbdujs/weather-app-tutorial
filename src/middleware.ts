@@ -69,8 +69,52 @@ export function middleware(req: NextRequest) {
     return response;
   }
 
+  // Share portal preference cookie across all subdomains
+  const isProd = process.env.NODE_ENV === 'production';
+  let cookieDomain: string | undefined = undefined;
+  if (isProd) {
+    try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top';
+      const parsedHost = new URL(siteUrl).hostname;
+      const parts = parsedHost.split('.');
+      if (parts.length >= 2) {
+        cookieDomain = `.${parts.slice(-2).join('.')}`;
+      }
+    } catch {}
+  }
+
   // Handle subdomain-specific routing for landing page
   if (pathname === '/') {
+    const isLoggedOutParam = req.nextUrl.searchParams.get('logged_out') === '1';
+    const isLoggedOutCookie = req.cookies.get('temari_manual_logout')?.value === 'true';
+
+    // If user explicitly logged out, DO NOT redirect them to dashboard!
+    if (isLoggedOutParam || isLoggedOutCookie) {
+      const response = NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+      response.cookies.set({
+        name: 'es_session',
+        value: '',
+        path: '/',
+        maxAge: 0,
+        expires: new Date(0),
+      });
+      if (cookieDomain) {
+        response.cookies.set({
+          name: 'es_session',
+          value: '',
+          domain: cookieDomain,
+          path: '/',
+          maxAge: 0,
+          expires: new Date(0),
+        });
+      }
+      return response;
+    }
+
     const sessionCookie = req.cookies.get('es_session')?.value;
     if (sessionCookie) {
       // Authenticated user on subdomain -> redirect directly to scoped dashboard
@@ -93,20 +137,6 @@ export function middleware(req: NextRequest) {
       headers: requestHeaders,
     },
   });
-
-  // Share portal preference cookie across all subdomains
-  const isProd = process.env.NODE_ENV === 'production';
-  let cookieDomain: string | undefined = undefined;
-  if (isProd) {
-    try {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top';
-      const parsedHost = new URL(siteUrl).hostname;
-      const parts = parsedHost.split('.');
-      if (parts.length >= 2) {
-        cookieDomain = `.${parts.slice(-2).join('.')}`;
-      }
-    } catch {}
-  }
 
   if (subdomain !== 'root') {
     response.cookies.set({

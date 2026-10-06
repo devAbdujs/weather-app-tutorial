@@ -117,13 +117,54 @@ export async function getSavedMistakes() {
  */
 export async function logout() {
   const cookieOptions = getSessionCookieOptions();
+
+  // 1. Clear with domain (e.g. .temari.top) if set
+  if (cookieOptions.domain) {
+    cookies().set({
+      name: 'es_session',
+      value: '',
+      ...cookieOptions,
+      maxAge: 0,
+      expires: new Date(0),
+    });
+    cookies().set({
+      name: 'temari_portal',
+      value: '',
+      domain: cookieOptions.domain,
+      path: '/',
+      maxAge: 0,
+      expires: new Date(0),
+    });
+  }
+
+  // 2. Clear host-only cookie (without domain)
   cookies().set({
     name: 'es_session',
     value: '',
-    ...cookieOptions,
+    path: '/',
+    maxAge: 0,
+    expires: new Date(0),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  });
+
+  cookies().set({
+    name: 'temari_portal',
+    value: '',
+    path: '/',
     maxAge: 0,
     expires: new Date(0),
   });
-  cookies().delete('es_session');
+
+  // 3. Set manual logout indicator cookie
+  cookies().set({
+    name: 'temari_manual_logout',
+    value: 'true',
+    path: '/',
+    maxAge: 60 * 60 * 24, // 24 hours
+    sameSite: 'lax',
+  });
+
   return { success: true };
 }

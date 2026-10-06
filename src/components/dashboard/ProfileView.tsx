@@ -58,12 +58,20 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
     haptic.impact('heavy');
     try {
       safeSessionStorage.setItem('temari_manual_logout', 'true');
+      safeLocalStorage.setItem('temari_manual_logout', 'true');
       safeLocalStorage.removeItem('tg_web_user');
-      await logout();
-      window.location.href = '/';
+      document.cookie = 'temari_manual_logout=true; path=/; max-age=86400; SameSite=Lax';
+
+      // Call API logout and server action concurrently for maximum reliability
+      await Promise.allSettled([
+        fetch('/api/auth/logout', { method: 'POST' }),
+        logout()
+      ]);
+
+      window.location.href = '/?logged_out=1';
     } catch (e) {
       console.error('Logout failed', e);
-      setIsLoggingOut(false);
+      window.location.href = '/?logged_out=1';
     }
   };
 

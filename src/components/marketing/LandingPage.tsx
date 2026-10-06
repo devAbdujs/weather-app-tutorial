@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Send, Bot, Target, Sparkles, GraduationCap, ShieldCheck, Building2, Zap, ArrowRight } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
-import { safeSessionStorage } from '@/lib/safeStorage';
+import { safeSessionStorage, safeLocalStorage } from '@/lib/safeStorage';
 import { TemariMascot } from '@/components/mascot/TemariMascot';
 import { SubdomainType, SUBDOMAIN_CONFIGS, getSubdomainUrl, getExamPortalPath } from '@/lib/subdomains';
 import { MobileDeviceMockup } from '@/components/marketing/MobileDeviceMockup';
@@ -51,21 +51,44 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
     }
   };
 
+  const clearManualLogoutFlags = () => {
+    safeSessionStorage.removeItem('temari_manual_logout');
+    safeLocalStorage.removeItem('temari_manual_logout');
+    if (typeof document !== 'undefined') {
+      document.cookie = 'temari_manual_logout=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    }
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.has('logged_out')) {
+        searchParams.delete('logged_out');
+        const newQuery = searchParams.toString();
+        window.history.replaceState({}, '', window.location.pathname + (newQuery ? `?${newQuery}` : ''));
+      }
+    }
+  };
+
   useEffect(() => {
     let attempts = 0;
 
     const checkTelegram = () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const isExplicitlyLoggedOut = 
+        searchParams.get('logged_out') === '1' ||
+        safeSessionStorage.getItem('temari_manual_logout') === 'true' ||
+        safeLocalStorage.getItem('temari_manual_logout') === 'true' ||
+        (typeof document !== 'undefined' && document.cookie.includes('temari_manual_logout=true'));
+
+      if (isExplicitlyLoggedOut) {
+        return;
+      }
+
       const tg = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp : null;
       if (tg && tg.initData) {
-        if (safeSessionStorage.getItem('temari_manual_logout') === 'true') {
-          return;
-        }
         setIsWebApp(true);
         try { tg.ready?.(); tg.expand?.(); } catch (e) {}
         authenticateWithTelegram(tg.initData);
         return;
       }
-      const searchParams = new URLSearchParams(window.location.search);
       if (searchParams.get('code') && searchParams.get('state')) {
         window.history.replaceState({}, '', window.location.pathname);
       }
@@ -79,9 +102,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
 
   const handlePrimaryAuth = (targetPortal?: SubdomainType) => {
     sounds.playTap();
+    clearManualLogoutFlags();
     const tg = typeof window !== 'undefined' ? (window as any).Telegram?.WebApp : null;
     if (tg?.initData) {
-      safeSessionStorage.removeItem('temari_manual_logout');
       authenticateWithTelegram(tg.initData);
     } else {
       handleTelegramOIDCLogin(targetPortal || (activePortal !== 'root' ? activePortal : undefined));
@@ -90,6 +113,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
 
   const handleTelegramOIDCLogin = async (targetPortal?: SubdomainType) => {
     sounds.playTap();
+    clearManualLogoutFlags();
     setIsAuthenticating(true);
     setError(null);
     try {

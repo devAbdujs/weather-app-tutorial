@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
+import { headers, cookies } from 'next/headers';
 import { getServerSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import { LandingPage } from '@/components/marketing/LandingPage';
@@ -44,14 +44,22 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams?: { logged_out?: string } }) {
   const headersList = await headers();
   const host = headersList.get('host');
   const headerSubdomain = headersList.get('x-temari-subdomain');
   const subdomain = (headerSubdomain && ['entrance', 'freshman', 'exit'].includes(headerSubdomain))
     ? (headerSubdomain as SubdomainType)
     : parseSubdomain(host);
-  const session = await getServerSession();
+
+  const isLoggedOutParam = searchParams?.logged_out === '1';
+  const cookieStore = cookies();
+  const isLoggedOutCookie = cookieStore.get('temari_manual_logout')?.value === 'true';
+
+  let session = null;
+  if (!isLoggedOutParam && !isLoggedOutCookie) {
+    session = await getServerSession();
+  }
   
   if (session) {
     if (subdomain !== 'root') {
