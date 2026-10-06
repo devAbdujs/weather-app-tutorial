@@ -55,30 +55,73 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to verify authorization code' }, { status: 401 });
     }
 
-    const idTokenPayload = JSON.parse(Buffer.from(tokenData.id_token.split('.')[1], 'base64').toString());
+    // Parse ID token payload safely across standard base64 and base64url encodings
+    let idTokenPayload: any;
+    try {
+      const payloadPart = tokenData.id_token.split('.')[1];
+      const base64 = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+      idTokenPayload = JSON.parse(Buffer.from(padded, 'base64').toString('utf-8'));
+    } catch (parseErr) {
+      console.error("[Auth OIDC] ID token payload parse error:", parseErr);
+      return NextResponse.json({ error: 'Failed to parse authorization token' }, { status: 400 });
+    }
+
     const telegramId = idTokenPayload.sub;
     const phone = idTokenPayload.phone_number;
     const fullName = idTokenPayload.name || '';
     const firstName = fullName.split(' ')[0] || 'Scholar';
+    const username = idTokenPayload.preferred_username || null;
+    const avatarUrl = idTokenPayload.picture || null;
 
-    if (!telegramId) return NextResponse.json({ error: 'Invalid ID token payload' }, { status: 400 });
+    if (!telegramId) {
+      return NextResponse.json({ error: 'Invalid ID token payload: missing sub' }, { status: 400 });
+    }
+
+    const supabase = await createClient();
 
     const upsertPayload: Record<string, any> = { 
       telegram_id: telegramId.toString(),
       full_name: fullName,
+      username: username,
+      avatar_url: avatarUrl,
     };
     if (phone) {
       upsertPayload.phone_number = phone;
     }
 
-    const supabase = await createClient();
-    const { data: profile, error } = await supabase
+    // 1. Attempt upsert into profiles
+    let profileResult = await supabase
       .from('profiles')
-      .upsert(upsertPayload, { onConflict: 'telegram_id' })
+      .upsert({ ...upsertPayload }, { onConflict: 'telegram_id' })
       .select('telegram_id, target_exam, stream')
-      .single();
+      .maybeSingle();
 
-    if (error) throw error;
+    // 2. Schema resilience: if phone_number column is not yet migrated in Supabase, retry without it
+    if (profileResult.error && upsertPayload.phone_number) {
+      const errMsg = (profileResult.error.message || '').toLowerCase();
+      const isColumnMissing = 
+        profileResult.error.code === 'PGRST204' || 
+        errMsg.includes('phone_number') ||
+        errMsg.includes('column');
+
+      if (isColumnMissing) {
+        console.warn("[Auth OIDC] 'phone_number' column not found on profiles table. Retrying upsert without phone_number. (Tip: run migration 20261005110000_add_phone_number_to_profiles.sql)");
+        delete upsertPayload.phone_number;
+        profileResult = await supabase
+          .from('profiles')
+          .upsert({ ...upsertPayload }, { onConflict: 'telegram_id' })
+          .select('telegram_id, target_exam, stream')
+          .maybeSingle();
+      }
+    }
+
+    if (profileResult.error || !profileResult.data) {
+      console.error("[Auth OIDC] Supabase profile upsert error:", profileResult.error);
+      throw profileResult.error || new Error('Failed to create or retrieve user profile');
+    }
+
+    const profile = profileResult.data;
 
     // Resolve target_exam if not already set on profile
     let activeTargetExam = profile.target_exam;
@@ -99,10 +142,14 @@ export async function POST(req: NextRequest) {
 
       if (candidate) {
         activeTargetExam = candidate;
-        await supabase
-          .from('profiles')
-          .update({ target_exam: candidate })
-          .eq('telegram_id', profile.telegram_id);
+        try {
+          await supabase
+            .from('profiles')
+            .update({ target_exam: candidate })
+            .eq('telegram_id', profile.telegram_id);
+        } catch (updateErr) {
+          console.warn("[Auth OIDC] Non-fatal: Failed to update target_exam on profile:", updateErr);
+        }
       }
     }
 
@@ -115,16 +162,41 @@ export async function POST(req: NextRequest) {
     });
 
     const response = NextResponse.json({ success: true, phone });
+    const cookieOptions = getSessionCookieOptions();
+
     response.cookies.set({
       name: 'es_session',
       value: sessionToken,
-      ...getSessionCookieOptions(),
+      ...cookieOptions,
+    });
+
+    // Clear any manual logout flags upon successful authentication
+    if (cookieOptions.domain) {
+      response.cookies.set({
+        name: 'temari_manual_logout',
+        value: '',
+        domain: cookieOptions.domain,
+        path: '/',
+        maxAge: 0,
+        expires: new Date(0),
+      });
+    }
+    response.cookies.set({
+      name: 'temari_manual_logout',
+      value: '',
+      path: '/',
+      maxAge: 0,
+      expires: new Date(0),
     });
 
     return response;
 
   } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
     console.error("OIDC Auth Error:", error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Authentication failed. Please try again.', details: process.env.NODE_ENV === 'development' ? errorMsg : undefined },
+      { status: 500 }
+    );
   }
 }
