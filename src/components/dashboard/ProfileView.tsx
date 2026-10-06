@@ -31,7 +31,7 @@ import { WelcomeOnboarding } from './WelcomeOnboarding';
 import { useGamificationStore, getLevelForXp } from '@/store/useGamificationStore';
 import { sounds } from '@/lib/sounds';
 import { TemariMascot } from '@/components/mascot/TemariMascot';
-import { safeSessionStorage, safeLocalStorage } from '@/lib/safeStorage';
+import { safeSessionStorage, safeLocalStorage, safeCookieStorage } from '@/lib/safeStorage';
 
 interface ProfileViewProps {
   profile: any;
@@ -60,7 +60,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
       safeSessionStorage.setItem('temari_manual_logout', 'true');
       safeLocalStorage.setItem('temari_manual_logout', 'true');
       safeLocalStorage.removeItem('tg_web_user');
-      document.cookie = 'temari_manual_logout=true; path=/; max-age=86400; SameSite=Lax';
+      safeCookieStorage.setItem('temari_manual_logout', 'true', 86400);
 
       // Call API logout and server action concurrently for maximum reliability
       await Promise.allSettled([

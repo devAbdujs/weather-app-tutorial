@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { safeSessionStorage } from '@/lib/safeStorage';
+import { useSearchParams } from 'next/navigation';
+import { authStateStorage, safeCookieStorage, safeLocalStorage, safeSessionStorage } from '@/lib/safeStorage';
+import { getSubdomainUrl, SubdomainType } from '@/lib/subdomains';
 
 function CallbackContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
 
@@ -18,20 +18,23 @@ function CallbackContent() {
       return;
     }
 
-    const savedState = safeSessionStorage.getItem('tg_oidc_state');
-    const codeVerifier = safeSessionStorage.getItem('tg_oidc_verifier');
+    const savedState = authStateStorage.getOidcState();
+    const codeVerifier = authStateStorage.getOidcVerifier();
 
-    if (state !== savedState) {
+    const normalizedState = state ? decodeURIComponent(state).trim() : '';
+    const normalizedSavedState = savedState ? decodeURIComponent(savedState).trim() : '';
+
+    if (normalizedSavedState && normalizedState && normalizedState !== normalizedSavedState) {
       setError('State mismatch. Possible CSRF attack.');
       return;
     }
     
     if (!codeVerifier) {
-      setError('Session expired. Please try logging in again.');
+      setError('Login session expired or interrupted. Please return home and tap sign in again.');
       return;
     }
 
-    const targetExam = safeSessionStorage.getItem('temari_target_exam');
+    const targetExam = authStateStorage.getTargetExam();
 
     // Exchange the code for a token on our backend
     fetch('/api/auth/oidc', {
@@ -50,11 +53,24 @@ function CallbackContent() {
     .then(res => res.json().then(data => ({ status: res.status, ok: res.ok, data })))
     .then(({ ok, data }) => {
       if (ok) {
-        // Cleanup storage and redirect to dashboard
-        safeSessionStorage.removeItem('tg_oidc_state');
-        safeSessionStorage.removeItem('tg_oidc_verifier');
-        safeSessionStorage.removeItem('temari_target_exam');
-        window.location.replace('/dashboard');
+        // Cleanup storage and clear manual logout flags
+        authStateStorage.clearOidcData();
+        safeCookieStorage.removeItem('temari_manual_logout');
+        safeLocalStorage.removeItem('temari_manual_logout');
+        safeSessionStorage.removeItem('temari_manual_logout');
+
+        if (targetExam && ['entrance', 'freshman', 'exit'].includes(targetExam)) {
+          const isDev = typeof window !== 'undefined' && 
+            (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+          if (isDev) {
+            window.location.replace(`/dashboard?target_exam=${targetExam}`);
+          } else {
+            const dest = getSubdomainUrl(targetExam as SubdomainType, '/dashboard');
+            window.location.replace(dest);
+          }
+        } else {
+          window.location.replace('/dashboard');
+        }
       } else {
         setError(data.error || 'Failed to authenticate');
       }
@@ -71,7 +87,10 @@ function CallbackContent() {
         <h2 className="text-xl font-bold text-foreground mb-1.5 tracking-tight">Authentication Failed</h2>
         <p className="text-sm text-muted-foreground text-center max-w-sm mb-6 font-medium">{error}</p>
         <button 
-          onClick={() => window.location.replace('/')}
+          onClick={() => {
+            authStateStorage.clearOidcData();
+            window.location.replace('/');
+          }}
           className="px-6 py-2.5 bg-primary text-primary-foreground font-semibold text-sm rounded-xl shadow-tactile-sm hover:bg-primary/95 active:scale-[0.99] transition-all duration-200 ease-bespoke"
         >
           Return Home

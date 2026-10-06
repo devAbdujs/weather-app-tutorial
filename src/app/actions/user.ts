@@ -166,5 +166,16 @@ export async function logout() {
     sameSite: 'lax',
   });
 
+  if (cookieOptions.domain) {
+    cookies().set({
+      name: 'temari_manual_logout',
+      value: 'true',
+      domain: cookieOptions.domain,
+      path: '/',
+      maxAge: 60 * 60 * 24,
+      sameSite: 'lax',
+    });
+  }
+
   return { success: true };
 }

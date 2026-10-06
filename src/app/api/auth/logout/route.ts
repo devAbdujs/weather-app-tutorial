@@ -68,4 +68,15 @@ function applyLogoutCookies(response: NextResponse) {
     maxAge: 60 * 60 * 24, // 24 hours
     sameSite: 'lax',
   });
+
+  if (cookieOptions.domain) {
+    response.cookies.set({
+      name: 'temari_manual_logout',
+      value: 'true',
+      domain: cookieOptions.domain,
+      path: '/',
+      maxAge: 60 * 60 * 24,
+      sameSite: 'lax',
+    });
+  }
 }

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Send, Bot, Target, Sparkles, GraduationCap, ShieldCheck, Building2, Zap, ArrowRight } from 'lucide-react';
 import { sounds } from '@/lib/sounds';
-import { safeSessionStorage, safeLocalStorage } from '@/lib/safeStorage';
+import { safeSessionStorage, safeLocalStorage, safeCookieStorage, authStateStorage } from '@/lib/safeStorage';
 import { TemariMascot } from '@/components/mascot/TemariMascot';
 import { SubdomainType, SUBDOMAIN_CONFIGS, getSubdomainUrl, getExamPortalPath } from '@/lib/subdomains';
 import { MobileDeviceMockup } from '@/components/marketing/MobileDeviceMockup';
@@ -54,9 +54,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
   const clearManualLogoutFlags = () => {
     safeSessionStorage.removeItem('temari_manual_logout');
     safeLocalStorage.removeItem('temari_manual_logout');
-    if (typeof document !== 'undefined') {
-      document.cookie = 'temari_manual_logout=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    }
+    safeCookieStorage.removeItem('temari_manual_logout');
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
       if (searchParams.has('logged_out')) {
@@ -76,6 +74,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
         searchParams.get('logged_out') === '1' ||
         safeSessionStorage.getItem('temari_manual_logout') === 'true' ||
         safeLocalStorage.getItem('temari_manual_logout') === 'true' ||
+        safeCookieStorage.getItem('temari_manual_logout') === 'true' ||
         (typeof document !== 'undefined' && document.cookie.includes('temari_manual_logout=true'));
 
       if (isExplicitlyLoggedOut) {
@@ -118,19 +117,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
     setError(null);
     try {
       const selected = targetPortal || activePortal;
-      if (selected !== 'root') {
-        safeSessionStorage.setItem('temari_target_exam', selected);
-      } else {
-        safeSessionStorage.removeItem('temari_target_exam');
-      }
+      const targetExam = selected !== 'root' ? selected : undefined;
 
       const { generateRandomString, generateCodeChallenge } = await import('@/lib/pkce');
       const codeVerifier = generateRandomString(64);
       const state = generateRandomString(32);
       const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-      safeSessionStorage.setItem('tg_oidc_verifier', codeVerifier);
-      safeSessionStorage.setItem('tg_oidc_state', state);
+      // Persist across root-domain cookie (.temari.top), localStorage, and sessionStorage
+      authStateStorage.setOidcState(state, codeVerifier, targetExam);
 
       const BOT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CLIENT_ID || '8400954528';
       const baseOrigin = process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top';
@@ -331,7 +326,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
               href={getExamPortalPath('entrance')}
               onClick={() => {
                 sounds.playTap();
-                safeSessionStorage.removeItem('temari_manual_logout');
+                clearManualLogoutFlags();
               }}
               className="p-4.5 rounded-2xl border bg-card border-black/[0.08] dark:border-white/[0.08] hover:border-primary/40 shadow-tactile-xs transition-all flex flex-col justify-between group"
             >
@@ -360,7 +355,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
               href={getExamPortalPath('freshman')}
               onClick={() => {
                 sounds.playTap();
-                safeSessionStorage.removeItem('temari_manual_logout');
+                clearManualLogoutFlags();
               }}
               className="p-4.5 rounded-2xl border bg-card border-black/[0.08] dark:border-white/[0.08] hover:border-primary/40 shadow-tactile-xs transition-all flex flex-col justify-between group"
             >
@@ -389,7 +384,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
               href={getExamPortalPath('exit')}
               onClick={() => {
                 sounds.playTap();
-                safeSessionStorage.removeItem('temari_manual_logout');
+                clearManualLogoutFlags();
               }}
               className="p-4.5 rounded-2xl border bg-card border-black/[0.08] dark:border-white/[0.08] hover:border-primary/40 shadow-tactile-xs transition-all flex flex-col justify-between group"
             >
