@@ -137,13 +137,30 @@ export async function loginAdmin(username: string, passcode: string) {
 
   const supabase = await createAdminClient();
   
-  const { data: admin, error } = await supabase
+  let admin: any = null;
+  const { data: adminWithActive, error: activeErr } = await supabase
     .from('admin_users')
     .select('id, username, role, passcode, is_active')
     .ilike('username', normalizedUsername)
     .single();
 
-  if (error || !admin) {
+  if (activeErr) {
+    // Graceful fallback if is_active column migration hasn't been executed yet
+    const { data: fallback, error: fbErr } = await supabase
+      .from('admin_users')
+      .select('id, username, role, passcode')
+      .ilike('username', normalizedUsername)
+      .single();
+
+    if (fbErr || !fallback) {
+      return { success: false, error: 'Invalid username or password' };
+    }
+    admin = { ...fallback, is_active: true };
+  } else {
+    admin = adminWithActive;
+  }
+
+  if (!admin) {
     return { success: false, error: 'Invalid username or password' };
   }
 
@@ -203,11 +220,24 @@ export async function verifyAdmin() {
 
   // Always verify against DB so role changes apply instantly
   const supabase = await createAdminClient();
-  const { data: admin } = await supabase
+  let admin: any = null;
+  const { data: adminWithActive, error: activeErr } = await supabase
     .from('admin_users')
     .select('id, username, role, is_active')
     .eq('id', session.id)
     .single();
+
+  if (activeErr) {
+    const { data: fallback } = await supabase
+      .from('admin_users')
+      .select('id, username, role')
+      .eq('id', session.id)
+      .single();
+    if (!fallback) return null;
+    admin = { ...fallback, is_active: true };
+  } else {
+    admin = adminWithActive;
+  }
   
   if (!admin || admin.is_active === false) return null;
 
@@ -287,7 +317,14 @@ export async function getAdmins() {
     .select('id, username, role, is_active, created_at')
     .order('created_at', { ascending: true });
 
-  if (error) throw error;
+  if (error) {
+    const { data: fallback, error: fbErr } = await supabase
+      .from('admin_users')
+      .select('id, username, role, created_at')
+      .order('created_at', { ascending: true });
+    if (fbErr) throw fbErr;
+    return (fallback || []).map((a: any) => ({ ...a, is_active: true }));
+  }
   return data || [];
 }
 

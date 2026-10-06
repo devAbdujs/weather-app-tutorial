@@ -476,12 +476,28 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           </button>
         </section>
 
-        {/* ── 7. SIGN OUT BUTTON (ui_inspiration3.png: FULL WIDTH PILL) ── */}
-        <div className="pt-2">
+        {/* ── 7. SIGN OUT & EXIT BUTTONS ── */}
+        <div className="pt-2 space-y-2.5">
+          {isTelegram && (
+            <button
+              type="button"
+              onClick={() => {
+                sounds.playTap();
+                try {
+                  const tg = (window as any).Telegram?.WebApp;
+                  tg?.close?.();
+                } catch {}
+              }}
+              className="w-full py-3 bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground font-black text-xs shadow-2xs transition-all active:translate-y-0.5"
+            >
+              <span>Exit Mini App</span>
+            </button>
+          )}
+
           <button 
             disabled={isLoggingOut} 
             onClick={handleLogout} 
-            className="w-full py-4 bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center justify-center gap-2.5 text-foreground hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-400 font-black text-sm shadow-2xs transition-all active:translate-y-0.5 disabled:opacity-50"
+            className="w-full py-3.5 bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-full flex items-center justify-center gap-2.5 text-foreground hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-400 font-black text-sm shadow-2xs transition-all active:translate-y-0.5 disabled:opacity-50"
           >
             {isLoggingOut ? (
               <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
