@@ -21,7 +21,10 @@ import {
   FileQuestion,
   ShieldCheck,
   Headphones,
-  Settings
+  Settings,
+  Share2,
+  Copy,
+  Check
 } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useRouter } from 'next/navigation';
@@ -47,6 +50,39 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
   const [devClicks, setDevClicks] = useState(0);
   const toggleDevMode = useAppStore(s => s.toggleDevMode);
   const devMode = useAppStore(s => s.devMode);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  const botUsername = process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot';
+  const referralLink = profile?.telegram_id 
+    ? `https://t.me/${botUsername}?start=ref_${profile.telegram_id}`
+    : `https://t.me/${botUsername}`;
+
+  const handleCopyLink = async () => {
+    sounds.playTap();
+    haptic.selection();
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    } catch {
+      const input = document.createElement('input');
+      input.value = referralLink;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    }
+  };
+
+  const handleShareTelegram = () => {
+    sounds.playTap();
+    haptic.impact('light');
+    const shareText = encodeURIComponent('Hey! Join me on Temari AI to study national exams with step-by-step AI tutoring:');
+    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${shareText}`;
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+  };
 
   const { xp, soundEnabled, toggleSound } = useGamificationStore();
   const currentLevel = getLevelForXp(xp);
@@ -412,7 +448,72 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           </div>
         </section>
 
-        {/* ── 6. SETTINGS & APP PREFERENCES ── */}
+        {/* ── 6. REFERRAL & INVITE FRIENDS ── */}
+        <section 
+          aria-label="Invite Friends"
+          className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-card-lg p-4 shadow-tactile-sm space-y-3"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                <Share2 className="w-5 h-5 stroke-[2.2]" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-foreground leading-tight">
+                  Invite Friends &amp; Study Together
+                </h3>
+                <p className="text-caption font-bold text-muted-foreground mt-0.5">
+                  Share your link to grow your scholar network
+                </p>
+              </div>
+            </div>
+            <span className="text-micro font-black uppercase tracking-wider text-purple-700 dark:text-purple-300 bg-purple-500/15 border border-purple-500/30 px-2 py-0.5 rounded-full shrink-0">
+              🎁 Invite
+            </span>
+          </div>
+
+          {/* Referral link display with Copy button */}
+          <div className="flex items-center gap-2 bg-ground border border-black/[0.08] dark:border-white/[0.08] rounded-xl p-1.5 pl-3">
+            <span className="text-xs font-mono text-muted-foreground truncate flex-1 select-all font-semibold">
+              {referralLink}
+            </span>
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all active:scale-95 flex items-center gap-1 shrink-0 ${
+                copiedLink 
+                  ? 'bg-emerald-600 text-white' 
+                  : 'bg-primary text-white hover:bg-primary/90'
+              }`}
+            >
+              {copiedLink ? (
+                <>
+                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>Copy</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Direct Telegram Share button */}
+          <button
+            type="button"
+            onClick={handleShareTelegram}
+            className="w-full py-2.5 rounded-xl bg-[#229ED9] hover:bg-[#1f8ec4] text-white font-black text-xs flex items-center justify-center gap-2 transition-all active:scale-[0.99] shadow-tactile-xs border border-white/10"
+          >
+            <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.37.74-.56 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.23 0 .37z" />
+            </svg>
+            <span>Share Invite on Telegram</span>
+          </button>
+        </section>
+
+        {/* ── 7. SETTINGS & APP PREFERENCES ── */}
         <section aria-label="Account Settings" className="space-y-2.5">
           {/* Notifications / Sound */}
           <div 

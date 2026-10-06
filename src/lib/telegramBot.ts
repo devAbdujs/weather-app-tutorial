@@ -221,7 +221,10 @@ export function getMainMenuPayload(firstName: string, siteUrl: string = SITE_URL
         { text: '🔄 Change Track', callback_data: 'nav:tracks' },
         { text: '👑 PRO Upgrade', callback_data: 'nav:upgrade' },
       ],
-      [{ text: '📢 Join Community (@temari_App)', callback_data: 'nav:channel' }],
+      [
+        { text: '🎁 Invite Friends', callback_data: 'nav:invite' },
+        { text: '📢 Community (@temari_App)', callback_data: 'nav:channel' },
+      ],
       [{ text: '🚀 Open Full Temari App', web_app: { url: siteUrl } }],
     ],
   };
@@ -916,7 +919,44 @@ export function getPersistentReplyKeyboard() {
 }
 
 /**
- * 12. Record Referral Deep-Link
+ * 12. Referral Invite Payload
+ */
+export function getInvitePayload(
+  telegramId?: string | number | null,
+  botUsername: string = process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot'
+) {
+  const sTelegramId = telegramId ? String(telegramId) : '';
+  const refLink = sTelegramId 
+    ? `https://t.me/${botUsername}?start=ref_${sTelegramId}`
+    : `https://t.me/${botUsername}`;
+  const shareText = encodeURIComponent(
+    `Hey! Join me on Temari AI to practice past Ethiopian national & university exams with step-by-step AI tutoring: ${refLink}`
+  );
+  const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${shareText}`;
+
+  const text = [
+    `🎁 <b>Invite Friends & Study Together</b>`,
+    ``,
+    `Study better with classmates! Share your unique referral link:`,
+    ``,
+    `🔗 <b>Your Personal Referral Link:</b>`,
+    `<code>${refLink}</code>`,
+    ``,
+    `💡 <i>Tip: Tap the button below to forward your invite directly to any Telegram chat or group in 1 click!</i>`,
+  ].join('\n');
+
+  const reply_markup = {
+    inline_keyboard: [
+      [{ text: '🚀 Share with Friends / Groups', url: tgShareUrl }],
+      [{ text: '🔙 Back to Menu', callback_data: 'nav:menu' }],
+    ],
+  };
+
+  return { text, reply_markup, refLink, tgShareUrl };
+}
+
+/**
+ * 13. Record Referral Deep-Link
  */
 export async function recordReferral(
   supabaseAdmin: SupabaseClient,
@@ -940,6 +980,17 @@ export async function recordReferral(
       .from('profiles')
       .update({ referred_by: sReferrer })
       .eq('telegram_id', sNewUser);
+
+    if (process.env.NODE_ENV !== 'test') {
+      try {
+        await sendTelegramMessage(
+          sReferrer,
+          `🎉 <b>Great news!</b> A fellow student just joined Temari through your referral link!\n\nKeep sharing to grow your scholar network!`
+        );
+      } catch {
+        // Non-critical if user blocked bot or network issue
+      }
+    }
 
     return true;
   } catch (err) {

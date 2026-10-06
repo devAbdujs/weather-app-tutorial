@@ -38,6 +38,7 @@ import {
   checkChannelMembership,
   getSingleQuestionPayload,
   getPersistentReplyKeyboard,
+  getInvitePayload,
   recordReferral,
   escapeTelegramHtml,
 } from '@/lib/telegramBot';
@@ -194,6 +195,21 @@ export async function POST(req: NextRequest) {
         if (text.startsWith('/channel') || text === '📢 Official Channel') {
           const { text: chText, reply_markup } = getChannelJoinPayload();
           await sendTelegramMessage(chatId, chText, reply_markup);
+          return NextResponse.json({ ok: true });
+        }
+
+        // Command: /invite, /ref, /referral
+        if (
+          text.startsWith('/invite') ||
+          text.startsWith('/ref') ||
+          text.startsWith('/referral') ||
+          text === '🎁 Invite Friends'
+        ) {
+          const { text: invText, reply_markup } = getInvitePayload(
+            telegramUser.id,
+            process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot'
+          );
+          await sendTelegramMessage(chatId, invText, reply_markup);
           return NextResponse.json({ ok: true });
         }
 
@@ -460,6 +476,17 @@ export async function POST(req: NextRequest) {
       if (data === 'nav:channel') {
         await answerCallbackQuery(callbackQuery.id);
         const { text, reply_markup } = getChannelJoinPayload();
+        await editTelegramMessage(chatId, messageId, text, reply_markup);
+        return NextResponse.json({ ok: true });
+      }
+
+      // 10. Navigation: Invite Friends
+      if (data === 'nav:invite') {
+        await answerCallbackQuery(callbackQuery.id);
+        const { text, reply_markup } = getInvitePayload(
+          fromUser?.id,
+          process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot'
+        );
         await editTelegramMessage(chatId, messageId, text, reply_markup);
         return NextResponse.json({ ok: true });
       }

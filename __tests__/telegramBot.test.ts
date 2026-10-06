@@ -18,6 +18,7 @@ import {
   getChannelJoinPayload,
   getSingleQuestionPayload,
   getPersistentReplyKeyboard,
+  getInvitePayload,
   recordReferral,
   checkMilestoneCelebration,
   formatMilestoneCard,
@@ -424,6 +425,15 @@ describe('Telegram Bot Database Operations', () => {
 
       expect(await recordReferral(mockSupabase, 'user-1', 'user-1')).toBe(false);
       expect(await recordReferral(mockSupabase, 'user-2', 'user-3')).toBe(false);
+    });
+
+    it('generates invite referral payload with valid deep link and share url', () => {
+      const { text, reply_markup, refLink, tgShareUrl } = getInvitePayload('998877', 'TemariExamBot');
+      expect(refLink).toBe('https://t.me/TemariExamBot?start=ref_998877');
+      expect(text).toContain('https://t.me/TemariExamBot?start=ref_998877');
+      expect(tgShareUrl).toContain('t.me/share/url');
+      expect(reply_markup.inline_keyboard[0][0].url).toContain(encodeURIComponent(refLink));
+      expect(reply_markup.inline_keyboard[1][0].callback_data).toBe('nav:menu');
     });
   });
 
