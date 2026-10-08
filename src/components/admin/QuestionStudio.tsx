@@ -271,7 +271,7 @@ export function QuestionStudio({ initialQuestions }: QuestionStudioProps) {
           <button
             type="button"
             onClick={handleOpenAdd}
-            className="px-3.5 py-2 bg-primary hover:bg-primary/95 text-primary-foreground font-semibold text-xs rounded-xl shadow-tactile-sm flex items-center gap-1.5 transition-all active:scale-[0.98]"
+            className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs rounded-xl shadow-tactile-sm flex items-center gap-1.5 transition-all active:scale-[0.98]"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Question</span>
@@ -554,7 +554,7 @@ export function QuestionStudio({ initialQuestions }: QuestionStudioProps) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-semibold shadow-tactile-sm disabled:opacity-50"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl text-xs font-bold shadow-tactile-sm disabled:opacity-50 transition-all active:scale-[0.98]"
                 >
                   {loading ? 'Saving...' : 'Save Question'}
                 </button>
@@ -636,7 +636,7 @@ export function QuestionStudio({ initialQuestions }: QuestionStudioProps) {
                 type="button"
                 onClick={handleBulkImport}
                 disabled={loading || !bulkInput.trim()}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-semibold shadow-tactile-sm disabled:opacity-50"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl text-xs font-bold shadow-tactile-sm disabled:opacity-50 transition-all active:scale-[0.98]"
               >
                 {loading ? 'Importing...' : 'Parse & Import'}
               </button>

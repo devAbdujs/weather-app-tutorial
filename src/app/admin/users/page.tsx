@@ -8,6 +8,7 @@ import Link from 'next/link';
 export default async function AdminUsersPage({ searchParams }: { searchParams: { page?: string } }) {
   const admin = await verifyAdmin();
   if (!hasPermission(admin, 'users:view')) {
+    if (admin?.role === 'ambassador') redirect('/admin/ambassador');
     redirect(admin?.role === 'editor' || admin?.role === 'content_editor' ? '/admin/questions' : '/admin');
   }
 

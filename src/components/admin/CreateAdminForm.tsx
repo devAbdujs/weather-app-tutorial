@@ -61,10 +61,11 @@ export function CreateAdminForm() {
           <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Role</label>
           <select 
             value={role} onChange={e => setRole(e.target.value)}
-            className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-medium text-foreground text-sm focus:border-primary/60 focus:ring-2 focus:ring-primary/15 transition-all outline-none cursor-pointer"
+            className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-medium text-foreground text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all outline-none cursor-pointer"
           >
             <option value="readonly">Read-Only Viewer</option>
             <option value="editor">Content Editor</option>
+            <option value="ambassador">College Ambassador</option>
             <option value="financial_admin">Financial Admin</option>
             <option value="superadmin">Super Admin</option>
           </select>
@@ -74,7 +75,7 @@ export function CreateAdminForm() {
           <input 
             type="password" 
             value={passcode} onChange={e => setPasscode(e.target.value)}
-            className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-medium text-foreground text-sm focus:border-primary/60 focus:ring-2 focus:ring-primary/15 transition-all outline-none"
+            className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-medium text-foreground text-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all outline-none"
             placeholder="Temporary password"
           />
         </div>
@@ -88,7 +89,7 @@ export function CreateAdminForm() {
         <button 
           type="submit" 
           disabled={loading || !username || !passcode}
-          className="w-full py-2.5 mt-2 bg-primary text-primary-foreground font-semibold text-sm rounded-xl hover:bg-primary/95 shadow-tactile-sm active:scale-[0.99] transition-all duration-200 ease-bespoke disabled:opacity-50"
+          className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm rounded-xl shadow-tactile-sm active:scale-[0.99] transition-all disabled:opacity-50"
         >
           {loading ? 'Creating...' : 'Create Account'}
         </button>

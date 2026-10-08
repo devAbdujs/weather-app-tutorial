@@ -9,6 +9,7 @@ import { PaymentActions } from '@/components/admin/PaymentActions';
 export default async function AdminPaymentsPage({ searchParams }: { searchParams: { page?: string } }) {
   const admin = await verifyAdmin();
   if (!hasPermission(admin, 'payments:view')) {
+    if (admin?.role === 'ambassador') redirect('/admin/ambassador');
     redirect(admin?.role === 'editor' || admin?.role === 'content_editor' ? '/admin/questions' : '/admin');
   }
 

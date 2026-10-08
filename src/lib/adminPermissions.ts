@@ -9,7 +9,8 @@ export type AdminPermission =
   | 'notes:write'
   | 'questions:read'
   | 'questions:write'
-  | 'analytics:read';
+  | 'analytics:read'
+  | 'ambassador:view';
 
 export function hasPermission(admin: { role: string } | null | undefined, permission: AdminPermission): boolean {
   if (!admin) return false;
@@ -19,6 +20,9 @@ export function hasPermission(admin: { role: string } | null | undefined, permis
     case 'admin:manage':
     case 'ai:view':
       return admin.role === 'superadmin';
+
+    case 'ambassador:view':
+      return ['superadmin', 'ambassador'].includes(admin.role);
 
     case 'payments:view':
     case 'payments:approve':

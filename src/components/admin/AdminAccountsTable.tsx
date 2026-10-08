@@ -166,10 +166,12 @@ export function AdminAccountsTable({ admins: initialAdmins, currentAdminId }: Ad
                             ? 'bg-accent-indigo/15 text-accent-indigo border-accent-indigo/30'
                             : a.role === 'editor'
                             ? 'bg-accent-emerald/10 text-accent-emerald border-accent-emerald/20'
+                            : a.role === 'ambassador'
+                            ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/30'
                             : 'bg-muted/10 text-muted-foreground border-border'
                         }`}
                       >
-                        {a.role}
+                        {a.role === 'ambassador' ? 'College Ambassador' : a.role}
                       </span>
                     </td>
                     <td className="p-4">

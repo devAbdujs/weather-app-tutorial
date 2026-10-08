@@ -8,6 +8,7 @@ import { AdminAccountsTable } from '@/components/admin/AdminAccountsTable';
 export default async function ManagersPage() {
   const currentAdmin = await verifyAdmin();
   if (!hasPermission(currentAdmin, 'admin:manage')) {
+    if (currentAdmin?.role === 'ambassador') redirect('/admin/ambassador');
     redirect(currentAdmin?.role === 'editor' || currentAdmin?.role === 'content_editor' ? '/admin/questions' : '/admin');
   }
 

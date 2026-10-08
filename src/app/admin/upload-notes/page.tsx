@@ -321,8 +321,8 @@ export default function AdminUploadNotes() {
               onClick={() => setDepartment(c)}
               className={`text-xs px-2.5 py-1 rounded-lg border font-bold transition-all ${
                 department === c
-                  ? 'bg-primary text-white border-primary shadow-xs'
-                  : 'bg-ground text-foreground border-border hover:border-primary/50'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                  : 'bg-ground text-foreground border-border hover:border-blue-500/50'
               }`}
             >
               {c}
@@ -337,7 +337,7 @@ export default function AdminUploadNotes() {
           onClick={() => setActiveTab('batch')}
           className={`px-5 py-3 text-sm font-black transition-all border-b-2 flex items-center gap-2 ${
             activeTab === 'batch'
-              ? 'border-primary text-primary'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
               : 'border-transparent text-muted hover:text-foreground'
           }`}
         >
@@ -348,7 +348,7 @@ export default function AdminUploadNotes() {
           onClick={() => setActiveTab('manual')}
           className={`px-5 py-3 text-sm font-black transition-all border-b-2 flex items-center gap-2 ${
             activeTab === 'manual'
-              ? 'border-primary text-primary'
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
               : 'border-transparent text-muted hover:text-foreground'
           }`}
         >
@@ -406,7 +406,7 @@ export default function AdminUploadNotes() {
                   <button
                     onClick={handleTransformAll}
                     disabled={isProcessingAll || queue.every(q => q.status === 'ready' || q.status === 'published')}
-                    className="flex-1 sm:flex-initial px-4 py-2 bg-primary text-white font-black text-xs rounded-xl shadow-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-40 flex items-center justify-center gap-1.5"
+                    className="flex-1 sm:flex-initial px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs rounded-xl shadow-tactile-sm hover:opacity-95 active:scale-95 transition-all disabled:opacity-40 flex items-center justify-center gap-1.5"
                   >
                     {isProcessingAll ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
                     Transform All
@@ -633,7 +633,7 @@ export default function AdminUploadNotes() {
               <button 
                 onClick={handleManualUpload} 
                 disabled={manualLoading || !manualTitle.trim() || !manualContent.trim()}
-                className="w-full py-3.5 bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 font-black text-sm rounded-2xl shadow-sm active:translate-y-0.5 border-2 border-b-[4px] border-black dark:border-white transition-all disabled:opacity-40"
+                className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-sm rounded-2xl shadow-tactile-sm active:translate-y-0.5 border-2 border-b-[4px] border-blue-700 active:border-b-2 transition-all disabled:opacity-40"
               >
                 {manualLoading ? 'Saving...' : `Save Directly to ${department} (${examType})`}
               </button>

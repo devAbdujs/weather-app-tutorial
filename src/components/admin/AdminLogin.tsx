@@ -67,7 +67,7 @@ export const AdminLogin = () => {
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full py-2.5 bg-primary text-primary-foreground font-semibold text-sm rounded-xl hover:bg-primary/95 shadow-tactile-sm active:scale-[0.99] transition-all duration-200 ease-bespoke disabled:opacity-50 mt-2"
+            className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm rounded-xl shadow-tactile-sm active:scale-[0.99] transition-all disabled:opacity-50 mt-2"
           >
             {loading ? 'Verifying...' : 'Sign In'}
           </button>

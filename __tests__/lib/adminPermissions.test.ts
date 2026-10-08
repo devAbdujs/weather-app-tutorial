@@ -42,6 +42,18 @@ describe('Admin Permissions (hasPermission)', () => {
     expect(hasPermission(admin, 'payments:view')).toBe(false);
     expect(hasPermission(admin, 'ai:view')).toBe(false);
     expect(hasPermission(admin, 'users:view')).toBe(false);
+    expect(hasPermission(admin, 'ambassador:view')).toBe(false);
+  });
+
+  it('restricts ambassador to ambassador portal only', () => {
+    const admin = { role: 'ambassador' };
+    expect(hasPermission(admin, 'ambassador:view')).toBe(true);
+    expect(hasPermission(admin, 'notes:write')).toBe(false);
+    expect(hasPermission(admin, 'questions:write')).toBe(false);
+    expect(hasPermission(admin, 'payments:approve')).toBe(false);
+    expect(hasPermission(admin, 'admin:manage')).toBe(false);
+    expect(hasPermission(admin, 'analytics:read')).toBe(false);
+    expect(hasPermission(admin, 'ai:view')).toBe(false);
   });
 
   it('restricts readonly to viewing content and analytics', () => {

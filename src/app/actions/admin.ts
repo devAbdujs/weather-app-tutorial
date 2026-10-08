@@ -834,3 +834,86 @@ export async function resetUserAIQuota(telegramId: string) {
   if (error) throw error;
   return { success: true };
 }
+
+export interface AmbassadorStudent {
+  id: string;
+  full_name: string | null;
+  username: string | null;
+  target_exam: string | null;
+  stream: string | null;
+  subscription_status: string | null;
+  created_at: string;
+}
+
+export interface AmbassadorDashboardData {
+  ambassador: {
+    id: string;
+    username: string;
+    role: string;
+  };
+  referralCode: string;
+  referralLink: string;
+  totalRecruited: number;
+  proConverted: number;
+  totalEarnedETB: number;
+  conversionRate: number;
+  students: AmbassadorStudent[];
+}
+
+export async function getAmbassadorDashboard(targetUsernameOrId?: string): Promise<AmbassadorDashboardData> {
+  const currentAdmin = await verifyAdmin();
+  if (!currentAdmin) throw new Error('Unauthorized');
+
+  if (!hasPermission(currentAdmin, 'ambassador:view')) {
+    throw new Error('Forbidden: Insufficient permissions to view ambassador dashboard.');
+  }
+
+  let targetAdmin = currentAdmin;
+  if (currentAdmin.role === 'superadmin' && targetUsernameOrId) {
+    const supabase = await createAdminClient();
+    const { data: found } = await supabase
+      .from('admin_users')
+      .select('id, username, role')
+      .or(`username.eq.${targetUsernameOrId},id.eq.${targetUsernameOrId}`)
+      .maybeSingle();
+    if (found) {
+      targetAdmin = found;
+    }
+  }
+
+  const supabase = await createAdminClient();
+  const botUsername = process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot';
+  const referralCode = targetAdmin.username;
+  const referralLink = `https://t.me/${botUsername}?start=ref_${referralCode}`;
+
+  const { data: students, error } = await supabase
+    .from('profiles')
+    .select('id, full_name, username, target_exam, stream, subscription_status, created_at')
+    .or(`referred_by.eq.${targetAdmin.username},referred_by.eq.${targetAdmin.id}`)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.warn('[AmbassadorDashboard] Query warning:', error);
+  }
+
+  const list = students || [];
+  const totalRecruited = list.length;
+  const proConverted = list.filter(s => s.subscription_status === 'premium').length;
+  const totalEarnedETB = proConverted * 50;
+  const conversionRate = totalRecruited > 0 ? Math.round((proConverted / totalRecruited) * 100) : 0;
+
+  return {
+    ambassador: {
+      id: targetAdmin.id,
+      username: targetAdmin.username,
+      role: targetAdmin.role,
+    },
+    referralCode,
+    referralLink,
+    totalRecruited,
+    proConverted,
+    totalEarnedETB,
+    conversionRate,
+    students: list,
+  };
+}

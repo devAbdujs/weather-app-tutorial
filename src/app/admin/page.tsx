@@ -9,6 +9,9 @@ export default async function AdminDashboard() {
   if (admin?.role === 'editor' || admin?.role === 'content_editor') {
     redirect('/admin/questions');
   }
+  if (admin?.role === 'ambassador') {
+    redirect('/admin/ambassador');
+  }
 
   // Fetch stats on the server
   let stats = { totalUsers: 0, totalNotes: 0, totalQuestions: 0, totalPremium: 0 };
@@ -88,7 +91,7 @@ export default async function AdminDashboard() {
           </div>
           <Link
             href="/admin/ai"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 font-black text-xs uppercase tracking-wider transition-all border-2 border-b-[4px] border-black dark:border-white shadow-tactile-sm active:translate-y-0.5 shrink-0"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs uppercase tracking-wider transition-all border-2 border-b-[4px] border-blue-700 shadow-tactile-sm active:translate-y-0.5 shrink-0"
           >
             <span>Open AI Telemetry</span>
             <ArrowRight className="w-4 h-4 stroke-[2.5]" />
