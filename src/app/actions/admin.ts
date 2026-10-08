@@ -473,7 +473,7 @@ export async function saveQuestion(payload: {
   }
 
   const supabase = await createAdminClient();
-  const normalizedAnswer = (payload.answer || 'A').trim().toUpperCase();
+  const normalizedAnswer = payload.answer ? payload.answer.trim().toUpperCase() : null;
 
   const questionData = {
     exam_type: payload.exam_type,
@@ -576,7 +576,7 @@ export async function bulkImportQuestions(questions: Array<{
       option_b: q.option_b.trim(),
       option_c: (q.option_c || '').trim(),
       option_d: (q.option_d || '').trim(),
-      answer: (q.answer || 'A').trim().toUpperCase(),
+      answer: q.answer ? q.answer.trim().toUpperCase() : null,
       explanation: q.explanation?.trim() || null,
     }));
 

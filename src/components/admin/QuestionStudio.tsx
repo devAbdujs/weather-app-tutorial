@@ -117,7 +117,7 @@ export function QuestionStudio({ initialQuestions }: QuestionStudioProps) {
         option_b: editingQuestion.option_b || '',
         option_c: editingQuestion.option_c || '',
         option_d: editingQuestion.option_d || '',
-        answer: editingQuestion.answer || 'A',
+        answer: editingQuestion.answer || '',
         explanation: editingQuestion.explanation,
       });
 
@@ -318,9 +318,15 @@ export function QuestionStudio({ initialQuestions }: QuestionStudioProps) {
                     </span>
                   </td>
                   <td className="p-4 text-center">
-                    <span className="inline-block px-2 py-1 rounded-lg text-xs font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                      {q.answer || 'A'}
-                    </span>
+                    {q.answer ? (
+                      <span className="inline-block px-2 py-1 rounded-lg text-xs font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                        {q.answer}
+                      </span>
+                    ) : (
+                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-medium text-muted-foreground bg-ground border border-border">
+                        None
+                      </span>
+                    )}
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-1.5">
