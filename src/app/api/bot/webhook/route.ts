@@ -21,6 +21,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { sendStudentNotification } from '@/lib/paymentNotifier';
+import { calculateReferralAttribution, type PaymentReceiptRecord } from '@/lib/referral';
 import {
   sendTelegramMessage,
   editTelegramMessage,
@@ -207,17 +208,26 @@ export async function POST(req: NextRequest) {
         ) {
           const { data: refList } = await supabaseAdmin
             .from('profiles')
-            .select('subscription_status')
+            .select('telegram_id, subscription_status, created_at, updated_at')
             .eq('referred_by', String(telegramUser.id));
 
-          const totalReferred = refList?.length || 0;
-          const proReferred = refList?.filter(r => r.subscription_status === 'premium').length || 0;
-          const totalEarnedETB = proReferred * 50;
+          const telegramIds = (refList || []).map(r => r.telegram_id).filter(Boolean);
+          let receipts: PaymentReceiptRecord[] = [];
+          if (telegramIds.length > 0) {
+            const { data: recData } = await supabaseAdmin
+              .from('payment_receipts')
+              .select('telegram_id, status, created_at')
+              .in('telegram_id', telegramIds)
+              .eq('status', 'approved');
+            receipts = (recData as PaymentReceiptRecord[]) || [];
+          }
+
+          const summary = calculateReferralAttribution(refList || [], receipts);
 
           const { text: invText, reply_markup } = getInvitePayload(
             telegramUser.id,
             process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot',
-            { totalReferred, proReferred, totalEarnedETB }
+            { totalReferred: summary.totalRecruited, proReferred: summary.proConverted, totalEarnedETB: summary.totalEarnedETB }
           );
           await sendTelegramMessage(chatId, invText, reply_markup);
           return NextResponse.json({ ok: true });
@@ -495,17 +505,26 @@ export async function POST(req: NextRequest) {
         await answerCallbackQuery(callbackQuery.id);
         const { data: refList } = await supabaseAdmin
           .from('profiles')
-          .select('subscription_status')
+          .select('telegram_id, subscription_status, created_at, updated_at')
           .eq('referred_by', String(fromUser?.id));
 
-        const totalReferred = refList?.length || 0;
-        const proReferred = refList?.filter(r => r.subscription_status === 'premium').length || 0;
-        const totalEarnedETB = proReferred * 50;
+        const telegramIds = (refList || []).map(r => r.telegram_id).filter(Boolean);
+        let receipts: PaymentReceiptRecord[] = [];
+        if (telegramIds.length > 0) {
+          const { data: recData } = await supabaseAdmin
+            .from('payment_receipts')
+            .select('telegram_id, status, created_at')
+            .in('telegram_id', telegramIds)
+            .eq('status', 'approved');
+          receipts = (recData as PaymentReceiptRecord[]) || [];
+        }
+
+        const summary = calculateReferralAttribution(refList || [], receipts);
 
         const { text, reply_markup } = getInvitePayload(
           fromUser?.id,
           process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot',
-          { totalReferred, proReferred, totalEarnedETB }
+          { totalReferred: summary.totalRecruited, proReferred: summary.proConverted, totalEarnedETB: summary.totalEarnedETB }
         );
         await editTelegramMessage(chatId, messageId, text, reply_markup);
         return NextResponse.json({ ok: true });

@@ -835,15 +835,13 @@ export async function resetUserAIQuota(telegramId: string) {
   return { success: true };
 }
 
-export interface AmbassadorStudent {
-  id: string;
-  full_name: string | null;
-  username: string | null;
-  target_exam: string | null;
-  stream: string | null;
-  subscription_status: string | null;
-  created_at: string;
-}
+import {
+  calculateReferralAttribution,
+  type EvaluatedStudentReferral,
+  type PaymentReceiptRecord,
+} from '@/lib/referral';
+
+export type AmbassadorStudent = EvaluatedStudentReferral;
 
 export interface AmbassadorDashboardData {
   ambassador: {
@@ -855,6 +853,7 @@ export interface AmbassadorDashboardData {
   referralLink: string;
   totalRecruited: number;
   proConverted: number;
+  freeCount: number;
   totalEarnedETB: number;
   conversionRate: number;
   students: AmbassadorStudent[];
@@ -886,9 +885,10 @@ export async function getAmbassadorDashboard(targetUsernameOrId?: string): Promi
   const referralCode = targetAdmin.username;
   const referralLink = `https://t.me/${botUsername}?start=ref_${referralCode}`;
 
-  const { data: students, error } = await supabase
+  // 1. Fetch all students who joined through this ambassador's username or ID
+  const { data: rawStudents, error } = await supabase
     .from('profiles')
-    .select('id, full_name, username, target_exam, stream, subscription_status, created_at')
+    .select('telegram_id, full_name, username, target_exam, stream, subscription_status, created_at, updated_at')
     .or(`referred_by.eq.${targetAdmin.username},referred_by.eq.${targetAdmin.id}`)
     .order('created_at', { ascending: false });
 
@@ -896,11 +896,23 @@ export async function getAmbassadorDashboard(targetUsernameOrId?: string): Promi
     console.warn('[AmbassadorDashboard] Query warning:', error);
   }
 
-  const list = students || [];
-  const totalRecruited = list.length;
-  const proConverted = list.filter(s => s.subscription_status === 'premium').length;
-  const totalEarnedETB = proConverted * 50;
-  const conversionRate = totalRecruited > 0 ? Math.round((proConverted / totalRecruited) * 100) : 0;
+  const studentList = rawStudents || [];
+  const telegramIds = studentList.map(s => s.telegram_id).filter(Boolean);
+
+  // 2. Fetch approved payment receipts for those students to check 24h upgrade attribution
+  let receipts: PaymentReceiptRecord[] = [];
+  if (telegramIds.length > 0) {
+    const { data: receiptData } = await supabase
+      .from('payment_receipts')
+      .select('telegram_id, status, created_at')
+      .in('telegram_id', telegramIds)
+      .eq('status', 'approved')
+      .order('created_at', { ascending: true });
+    receipts = (receiptData as PaymentReceiptRecord[]) || [];
+  }
+
+  // 3. Strictly evaluate 24-hour window and deduplicate recruits
+  const summary = calculateReferralAttribution(studentList, receipts);
 
   return {
     ambassador: {
@@ -910,10 +922,11 @@ export async function getAmbassadorDashboard(targetUsernameOrId?: string): Promi
     },
     referralCode,
     referralLink,
-    totalRecruited,
-    proConverted,
-    totalEarnedETB,
-    conversionRate,
-    students: list,
+    totalRecruited: summary.totalRecruited,
+    proConverted: summary.proConverted,
+    freeCount: summary.freeCount,
+    totalEarnedETB: summary.totalEarnedETB,
+    conversionRate: summary.conversionRate,
+    students: summary.students,
   };
 }

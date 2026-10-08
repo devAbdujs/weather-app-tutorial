@@ -1,5 +1,6 @@
 'use server';
 import { calculateNewStreak, getAddisAbabaDate } from '@/lib/streak';
+import { calculateReferralAttribution, type PaymentReceiptRecord } from '@/lib/referral';
 
 import { createAdminClient as createClient } from '@/utils/supabase/admin';
 import { getServerSession, encryptSession, getSessionCookieOptions } from '@/lib/session';
@@ -189,13 +190,14 @@ export interface ReferralDashboardData {
     name: string;
     username?: string;
     isPro: boolean;
+    conversionStatus?: 'free' | 'pro_eligible' | 'pro_expired';
     joinedAt: string;
   }>;
 }
 
 /**
  * Real-time referral dashboard data for the authenticated student.
- * Scoped strictly to the student's own telegram_id.
+ * Scoped strictly to the student's own telegram_id with 24-hour conversion attribution.
  */
 export async function getReferralDashboard(): Promise<ReferralDashboardData> {
   const session = await getServerSession();
@@ -203,14 +205,14 @@ export async function getReferralDashboard(): Promise<ReferralDashboardData> {
 
   const supabase = await createClient();
 
-  const { data: referrals, error } = await supabase
+  const { data: rawReferrals, error } = await supabase
     .from('profiles')
-    .select('full_name, username, subscription_status, created_at')
+    .select('telegram_id, full_name, username, subscription_status, created_at, updated_at')
     .eq('referred_by', String(session.telegram_id))
     .order('created_at', { ascending: false });
 
-  if (error) {
-    console.warn('[ReferralDashboard] Error fetching referrals:', error);
+  if (error || !rawReferrals) {
+    if (error) console.warn('[ReferralDashboard] Error fetching referrals:', error);
     return {
       totalReferred: 0,
       proReferred: 0,
@@ -220,24 +222,33 @@ export async function getReferralDashboard(): Promise<ReferralDashboardData> {
     };
   }
 
-  const list = referrals || [];
-  const totalReferred = list.length;
-  const proReferred = list.filter(r => r.subscription_status === 'premium').length;
-  const totalEarnedETB = proReferred * 50;
-  const bonusXpEarned = totalReferred * 50;
+  const telegramIds = rawReferrals.map(r => r.telegram_id).filter(Boolean);
+  let receipts: PaymentReceiptRecord[] = [];
+  if (telegramIds.length > 0) {
+    const { data: receiptData } = await supabase
+      .from('payment_receipts')
+      .select('telegram_id, status, created_at')
+      .in('telegram_id', telegramIds)
+      .eq('status', 'approved')
+      .order('created_at', { ascending: true });
+    receipts = (receiptData as PaymentReceiptRecord[]) || [];
+  }
 
-  const recentReferrals = list.slice(0, 10).map(r => ({
+  const summary = calculateReferralAttribution(rawReferrals, receipts);
+
+  const recentReferrals = summary.students.slice(0, 10).map(r => ({
     name: r.full_name || 'Scholar',
     username: r.username || undefined,
-    isPro: r.subscription_status === 'premium',
+    isPro: r.isConvertedPro,
+    conversionStatus: r.conversionStatus,
     joinedAt: r.created_at,
   }));
 
   return {
-    totalReferred,
-    proReferred,
-    totalEarnedETB,
-    bonusXpEarned,
+    totalReferred: summary.totalRecruited,
+    proReferred: summary.proConverted,
+    totalEarnedETB: summary.totalEarnedETB,
+    bonusXpEarned: summary.totalRecruited * 50,
     recentReferrals,
   };
 }

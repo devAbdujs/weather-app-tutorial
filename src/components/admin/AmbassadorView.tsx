@@ -115,7 +115,7 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
             {totalRecruited.toLocaleString()}
           </div>
           <p className="text-[11px] text-muted-foreground mt-0.5">
-            Total signups
+            Unique signups
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
             {proConverted.toLocaleString()}
           </div>
           <p className="text-[11px] text-muted-foreground mt-0.5">
-            Paid upgrades
+            24h upgrades
           </p>
         </div>
 
@@ -143,7 +143,7 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
             {totalEarnedETB.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">ETB</span>
           </div>
           <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium mt-0.5">
-            50 ETB per PRO
+            50 ETB per 24h PRO
           </p>
         </div>
 
@@ -157,7 +157,7 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
             {conversionRate}%
           </div>
           <p className="text-[11px] text-muted-foreground mt-0.5">
-            PRO rate
+            24h rate
           </p>
         </div>
       </div>
@@ -169,7 +169,7 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
           <div className="flex items-center justify-between gap-2">
             <div>
               <h2 className="text-sm font-semibold text-foreground">Your Link</h2>
-              <p className="text-[11px] text-muted-foreground">Earn 50 ETB for each PRO upgrade.</p>
+              <p className="text-[11px] text-muted-foreground">Earn 50 ETB for each recruit who upgrades within 24h.</p>
             </div>
             <span className="text-xs font-mono text-muted-foreground bg-ground px-2 py-0.5 rounded border border-border">
               ref_{referralCode}
@@ -289,7 +289,8 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
                 </tr>
               ) : (
                 filteredStudents.map((student) => {
-                  const isPro = student.subscription_status === 'premium';
+                  const isEligiblePro = student.conversionStatus === 'pro_eligible' || (student.isConvertedPro ?? false);
+                  const isExpiredPro = student.conversionStatus === 'pro_expired';
                   const examLabel = 
                     student.target_exam === 'entrance' ? 'Grade 12' :
                     student.target_exam === 'freshman' ? 'Freshman' :
@@ -297,7 +298,7 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
 
                   return (
                     <tr
-                      key={student.id}
+                      key={student.telegram_id || student.id}
                       className="border-b border-border/40 hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors"
                     >
                       <td className="p-3">
@@ -327,10 +328,17 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
                       </td>
 
                       <td className="p-3">
-                        {isPro ? (
+                        {isEligiblePro ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50">
                             <span>👑</span>
                             <span>PRO (+50 ETB)</span>
+                          </span>
+                        ) : isExpiredPro ? (
+                          <span 
+                            className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                            title="Upgraded after 24-hour referral window expired (0 ETB commission)"
+                          >
+                            Free · &gt;24h Expired
                           </span>
                         ) : (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-ground border border-border text-muted-foreground">

@@ -947,7 +947,7 @@ export function getInvitePayload(
     `🎁 <b>Invite Friends & Earn Rewards</b>`,
     ``,
     ...statsLines,
-    `Study better with classmates! Earn <b>50 ETB</b> for each friend who subscribes to Temari PRO.`,
+    `Study better with classmates! Earn <b>50 ETB</b> for each friend who subscribes to Temari PRO within 24 hours of joining.`,
     ``,
     `🔗 <b>Your Personal Referral Link:</b>`,
     `<code>${refLink}</code>`,
