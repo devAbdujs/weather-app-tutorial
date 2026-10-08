@@ -59,38 +59,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </aside>
 
       <main className="flex-1 p-4 md:p-8 overflow-y-auto h-full w-full bg-ground custom-scrollbar relative">
-        <div className="max-w-6xl mx-auto pb-24 md:pb-8">
-          {/* Sub-admin friendly banner */}
-          {isAmbassador && (
-            <div className="mb-6 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/25 flex items-center justify-between gap-4 text-xs">
-              <div className="flex items-center gap-2.5">
-                <span className="text-lg">🎓</span>
-                <div>
-                  <span className="font-black text-blue-900 dark:text-blue-200">Campus Ambassador Mode:</span>{' '}
-                  <span className="text-muted-foreground font-medium">Recruit students from your campus and earn 50 ETB for every PRO subscriber.</span>
-                </div>
-              </div>
-              <span className="shrink-0 px-2.5 py-1 rounded-full bg-blue-600 text-white font-bold text-[11px] shadow-tactile-xs">
-                Active Code: ref_{admin.username}
-              </span>
-            </div>
-          )}
-
-          {isEditor && (
-            <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between gap-4 text-xs">
-              <div className="flex items-center gap-2.5">
-                <span className="text-lg">✍️</span>
-                <div>
-                  <span className="font-black text-emerald-900 dark:text-emerald-200">Content Editor Mode:</span>{' '}
-                  <span className="text-muted-foreground font-medium">You have direct write access to past exam question banks and textbook study notes.</span>
-                </div>
-              </div>
-              <span className="shrink-0 px-2.5 py-1 rounded-full bg-emerald-600 text-white font-bold text-[11px] shadow-tactile-xs">
-                Editor Studio
-              </span>
-            </div>
-          )}
-
+        <div className="max-w-6xl mx-auto pb-16">
           {children}
         </div>
       </main>

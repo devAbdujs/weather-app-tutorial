@@ -70,13 +70,13 @@ export function AdminNav({ role = 'readonly', isReadonly, isSuperAdmin }: AdminN
           <Link
             key={link.href}
             href={link.href}
-            className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all text-sm active:translate-x-1 ${
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all text-xs font-semibold ${
               isActive
-                ? 'bg-blue-600 font-black text-white shadow-tactile-sm border border-blue-500/30'
-                : 'font-bold text-gray-300 hover:text-white hover:bg-white/5 border border-transparent'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Icon className={`w-5 h-5 stroke-[2.2] ${isActive ? 'text-white' : 'text-gray-400'}`} />
+            <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-400'}`} />
             {link.label}
           </Link>
         );
