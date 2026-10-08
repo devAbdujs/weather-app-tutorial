@@ -435,6 +435,17 @@ describe('Telegram Bot Database Operations', () => {
       expect(reply_markup.inline_keyboard[0][0].url).toContain(encodeURIComponent(refLink));
       expect(reply_markup.inline_keyboard[1][0].callback_data).toBe('nav:menu');
     });
+
+    it('generates invite referral payload with live stats when stats provided', () => {
+      const { text } = getInvitePayload('998877', 'TemariExamBot', {
+        totalReferred: 12,
+        proReferred: 3,
+        totalEarnedETB: 150,
+      });
+      expect(text).toContain('Friends Joined: <b>12</b>');
+      expect(text).toContain('PRO Members: <b>3</b>');
+      expect(text).toContain('Rewards Earned: <b>150 ETB</b>');
+    });
   });
 
   describe('Milestone Celebrations', () => {

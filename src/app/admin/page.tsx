@@ -1,9 +1,15 @@
 import React from 'react';
-import { getAdminStats, getAdminAIStats } from '@/app/actions/admin';
+import { verifyAdmin, getAdminStats, getAdminAIStats } from '@/app/actions/admin';
+import { redirect } from 'next/navigation';
 import { Users, FileText, BrainCircuit, Zap, Bot, Key, Sparkles, Database, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function AdminDashboard() {
+  const admin = await verifyAdmin();
+  if (admin?.role === 'editor' || admin?.role === 'content_editor') {
+    redirect('/admin/questions');
+  }
+
   // Fetch stats on the server
   let stats = { totalUsers: 0, totalNotes: 0, totalQuestions: 0, totalPremium: 0 };
   let aiStats: Awaited<ReturnType<typeof getAdminAIStats>> | null = null;

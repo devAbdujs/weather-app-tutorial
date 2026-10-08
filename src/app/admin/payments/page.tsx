@@ -1,10 +1,17 @@
 import React from 'react';
-import { getPendingPayments } from '@/app/actions/admin';
+import { getPendingPayments, verifyAdmin } from '@/app/actions/admin';
+import { hasPermission } from '@/lib/adminPermissions';
+import { redirect } from 'next/navigation';
 import { CreditCard, ExternalLink, Image as ImageIcon, ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { PaymentActions } from '@/components/admin/PaymentActions';
 
 export default async function AdminPaymentsPage({ searchParams }: { searchParams: { page?: string } }) {
+  const admin = await verifyAdmin();
+  if (!hasPermission(admin, 'payments:view')) {
+    redirect(admin?.role === 'editor' || admin?.role === 'content_editor' ? '/admin/questions' : '/admin');
+  }
+
   const currentPage = parseInt(searchParams.page || '1', 10);
   const { payments, total, totalPages } = await getPendingPayments(currentPage, 20);
 

@@ -923,7 +923,8 @@ export function getPersistentReplyKeyboard() {
  */
 export function getInvitePayload(
   telegramId?: string | number | null,
-  botUsername: string = process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot'
+  botUsername: string = process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot',
+  stats?: { totalReferred: number; proReferred: number; totalEarnedETB: number }
 ) {
   const sTelegramId = telegramId ? String(telegramId) : '';
   const refLink = sTelegramId 
@@ -934,10 +935,19 @@ export function getInvitePayload(
   );
   const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${shareText}`;
 
-  const text = [
-    `🎁 <b>Invite Friends & Study Together</b>`,
+  const statsLines = stats ? [
+    `📊 <b>Your Live Referral Dashboard:</b>`,
+    `👥 Friends Joined: <b>${stats.totalReferred}</b>`,
+    `👑 PRO Members: <b>${stats.proReferred}</b>`,
+    `💰 Rewards Earned: <b>${stats.totalEarnedETB} ETB</b>`,
     ``,
-    `Study better with classmates! Share your unique referral link:`,
+  ] : [];
+
+  const text = [
+    `🎁 <b>Invite Friends & Earn Rewards</b>`,
+    ``,
+    ...statsLines,
+    `Study better with classmates! Earn <b>50 ETB</b> for each friend who subscribes to Temari PRO.`,
     ``,
     `🔗 <b>Your Personal Referral Link:</b>`,
     `<code>${refLink}</code>`,

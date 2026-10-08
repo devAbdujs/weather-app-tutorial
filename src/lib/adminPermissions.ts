@@ -3,6 +3,8 @@ export type AdminPermission =
   | 'payments:view'
   | 'payments:approve'
   | 'payments:reject'
+  | 'ai:view'
+  | 'users:view'
   | 'notes:read'
   | 'notes:write'
   | 'questions:read'
@@ -15,6 +17,7 @@ export function hasPermission(admin: { role: string } | null | undefined, permis
 
   switch (permission) {
     case 'admin:manage':
+    case 'ai:view':
       return admin.role === 'superadmin';
 
     case 'payments:view':
@@ -22,9 +25,14 @@ export function hasPermission(admin: { role: string } | null | undefined, permis
     case 'payments:reject':
       return admin.role === 'financial_admin';
 
+    case 'users:view':
+      return ['financial_admin', 'readonly'].includes(admin.role);
+
+    case 'analytics:read':
+      return ['financial_admin', 'readonly', 'reviewer'].includes(admin.role);
+
     case 'notes:read':
     case 'questions:read':
-    case 'analytics:read':
       return ['financial_admin', 'editor', 'content_editor', 'readonly', 'reviewer'].includes(admin.role);
 
     case 'notes:write':

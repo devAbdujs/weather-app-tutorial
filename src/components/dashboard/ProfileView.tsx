@@ -24,7 +24,9 @@ import {
   Settings,
   Share2,
   Copy,
-  Check
+  Check,
+  UserPlus,
+  Coins
 } from 'lucide-react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useRouter } from 'next/navigation';
@@ -39,9 +41,21 @@ import { safeSessionStorage, safeLocalStorage, safeCookieStorage } from '@/lib/s
 interface ProfileViewProps {
   profile: any;
   stats: any[];
+  referralData?: {
+    totalReferred: number;
+    proReferred: number;
+    totalEarnedETB: number;
+    bonusXpEarned: number;
+    recentReferrals?: Array<{
+      name: string;
+      username?: string;
+      isPro: boolean;
+      joinedAt: string;
+    }>;
+  };
 }
 
-export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
+export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats, referralData }) => {
   const router = useRouter();
   const { haptic, isTelegram } = useTelegram();
   const updateProfile = useAppStore(s => s.setUserProfile);
@@ -448,10 +462,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
           </div>
         </section>
 
-        {/* ── 6. REFERRAL & INVITE FRIENDS ── */}
+        {/* ── 6. REFERRAL DASHBOARD & INVITE FRIENDS ── */}
         <section 
-          aria-label="Invite Friends"
-          className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-card-lg p-4 shadow-tactile-sm space-y-3"
+          aria-label="Referral Program Dashboard"
+          className="bg-card border border-black/[0.08] dark:border-white/[0.08] border-b-bevel rounded-card-lg p-4 shadow-tactile-sm space-y-3.5"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -460,44 +474,89 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
               </div>
               <div>
                 <h3 className="text-sm font-black text-foreground leading-tight">
-                  Invite Friends &amp; Study Together
+                  Referral Dashboard
                 </h3>
                 <p className="text-caption font-bold text-muted-foreground mt-0.5">
-                  Share your link to grow your scholar network
+                  Real-time invites &amp; reward tracking
                 </p>
               </div>
             </div>
-            <span className="text-micro font-black uppercase tracking-wider text-purple-700 dark:text-purple-300 bg-purple-500/15 border border-purple-500/30 px-2 py-0.5 rounded-full shrink-0">
-              🎁 Invite
+            <span className="text-micro font-black uppercase tracking-wider text-purple-700 dark:text-purple-300 bg-purple-500/15 border border-purple-500/30 px-2 py-0.5 rounded-full shrink-0 flex items-center gap-1">
+              <span>🎁</span>
+              <span>50 ETB / PRO</span>
             </span>
           </div>
 
+          {/* Real-time referral metrics grid */}
+          <div className="grid grid-cols-3 gap-2 pt-0.5">
+            <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-xl p-2.5 text-center shadow-2xs">
+              <div className="flex items-center justify-center gap-1 text-purple-600 dark:text-purple-400 mb-0.5">
+                <UserPlus className="w-3.5 h-3.5 stroke-[2.5]" />
+              </div>
+              <span className="text-lg font-black font-mono tabular-nums block text-foreground leading-tight">
+                {referralData?.totalReferred || 0}
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground block mt-0.5">
+                Invited
+              </span>
+            </div>
+
+            <div className="bg-ground border border-black/[0.06] dark:border-white/[0.08] rounded-xl p-2.5 text-center shadow-2xs">
+              <div className="flex items-center justify-center gap-1 text-amber-500 mb-0.5">
+                <span className="text-xs">👑</span>
+              </div>
+              <span className="text-lg font-black font-mono tabular-nums block text-foreground leading-tight">
+                {referralData?.proReferred || 0}
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground block mt-0.5">
+                PRO Paid
+              </span>
+            </div>
+
+            <div className="bg-tint-green text-tint-green-fg border border-tint-green-border rounded-xl p-2.5 text-center shadow-2xs">
+              <div className="flex items-center justify-center gap-1 mb-0.5">
+                <Coins className="w-3.5 h-3.5 stroke-[2.5] text-current" />
+              </div>
+              <span className="text-lg font-black font-mono tabular-nums block text-current leading-tight">
+                {referralData?.totalEarnedETB || 0}
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-current opacity-80 block mt-0.5">
+                ETB Earned
+              </span>
+            </div>
+          </div>
+
           {/* Referral link display with Copy button */}
-          <div className="flex items-center gap-2 bg-ground border border-black/[0.08] dark:border-white/[0.08] rounded-xl p-1.5 pl-3">
-            <span className="text-xs font-mono text-muted-foreground truncate flex-1 select-all font-semibold">
-              {referralLink}
-            </span>
-            <button
-              type="button"
-              onClick={handleCopyLink}
-              className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all active:scale-95 flex items-center gap-1 shrink-0 ${
-                copiedLink 
-                  ? 'bg-emerald-600 text-white' 
-                  : 'bg-primary text-white hover:bg-primary/90'
-              }`}
-            >
-              {copiedLink ? (
-                <>
-                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                  <span>Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5 stroke-[2.5]" />
-                  <span>Copy</span>
-                </>
-              )}
-            </button>
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-black uppercase tracking-wider text-muted-foreground block">
+              Your Personal Invite Link
+            </label>
+            <div className="flex items-center gap-2 bg-ground border border-black/[0.08] dark:border-white/[0.08] rounded-xl p-1.5 pl-3">
+              <span className="text-xs font-mono text-muted-foreground truncate flex-1 select-all font-semibold">
+                {referralLink}
+              </span>
+              <button
+                type="button"
+                onClick={handleCopyLink}
+                className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all active:scale-95 flex items-center gap-1 shrink-0 ${
+                  copiedLink 
+                    ? 'bg-emerald-600 text-white' 
+                    : 'bg-primary text-white hover:bg-primary/90'
+                }`}
+              >
+                {copiedLink ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Direct Telegram Share button */}
@@ -511,6 +570,42 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats }) => {
             </svg>
             <span>Share Invite on Telegram</span>
           </button>
+
+          {/* Recent Referrals List */}
+          {referralData?.recentReferrals && referralData.recentReferrals.length > 0 && (
+            <div className="pt-2 border-t border-black/[0.06] dark:border-white/[0.08] space-y-2">
+              <div className="flex items-center justify-between text-xs font-bold text-muted-foreground">
+                <span>Recent Scholars Invited</span>
+                <span className="font-mono text-[11px]">{referralData.recentReferrals.length} active</span>
+              </div>
+              <div className="space-y-1.5 max-h-36 overflow-y-auto custom-scrollbar pr-1">
+                {referralData.recentReferrals.map((item, idx) => (
+                  <div 
+                    key={idx}
+                    className="flex items-center justify-between p-2 rounded-xl bg-ground border border-black/[0.04] dark:border-white/[0.04] text-xs"
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <div className="w-6 h-6 rounded-lg bg-primary/10 text-primary font-bold flex items-center justify-center text-[10px] shrink-0">
+                        {item.name.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="font-bold text-foreground truncate">{item.name}</span>
+                    </div>
+                    <div className="shrink-0 flex items-center gap-1.5">
+                      {item.isPro ? (
+                        <span className="px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-300 font-black text-[10px] border border-amber-500/30">
+                          👑 PRO (+50 ETB)
+                        </span>
+                      ) : (
+                        <span className="px-1.5 py-0.5 rounded-full bg-slate-500/10 text-slate-500 dark:text-slate-400 font-bold text-[10px]">
+                          Free (+50 XP)
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         {/* ── 7. SETTINGS & APP PREFERENCES ── */}

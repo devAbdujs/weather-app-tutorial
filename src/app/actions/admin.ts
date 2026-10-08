@@ -395,9 +395,9 @@ export async function toggleAdminActive(targetAdminId: string, isActive: boolean
   return { success: true };
 }
 export async function getAdminStats() {
-
   const admin = await verifyAdmin();
   if (!admin) throw new Error('Unauthorized');
+  if (!hasPermission(admin, 'analytics:read')) throw new Error('Forbidden: Insufficient permissions');
 
   const supabase = await createAdminClient();
   
@@ -419,6 +419,7 @@ export async function getAdminStats() {
 export async function getUsers(page = 1, limit = 50) {
   const admin = await verifyAdmin();
   if (!admin) throw new Error('Unauthorized');
+  if (!hasPermission(admin, 'users:view')) throw new Error('Forbidden: Insufficient permissions');
 
   const supabase = await createAdminClient();
   const offset = (page - 1) * limit;
@@ -600,6 +601,7 @@ export async function bulkImportQuestions(questions: Array<{
 export async function getPendingPayments(page = 1, limit = 50) {
   const admin = await verifyAdmin();
   if (!admin) throw new Error('Unauthorized');
+  if (!hasPermission(admin, 'payments:view')) throw new Error('Forbidden: Insufficient permissions');
 
   const offset = (page - 1) * limit;
   const supabase = await createAdminClient();
@@ -740,6 +742,7 @@ export async function updatePaymentStatus(paymentId: string, telegramId: string,
 export async function getAdminAIStats() {
   const admin = await verifyAdmin();
   if (!admin) throw new Error('Unauthorized');
+  if (!hasPermission(admin, 'ai:view')) throw new Error('Forbidden: Insufficient permissions');
 
   const supabase = await createAdminClient();
 

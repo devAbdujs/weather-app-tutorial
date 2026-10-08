@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/utils/supabase/admin';
 import crypto from 'crypto';
-import { verifyAdmin } from '@/app/actions/admin';
+import { hasPermission } from '@/lib/adminPermissions';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,8 +9,8 @@ export async function POST(req: NextRequest) {
     if (!isAdmin) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
-    if (isAdmin.role === 'readonly') {
-      return NextResponse.json({ success: false, error: 'Forbidden: Read-only accounts cannot modify notes' }, { status: 403 });
+    if (!hasPermission(isAdmin, 'notes:write')) {
+      return NextResponse.json({ success: false, error: 'Forbidden: Insufficient permissions to modify study notes' }, { status: 403 });
     }
 
     const body = await req.json();

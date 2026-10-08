@@ -179,3 +179,65 @@ export async function logout() {
 
   return { success: true };
 }
+
+export interface ReferralDashboardData {
+  totalReferred: number;
+  proReferred: number;
+  totalEarnedETB: number;
+  bonusXpEarned: number;
+  recentReferrals: Array<{
+    name: string;
+    username?: string;
+    isPro: boolean;
+    joinedAt: string;
+  }>;
+}
+
+/**
+ * Real-time referral dashboard data for the authenticated student.
+ * Scoped strictly to the student's own telegram_id.
+ */
+export async function getReferralDashboard(): Promise<ReferralDashboardData> {
+  const session = await getServerSession();
+  if (!session?.telegram_id) throw new Error('Unauthorized');
+
+  const supabase = await createClient();
+
+  const { data: referrals, error } = await supabase
+    .from('profiles')
+    .select('full_name, username, subscription_status, created_at')
+    .eq('referred_by', String(session.telegram_id))
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.warn('[ReferralDashboard] Error fetching referrals:', error);
+    return {
+      totalReferred: 0,
+      proReferred: 0,
+      totalEarnedETB: 0,
+      bonusXpEarned: 0,
+      recentReferrals: [],
+    };
+  }
+
+  const list = referrals || [];
+  const totalReferred = list.length;
+  const proReferred = list.filter(r => r.subscription_status === 'premium').length;
+  const totalEarnedETB = proReferred * 50;
+  const bonusXpEarned = totalReferred * 50;
+
+  const recentReferrals = list.slice(0, 10).map(r => ({
+    name: r.full_name || 'Scholar',
+    username: r.username || undefined,
+    isPro: r.subscription_status === 'premium',
+    joinedAt: r.created_at,
+  }));
+
+  return {
+    totalReferred,
+    proReferred,
+    totalEarnedETB,
+    bonusXpEarned,
+    recentReferrals,
+  };
+}

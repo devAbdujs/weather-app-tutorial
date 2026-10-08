@@ -1,9 +1,16 @@
 import React from 'react';
-import { getUsers } from '@/app/actions/admin';
+import { getUsers, verifyAdmin } from '@/app/actions/admin';
+import { hasPermission } from '@/lib/adminPermissions';
+import { redirect } from 'next/navigation';
 import { Users, Flame, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function AdminUsersPage({ searchParams }: { searchParams: { page?: string } }) {
+  const admin = await verifyAdmin();
+  if (!hasPermission(admin, 'users:view')) {
+    redirect(admin?.role === 'editor' || admin?.role === 'content_editor' ? '/admin/questions' : '/admin');
+  }
+
   const currentPage = parseInt(searchParams.page || '1', 10);
   const { users, total, totalPages } = await getUsers(currentPage, 50);
 

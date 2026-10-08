@@ -1,10 +1,16 @@
 import React from 'react';
 import { getAdmins, verifyAdmin } from '@/app/actions/admin';
+import { hasPermission } from '@/lib/adminPermissions';
+import { redirect } from 'next/navigation';
 import { CreateAdminForm } from '@/components/admin/CreateAdminForm';
 import { AdminAccountsTable } from '@/components/admin/AdminAccountsTable';
 
 export default async function ManagersPage() {
   const currentAdmin = await verifyAdmin();
+  if (!hasPermission(currentAdmin, 'admin:manage')) {
+    redirect(currentAdmin?.role === 'editor' || currentAdmin?.role === 'content_editor' ? '/admin/questions' : '/admin');
+  }
+
   const admins = await getAdmins();
 
   return (

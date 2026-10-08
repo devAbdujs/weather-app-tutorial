@@ -205,9 +205,19 @@ export async function POST(req: NextRequest) {
           text.startsWith('/referral') ||
           text === '🎁 Invite Friends'
         ) {
+          const { data: refList } = await supabaseAdmin
+            .from('profiles')
+            .select('subscription_status')
+            .eq('referred_by', String(telegramUser.id));
+
+          const totalReferred = refList?.length || 0;
+          const proReferred = refList?.filter(r => r.subscription_status === 'premium').length || 0;
+          const totalEarnedETB = proReferred * 50;
+
           const { text: invText, reply_markup } = getInvitePayload(
             telegramUser.id,
-            process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot'
+            process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot',
+            { totalReferred, proReferred, totalEarnedETB }
           );
           await sendTelegramMessage(chatId, invText, reply_markup);
           return NextResponse.json({ ok: true });
@@ -483,9 +493,19 @@ export async function POST(req: NextRequest) {
       // 10. Navigation: Invite Friends
       if (data === 'nav:invite') {
         await answerCallbackQuery(callbackQuery.id);
+        const { data: refList } = await supabaseAdmin
+          .from('profiles')
+          .select('subscription_status')
+          .eq('referred_by', String(fromUser?.id));
+
+        const totalReferred = refList?.length || 0;
+        const proReferred = refList?.filter(r => r.subscription_status === 'premium').length || 0;
+        const totalEarnedETB = proReferred * 50;
+
         const { text, reply_markup } = getInvitePayload(
           fromUser?.id,
-          process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot'
+          process.env.NEXT_PUBLIC_BOT_USERNAME || 'toptemari_bot',
+          { totalReferred, proReferred, totalEarnedETB }
         );
         await editTelegramMessage(chatId, messageId, text, reply_markup);
         return NextResponse.json({ ok: true });

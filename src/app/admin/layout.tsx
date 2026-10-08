@@ -37,7 +37,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
         </div>
         
-        <AdminNav isReadonly={isReadonly} isSuperAdmin={isSuperAdmin} />
+        <AdminNav role={admin.role} isReadonly={isReadonly} isSuperAdmin={isSuperAdmin} />
         
         <div className="p-4 border-t border-white/10 shrink-0">
           <LogoutButton />

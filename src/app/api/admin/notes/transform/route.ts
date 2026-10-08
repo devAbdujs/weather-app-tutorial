@@ -22,14 +22,16 @@ const MIME_MAP: Record<string, string> = {
   '.md': 'text/plain',
 };
 
+import { hasPermission } from '@/lib/adminPermissions';
+
 export async function POST(req: NextRequest) {
   try {
     const admin = await verifyAdmin();
     if (!admin) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
-    if (admin.role === 'readonly') {
-      return NextResponse.json({ success: false, error: 'Forbidden: Read-only accounts cannot transform notes' }, { status: 403 });
+    if (!hasPermission(admin, 'notes:write')) {
+      return NextResponse.json({ success: false, error: 'Forbidden: Insufficient permissions to transform study notes' }, { status: 403 });
     }
 
     const formData = await req.formData();

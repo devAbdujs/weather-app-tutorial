@@ -38,6 +38,10 @@ describe('Admin Permissions (hasPermission)', () => {
     expect(hasPermission(admin, 'questions:write')).toBe(true);
     expect(hasPermission(admin, 'payments:approve')).toBe(false);
     expect(hasPermission(admin, 'admin:manage')).toBe(false);
+    expect(hasPermission(admin, 'analytics:read')).toBe(false);
+    expect(hasPermission(admin, 'payments:view')).toBe(false);
+    expect(hasPermission(admin, 'ai:view')).toBe(false);
+    expect(hasPermission(admin, 'users:view')).toBe(false);
   });
 
   it('restricts readonly to viewing content and analytics', () => {
