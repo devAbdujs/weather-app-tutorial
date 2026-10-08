@@ -255,24 +255,24 @@ export default function AdminUploadNotes() {
     <div className="max-w-5xl mx-auto space-y-6 pb-20">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight flex items-center gap-2.5">
-          <Sparkles className="w-7 h-7 text-primary" />
-          Study Notes Ingestion Studio
+        <h1 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-blue-600" />
+          Upload Notes
         </h1>
-        <p className="text-sm font-semibold text-muted mt-1">
-          Transform prepared chapter documents (PDF, Word, PPTX, Text) into student-ready notes with LaTeX & diagrams.
+        <p className="text-xs text-muted-foreground mt-0.5">
+          Process textbook chapters into student notes.
         </p>
       </div>
 
       {/* Course & Target Config */}
-      <div className="bg-card border border-border rounded-2xl p-5 shadow-sm space-y-4">
-        <h2 className="text-xs font-black uppercase tracking-wider text-muted flex items-center gap-2">
-          <Layers className="w-4 h-4 text-primary" /> Target Course Coordinates
+      <div className="bg-card border border-border/80 rounded-2xl p-4 shadow-xs space-y-3">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+          <Layers className="w-3.5 h-3.5 text-blue-600" /> Course Target
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-bold text-foreground mb-1.5">Exam Target</label>
+            <label className="block text-xs font-semibold text-foreground mb-1">Target Exam</label>
             <select
               value={examType}
               onChange={(e) => {
@@ -283,24 +283,24 @@ export default function AdminUploadNotes() {
                   setDepartment(nextSuggestions[0]);
                 }
               }}
-              className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-bold text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all cursor-pointer"
+              className="w-full px-3 py-2 border border-border rounded-xl bg-ground font-medium text-xs text-foreground focus:border-blue-600 outline-none transition-all cursor-pointer"
             >
               <option value="freshman">University Freshman</option>
-              <option value="entrance">Grade 12 EUEE Entrance</option>
-              <option value="exit">University Exit Exam</option>
+              <option value="entrance">Grade 12 Entrance</option>
+              <option value="exit">Exit Exam</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-foreground mb-1.5">Course / Department / Subject</label>
+            <label className="block text-xs font-semibold text-foreground mb-1">Course / Subject</label>
             <div className="relative">
               <input
                 type="text"
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
-                placeholder="e.g. Applied Mathematics I or Physics"
+                placeholder="e.g. Applied Mathematics I"
                 list="course-suggestions"
-                className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-bold text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                className="w-full px-3 py-2 border border-border rounded-xl bg-ground font-medium text-xs text-foreground focus:border-blue-600 outline-none transition-all"
               />
               <datalist id="course-suggestions">
                 {(COURSE_SUGGESTIONS[examType] || []).map(c => (
@@ -313,13 +313,13 @@ export default function AdminUploadNotes() {
 
         {/* Quick Suggestion Pills */}
         <div className="flex flex-wrap gap-1.5 pt-1">
-          <span className="text-[11px] font-bold text-muted self-center mr-1">Quick Picks:</span>
+          <span className="text-[11px] font-medium text-muted-foreground self-center mr-1">Quick Picks:</span>
           {(COURSE_SUGGESTIONS[examType] || []).slice(0, 8).map(c => (
             <button
               key={c}
               type="button"
               onClick={() => setDepartment(c)}
-              className={`text-xs px-2.5 py-1 rounded-lg border font-bold transition-all ${
+              className={`text-xs px-2.5 py-1 rounded-lg border font-medium transition-all ${
                 department === c
                   ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
                   : 'bg-ground text-foreground border-border hover:border-blue-500/50'
@@ -332,28 +332,28 @@ export default function AdminUploadNotes() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-border">
+      <div className="flex border-b border-border/80">
         <button
           onClick={() => setActiveTab('batch')}
-          className={`px-5 py-3 text-sm font-black transition-all border-b-2 flex items-center gap-2 ${
+          className={`px-4 py-2.5 text-xs font-semibold transition-all border-b-2 flex items-center gap-1.5 ${
             activeTab === 'batch'
               ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-muted hover:text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
           }`}
         >
-          <Upload className="w-4 h-4" />
-          Batch Chapter Ingestion (PDF, Word, PPTX, Text)
+          <Upload className="w-3.5 h-3.5" />
+          Batch Upload
         </button>
         <button
           onClick={() => setActiveTab('manual')}
-          className={`px-5 py-3 text-sm font-black transition-all border-b-2 flex items-center gap-2 ${
+          className={`px-4 py-2.5 text-xs font-semibold transition-all border-b-2 flex items-center gap-1.5 ${
             activeTab === 'manual'
               ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-              : 'border-transparent text-muted hover:text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
           }`}
         >
-          <FileText className="w-4 h-4" />
-          Direct Markdown Paste
+          <FileText className="w-3.5 h-3.5" />
+          Markdown Editor
         </button>
       </div>
 
@@ -378,27 +378,27 @@ export default function AdminUploadNotes() {
               className="hidden"
               onChange={(e) => handleFilesAdded(e.target.files)}
             />
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-              <Upload className="w-7 h-7 stroke-[2.2]" />
+            <div className="w-12 h-12 mx-auto rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
+              <Upload className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-black text-foreground">
-              Drop chapter files here, or <span className="text-primary underline">browse</span>
+            <h3 className="text-sm font-bold text-foreground">
+              Drop chapter files here or <span className="text-blue-600 underline">browse</span>
             </h3>
-            <p className="text-xs font-semibold text-muted mt-1 max-w-sm mx-auto">
-              Supports prepared <b>PDF, Word (.docx, .doc), PowerPoint (.pptx, .ppt)</b>, and plain text. Drop multiple chapters at once!
+            <p className="text-xs text-muted-foreground mt-0.5 max-w-sm mx-auto">
+              Supports PDF, Word, PowerPoint, and Markdown files.
             </p>
           </div>
 
           {/* Queue List */}
           {queue.length > 0 && (
-            <div className="bg-card border border-border rounded-2xl p-5 shadow-sm space-y-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-border">
+            <div className="bg-card border border-border/80 rounded-2xl p-4 shadow-xs space-y-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-2.5 border-b border-border/80">
                 <div>
-                  <h3 className="text-sm font-black text-foreground">
-                    Chapter Processing Queue ({queue.length} files)
+                  <h3 className="text-sm font-bold text-foreground">
+                    Queue ({queue.length})
                   </h3>
-                  <p className="text-xs font-semibold text-muted">
-                    Course: <span className="font-bold text-foreground">{department}</span> · Level: <span className="font-bold text-foreground">{examType}</span>
+                  <p className="text-xs text-muted-foreground">
+                    {department} · {examType}
                   </p>
                 </div>
 

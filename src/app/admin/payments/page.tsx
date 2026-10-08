@@ -17,19 +17,18 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
   const { payments, total, totalPages } = await getPendingPayments(currentPage, 20);
 
   return (
-    <div>
-      <header className="mb-8 flex items-center justify-between">
+    <div className="space-y-6">
+      <header className="flex items-center justify-between pb-1">
         <div>
-          <h1 className="text-3xl font-black text-foreground tracking-tight">Payments Queue</h1>
-          <p className="text-muted-foreground font-medium mt-1">Review and approve manual payment receipts.</p>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">Payments</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">Review manual payment receipts.</p>
         </div>
-        <div className="bg-tint-purple text-tint-purple-fg px-4 py-2 rounded-2xl font-black flex items-center gap-2 border-2 border-b-[3px] border-tint-purple-border shadow-2xs">
-          <CreditCard className="w-5 h-5" />
-          <span className="tabular-nums">{total} Pending</span>
-        </div>
+        <span className="text-xs font-mono font-medium text-muted-foreground px-2.5 py-1 rounded-lg bg-ground border border-border">
+          {total} pending
+        </span>
       </header>
 
-      <div className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden flex flex-col">
+      <div className="bg-card border border-border/80 rounded-2xl shadow-xs overflow-hidden flex flex-col">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

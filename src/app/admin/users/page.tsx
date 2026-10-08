@@ -16,19 +16,18 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
   const { users, total, totalPages } = await getUsers(currentPage, 50);
 
   return (
-    <div>
-      <header className="mb-8 flex items-center justify-between">
+    <div className="space-y-6">
+      <header className="flex items-center justify-between pb-1">
         <div>
-          <h1 className="text-3xl font-black text-foreground tracking-tight">User Management</h1>
-          <p className="text-muted-foreground font-medium mt-1">View and manage all registered students.</p>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">Students</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">Registered student accounts.</p>
         </div>
-        <div className="bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-tint-sky-border px-4 py-2 rounded-2xl font-black flex items-center gap-2 shadow-2xs">
-          <Users className="w-5 h-5" />
-          <span className="tabular-nums">{total} Total</span>
-        </div>
+        <span className="text-xs font-mono font-medium text-muted-foreground px-2.5 py-1 rounded-lg bg-ground border border-border">
+          {total} students
+        </span>
       </header>
 
-      <div className="bg-card border-2 border-b-[4px] border-black/[0.08] dark:border-white/[0.08] rounded-3xl shadow-tactile-sm overflow-hidden flex flex-col">
+      <div className="bg-card border border-border/80 rounded-2xl shadow-xs overflow-hidden flex flex-col">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

@@ -30,71 +30,71 @@ export default async function AdminDashboard() {
   }
 
   return (
-    <div>
-      <header className="mb-8">
-        <h1 className="text-3xl font-black text-foreground tracking-tight">Overview Dashboard</h1>
-        <p className="text-muted-foreground font-bold mt-1">Welcome back. Here is what is happening across the platform.</p>
+    <div className="space-y-6">
+      <header className="pb-1">
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">Dashboard</h1>
+        <p className="text-xs text-muted-foreground mt-0.5">Platform overview and live metrics.</p>
       </header>
 
       {error && (
-        <div className="p-4 bg-error/10 text-error rounded-xl font-bold mb-8">
+        <div className="p-3 bg-error/10 text-error rounded-xl font-semibold text-xs mb-4">
           Error loading stats: {error}
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard 
-          title="Total Users" 
+          title="Students" 
           value={stats.totalUsers.toLocaleString()} 
-          icon={<Users className="w-7 h-7 text-tint-purple-fg" />} 
+          icon={<Users className="w-5 h-5 text-tint-purple-fg" />} 
           cardClass="bg-tint-purple text-tint-purple-fg border-tint-purple-border"
-          badge="Active Students"
+          badge="Active"
         />
         <StatCard 
-          title="Study Notes" 
+          title="Notes" 
           value={stats.totalNotes.toLocaleString()} 
-          icon={<FileText className="w-7 h-7 text-tint-green-fg" />} 
+          icon={<FileText className="w-5 h-5 text-tint-green-fg" />} 
           cardClass="bg-tint-green text-tint-green-fg border-tint-green-border"
-          badge="Curated Library"
+          badge="Library"
         />
         <StatCard 
-          title="Exam Questions" 
+          title="Questions" 
           value={stats.totalQuestions.toLocaleString()} 
-          icon={<BrainCircuit className="w-7 h-7 text-tint-peach-fg" />} 
+          icon={<BrainCircuit className="w-5 h-5 text-tint-peach-fg" />} 
           cardClass="bg-tint-peach text-tint-peach-fg border-tint-peach-border"
-          badge="EUEE & Freshman"
+          badge="Bank"
         />
         <StatCard 
-          title="Premium Users" 
+          title="PRO Users" 
           value={stats.totalPremium.toLocaleString()} 
-          icon={<Zap className="w-7 h-7 text-tint-sky-fg" />} 
+          icon={<Zap className="w-5 h-5 text-tint-sky-fg" />} 
           cardClass="bg-tint-sky text-tint-sky-fg border-tint-sky-border"
-          badge="VIP Subscribers"
+          badge="VIP"
         />
       </div>
 
       {/* Gemini AI Engine Spotlight */}
-      <div className="bg-tint-cream text-tint-cream-fg border-2 border-b-[4px] border-tint-cream-border rounded-3xl p-6 md:p-8 shadow-tactile-sm mb-8 relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-tint-cream-border">
+      <div className="bg-tint-cream text-tint-cream-fg border border-tint-cream-border rounded-2xl p-5 shadow-xs mb-6 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4 pb-3 border-b border-tint-cream-border">
           <div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center shadow-xs">
+              <div className="w-7 h-7 rounded-lg bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center shadow-xs">
                 <Bot className="w-4 h-4" />
               </div>
-              <h2 className="text-xl font-black tracking-tight text-tint-cream-fg">
-                Gemini &amp; AI Operations Engine
+              <h2 className="text-base font-bold tracking-tight text-tint-cream-fg">
+                AI Telemetry
               </h2>
             </div>
-            <p className="text-sm font-bold text-tint-cream-fg mt-1">
-              Live telemetry for Gemini 3.6 Flash key rotation, student inquiry quotas, and cache savings.
+            <p className="text-xs font-medium text-tint-cream-fg/80 mt-0.5">
+              Gemini key rotation, inquiry quotas, and cache savings.
             </p>
           </div>
           <Link
             href="/admin/ai"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs uppercase tracking-wider transition-all border-2 border-b-[4px] border-blue-700 shadow-tactile-sm active:translate-y-0.5 shrink-0"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs transition-all shadow-xs shrink-0 active:scale-95"
           >
-            <span>Open AI Telemetry</span>
-            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+            <span>View Telemetry</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 

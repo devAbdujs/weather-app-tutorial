@@ -36,14 +36,14 @@ export function CreateAdminForm() {
   };
 
   return (
-    <div className="bg-card border border-border/80 rounded-2xl p-6 shadow-tactile-sm">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-          <ShieldPlus className="w-5 h-5" />
+    <div className="bg-card border border-border/80 rounded-2xl p-5 shadow-xs">
+      <div className="flex items-center gap-2.5 mb-5">
+        <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600">
+          <ShieldPlus className="w-4 h-4" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-foreground tracking-tight">New Admin</h2>
-          <p className="text-xs text-muted font-medium">Grant staff administrative credentials</p>
+          <h2 className="text-sm font-bold text-foreground">New Account</h2>
+          <p className="text-[11px] text-muted-foreground">Add a team member</p>
         </div>
       </div>
 

@@ -116,28 +116,24 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
       )}
 
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
         <div>
-          <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-1">
-            <Bot className="w-4 h-4 text-accent" />
-            <span>AI Operations &amp; Engine</span>
-          </div>
-          <h1 className="text-3xl font-black text-foreground tracking-tight">
-            Gemini &amp; AI Usage Telemetry
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">
+            AI Telemetry
           </h1>
-          <p className="text-muted-foreground font-medium mt-1">
-            Real-time tracking of Gemini model calls, key rotation pool, student quotas, and cache savings.
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Gemini key rotation, student quotas, and cache performance.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="px-3.5 py-1.5 rounded-xl bg-accent/15 text-accent border border-accent/30 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-tactile-sm">
+          <span className="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 text-xs font-semibold flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" />
             Gemini 3.6 Flash
           </span>
-          <span className="px-3.5 py-1.5 rounded-xl bg-accent-emerald/15 text-accent-emerald border border-accent-emerald/30 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-tactile-sm">
+          <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5" />
-            {stats.keyDetails.activeKeys}/{stats.keyDetails.totalKeys} Keys Active
+            {stats.keyDetails.activeKeys}/{stats.keyDetails.totalKeys} Active
           </span>
         </div>
       </header>

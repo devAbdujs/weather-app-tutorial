@@ -15,19 +15,20 @@ export default async function ManagersPage() {
   const admins = await getAdmins();
 
   return (
-    <div>
-      <header className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-black text-foreground tracking-tight">Manage Admins</h1>
-          <p className="text-muted-foreground font-medium mt-1">Create accounts, toggle access, or revoke staff administrative privileges.</p>
-        </div>
+    <div className="space-y-6">
+      <header className="pb-1">
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">Admin Accounts</h1>
+        <p className="text-xs text-muted-foreground mt-0.5">Staff roles and access permissions.</p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Admin List */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-foreground">Admin Accounts ({admins.length})</h2>
+        <div className="lg:col-span-2 space-y-3">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-foreground">Staff Members</h2>
+            <span className="text-xs font-mono text-muted-foreground px-2 py-0.5 rounded bg-ground border border-border">
+              {admins.length}
+            </span>
           </div>
           <AdminAccountsTable admins={admins} currentAdminId={currentAdmin?.id || ''} />
         </div>
