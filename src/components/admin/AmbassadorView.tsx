@@ -23,7 +23,18 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
   const [search, setSearch] = useState('');
   const [filterExam, setFilterExam] = useState<string>('all');
 
-  const { ambassador, referralCode, referralLink, totalRecruited, proConverted, totalEarnedETB, conversionRate, students } = data;
+  const { 
+    ambassador, 
+    referralCode, 
+    referralLink, 
+    totalRecruited, 
+    proConverted, 
+    totalEarnedETB, 
+    conversionRate, 
+    currentMonthFreeCount = 0,
+    monthlyFreeCap = 30,
+    students 
+  } = data;
 
   const handleCopyLink = async () => {
     try {
@@ -105,7 +116,7 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
 
       {/* ── 1. METRICS ──────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {/* Recruits */}
+        {/* Recruits & Monthly Free Cap */}
         <div className="bg-card border border-border/70 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between text-muted-foreground mb-2.5">
             <span className="text-[11px] font-semibold uppercase tracking-wider">Recruits</span>
@@ -117,6 +128,18 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
           <p className="text-[11px] text-muted-foreground mt-0.5">
             Unique signups
           </p>
+          <div className="mt-2 pt-2 border-t border-border/50">
+            <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
+              <span>Monthly Free Cap</span>
+              <span className="font-mono font-bold text-foreground">{currentMonthFreeCount}/{monthlyFreeCap}</span>
+            </div>
+            <div className="w-full h-1.5 bg-ground rounded-full overflow-hidden border border-border/50">
+              <div 
+                className={`h-full rounded-full transition-all ${currentMonthFreeCount >= monthlyFreeCap ? 'bg-amber-500' : 'bg-primary'}`}
+                style={{ width: `${Math.min(100, (currentMonthFreeCount / monthlyFreeCap) * 100)}%` }}
+              />
+            </div>
+          </div>
         </div>
 
         {/* PRO Conversions */}
@@ -339,6 +362,13 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
                             title="Upgraded after 24-hour referral window expired (0 ETB commission)"
                           >
                             Free · &gt;24h Expired
+                          </span>
+                        ) : student.conversionStatus === 'free_capped' || student.isCapped ? (
+                          <span 
+                            className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-500/10 text-slate-500 dark:text-slate-400 border border-slate-500/20"
+                            title="Exceeded monthly 30-free recruit quota for this ambassador"
+                          >
+                            Free · Monthly Cap
                           </span>
                         ) : (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-ground border border-border text-muted-foreground">

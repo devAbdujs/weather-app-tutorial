@@ -854,6 +854,9 @@ export interface AmbassadorDashboardData {
   totalRecruited: number;
   proConverted: number;
   freeCount: number;
+  freeCappedCount: number;
+  currentMonthFreeCount: number;
+  monthlyFreeCap: number;
   totalEarnedETB: number;
   conversionRate: number;
   students: AmbassadorStudent[];
@@ -925,6 +928,9 @@ export async function getAmbassadorDashboard(targetUsernameOrId?: string): Promi
     totalRecruited: summary.totalRecruited,
     proConverted: summary.proConverted,
     freeCount: summary.freeCount,
+    freeCappedCount: summary.freeCappedCount,
+    currentMonthFreeCount: summary.currentMonthFreeCount,
+    monthlyFreeCap: summary.monthlyFreeCap,
     totalEarnedETB: summary.totalEarnedETB,
     conversionRate: summary.conversionRate,
     students: summary.students,
