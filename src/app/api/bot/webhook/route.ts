@@ -50,6 +50,7 @@ const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 // No hardcoded fallback — if env is unset, payment approvals are blocked for everyone.
 // Set ADMIN_TELEGRAM_ID in your deployment environment variables.
 const ADMIN_TELEGRAM_ID = process.env.ADMIN_TELEGRAM_ID || null;
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://temari.top';
 
 // ── Security: verify request is genuinely from Telegram ───────────────────────
 function getExpectedSecret(): string {

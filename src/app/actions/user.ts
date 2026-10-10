@@ -190,7 +190,7 @@ export interface ReferralDashboardData {
     name: string;
     username?: string;
     isPro: boolean;
-    conversionStatus?: 'free' | 'pro_eligible' | 'pro_expired';
+    conversionStatus?: 'free' | 'free_capped' | 'pro_eligible' | 'pro_expired';
     joinedAt: string;
   }>;
 }

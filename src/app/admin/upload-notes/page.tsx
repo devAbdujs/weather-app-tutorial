@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { 
   Upload, FileText, CheckCircle2, AlertCircle, Loader2, 
@@ -68,11 +68,23 @@ interface ChapterQueueItem {
   error?: string;
 }
 
+interface ExistingNoteItem {
+  id: string;
+  title: string;
+  createdAt: string;
+  wordCount: number;
+}
+
 export default function AdminUploadNotes() {
   const [activeTab, setActiveTab] = useState<'batch' | 'manual'>('batch');
   const [examType, setExamType] = useState('freshman');
   const [department, setDepartment] = useState('Applied Mathematics I');
   
+  // Inventory State
+  const [existingNotes, setExistingNotes] = useState<ExistingNoteItem[]>([]);
+  const [isLoadingInventory, setIsLoadingInventory] = useState(false);
+  const [allowOverwrite, setAllowOverwrite] = useState(true);
+
   // Batch Queue State
   const [queue, setQueue] = useState<ChapterQueueItem[]>([]);
   const [previewItem, setPreviewItem] = useState<ChapterQueueItem | null>(null);
@@ -85,6 +97,29 @@ export default function AdminUploadNotes() {
   const [manualStatus, setManualStatus] = useState('');
   const [manualLoading, setManualLoading] = useState(false);
   const [manualMode, setManualMode] = useState<'write' | 'preview'>('write');
+
+  const fetchInventory = useCallback(async () => {
+    if (!examType || !department) return;
+    setIsLoadingInventory(true);
+    try {
+      const res = await fetch(`/api/admin/notes?examType=${encodeURIComponent(examType)}&department=${encodeURIComponent(department)}`);
+      const data = await res.json();
+      if (data.success && Array.isArray(data.notes)) {
+        setExistingNotes(data.notes);
+      } else {
+        setExistingNotes([]);
+      }
+    } catch (err) {
+      console.error('Failed to load notes inventory:', err);
+      setExistingNotes([]);
+    } finally {
+      setIsLoadingInventory(false);
+    }
+  }, [examType, department]);
+
+  useEffect(() => {
+    fetchInventory();
+  }, [fetchInventory]);
 
   // ── Drag & Drop / File Selection Handlers ────────────────────────────────────
   const handleFilesAdded = (files: FileList | null) => {
@@ -189,6 +224,7 @@ export default function AdminUploadNotes() {
           department,
           title: item.inferredTitle,
           content: item.content,
+          allowOverwrite,
         }),
       });
 
@@ -196,6 +232,7 @@ export default function AdminUploadNotes() {
       if (!data.success) throw new Error(data.error || 'Publish failed');
 
       setQueue(prev => prev.map(q => q.id === itemId ? { ...q, status: 'published' } : q));
+      fetchInventory();
     } catch (err: any) {
       setQueue(prev => prev.map(q => q.id === itemId ? { ...q, status: 'error', error: err.message } : q));
     }
@@ -209,6 +246,7 @@ export default function AdminUploadNotes() {
     for (const item of readyItems) {
       await publishItem(item.id);
     }
+    fetchInventory();
   };
 
   // ── Manual Paste Upload ─────────────────────────────────────────────────────
@@ -233,6 +271,7 @@ export default function AdminUploadNotes() {
           department,
           title: manualTitle,
           content: cleanContent,
+          allowOverwrite,
         }),
       });
 
@@ -241,6 +280,7 @@ export default function AdminUploadNotes() {
         setManualStatus('✅ Successfully saved to Supabase!');
         setManualTitle('');
         setManualContent('');
+        fetchInventory();
       } else {
         setManualStatus(`❌ Error: ${data.error}`);
       }
@@ -251,16 +291,35 @@ export default function AdminUploadNotes() {
     }
   };
 
+  // Chapter Gap & Coverage Analysis
+  const existingChapterNums = existingNotes
+    .map(n => {
+      const m = n.title.match(/(?:chapter|ch)\s*(\d+)/i);
+      return m ? parseInt(m[1], 10) : null;
+    })
+    .filter((n): n is number => n !== null)
+    .sort((a, b) => a - b);
+
+  const maxChapter = existingChapterNums.length > 0 ? Math.max(...existingChapterNums) : 0;
+  const missingChapters: number[] = [];
+  if (maxChapter > 1) {
+    for (let i = 1; i <= maxChapter; i++) {
+      if (!existingChapterNums.includes(i)) {
+        missingChapters.push(i);
+      }
+    }
+  }
+
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-20">
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-blue-600" />
-          Upload Notes
+          Upload Notes Studio
         </h1>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Process textbook chapters into student notes.
+          Process textbook chapters into student notes with live inventory awareness.
         </p>
       </div>
 
@@ -329,6 +388,68 @@ export default function AdminUploadNotes() {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* ── Chapter Inventory & Coverage Matrix ──────────────────────────────── */}
+      <div className="bg-card border border-border/80 rounded-2xl p-4 shadow-xs space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-blue-600" />
+              Chapter Inventory &amp; Coverage
+            </h2>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-ground border border-border font-bold text-foreground">
+              {existingNotes.length} Chapters in DB
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={fetchInventory}
+            disabled={isLoadingInventory}
+            className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors disabled:opacity-50"
+            title="Refresh Inventory"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoadingInventory ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+        </div>
+
+        {isLoadingInventory ? (
+          <div className="flex items-center gap-2 py-3 text-xs text-muted-foreground">
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
+            <span>Checking database inventory...</span>
+          </div>
+        ) : existingNotes.length === 0 ? (
+          <div className="p-3 rounded-xl bg-ground/60 border border-border/60 text-xs text-muted-foreground">
+            No chapters published yet for <b>{department}</b>. All uploads will be new entries.
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {/* Existing Chapters Badges */}
+            <div className="flex flex-wrap gap-1.5">
+              {existingNotes.map((note) => (
+                <div
+                  key={note.id}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400 text-xs font-medium"
+                >
+                  <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
+                  <span className="font-semibold">{note.title}</span>
+                  <span className="text-[10px] opacity-75 font-mono">({note.wordCount}w)</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Missing Chapters Gap Warning */}
+            {missingChapters.length > 0 && (
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs">
+                <AlertCircle className="w-4 h-4 shrink-0 text-amber-500" />
+                <span>
+                  <b>Missing Chapters Detected:</b> Chapter {missingChapters.join(', Chapter ')} not found in database.
+                </span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Tabs */}
@@ -402,7 +523,17 @@ export default function AdminUploadNotes() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                  <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer select-none px-2.5 py-1.5 rounded-lg bg-ground border border-border/80">
+                    <input
+                      type="checkbox"
+                      checked={allowOverwrite}
+                      onChange={(e) => setAllowOverwrite(e.target.checked)}
+                      className="rounded border-border text-blue-600 focus:ring-blue-500"
+                    />
+                    <span>Overwrite if exists</span>
+                  </label>
+
                   <button
                     onClick={handleTransformAll}
                     disabled={isProcessingAll || queue.every(q => q.status === 'ready' || q.status === 'published')}
@@ -425,42 +556,53 @@ export default function AdminUploadNotes() {
 
               {/* Items */}
               <div className="space-y-3">
-                {queue.map((item, idx) => (
-                  <div
-                    key={item.id}
-                    className="p-4 rounded-xl border border-border/80 bg-ground/60 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 hover:border-primary/40 transition-all"
-                  >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="w-8 h-8 rounded-lg bg-black/5 dark:bg-white/5 flex items-center justify-center font-black text-xs shrink-0 text-muted">
-                        {idx + 1}
-                      </div>
+                {queue.map((item, idx) => {
+                  const isDuplicate = existingNotes.some(
+                    n => n.title.toLowerCase().trim() === item.inferredTitle.toLowerCase().trim()
+                  );
 
-                      <div className="min-w-0 flex-1">
-                        <input
-                          type="text"
-                          value={item.inferredTitle}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setQueue(prev => prev.map(q => q.id === item.id ? { ...q, inferredTitle: val } : q));
-                          }}
-                          placeholder="Chapter Title..."
-                          className="font-black text-sm text-foreground bg-transparent border-b border-transparent hover:border-border focus:border-primary outline-none w-full"
-                        />
-                        <div className="flex items-center gap-2 mt-0.5 text-xs text-muted font-medium">
-                          <span className="truncate max-w-[200px]">{item.file.name}</span>
-                          <span>•</span>
-                          <span>{(item.file.size / 1024).toFixed(0)} KB</span>
-                          {item.content && (
-                            <>
-                              <span>•</span>
-                              <span className="text-primary font-bold">
-                                ~{Math.max(1, Math.ceil((item.content.trim().match(/\S+/g) || []).length / 180))} min read
+                  return (
+                    <div
+                      key={item.id}
+                      className="p-4 rounded-xl border border-border/80 bg-ground/60 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 hover:border-primary/40 transition-all"
+                    >
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="w-8 h-8 rounded-lg bg-black/5 dark:bg-white/5 flex items-center justify-center font-black text-xs shrink-0 text-muted">
+                          {idx + 1}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <input
+                            type="text"
+                            value={item.inferredTitle}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setQueue(prev => prev.map(q => q.id === item.id ? { ...q, inferredTitle: val } : q));
+                            }}
+                            placeholder="Chapter Title..."
+                            className="font-black text-sm text-foreground bg-transparent border-b border-transparent hover:border-border focus:border-primary outline-none w-full"
+                          />
+                          <div className="flex flex-wrap items-center gap-2 mt-0.5 text-xs text-muted font-medium">
+                            <span className="truncate max-w-[200px]">{item.file.name}</span>
+                            <span>•</span>
+                            <span>{(item.file.size / 1024).toFixed(0)} KB</span>
+                            {isDuplicate && (
+                              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25 flex items-center gap-1 shrink-0">
+                                <AlertCircle className="w-3 h-3" />
+                                Exists in DB (Overwrite Alert)
                               </span>
-                            </>
-                          )}
+                            )}
+                            {item.content && (
+                              <>
+                                <span>•</span>
+                                <span className="text-primary font-bold">
+                                  ~{Math.max(1, Math.ceil((item.content.trim().match(/\S+/g) || []).length / 180))} min read
+                                </span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
                     {/* Status Badge & Actions */}
                     <div className="flex items-center gap-2 w-full md:w-auto justify-between md:justify-end">
@@ -537,7 +679,8 @@ export default function AdminUploadNotes() {
                       </div>
                     </div>
                   </div>
-                ))}
+                );
+              })}
               </div>
             </div>
           )}
