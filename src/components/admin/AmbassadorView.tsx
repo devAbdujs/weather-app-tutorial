@@ -292,21 +292,21 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[500px]">
-            <thead>
-              <tr className="bg-ground/40 border-b border-border/70">
+        {/* Table (Responsive Table-Cards) */}
+        <div className="overflow-x-auto sm:overflow-x-visible">
+          <table className="w-full text-left border-collapse block sm:table">
+            <thead className="hidden sm:table-header-group bg-ground/40 border-b border-border/70">
+              <tr>
                 <th className="p-3 font-semibold text-muted-foreground text-xs">Student</th>
                 <th className="p-3 font-semibold text-muted-foreground text-xs">Track</th>
                 <th className="p-3 font-semibold text-muted-foreground text-xs">Status</th>
                 <th className="p-3 font-semibold text-muted-foreground text-xs text-right">Joined</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="block sm:table-row-group divide-y divide-border/40 sm:divide-y-0">
               {filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="p-6 text-center text-muted-foreground text-xs">
+                  <td colSpan={4} className="p-6 text-center text-muted-foreground text-xs block sm:table-cell">
                     {search || filterExam !== 'all' ? 'No matching students.' : 'No recruits yet.'}
                   </td>
                 </tr>
@@ -322,11 +322,11 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
                   return (
                     <tr
                       key={student.telegram_id || student.id}
-                      className="border-b border-border/40 hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors"
+                      className="block sm:table-row p-3.5 sm:p-0 border-b border-border/40 hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors"
                     >
-                      <td className="p-3">
+                      <td className="block sm:table-cell p-0 sm:p-3 mb-2 sm:mb-0">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-blue-500/10 text-blue-600 font-bold text-xs flex items-center justify-center shrink-0">
+                          <div className="w-8 h-8 sm:w-7 sm:h-7 rounded-full bg-blue-500/10 text-blue-600 font-bold text-xs flex items-center justify-center shrink-0">
                             {(student.full_name || 'S').charAt(0).toUpperCase()}
                           </div>
                           <div>
@@ -340,7 +340,7 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
                         </div>
                       </td>
 
-                      <td className="p-3 text-xs text-foreground">
+                      <td className="inline-block sm:table-cell p-0 sm:p-3 mr-2 sm:mr-0 text-xs text-foreground">
                         <div className="flex items-center gap-1.5 text-muted-foreground">
                           <BookOpen className="w-3 h-3" />
                           <span className="font-medium text-foreground">{examLabel}</span>
@@ -350,7 +350,7 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
                         </div>
                       </td>
 
-                      <td className="p-3">
+                      <td className="inline-block sm:table-cell p-0 sm:p-3 mr-2 sm:mr-0">
                         {isEligiblePro ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50">
                             <span>👑</span>
@@ -377,7 +377,8 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
                         )}
                       </td>
 
-                      <td className="p-3 text-xs font-mono text-muted-foreground text-right">
+                      <td className="block sm:table-cell p-0 sm:p-3 mt-1 sm:mt-0 text-xs font-mono text-muted-foreground sm:text-right">
+                        <span className="sm:hidden text-[10px] text-muted mr-1">Joined:</span>
                         {new Date(student.created_at).toLocaleDateString(undefined, {
                           month: 'short',
                           day: 'numeric'

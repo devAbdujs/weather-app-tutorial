@@ -294,7 +294,84 @@ export function AdminAIView({ stats }: AdminAIViewProps) {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Mobile Cards Feed (< sm) */}
+        <div className="block sm:hidden divide-y divide-border/60">
+          {filteredUsers.length === 0 ? (
+            <div className="p-6 text-center text-xs font-bold text-muted-foreground">
+              No active student AI usage found for this cycle.
+            </div>
+          ) : (
+            filteredUsers.map(user => {
+              const isPrem = user.subscription_status === 'premium';
+              const maxQuota = isPrem ? 150 : 5;
+              const percent = Math.min(100, Math.round((user.ai_weekly_usage / maxQuota) * 100));
+
+              return (
+                <div key={user.telegram_id} className="p-4 space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
+                        isPrem 
+                          ? 'bg-amber-500/20 text-amber-950 dark:text-amber-200 border border-amber-500/30' 
+                          : 'bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white border border-black/10 dark:border-white/10'
+                      }`}>
+                        {user.full_name?.charAt(0).toUpperCase() || '?'}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-xs text-foreground truncate">
+                          {user.full_name || 'Unknown Student'}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground font-mono truncate">
+                          @{user.username || user.telegram_id}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1 shrink-0 ${
+                      isPrem 
+                        ? 'bg-accent/15 text-accent border border-accent/20' 
+                        : 'bg-black/5 dark:bg-white/10 text-foreground'
+                    }`}>
+                      {isPrem && <Award className="w-3 h-3 text-accent" />}
+                      {user.subscription_status}
+                    </span>
+                  </div>
+
+                  {/* Quota Progress */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-[11px] font-bold">
+                      <span className="text-muted-foreground">Weekly Quota</span>
+                      <span className="font-mono text-foreground">{user.ai_weekly_usage} / {maxQuota} ({percent}%)</span>
+                    </div>
+                    <div className="w-full bg-black/10 dark:bg-white/10 h-2 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-300 ${
+                          percent >= 90 ? 'bg-error' : percent >= 60 ? 'bg-amber-500' : 'bg-accent-emerald'
+                        }`}
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Reset Action */}
+                  <div className="pt-1 flex justify-end border-t border-border/40">
+                    <button
+                      onClick={() => handleReset(user.telegram_id, user.full_name || 'Student')}
+                      disabled={resettingId === user.telegram_id || user.ai_weekly_usage === 0}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-black/10 dark:border-white/10 text-xs font-bold text-foreground active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all shadow-2xs"
+                    >
+                      <RotateCcw className={`w-3 h-3 ${resettingId === user.telegram_id ? 'animate-spin' : ''}`} />
+                      <span>Reset Quota</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Desktop Table (>= sm) */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-ground/50 border-b border-black/[0.06] dark:border-white/[0.08]">

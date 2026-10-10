@@ -279,12 +279,12 @@ export function QuestionStudio({ initialQuestions }: QuestionStudioProps) {
         </div>
       </div>
 
-      {/* Questions Table */}
+      {/* Questions Table (Responsive Table-Cards) */}
       <div className="bg-card border border-border/80 rounded-3xl shadow-tactile-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[700px]">
-            <thead>
-              <tr className="bg-ground/50 border-b border-border/80">
+        <div className="overflow-x-auto sm:overflow-x-visible">
+          <table className="w-full text-left border-collapse block sm:table">
+            <thead className="hidden sm:table-header-group bg-ground/50 border-b border-border/80">
+              <tr>
                 <th className="p-4 font-bold text-muted uppercase tracking-wider text-xs w-[50%]">Question</th>
                 <th className="p-4 font-bold text-muted uppercase tracking-wider text-xs">Subject</th>
                 <th className="p-4 font-bold text-muted uppercase tracking-wider text-xs">Track</th>
@@ -292,14 +292,14 @@ export function QuestionStudio({ initialQuestions }: QuestionStudioProps) {
                 <th className="p-4 font-bold text-muted uppercase tracking-wider text-xs text-right">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="block sm:table-row-group divide-y divide-border/50 sm:divide-y-0">
               {filteredQuestions.map((q: QuestionItem) => (
                 <tr
                   key={q.id}
-                  className="border-b border-border/40 hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors"
+                  className="block sm:table-row p-4 sm:p-0 border-b border-border/40 hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors"
                 >
-                  <td className="p-4">
-                    <p className="font-bold text-foreground text-sm line-clamp-2">
+                  <td className="block sm:table-cell p-0 sm:p-4 mb-2 sm:mb-0">
+                    <p className="font-bold text-foreground text-sm line-clamp-3 leading-snug">
                       <MathText content={q.question} />
                     </p>
                     <div className="flex items-center gap-2 mt-1.5">
@@ -311,15 +311,19 @@ export function QuestionStudio({ initialQuestions }: QuestionStudioProps) {
                       )}
                     </div>
                   </td>
-                  <td className="p-4 font-bold text-foreground/80 text-xs">{q.subject}</td>
-                  <td className="p-4">
+                  <td className="inline-block sm:table-cell p-0 sm:p-4 mr-2 sm:mr-0 font-bold text-foreground/80 text-xs">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-primary/10 text-primary border border-primary/20 sm:bg-transparent sm:border-0 sm:p-0 sm:text-xs">
+                      {q.subject}
+                    </span>
+                  </td>
+                  <td className="inline-block sm:table-cell p-0 sm:p-4 mr-2 sm:mr-0">
                     <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-accent-gold/15 text-accent-gold border border-accent-gold/30 uppercase tracking-wide">
                       {q.exam_type}
                     </span>
                   </td>
-                  <td className="p-4 text-center">
+                  <td className="inline-block sm:table-cell p-0 sm:p-4 sm:text-center mr-2 sm:mr-0">
                     {q.answer ? (
-                      <span className="inline-block px-2 py-1 rounded-lg text-xs font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                      <span className="inline-block px-2 py-0.5 sm:py-1 rounded-lg text-xs font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                         {q.answer}
                       </span>
                     ) : (
@@ -328,8 +332,8 @@ export function QuestionStudio({ initialQuestions }: QuestionStudioProps) {
                       </span>
                     )}
                   </td>
-                  <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
+                  <td className="block sm:table-cell p-0 sm:p-4 mt-2 sm:mt-0 sm:text-right">
+                    <div className="flex items-center justify-end gap-1.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-border/30">
                       <button
                         type="button"
                         onClick={() => {
@@ -337,19 +341,21 @@ export function QuestionStudio({ initialQuestions }: QuestionStudioProps) {
                           setPreviewMode(false);
                         }}
                         aria-label={`Edit question ${q.id}`}
-                        className="p-1.5 rounded-xl border border-border bg-ground hover:bg-black/5 dark:hover:bg-white/5 text-foreground/80 transition-all"
+                        className="px-2.5 py-1.5 sm:p-1.5 rounded-xl border border-border bg-ground hover:bg-black/5 dark:hover:bg-white/5 text-foreground/80 transition-all text-xs font-semibold flex items-center gap-1 active:scale-95"
                         title="Edit question"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
+                        <span className="sm:hidden">Edit</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(q)}
                         aria-label={`Delete question ${q.id}`}
-                        className="p-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 transition-all"
+                        className="px-2.5 py-1.5 sm:p-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 transition-all text-xs font-semibold flex items-center gap-1 active:scale-95"
                         title="Delete question"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
+                        <span className="sm:hidden">Delete</span>
                       </button>
                     </div>
                   </td>

@@ -5,6 +5,7 @@ import { AdminNav } from '@/components/admin/AdminNav';
 import { LogoutButton } from '@/components/admin/LogoutButton';
 
 import { TemariMascot } from '@/components/mascot/TemariMascot';
+import { AdminMobileNav } from '@/components/admin/AdminMobileNav';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await verifyAdmin();
@@ -31,8 +32,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     'text-gray-300 bg-white/10 border-white/20';
 
   return (
-    <div className="h-screen bg-ground flex flex-col md:flex-row overflow-hidden">
-      <aside className="w-full md:w-64 bg-gray-950 dark:bg-card text-white flex flex-col h-auto md:h-full shrink-0 border-r border-white/10 shadow-tactile-md z-10">
+    <div className="min-h-screen md:h-screen bg-ground flex flex-col md:flex-row overflow-x-hidden md:overflow-hidden">
+      {/* Mobile-First Header Bar & Drawer for Touch Screens */}
+      <AdminMobileNav 
+        role={admin.role}
+        username={admin.username}
+        roleLabel={roleLabel}
+        roleBadgeStyle={roleBadgeStyle}
+      />
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex md:w-64 bg-gray-950 dark:bg-card text-white flex-col h-full shrink-0 border-r border-white/10 shadow-tactile-md z-10">
         <div className="p-6 pb-4 border-b border-white/10 flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center p-1 shadow-2xs shrink-0">
             <TemariMascot mood="happy" size={38} animate={false} />
@@ -58,7 +68,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </aside>
 
-      <main className="flex-1 p-4 md:p-8 overflow-y-auto h-full w-full bg-ground custom-scrollbar relative">
+      <main className="flex-1 p-3 sm:p-5 md:p-8 overflow-y-auto h-full w-full bg-ground custom-scrollbar relative">
         <div className="max-w-6xl mx-auto pb-16">
           {children}
         </div>

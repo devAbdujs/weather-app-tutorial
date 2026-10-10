@@ -27,7 +27,7 @@ export const MobileDeviceMockup: React.FC<MobileDeviceMockupProps> = ({ portal }
   };
 
   return (
-    <div className="relative mx-auto w-full max-w-[340px] select-none">
+    <div className="relative mx-auto w-full max-w-[320px] sm:max-w-[340px] select-none">
       {/* Device Outer Chassis */}
       <div className="relative rounded-[44px] p-3.5 bg-slate-900 border-[7px] border-slate-800 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] ring-1 ring-white/10 overflow-hidden">
         {/* Dynamic Island / Notch */}

@@ -28,7 +28,59 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
       </header>
 
       <div className="bg-card border border-border/80 rounded-2xl shadow-xs overflow-hidden flex flex-col">
-        <div className="overflow-x-auto">
+        {/* Mobile Cards Feed (< sm) */}
+        <div className="block sm:hidden divide-y divide-border/60">
+          {users.map((user: any) => (
+            <div key={user.id} className="p-4 space-y-2.5">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-2xl bg-tint-peach text-tint-peach-fg font-black text-xs flex items-center justify-center shadow-2xs shrink-0">
+                    {user.full_name?.charAt(0).toUpperCase() || '?'}
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm text-foreground leading-tight">{user.full_name || 'Unknown'}</p>
+                    <p className="text-[11px] text-muted-foreground font-mono flex items-center gap-1.5 flex-wrap mt-0.5">
+                      <span>@{user.username || user.telegram_id}</span>
+                      {user.phone_number && (
+                        <span className="font-sans font-semibold text-primary/90 bg-primary/10 px-1.5 py-0.5 rounded text-[10px]">
+                          {user.phone_number}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 font-bold text-accent text-xs tabular-nums shrink-0">
+                  <Flame className="w-3.5 h-3.5 fill-accent" />
+                  <span>{user.daily_streak || 0}d</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs pt-1 border-t border-border/40">
+                <div>
+                  {user.target_exam ? (
+                    <span className="px-2 py-0.5 bg-tint-green text-tint-green-fg rounded-lg text-[10px] font-black border border-tint-green-border uppercase">
+                      {user.target_exam}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground text-[10px]">No track set</span>
+                  )}
+                </div>
+                <span className="text-[10px] text-muted-foreground font-medium">
+                  Joined {new Date(user.created_at).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+          ))}
+
+          {users.length === 0 && (
+            <div className="p-8 text-center text-muted-foreground font-bold text-xs">
+              No users found.
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Table (>= sm) */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-ground/50 border-b border-black/[0.06] dark:border-white/[0.08]">

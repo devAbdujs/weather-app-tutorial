@@ -29,7 +29,71 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
       </header>
 
       <div className="bg-card border border-border/80 rounded-2xl shadow-xs overflow-hidden flex flex-col">
-        <div className="overflow-x-auto">
+        {/* Mobile-Native Cards Feed (< sm) */}
+        <div className="block sm:hidden divide-y divide-border/60">
+          {payments.map((payment: any) => (
+            <div key={payment.id} className="p-4 space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center font-black text-xs shadow-2xs shrink-0">
+                    {payment.profiles?.full_name?.charAt(0).toUpperCase() || '?'}
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm text-foreground leading-tight">
+                      {payment.profiles?.full_name || 'Unknown'}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground font-mono">
+                      @{payment.profiles?.username || payment.telegram_id}
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] text-muted-foreground font-medium shrink-0">
+                  {new Date(payment.created_at).toLocaleDateString()}
+                </span>
+              </div>
+
+              {/* Transaction & Receipt details */}
+              <div className="p-2.5 rounded-xl bg-ground border border-border/70 flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <span className="text-[10px] uppercase font-bold text-muted-foreground block">
+                    Txn ID
+                  </span>
+                  <span className="text-xs font-mono font-bold text-foreground truncate block">
+                    {payment.transaction_id || <span className="italic font-sans text-muted-foreground">Not provided</span>}
+                  </span>
+                </div>
+                <a 
+                  href={payment.receipt_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-tint-peach text-tint-peach-fg border border-tint-peach-border rounded-xl text-xs font-black shrink-0 active:scale-95 transition-transform"
+                >
+                  <ImageIcon className="w-3.5 h-3.5" />
+                  <span>Receipt</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-1">
+                <PaymentActions paymentId={payment.id} telegramId={payment.telegram_id} />
+              </div>
+            </div>
+          ))}
+
+          {payments.length === 0 && (
+            <div className="p-8 text-center text-muted-foreground font-bold">
+              <div className="w-12 h-12 bg-ground rounded-full flex items-center justify-center mx-auto mb-3 border border-border">
+                <CheckCircle2 className="w-6 h-6 text-accent-emerald opacity-70" />
+              </div>
+              <p className="text-base text-foreground font-black">All caught up!</p>
+              <p className="text-xs text-muted-foreground mt-0.5">No pending payments to review.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Table (>= sm) */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-ground/50 border-b border-black/[0.06] dark:border-white/[0.08]">

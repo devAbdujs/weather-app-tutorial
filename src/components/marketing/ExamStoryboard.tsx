@@ -15,10 +15,10 @@ export const ExamStoryboard: React.FC<ExamStoryboardProps> = ({ portal }) => {
   const currentTrack: 'entrance' | 'freshman' | 'exit' = portal === 'root' ? activeTab : portal;
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-6 py-6 space-y-6">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
       {/* Root portal switcher tabs — ONLY shown when on root temari.top */}
       {portal === 'root' && (
-        <div className="flex items-center justify-center gap-2 mb-2">
+        <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
           <button
             onClick={() => setActiveTab('entrance')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${

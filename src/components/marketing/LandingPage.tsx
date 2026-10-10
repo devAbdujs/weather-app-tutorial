@@ -193,9 +193,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
       
       {/* 1. Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-ground/85 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06]">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href={getSubdomainUrl('root')} className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
-             <div className="w-9 h-9 rounded-2xl bg-primary/10 border-2 border-b-[3px] border-primary/25 dark:border-primary/40 flex items-center justify-center p-1 shadow-tactile-sm overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-15 sm:h-16 flex items-center justify-between">
+          <Link href={getSubdomainUrl('root')} className="flex items-center gap-2.5 hover:opacity-90 active:scale-95 transition-all">
+             <div className="w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-2xl bg-primary/10 border-2 border-b-[3px] border-primary/25 dark:border-primary/40 flex items-center justify-center p-1 shadow-tactile-sm overflow-hidden">
                <Image 
                  src="/assets/temari_icon.png" 
                  alt="Temari Logo" 
@@ -213,14 +213,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
                 onClick={() => {
                   try { (window as any).Telegram.WebApp.close(); } catch {}
                 }} 
-                className="text-xs font-bold px-3 py-1.5 rounded-xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground transition-colors"
+                className="text-xs font-bold px-3 py-2 min-h-[44px] rounded-xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground transition-colors"
               >
                 Exit App
               </button>
             )}
             <button 
               onClick={() => handlePrimaryAuth(activePortal !== 'root' ? activePortal : undefined)} 
-              className="btn-3d-card text-xs font-black px-4 py-2 rounded-xl text-foreground"
+              className="btn-3d-card text-xs font-black px-4 py-2.5 min-h-[44px] rounded-xl text-foreground active:scale-95 transition-transform"
             >
               Sign In
             </button>
@@ -229,30 +229,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
       </nav>
 
       {/* 2. Hero Section */}
-      <header className="relative px-6 pt-24 sm:pt-30 pb-6 sm:pb-10 flex flex-col items-center text-center max-w-3xl mx-auto w-full mt-2 sm:mt-4">
+      <header className="relative px-4 sm:px-6 pt-20 sm:pt-28 pb-6 sm:pb-10 flex flex-col items-center text-center max-w-3xl mx-auto w-full mt-1 sm:mt-4">
         
         {/* Mascot & Track Badge */}
-        <div className="flex flex-col items-center mb-5 animate-fade-up">
-          <TemariMascot mood="happy" size={105} className="drop-shadow-sm mb-3" />
+        <div className="flex flex-col items-center mb-4 sm:mb-5 animate-fade-up">
+          <TemariMascot mood="happy" size={92} className="drop-shadow-sm mb-2.5 sm:mb-3" />
           {activePortal !== 'root' ? (
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-black tracking-wide shadow-2xs">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-black tracking-wide shadow-2xs">
               <span className="text-sm">{portalConfig.emoji}</span>
               <span>{portalConfig.tagline}</span>
             </div>
           ) : (
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 text-xs font-black uppercase tracking-wider">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-gold/15 text-accent-gold border border-accent-gold/30 text-xs font-black uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5" /> 
               Ethiopian National Exam Prep
             </div>
           )}
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight sm:leading-[1.1] mb-4 animate-fade-up" style={{ animationDelay: '0.1s' }}>
+        <h1 className="text-2xl sm:text-5xl font-black tracking-tight leading-tight sm:leading-[1.1] mb-3 sm:mb-4 animate-fade-up" style={{ animationDelay: '0.1s' }}>
           {portalConfig.headline} <br className="hidden sm:block" />
           <span className="text-primary">{portalConfig.highlightedText}</span>
         </h1>
         
-        <p className="text-muted-foreground font-semibold text-sm sm:text-base mb-6 max-w-lg mx-auto leading-relaxed animate-fade-up" style={{ animationDelay: '0.2s' }}>
+        <p className="text-muted-foreground font-semibold text-xs sm:text-base mb-5 sm:mb-6 max-w-lg mx-auto leading-relaxed animate-fade-up" style={{ animationDelay: '0.2s' }}>
           {portalConfig.description}
         </p>
 
@@ -268,7 +268,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
               handlePrimaryAuth(activePortal);
             }
           }}
-          className="btn-3d-primary w-full max-w-[320px] py-3.5 rounded-2xl flex items-center justify-center gap-2 shadow-tactile-md text-sm font-black tracking-wide animate-fade-up z-10"
+          className="btn-3d-primary w-full max-w-[320px] py-4 rounded-2xl flex items-center justify-center gap-2 shadow-tactile-md text-sm font-black tracking-wide animate-fade-up z-10 active:scale-[0.98] transition-transform min-h-[48px]"
           style={{ animationDelay: '0.3s' }}
         >
           {activePortal === 'root' ? (
@@ -501,7 +501,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
         </p>
         <button
           onClick={() => handlePrimaryAuth(activePortal !== 'root' ? activePortal : undefined)}
-          className="btn-3d-primary w-full max-w-[300px] py-3.5 rounded-2xl flex items-center justify-center gap-2 text-sm font-black shadow-tactile-sm"
+          className="btn-3d-primary w-full max-w-[300px] py-4 rounded-2xl min-h-[48px] flex items-center justify-center gap-2 text-sm font-black shadow-tactile-sm active:scale-[0.98] transition-transform"
         >
           <Send className="w-4 h-4 text-white" />
           <span>Start Practicing — Free</span>
@@ -509,7 +509,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
       </section>
 
       {/* 7. Footer */}
-      <footer className="w-full bg-ground border-t border-black/[0.06] dark:border-white/[0.06] py-6 px-6">
+      <footer className="w-full bg-ground border-t border-black/[0.06] dark:border-white/[0.06] py-6 px-6 pb-24 sm:pb-6">
          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
             <div className="flex items-center gap-2">
                <div className="w-6 h-6 rounded-lg bg-primary/10 border border-primary/25 overflow-hidden flex items-center justify-center p-0.5">
@@ -520,6 +520,35 @@ export const LandingPage: React.FC<LandingPageProps> = ({ initialPortal = 'root'
             <p className="text-xs font-semibold text-muted-foreground">© {new Date().getFullYear()} Temari. Built for Ethiopian scholars.</p>
          </div>
       </footer>
+
+      {/* 8. Mobile Floating 1-Tap Quick Action Bar (< sm) */}
+      <div className="sm:hidden fixed bottom-4 inset-x-4 z-40 animate-fade-up">
+        <button
+          type="button"
+          onClick={() => {
+            if (activePortal === 'root') {
+              sounds.playTap();
+              const el = document.getElementById('exam-portals');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              } else {
+                handlePrimaryAuth();
+              }
+            } else {
+              handlePrimaryAuth(activePortal);
+            }
+          }}
+          className="btn-3d-primary w-full py-3.5 px-5 rounded-2xl flex items-center justify-between shadow-tactile-lg text-sm font-black tracking-wide active:scale-[0.98] transition-transform"
+        >
+          <span className="flex items-center gap-2">
+            <Send className="w-4 h-4 text-white" />
+            <span>{activePortal === 'root' ? 'Choose Exam Track' : `Practice ${portalConfig.shortLabel}`}</span>
+          </span>
+          <span className="text-[11px] bg-white/20 px-2 py-0.5 rounded-full font-bold">
+            Free
+          </span>
+        </button>
+      </div>
     </div>
   );
 };

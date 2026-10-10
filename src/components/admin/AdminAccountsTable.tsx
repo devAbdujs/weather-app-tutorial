@@ -125,10 +125,10 @@ export function AdminAccountsTable({ admins: initialAdmins, currentAdminId }: Ad
       )}
 
       <div className="bg-card border border-border/80 rounded-3xl shadow-tactile-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[550px]">
-            <thead>
-              <tr className="bg-ground/50 border-b border-border/80">
+        <div className="overflow-x-auto sm:overflow-x-visible">
+          <table className="w-full text-left border-collapse block sm:table">
+            <thead className="hidden sm:table-header-group bg-ground/50 border-b border-border/80">
+              <tr>
                 <th className="p-4 font-bold text-muted uppercase tracking-wider text-xs">Username</th>
                 <th className="p-4 font-bold text-muted uppercase tracking-wider text-xs">Role</th>
                 <th className="p-4 font-bold text-muted uppercase tracking-wider text-xs">Status</th>
@@ -136,7 +136,7 @@ export function AdminAccountsTable({ admins: initialAdmins, currentAdminId }: Ad
                 <th className="p-4 font-bold text-muted uppercase tracking-wider text-xs text-right">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="block sm:table-row-group divide-y divide-border/40 sm:divide-y-0">
               {admins.map((a: AdminUser) => {
                 const isCurrentUser = a.id === currentAdminId;
                 const isActive = a.is_active !== false;
@@ -145,9 +145,9 @@ export function AdminAccountsTable({ admins: initialAdmins, currentAdminId }: Ad
                 return (
                   <tr
                     key={a.id}
-                    className="border-b border-border/40 hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors"
+                    className="block sm:table-row p-4 sm:p-0 border-b border-border/40 hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors"
                   >
-                    <td className="p-4 font-bold text-foreground">
+                    <td className="block sm:table-cell p-0 sm:p-4 mb-2 sm:mb-0 font-bold text-foreground">
                       <div className="flex items-center gap-2">
                         <span>@{a.username}</span>
                         {isCurrentUser && (
@@ -157,7 +157,7 @@ export function AdminAccountsTable({ admins: initialAdmins, currentAdminId }: Ad
                         )}
                       </div>
                     </td>
-                    <td className="p-4">
+                    <td className="inline-block sm:table-cell p-0 sm:p-4 mr-2 sm:mr-0">
                       <span
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold border uppercase tracking-wider ${
                           a.role === 'superadmin'
@@ -174,7 +174,7 @@ export function AdminAccountsTable({ admins: initialAdmins, currentAdminId }: Ad
                         {a.role === 'ambassador' ? 'College Ambassador' : a.role}
                       </span>
                     </td>
-                    <td className="p-4">
+                    <td className="inline-block sm:table-cell p-0 sm:p-4 mr-2 sm:mr-0">
                       {isActive ? (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -187,14 +187,15 @@ export function AdminAccountsTable({ admins: initialAdmins, currentAdminId }: Ad
                         </span>
                       )}
                     </td>
-                    <td className="p-4 text-sm font-medium text-muted-foreground">
+                    <td className="block sm:table-cell p-0 sm:p-4 my-1 sm:my-0 text-sm font-medium text-muted-foreground">
+                      <span className="sm:hidden text-xs text-muted mr-1">Added:</span>
                       {new Date(a.created_at).toLocaleDateString()}
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="block sm:table-cell p-0 sm:p-4 mt-2 sm:mt-0 sm:text-right">
                       {isCurrentUser ? (
                         <span className="text-xs font-medium text-muted italic">Current Session</span>
                       ) : (
-                        <div className="flex items-center justify-end gap-1.5">
+                        <div className="flex items-center sm:justify-end gap-1.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-border/30">
                           <button
                             type="button"
                             onClick={() => handleToggleActive(a)}
@@ -210,12 +211,12 @@ export function AdminAccountsTable({ admins: initialAdmins, currentAdminId }: Ad
                             {isActive ? (
                               <>
                                 <PowerOff className="w-3.5 h-3.5" />
-                                <span className="hidden sm:inline">Deactivate</span>
+                                <span>Deactivate</span>
                               </>
                             ) : (
                               <>
                                 <Power className="w-3.5 h-3.5" />
-                                <span className="hidden sm:inline">Activate</span>
+                                <span>Activate</span>
                               </>
                             )}
                           </button>
@@ -229,7 +230,7 @@ export function AdminAccountsTable({ admins: initialAdmins, currentAdminId }: Ad
                             title="Delete account permanently"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
-                            <span className="hidden sm:inline">Delete</span>
+                            <span>Delete</span>
                           </button>
                         </div>
                       )}
