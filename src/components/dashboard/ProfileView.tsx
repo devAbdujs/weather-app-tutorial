@@ -422,7 +422,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats, referr
                   Temari Pro
                 </h2>
                 <p className="text-caption font-bold text-white/95 mt-0.5">
-                  199 ETB • Unlimited AI Tutor
+                  250 ETB • Unlimited AI Tutor
                 </p>
               </div>
             </div>

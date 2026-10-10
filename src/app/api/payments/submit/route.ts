@@ -5,13 +5,14 @@ import { createAdminClient } from '@/utils/supabase/admin';
 import { getNextGeminiKey } from '@/lib/geminiKeyRotation';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText } from 'ai';
-import { sendAdminPaymentAlert } from '@/lib/paymentNotifier';
+import { sendAdminPaymentAlert, sendAutoApprovalAdminAlert, sendStudentNotification } from '@/lib/paymentNotifier';
 import { checkRateLimit } from '@/lib/rateLimiter';
 
 // NOTE: Node.js runtime required for Buffer (not Edge-compatible)
 export const runtime = 'nodejs';
 
-const PAYMENT_AMOUNT_ETB = 199; // Expected payment amount (matches 199 ETB in upgrade UI)
+const PAYMENT_AMOUNT_ETB = 250; // Expected payment amount (matches 250 ETB in upgrade UI)
+const MIN_AUTO_APPROVE_AMOUNT = 245; // Tolerance threshold for automated approval (covers potential bank fee rounding)
 
 export async function POST(req: NextRequest) {
   try {
@@ -142,22 +143,24 @@ export async function POST(req: NextRequest) {
                 },
                 {
                   type: 'text',
-                  text: `You are a payment verification assistant for an Ethiopian educational app.
-Analyze this bank/mobile money transfer receipt image.
+                  text: `You are an automated payment verification assistant for an Ethiopian educational app (Temari).
+Analyze this CBE / Telebirr bank or mobile money transfer receipt screenshot.
 
 Extract and respond with ONLY valid JSON in this exact format:
 {
-  "transaction_id": "the transaction ID or reference number (string or null)",
-  "amount_etb": "the transfer amount as a number (e.g. 500) or null",
+  "transaction_id": "the transaction reference or confirmation code (string or null)",
+  "amount_etb": 250,
   "sender_name": "the full name of the sender (string or null)",
+  "credited_account": "the recipient bank account number or phone number credited (string or null)",
+  "receiver_name": "the recipient name or merchant credited (string or null)",
   "is_suspicious": false
 }
 
 Set "is_suspicious" to true if:
-- The image is not a payment receipt
-- The image appears edited or manipulated
-- The amount is less than ${PAYMENT_AMOUNT_ETB} ETB
-- No clear transaction reference is visible
+- The image is not a payment receipt or transfer confirmation
+- The image appears edited, manipulated, font-altered, or counterfeit
+- The amount transferred is less than ${MIN_AUTO_APPROVE_AMOUNT} ETB
+- The transaction ID or reference is completely missing or obscured
 
 Respond ONLY with the JSON object, no explanation, no markdown.`,
                 },
@@ -170,12 +173,17 @@ Respond ONLY with the JSON object, no explanation, no markdown.`,
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
           extractedTxId = parsed.transaction_id ?? extractedTxId;
-          extractedAmount = parsed.amount_etb ? `${parsed.amount_etb} ETB` : null;
+          const rawAmt = parsed.amount_etb ?? parsed.amount;
+          const numAmount = typeof rawAmt === 'number' 
+            ? rawAmt 
+            : parseFloat(String(rawAmt || '').replace(/[^0-9.]/g, ''));
+          extractedAmount = !isNaN(numAmount) && numAmount > 0 ? `${numAmount} ETB` : null;
           extractedSender = parsed.sender_name ?? null;
+          const extractedCreditedAccount = parsed.credited_account ?? null;
+          const extractedReceiverName = parsed.receiver_name ?? null;
           geminiSuspicious = parsed.is_suspicious === true;
 
           // Save Gemini-extracted info back to the receipt row
-          // Use try/catch so a missing column doesn't break the whole flow
           try {
             await supabaseAdmin.from('payment_receipts').update({
               transaction_id: extractedTxId,
@@ -184,10 +192,101 @@ Respond ONLY with the JSON object, no explanation, no markdown.`,
               gemini_flagged: geminiSuspicious,
             }).eq('id', receiptId);
           } catch (_colErr) {
-            // Columns may not exist yet — try a minimal update
             await supabaseAdmin.from('payment_receipts').update({
               transaction_id: extractedTxId,
             }).eq('id', receiptId);
+          }
+
+          // ── Step 3.5: Evaluate for Instant Auto-Approval ──────────────────────
+          let isAutoApproved = false;
+
+          if (!geminiSuspicious && !isNaN(numAmount) && numAmount >= MIN_AUTO_APPROVE_AMOUNT && extractedTxId) {
+            // Check replay attack protection: ensure transaction_id has never been approved before
+            const { data: duplicateTx } = await supabaseAdmin
+              .from('payment_receipts')
+              .select('id')
+              .eq('transaction_id', extractedTxId)
+              .eq('status', 'approved')
+              .maybeSingle();
+
+            if (!duplicateTx) {
+              const rawCredited = (extractedCreditedAccount || '').replace(/\D/g, '');
+              const rawReceiver = (extractedReceiverName || '').toLowerCase();
+
+              // Verify credited account: CBE (1000217910448) or Telebirr (0942202051)
+              const isCbeMatch = rawCredited.includes('1000217910448') || rawReceiver.includes('cbe');
+              const isTelebirrMatch = rawCredited.endsWith('942202051') || rawReceiver.includes('telebirr') || rawReceiver.includes('temari');
+
+              if (isCbeMatch || isTelebirrMatch) {
+                isAutoApproved = true;
+              }
+            } else {
+              geminiSuspicious = true; // Duplicate transaction ID detected
+            }
+          }
+
+          if (isAutoApproved) {
+            // 1. Mark receipt approved
+            await supabaseAdmin
+              .from('payment_receipts')
+              .update({
+                status: 'approved',
+                transaction_id: extractedTxId,
+                gemini_amount: extractedAmount,
+                gemini_sender: extractedSender,
+                gemini_flagged: false,
+              })
+              .eq('id', receiptId);
+
+            // 2. Upgrade user profile to premium immediately
+            await supabaseAdmin
+              .from('profiles')
+              .update({ subscription_status: 'premium' })
+              .eq('telegram_id', session.telegram_id);
+
+            // 3. Auto-resolve any older duplicate pending receipts from this user
+            await supabaseAdmin
+              .from('payment_receipts')
+              .update({ status: 'approved' })
+              .eq('telegram_id', session.telegram_id)
+              .eq('status', 'pending');
+
+            // 4. Fetch student name
+            const { data: profile } = await supabaseAdmin
+              .from('profiles')
+              .select('full_name')
+              .eq('telegram_id', session.telegram_id)
+              .single();
+            const studentName = profile?.full_name?.split(' ')[0] ?? session.first_name ?? 'Student';
+
+            // 5. Send instant confirmation to student on Telegram
+            try {
+              await sendStudentNotification(session.telegram_id, true, studentName);
+            } catch (notifyErr) {
+              console.error('[Payment] Student notification error:', notifyErr);
+            }
+
+            // 6. Send Auto-Approval summary alert to Admin
+            try {
+              await sendAutoApprovalAdminAlert({
+                receiptId,
+                telegramId: session.telegram_id,
+                studentName,
+                transactionId: extractedTxId,
+                amount: extractedAmount || `${PAYMENT_AMOUNT_ETB} ETB`,
+                senderName: extractedSender,
+                receiptUrl,
+              });
+            } catch (adminErr) {
+              console.error('[Payment] Admin alert failed:', adminErr);
+            }
+
+            return NextResponse.json({
+              success: true,
+              receiptId,
+              isAutoApproved: true,
+              message: '🎉 Payment verified automatically! Your Temari PRO account is now active.',
+            });
           }
         }
       }
@@ -196,7 +295,7 @@ Respond ONLY with the JSON object, no explanation, no markdown.`,
       console.error('[Payment] Gemini Vision extraction failed:', geminiErr);
     }
 
-    // ── Step 4: Fetch student name from profiles ──────────────────────────────
+    // ── Step 4: Fetch student name from profiles for manual review queue ──────
     const { data: profile } = await supabaseAdmin
       .from('profiles')
       .select('full_name')
@@ -205,8 +304,7 @@ Respond ONLY with the JSON object, no explanation, no markdown.`,
 
     const studentName = profile?.full_name?.split(' ')[0] ?? session.first_name ?? 'Student';
 
-    // ── Step 5: Send Telegram alert to admin ──────────────────────────────────
-    // (Non-blocking — we already saved to DB, so failure here is not critical)
+    // ── Step 5: Send Telegram alert to admin for manual review ────────────────
     try {
       await sendAdminPaymentAlert({
         receiptId,
@@ -224,6 +322,7 @@ Respond ONLY with the JSON object, no explanation, no markdown.`,
     return NextResponse.json({
       success: true,
       receiptId,
+      isAutoApproved: false,
       message: geminiSuspicious
         ? 'Your receipt was submitted but flagged for manual review. Our team will verify within 24 hours.'
         : 'Receipt submitted successfully! Our admin will verify and approve your account shortly.',

@@ -65,6 +65,38 @@ export async function sendAdminPaymentAlert(info: PaymentInfo): Promise<void> {
   }
 }
 
+export async function sendAutoApprovalAdminAlert(info: PaymentInfo): Promise<void> {
+  if (!BOT_TOKEN || !ADMIN_TELEGRAM_ID) return;
+
+  const caption = [
+    `⚡ <b>[INSTANT AUTO-APPROVED] Payment Verified!</b>`,
+    ``,
+    `👤 Student: <b>${info.studentName}</b>`,
+    `🆔 Telegram ID: <code>${info.telegramId}</code>`,
+    `📋 Transaction ID: <code>${info.transactionId ?? 'N/A'}</code>`,
+    `💰 Amount: <b>${info.amount ?? '250 ETB'}</b>`,
+    `🏦 Sender Name: <b>${info.senderName ?? 'Unknown'}</b>`,
+    `👑 Status: <b>PRO Activated Automatically</b>`,
+    ``,
+    `📎 <a href="${info.receiptUrl}">View Receipt Image</a>`,
+  ].join('\n');
+
+  try {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: ADMIN_TELEGRAM_ID,
+        text: caption,
+        parse_mode: 'HTML',
+        disable_web_page_preview: false,
+      }),
+    });
+  } catch (err) {
+    console.warn('[PaymentNotifier] Auto-approval admin alert failed:', err);
+  }
+}
+
 export async function sendStudentNotification(
   studentTelegramId: string,
   approved: boolean,

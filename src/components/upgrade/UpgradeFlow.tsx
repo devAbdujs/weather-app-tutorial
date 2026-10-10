@@ -330,8 +330,13 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
       }
 
       haptic.notification('success');
-      setSecondsLeft(300); // 5 min timer starts
-      setPhase('verifying');
+      if (data.isAutoApproved) {
+        triggerConfetti();
+        setPhase('approved');
+      } else {
+        setSecondsLeft(300); // 5 min timer starts
+        setPhase('verifying');
+      }
     } catch (err: any) {
       setError(err.message);
       haptic.notification('error');
@@ -614,7 +619,7 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.06] rounded-full blur-2xl -mr-10 -mt-10" />
           <h2 className="text-lg font-bold text-white/85 mb-1">Premium Pass</h2>
           <div className="flex items-baseline gap-2 mb-4">
-            <span className="text-4xl font-black">199 ETB</span>
+            <span className="text-4xl font-black">250 ETB</span>
             <span className="text-white/75 font-medium">/ term</span>
           </div>
           <ul className="space-y-2 text-sm font-medium text-white/85">
@@ -630,7 +635,7 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
             <span className="w-6 h-6 rounded-full bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center text-xs font-black shadow-2xs">
               1
             </span>
-            Transfer 199 ETB
+            Transfer 250 ETB
           </h3>
           <span className="text-xs text-muted-foreground font-medium">Choose payment method</span>
         </div>
