@@ -739,33 +739,32 @@ Require all admin accounts to update password; remove plaintext comparison branc
 
 ---
 
-### [P-09] 30-User Monthly Free Signup Cap & Anti-Spam Control
-**Files:** `src/app/api/auth/*`, `src/lib/telegramBot.ts`, `src/lib/signupCap.ts`, `src/app/actions/admin.ts`
+### [P-09] 30-Free-Recruits Monthly Cap per Ambassador (Anti-Spam Referral Protection)
+**Files:** `src/lib/referral.ts`, `src/app/actions/admin.ts`, `src/components/admin/AmbassadorView.tsx`, `src/app/actions/user.ts`
 
 **Current State & Audit Findings:**
-- When users authenticate on web (`/api/auth/session`, `/api/auth/oidc`, `/api/auth/telegram/web`) or Telegram bot (`/start`), new accounts are inserted into `profiles` unconditionally with `subscription_status: 'free'`.
-- There is no monthly registration limit or anti-spam cohort throttle.
-- Rogue scripts or bot spam could inflate database rows, burn serverless execution time, and degrade Gemini AI performance for paying scholars.
+- The monthly cap is **strictly for the referral program, NOT for general platform signups**.
+- General students can sign up freely with zero restrictions at any time.
+- However, to prevent ambassadors from using bots/emulators to inflate free recruitment counts, a single ambassador is capped at **30 free recruits per calendar month**.
+- If an ambassador's link brings in more than 30 free recruits in a calendar month, the 31st+ student still signs up and navigates the platform normally, but does NOT count towards the ambassador's recruit tally.
+- If any referred student upgrades to PRO within 24 hours of joining, the ambassador receives their verified 50 ETB commission as normal.
 
 **Architecture & Solution Design:**
-1. **Add Monthly Signup Cap Helper (`src/lib/signupCap.ts`):**
-   - Query count of new free profiles created in the current calendar month:
-     `SELECT count(*) FROM profiles WHERE subscription_status = 'free' AND created_at >= start_of_month`.
-   - Max allowed: `30` free signups per calendar month.
-   - Distinct from logins: **Existing users are always allowed to log in**. The cap ONLY gates the creation of *new* free user rows.
-2. **Web Auth Enforcement:**
-   - If a new user attempts registration after the 30-user monthly limit is reached, return a structured 403 response with an actionable message directing them to upgrade to PRO or wait for next month's cohort.
-3. **Telegram Bot Enforcement:**
-   - Bot checks the monthly cap in `ensureUserProfile`. If capped, the bot welcomes the student with a polite message:
-     `🔒 Monthly Free Cohort Full (30/30). Upgrade to Temari PRO for instant access, or join @temari_App for next month's cohort announcement!`
-4. **Super Admin Dashboard Visibility:**
-   - Show a live progress meter on the Super Admin dashboard: `Free Signups This Month: X / 30`.
+1. **Monthly Referral Cap Logic in `src/lib/referral.ts`:**
+   - Group referred profiles by calendar month (`profile.created_at`).
+   - For each calendar month, permit up to `MAX_MONTHLY_FREE_RECRUITS = 30` free recruit attributions.
+   - Any 31st+ free recruit in that same calendar month is tagged as `free_capped` (0 ETB commission, excluded from ambassador's free count).
+   - Eligible 24h PRO conversions (`pro_eligible`) are always credited (+50 ETB).
+   - Platform signup routes remain completely unblocked for all students!
+2. **Ambassador Dashboard UI (`AmbassadorView.tsx`):**
+   - Display monthly free recruit progress pill: `Monthly Free Recruits: X / 30`.
+   - In recruits table, display badge `Free · Monthly Cap Reached` for recruits beyond the 30-student monthly free allowance.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[CAP-01]` Create `src/lib/signupCap.ts` with `checkMonthlySignupCap(supabase)` helper computing UTC/Addis month boundaries and caching count for 60 seconds.
-- [ ] `[CAP-02]` Integrate `checkMonthlySignupCap` in `src/app/api/auth/session/route.ts`, `src/app/api/auth/oidc/route.ts`, and `src/app/api/auth/telegram/web/route.ts` to block new free profile creation when `count >= 30`.
-- [ ] `[CAP-03]` Integrate `checkMonthlySignupCap` in `src/lib/telegramBot.ts` (`ensureUserProfile` and `/start` flow) with user-friendly upgrade prompt.
-- [ ] `[CAP-04]` Add automated unit tests in `__tests__/lib/signupCap.test.ts`.
+- [ ] `[CAP-01]` Update `calculateReferralAttribution` in `src/lib/referral.ts` with `MAX_MONTHLY_FREE_RECRUITS = 30` per calendar month per ambassador.
+- [ ] `[CAP-02]` Tag excess free recruits as `free_capped` so platform signups remain 100% open while ambassador stats are strictly protected.
+- [ ] `[CAP-03]` Update `AmbassadorView.tsx` to render the monthly free recruit cap meter (`X / 30`) and `Free · Cap Reached` table status.
+- [ ] `[CAP-04]` Add automated unit tests in `__tests__/lib/referral.test.ts` verifying that free recruits $> 30$ in a month do not increment the ambassador's free count, while PRO conversions remain credited.
 
 ---
 
@@ -822,35 +821,34 @@ Require all admin accounts to update password; remove plaintext comparison branc
 
 ---
 
-### [P-12] Mobile-First Native App-Feel UI/UX Overhaul for Landing Pages and Dashboards
-**Files:** `src/components/marketing/LandingPage.tsx`, `src/components/marketing/ExamLandingHero.tsx`, `src/components/dashboard/StudentDashboard.tsx`, `src/components/layout/BottomNav.tsx`, `src/app/(app)/layout.tsx`
+### [P-12] Mobile-First Native App-Feel UI/UX for Landing Pages & ALL Admin Dashboards
+**Files:** `src/components/marketing/LandingPage.tsx`, `src/components/marketing/ExamLandingHero.tsx`, `src/app/admin/*`, `src/components/admin/*`, `src/components/admin/AdminNav.tsx`
 
 **Current State & Audit Findings:**
-- Over 90% of Ethiopian students use mobile devices (Android/iOS) and the Telegram Mini App.
-- Current landing pages and dashboards still use desktop-centric layouts (wide multi-column grids, desktop margins, heavy text paragraphs, desktop modals) that feel like scaled-down desktop websites rather than native mobile apps.
-- Missing tactile touch feedback, sticky thumb-friendly controls, and native-feeling gesture components.
+- The student dashboard is already functioning well.
+- The mobile app-feel overhaul is needed for:
+  1. **Landing Pages** (`entrance`, `freshman`, `exit`, root): Currently feature desktop container constraints, stacked vertical blocks, and lack tactile swipeable carousels.
+  2. **ALL Admin Dashboards** (`/admin`, `/admin/payments`, `/admin/ambassador`, `/admin/questions`, `/admin/upload-notes`, `/admin/users`, `/admin/managers`, `/admin/ai`):
+     - Designed predominantly for desktop monitors with wide horizontal table layouts that break or require horizontal scrolling on phones.
+     - Sub-admins (campus ambassadors, content editors, financial admins) and the super admin manage operations on mobile devices and within Telegram.
+     - Lacks mobile-first responsive cards, mobile action bars, and thumb-friendly controls.
 
 **Architecture & Solution Design:**
-1. **Native Mobile Shell & Ergonomics:**
-   - Enforce `h-[100dvh]` container with iOS/Android safe area insets (`env(safe-area-inset-bottom)`).
-   - Implement tactile touch feedback (`active:scale-[0.97]` physical press, `-webkit-tap-highlight-color: transparent`).
-   - Sticky thumb navigation bar with 48px touch targets.
-2. **Mobile-First Landing Page:**
-   - Compact, high-impact Hero with single-thumb CTAs ("Start Free Practice" & "Launch Telegram Bot").
+1. **Mobile-First Landing Pages:**
+   - Single-screen thumb-focused Hero with instant single-tap CTAs ("Start Free Practice" & "Launch Telegram Bot").
    - Horizontal swipeable track cards (Grade 12 Entrance, Freshman, Exit) instead of tall desktop vertical stacks.
    - Compact, punchy stat chips with high contrast and zero clutter.
-3. **Mobile-First Student Dashboard:**
-   - "Today's Focus" daily drill card centered directly within thumb reach.
-   - Native mobile segmented control for switching between Practice, Mock Exams, and Notes.
-   - Floating quick-practice button positioned neatly above the bottom navigation bar.
-4. **Native Bottom Sheets:**
-   - Replace desktop-style centered popups with slide-up bottom sheets with drag handle and backdrop blur.
+2. **Mobile App-Feel for ALL Admin Dashboards:**
+   - **Responsive Card View on Mobile (`< 768px`)**: Replace wide, overflowing tables (`min-w-[700px]`) with compact, tactile mobile cards (e.g. in Payments Queue, Recruits Table, Question Bank, User List).
+   - **Mobile Sticky Header & Touch Navigation**: Compact mobile top header with slide-out drawer or bottom bar navigation (`AdminNav.tsx`) so sub-admins can switch views effortlessly with one thumb.
+   - **Thumb-Friendly Action Buttons**: Touch targets $\ge 44$px for approving/rejecting payments, publishing notes, editing questions, and copying referral links.
+   - **Compact KPI Gauges**: Admin metric cards resize smoothly without horizontal scroll jank.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[MOB-01]` Implement mobile safe-area insets, tactile active states (`active:scale-[0.97]`), and mobile shell styling in `src/app/(app)/layout.tsx`.
-- [ ] `[MOB-02]` Overhaul `src/components/marketing/LandingPage.tsx` and `ExamLandingHero.tsx` into a high-impact, swipeable mobile-first experience.
-- [ ] `[MOB-03]` Refactor `src/components/dashboard/StudentDashboard.tsx` with thumb-friendly "Today's Focus" card and segmented controls.
-- [ ] `[MOB-04]` Convert mobile dialogs and menus into native slide-up bottom sheets with swipe-down dismiss.
+- [ ] `[MOB-01]` Overhaul `src/components/marketing/LandingPage.tsx` and `ExamLandingHero.tsx` into a high-impact, swipeable mobile-first experience.
+- [ ] `[MOB-02]` Implement mobile drawer / bottom navigation for `AdminNav.tsx` across all `/admin/*` views.
+- [ ] `[MOB-03]` Implement responsive mobile card feeds for tables in `/admin/payments`, `/admin/ambassador`, `/admin/users`, and `/admin/questions` (cards on mobile, tables on desktop).
+- [ ] `[MOB-04]` Ensure all admin buttons, status pills, and filters are thumb-friendly ($\ge 44$px) with tactile physical feedback (`active:scale-[0.97]`).
 
 ---
 
