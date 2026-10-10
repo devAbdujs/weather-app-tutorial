@@ -757,11 +757,11 @@ export function getUpgradePayload(siteUrl: string = SITE_URL) {
     `• <b>Full Year / Exit Pass:</b> 250 ETB`,
     ``,
     `💳 <b>Payment Methods:</b>`,
-    `• <b>Telebirr:</b> <code>0911000000</code> (Temari Prep)`,
-    `• <b>CBE Account:</b> <code>1000123456789</code>`,
+    `• <b>Telebirr:</b> <code>0942202051</code>`,
+    `• <b>CBE Account:</b> <code>1000217910448</code>`,
     ``,
     `📸 <b>Instant Activation:</b>`,
-    `Transfer and upload your payment receipt directly in the app. Accounts are verified within minutes!`,
+    `Transfer 250 ETB and upload your payment receipt. Accounts are verified automatically within seconds!`,
   ].join('\n');
 
   const reply_markup = {
