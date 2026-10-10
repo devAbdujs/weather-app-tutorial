@@ -1,8 +1,10 @@
 import React from 'react';
-import { verifyAdmin, getAdminStats, getAdminAIStats } from '@/app/actions/admin';
+import { verifyAdmin, getAdminStats, getAdminAIStats, getSuperAdminExecutiveMetrics } from '@/app/actions/admin';
 import { redirect } from 'next/navigation';
 import { Users, FileText, BrainCircuit, Zap, Bot, Key, Sparkles, Database, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { ExecutiveDashboardView } from '@/components/admin/ExecutiveDashboardView';
+import { hasPermission } from '@/lib/adminPermissions';
 
 export default async function AdminDashboard() {
   const admin = await verifyAdmin();
@@ -16,24 +18,36 @@ export default async function AdminDashboard() {
   // Fetch stats on the server
   let stats = { totalUsers: 0, totalNotes: 0, totalQuestions: 0, totalPremium: 0 };
   let aiStats: Awaited<ReturnType<typeof getAdminAIStats>> | null = null;
+  let executiveData: Awaited<ReturnType<typeof getSuperAdminExecutiveMetrics>> | null = null;
   let error = null;
   
   try {
-    const [mainStats, aiData] = await Promise.all([
+    const canReadAnalytics = hasPermission(admin, 'analytics:read');
+    const [mainStats, aiData, execMetrics] = await Promise.all([
       getAdminStats(),
-      getAdminAIStats().catch(() => null)
+      getAdminAIStats().catch(() => null),
+      canReadAnalytics ? getSuperAdminExecutiveMetrics().catch(() => null) : Promise.resolve(null),
     ]);
     stats = mainStats;
     aiStats = aiData;
+    executiveData = execMetrics;
   } catch (err: any) {
     error = err.message;
   }
 
   return (
     <div className="space-y-6">
-      <header className="pb-1">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">Dashboard</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">Platform overview and live metrics.</p>
+      <header className="pb-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h1 className="text-2xl font-black text-foreground tracking-tight">Executive Dashboard</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">Comprehensive real-time platform telemetry &amp; business metrics.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-micro font-black uppercase tracking-wider flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            Live Engine
+          </span>
+        </div>
       </header>
 
       {error && (
@@ -42,7 +56,10 @@ export default async function AdminDashboard() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {executiveData ? (
+        <ExecutiveDashboardView data={executiveData} />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard 
           title="Students" 
           value={stats.totalUsers.toLocaleString()} 
@@ -72,6 +89,7 @@ export default async function AdminDashboard() {
           badge="VIP"
         />
       </div>
+      )}
 
       {/* Gemini AI Engine Spotlight */}
       <div className="bg-tint-cream text-tint-cream-fg border border-tint-cream-border rounded-2xl p-5 shadow-xs mb-6 relative overflow-hidden">

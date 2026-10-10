@@ -416,6 +416,219 @@ export async function getAdminStats() {
   };
 }
 
+export interface ExecutiveMetricsData {
+  financials: {
+    grossRevenueETB: number;
+    totalApprovedReceipts: number;
+    commissionsPaidETB: number;
+    netPlatformRevenueETB: number;
+    pendingReceiptsCount: number;
+    proPriceETB: number;
+  };
+  users: {
+    totalStudents: number;
+    totalProStudents: number;
+    totalFreeStudents: number;
+    proConversionRate: number;
+    signupsLast7Days: number;
+    signupsLast30Days: number;
+    proUpgradesLast7Days: number;
+    proUpgradesLast30Days: number;
+  };
+  ambassadors: {
+    totalAmbassadors: number;
+    activeAmbassadors: number;
+    topAmbassadors: Array<{
+      username: string;
+      recruits: number;
+      proConversions: number;
+      commissionsETB: number;
+    }>;
+  };
+  tracks: {
+    entrance: number;
+    freshman: number;
+    exit: number;
+    other: number;
+  };
+  content: {
+    totalQuestions: number;
+    totalNotes: number;
+  };
+}
+
+export async function getSuperAdminExecutiveMetrics(): Promise<ExecutiveMetricsData> {
+  const admin = await verifyAdmin();
+  if (!admin) throw new Error('Unauthorized');
+  if (!hasPermission(admin, 'analytics:read')) throw new Error('Forbidden: Insufficient permissions');
+
+  const supabase = await createAdminClient();
+  const PRO_PRICE = 250;
+  const COMMISSION_PER_PRO = 50;
+
+  const [
+    profilesRes,
+    receiptsRes,
+    ambassadorsRes,
+    questionsCountRes,
+    notesCountRes
+  ] = await Promise.all([
+    supabase.from('profiles').select('telegram_id, subscription_status, target_exam, created_at, referred_by'),
+    supabase.from('payment_receipts').select('id, telegram_id, status, created_at'),
+    supabase.from('admin_users').select('id, username, role').eq('role', 'ambassador'),
+    supabase.from('questions').select('*', { count: 'exact', head: true }),
+    supabase.from('study_notes').select('*', { count: 'exact', head: true }),
+  ]);
+
+  const profiles = profilesRes.data || [];
+  const receipts = receiptsRes.data || [];
+  const ambassadors = ambassadorsRes.data || [];
+
+  const approvedReceipts = receipts.filter(r => r.status === 'approved');
+  const pendingReceipts = receipts.filter(r => r.status === 'pending');
+
+  // Earliest payment map for 24h conversion check
+  const earliestPaymentMap = new Map<string, number>();
+  for (const r of approvedReceipts) {
+    if (r.telegram_id && r.created_at) {
+      const time = new Date(r.created_at).getTime();
+      const existing = earliestPaymentMap.get(r.telegram_id);
+      if (!existing || time < existing) {
+        earliestPaymentMap.set(r.telegram_id, time);
+      }
+    }
+  }
+
+  // Calculate 24h conversions per student
+  const profileMap = new Map<string, { signupTime: number; referredBy?: string | null; isPro: boolean; is24hPro: boolean }>();
+  let total24hProConversions = 0;
+
+  for (const p of profiles) {
+    const signupTime = new Date(p.created_at).getTime();
+    const isPro = p.subscription_status === 'premium';
+    const paymentTime = earliestPaymentMap.get(p.telegram_id);
+    let is24hPro = false;
+
+    if (isPro && paymentTime) {
+      const diffMs = paymentTime - signupTime;
+      if (diffMs >= 0 && diffMs <= 24 * 60 * 60 * 1000) {
+        is24hPro = true;
+        total24hProConversions++;
+      }
+    }
+
+    profileMap.set(p.telegram_id, {
+      signupTime,
+      referredBy: p.referred_by,
+      isPro,
+      is24hPro,
+    });
+  }
+
+  // Financials
+  const grossRevenueETB = approvedReceipts.length * PRO_PRICE;
+  const commissionsPaidETB = total24hProConversions * COMMISSION_PER_PRO;
+  const netPlatformRevenueETB = grossRevenueETB - commissionsPaidETB;
+
+  // Users
+  const totalStudents = profiles.length;
+  const totalProStudents = profiles.filter(p => p.subscription_status === 'premium').length;
+  const totalFreeStudents = totalStudents - totalProStudents;
+  const proConversionRate = totalStudents > 0 ? Number(((totalProStudents / totalStudents) * 100).toFixed(1)) : 0;
+
+  const now = Date.now();
+  const ms7Days = 7 * 24 * 60 * 60 * 1000;
+  const ms30Days = 30 * 24 * 60 * 60 * 1000;
+
+  const signupsLast7Days = profiles.filter(p => now - new Date(p.created_at).getTime() <= ms7Days).length;
+  const signupsLast30Days = profiles.filter(p => now - new Date(p.created_at).getTime() <= ms30Days).length;
+  const proUpgradesLast7Days = approvedReceipts.filter(r => now - new Date(r.created_at).getTime() <= ms7Days).length;
+  const proUpgradesLast30Days = approvedReceipts.filter(r => now - new Date(r.created_at).getTime() <= ms30Days).length;
+
+  // Ambassador Leaderboard & Metrics
+  const ambassadorStats = new Map<string, { recruits: number; proConversions: number }>();
+  for (const amb of ambassadors) {
+    ambassadorStats.set(amb.username, { recruits: 0, proConversions: 0 });
+    ambassadorStats.set(amb.id, { recruits: 0, proConversions: 0 });
+  }
+
+  for (const p of profileMap.values()) {
+    if (p.referredBy && ambassadorStats.has(p.referredBy)) {
+      const stats = ambassadorStats.get(p.referredBy)!;
+      stats.recruits++;
+      if (p.is24hPro) stats.proConversions++;
+    }
+  }
+
+  let activeAmbassadorsCount = 0;
+  const topAmbassadorsList: Array<{
+    username: string;
+    recruits: number;
+    proConversions: number;
+    commissionsETB: number;
+  }> = [];
+
+  for (const amb of ambassadors) {
+    const byUser = ambassadorStats.get(amb.username) || { recruits: 0, proConversions: 0 };
+    const byId = ambassadorStats.get(amb.id) || { recruits: 0, proConversions: 0 };
+    const recruits = byUser.recruits + byId.recruits;
+    const proConversions = byUser.proConversions + byId.proConversions;
+
+    if (recruits > 0) activeAmbassadorsCount++;
+
+    topAmbassadorsList.push({
+      username: amb.username,
+      recruits,
+      proConversions,
+      commissionsETB: proConversions * COMMISSION_PER_PRO,
+    });
+  }
+
+  topAmbassadorsList.sort((a, b) => b.recruits - a.recruits);
+
+  // Track Breakdown
+  const entrance = profiles.filter(p => p.target_exam === 'entrance').length;
+  const freshman = profiles.filter(p => p.target_exam === 'freshman').length;
+  const exit = profiles.filter(p => p.target_exam === 'exit').length;
+  const other = totalStudents - (entrance + freshman + exit);
+
+  return {
+    financials: {
+      grossRevenueETB,
+      totalApprovedReceipts: approvedReceipts.length,
+      commissionsPaidETB,
+      netPlatformRevenueETB,
+      pendingReceiptsCount: pendingReceipts.length,
+      proPriceETB: PRO_PRICE,
+    },
+    users: {
+      totalStudents,
+      totalProStudents,
+      totalFreeStudents,
+      proConversionRate,
+      signupsLast7Days,
+      signupsLast30Days,
+      proUpgradesLast7Days,
+      proUpgradesLast30Days,
+    },
+    ambassadors: {
+      totalAmbassadors: ambassadors.length,
+      activeAmbassadors: activeAmbassadorsCount,
+      topAmbassadors: topAmbassadorsList.slice(0, 10),
+    },
+    tracks: {
+      entrance,
+      freshman,
+      exit,
+      other,
+    },
+    content: {
+      totalQuestions: questionsCountRes.count || 0,
+      totalNotes: notesCountRes.count || 0,
+    },
+  };
+}
+
 export async function getUsers(page = 1, limit = 50) {
   const admin = await verifyAdmin();
   if (!admin) throw new Error('Unauthorized');
