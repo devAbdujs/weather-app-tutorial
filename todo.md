@@ -736,3 +736,161 @@ Require all admin accounts to update password; remove plaintext comparison branc
 - [x] `[PWA-01]` Decouple the PWA prompt from the top-center sonner toast in `src/components/layout/PWARegistry.tsx`.
 - [x] `[PWA-02]` Implement a dedicated fixed bottom banner styled with `fixed bottom-20 left-1/2 -translate-x-1/2 z-40 max-w-[92vw] w-[360px]` floating directly above the bottom navigation bar (`bottom-16`).
 - [x] `[PWA-03]` Add touch-friendly dismissal with `localStorage` cooldown (don't re-prompt for 7 days if dismissed).
+
+---
+
+### [P-09] 30-User Monthly Free Signup Cap & Anti-Spam Control
+**Files:** `src/app/api/auth/*`, `src/lib/telegramBot.ts`, `src/lib/signupCap.ts`, `src/app/actions/admin.ts`
+
+**Current State & Audit Findings:**
+- When users authenticate on web (`/api/auth/session`, `/api/auth/oidc`, `/api/auth/telegram/web`) or Telegram bot (`/start`), new accounts are inserted into `profiles` unconditionally with `subscription_status: 'free'`.
+- There is no monthly registration limit or anti-spam cohort throttle.
+- Rogue scripts or bot spam could inflate database rows, burn serverless execution time, and degrade Gemini AI performance for paying scholars.
+
+**Architecture & Solution Design:**
+1. **Add Monthly Signup Cap Helper (`src/lib/signupCap.ts`):**
+   - Query count of new free profiles created in the current calendar month:
+     `SELECT count(*) FROM profiles WHERE subscription_status = 'free' AND created_at >= start_of_month`.
+   - Max allowed: `30` free signups per calendar month.
+   - Distinct from logins: **Existing users are always allowed to log in**. The cap ONLY gates the creation of *new* free user rows.
+2. **Web Auth Enforcement:**
+   - If a new user attempts registration after the 30-user monthly limit is reached, return a structured 403 response with an actionable message directing them to upgrade to PRO or wait for next month's cohort.
+3. **Telegram Bot Enforcement:**
+   - Bot checks the monthly cap in `ensureUserProfile`. If capped, the bot welcomes the student with a polite message:
+     `🔒 Monthly Free Cohort Full (30/30). Upgrade to Temari PRO for instant access, or join @temari_App for next month's cohort announcement!`
+4. **Super Admin Dashboard Visibility:**
+   - Show a live progress meter on the Super Admin dashboard: `Free Signups This Month: X / 30`.
+
+**Action Items & Implementation Roadmap:**
+- [ ] `[CAP-01]` Create `src/lib/signupCap.ts` with `checkMonthlySignupCap(supabase)` helper computing UTC/Addis month boundaries and caching count for 60 seconds.
+- [ ] `[CAP-02]` Integrate `checkMonthlySignupCap` in `src/app/api/auth/session/route.ts`, `src/app/api/auth/oidc/route.ts`, and `src/app/api/auth/telegram/web/route.ts` to block new free profile creation when `count >= 30`.
+- [ ] `[CAP-03]` Integrate `checkMonthlySignupCap` in `src/lib/telegramBot.ts` (`ensureUserProfile` and `/start` flow) with user-friendly upgrade prompt.
+- [ ] `[CAP-04]` Add automated unit tests in `__tests__/lib/signupCap.test.ts`.
+
+---
+
+### [P-10] Platform-Wide PRO Subscription Pricing Standardized to 250 ETB
+**Files:** `src/app/api/payments/submit/route.ts`, `src/components/upgrade/UpgradeFlow.tsx`, `src/components/dashboard/ProfileView.tsx`, `src/components/ai/AITutorDrawer.tsx`, `src/lib/telegramBot.ts`
+
+**Current State & Audit Findings:**
+- Pricing across the application is currently mismatched:
+  - `UpgradeFlow.tsx` displays `199 ETB`.
+  - `src/app/api/payments/submit/route.ts` has `PAYMENT_AMOUNT_ETB = 199` and Gemini OCR prompt expects `199 ETB`.
+  - `ProfileView.tsx` displays `199 ETB • Unlimited AI Tutor`.
+  - `AITutorDrawer.tsx` displays `just 199 ETB/term`.
+  - `telegramBot.ts` mentions `250 ETB` in `/upgrade` but `99 ETB` in tip text.
+- This creates confusion for students transferring via CBE / Telebirr and causes OCR receipts to trigger false fraud flags if the transferred amount is 250 ETB instead of 199 ETB.
+
+**Action Items & Implementation Roadmap:**
+- [ ] `[PRC-01]` Update `PAYMENT_AMOUNT_ETB = 250` in `src/app/api/payments/submit/route.ts` and adjust Gemini OCR prompt tolerance (`< 240 ETB` flagged).
+- [ ] `[PRC-02]` Update `src/components/upgrade/UpgradeFlow.tsx` price headers, plan descriptions, and bank transfer copy to `250 ETB`.
+- [ ] `[PRC-03]` Update `src/components/dashboard/ProfileView.tsx` upgrade button and badges to `250 ETB`.
+- [ ] `[PRC-04]` Update `src/components/ai/AITutorDrawer.tsx` quota limit paywall text to `250 ETB`.
+- [ ] `[PRC-05]` Standardize all pricing copy in `src/lib/telegramBot.ts` to `250 ETB`.
+- [ ] `[PRC-06]` Verify with automated tests in `__tests__/api/paymentsSubmit.test.ts`.
+
+---
+
+### [P-11] Short Notes Upload Studio: Inventory Awareness & Streamlined Uploader Experience
+**Files:** `src/app/admin/upload-notes/page.tsx`, `src/app/actions/admin.ts`, `src/app/api/admin/notes/route.ts`
+
+**Current State & Audit Findings:**
+- Currently, when an uploader selects an exam track and course (e.g. `freshman` / `Applied Mathematics I`), the page provides ZERO feedback on which chapters already exist in the database.
+- Uploaders are blind to whether Chapter 1 or Chapter 2 has already been published, leading to accidental duplicate uploads or confusion over missing curriculum units.
+- The UI contains heavy batch queue states without an inventory matrix or curriculum progress tracker.
+
+**Architecture & Solution Design:**
+1. **Real-Time Note Inventory Endpoint & Server Action:**
+   - Fetch existing notes for the selected subject: `SELECT id, title, chapter_number, is_locked, created_at, updated_at FROM study_notes WHERE exam_type = $1 AND department = $2 ORDER BY chapter_number ASC`.
+2. **Visual Curriculum Matrix Component:**
+   - Interactive chapter overview grid displaying published chapters (`[✅ Chapter 1: Vectors]`, `[✅ Chapter 2: Matrices]`) alongside missing chapters (`[⚠️ Chapter 3: Not Uploaded]`).
+   - Progress bar: "6/8 Chapters Published (75% Complete)".
+3. **Smart Upload & Overwrite Awareness:**
+   - File queue auto-detects chapter numbers from filenames (e.g. `Applied_Math_Ch1.pdf`).
+   - If Chapter 1 already exists, tags item as `⚠️ Overwrites Existing Chapter 1` with a diff/replace option.
+   - If Chapter 1 does not exist, tags item as `✨ New Chapter`.
+4. **Streamlined UX for Non-Technical Sub-Admins:**
+   - Simplified step-by-step layout: (1) Select Subject → (2) Review Missing Chapters → (3) Drop Files → (4) 1-Click Publish.
+   - Quick preview modal to read markdown and math equations before publishing.
+
+**Action Items & Implementation Roadmap:**
+- [ ] `[NOT-01]` Create `getSubjectNotesInventory(examType, department)` server action in `src/app/actions/admin.ts`.
+- [ ] `[NOT-02]` Build interactive **Chapter Inventory Matrix** in `src/app/admin/upload-notes/page.tsx` showing existing vs missing chapters.
+- [ ] `[NOT-03]` Implement automatic overwrite / duplicate warning in the upload queue when a file matches an existing chapter.
+- [ ] `[NOT-04]` Add single-click chapter actions (View, Edit, Delete) directly inside the subject inventory view.
+- [ ] `[NOT-05]` Refactor studio UI to be clean, punchy, and straightforward for non-technical content uploaders.
+
+---
+
+### [P-12] Mobile-First Native App-Feel UI/UX Overhaul for Landing Pages and Dashboards
+**Files:** `src/components/marketing/LandingPage.tsx`, `src/components/marketing/ExamLandingHero.tsx`, `src/components/dashboard/StudentDashboard.tsx`, `src/components/layout/BottomNav.tsx`, `src/app/(app)/layout.tsx`
+
+**Current State & Audit Findings:**
+- Over 90% of Ethiopian students use mobile devices (Android/iOS) and the Telegram Mini App.
+- Current landing pages and dashboards still use desktop-centric layouts (wide multi-column grids, desktop margins, heavy text paragraphs, desktop modals) that feel like scaled-down desktop websites rather than native mobile apps.
+- Missing tactile touch feedback, sticky thumb-friendly controls, and native-feeling gesture components.
+
+**Architecture & Solution Design:**
+1. **Native Mobile Shell & Ergonomics:**
+   - Enforce `h-[100dvh]` container with iOS/Android safe area insets (`env(safe-area-inset-bottom)`).
+   - Implement tactile touch feedback (`active:scale-[0.97]` physical press, `-webkit-tap-highlight-color: transparent`).
+   - Sticky thumb navigation bar with 48px touch targets.
+2. **Mobile-First Landing Page:**
+   - Compact, high-impact Hero with single-thumb CTAs ("Start Free Practice" & "Launch Telegram Bot").
+   - Horizontal swipeable track cards (Grade 12 Entrance, Freshman, Exit) instead of tall desktop vertical stacks.
+   - Compact, punchy stat chips with high contrast and zero clutter.
+3. **Mobile-First Student Dashboard:**
+   - "Today's Focus" daily drill card centered directly within thumb reach.
+   - Native mobile segmented control for switching between Practice, Mock Exams, and Notes.
+   - Floating quick-practice button positioned neatly above the bottom navigation bar.
+4. **Native Bottom Sheets:**
+   - Replace desktop-style centered popups with slide-up bottom sheets with drag handle and backdrop blur.
+
+**Action Items & Implementation Roadmap:**
+- [ ] `[MOB-01]` Implement mobile safe-area insets, tactile active states (`active:scale-[0.97]`), and mobile shell styling in `src/app/(app)/layout.tsx`.
+- [ ] `[MOB-02]` Overhaul `src/components/marketing/LandingPage.tsx` and `ExamLandingHero.tsx` into a high-impact, swipeable mobile-first experience.
+- [ ] `[MOB-03]` Refactor `src/components/dashboard/StudentDashboard.tsx` with thumb-friendly "Today's Focus" card and segmented controls.
+- [ ] `[MOB-04]` Convert mobile dialogs and menus into native slide-up bottom sheets with swipe-down dismiss.
+
+---
+
+### [P-13] Super Admin Executive Analytics Suite (Native Real-Time App Intelligence)
+**Files:** `src/app/admin/page.tsx`, `src/app/actions/admin.ts`, `src/components/admin/ExecutiveDashboardView.tsx`
+
+**Current State & Audit Findings:**
+- Currently, `/admin` only displays 4 basic count cards (`Students`, `Notes`, `Questions`, `PRO Users`).
+- The Super Admin has no visibility into:
+  - Total gross revenue generated by the app.
+  - Monthly revenue and pending payment queues.
+  - Total ambassador commission liability and net revenue.
+  - Active ambassadors count and recruitment performance.
+  - Monthly free signup quota consumption (`X / 30`).
+- Integrating an external tool like Power BI introduces significant licensing costs, slow iframe loading, mobile layout issues, and privacy/token synchronization headaches.
+- A native, high-performance, real-time executive dashboard provides instant intelligence with zero external dependencies.
+
+**Architecture & Solution Design:**
+1. **Executive Financial Command Center:**
+   - **Gross Platform Revenue (ETB):** Sum of all approved payments (`payment_receipts` where `status = 'approved'`).
+   - **Monthly Revenue:** Approved payments in the current calendar month.
+   - **Ambassador Commission Payable:** Real-time calculation (`50 ETB` per verified 24h PRO conversion).
+   - **Net Platform Profit:** Gross Revenue minus Ambassador Commissions.
+   - **Pending Verification Queue:** Real-time count and ETB amount awaiting admin approval.
+2. **User Cohort & Subscription Health:**
+   - Total Students, Free Users, PRO Members, and Conversion Rate (`PRO / Total * 100`).
+   - **Monthly Free Cap Gauge:** Visual gauge tracking `X / 30` free signups used this month with days remaining.
+3. **Campus Ambassador Growth Ledger:**
+   - Total Active Ambassadors (`admin_users` where `role = 'ambassador'`).
+   - Total Students Recruited via Ambassador Links.
+   - Top 5 Performing Ambassadors Leaderboard (Recruits, PRO Conversions, Earnings).
+4. **Academic Catalog & Content Coverage:**
+   - Question distribution by track (`entrance`, `freshman`, `exit`).
+   - Notes coverage by course.
+5. **Native Interactive Charts:**
+   - Lightweight, responsive SVG/CSS time-series and tier distribution charts (100% native, instant render, zero dependencies).
+
+**Action Items & Implementation Roadmap:**
+- [ ] `[BI-01]` Create `getSuperAdminExecutiveMetrics()` in `src/app/actions/admin.ts` aggregating revenue, payment status, ambassador ledger, user tiers, and content stats with optimized single-pass queries.
+- [ ] `[BI-02]` Build `src/components/admin/ExecutiveDashboardView.tsx` with KPI cards, revenue vs commission ledger, monthly free signup cap meter, and ambassador leaderboard.
+- [ ] `[BI-03]` Build native responsive SVG charts for revenue trends and user tier distribution.
+- [ ] `[BI-04]` Mount `ExecutiveDashboardView` in `src/app/admin/page.tsx` for Super Admin with live refresh and export capabilities.
+- [ ] `[BI-05]` Add automated unit tests in `__tests__/lib/executiveMetrics.test.ts`.
