@@ -59,6 +59,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats, referr
   const router = useRouter();
   const { haptic, isTelegram } = useTelegram();
   const updateProfile = useAppStore(s => s.setUserProfile);
+  const setIsUpgradeModalOpen = useAppStore(s => s.setIsUpgradeModalOpen);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isChangingExam, setIsChangingExam] = useState(false);
   const [devClicks, setDevClicks] = useState(0);
@@ -409,7 +410,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats, referr
             onClick={() => {
               sounds.playCelebration();
               haptic.impact('heavy');
-              router.push('/upgrade');
+              setIsUpgradeModalOpen(true);
             }}
             className="bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 text-white rounded-2xl p-4 shadow-lg shadow-orange-500/25 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all relative overflow-hidden"
           >

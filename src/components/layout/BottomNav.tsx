@@ -14,6 +14,7 @@ export const BottomNav = () => {
   const { haptic } = useTelegram();
   const userProfile = useAppStore(s => s.userProfile);
   const setSetupModalType = useAppStore(s => s.setSetupModalType);
+  const setIsUpgradeModalOpen = useAppStore(s => s.setIsUpgradeModalOpen);
 
   // Hide during deep focus screens
   const isFocusMode =
@@ -144,6 +145,21 @@ export const BottomNav = () => {
                     }`}
                     strokeWidth={isActive ? 2.6 : 2}
                   />
+                  {item.name === 'Profile' && userProfile?.subscription_status !== 'premium' && (
+                    <span 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        sounds.playCelebration();
+                        haptic.impact('medium');
+                        setIsUpgradeModalOpen(true);
+                      }}
+                      title="1-Tap Upgrade to PRO"
+                      className="absolute -top-1.5 -right-2.5 text-[9px] bg-amber-400 text-stone-950 px-1 py-0.5 rounded-full font-black shadow-2xs border border-amber-500 leading-none cursor-pointer active:scale-90 transition-transform"
+                    >
+                      PRO
+                    </span>
+                  )}
                   {isActive && (
                     <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1 shadow-sm shadow-primary/40 animate-fade-in" />
                   )}

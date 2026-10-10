@@ -112,6 +112,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({
   const router = useRouter();
   const { user, haptic, setBackButton } = useTelegram();
   const userProfile = useAppStore((state) => state.userProfile);
+  const setIsUpgradeModalOpen = useAppStore((state) => state.setIsUpgradeModalOpen);
   const isPremium = isPremiumProp ?? (userProfile?.subscription_status === 'premium');
   const [selectedNote, setSelectedNote] = useState<StudyNote | null>(null);
   const [isNoteLocked, setIsNoteLocked] = useState(false);
@@ -881,12 +882,12 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({
                     <button
                       onClick={() => {
                         sounds.playCelebration();
-                        router.push('/upgrade');
+                        setIsUpgradeModalOpen(true);
                       }}
                       className="w-full max-w-xs mx-auto h-12 rounded-btn font-black text-xs flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-tactile-sm active:scale-[0.98] transition-all"
                     >
                       <Zap className="w-4 h-4 fill-current" />
-                      Upgrade to Unlock — 99 ETB / mo
+                      Upgrade to Unlock — 250 ETB / term
                     </button>
                   </div>
                 )}
@@ -902,7 +903,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({
               sounds.playTap(); 
               haptic.impact('light'); 
               if (isNoteLocked || !isPremium) {
-                router.push('/upgrade');
+                setIsUpgradeModalOpen(true);
               } else {
                 setShowTutor(true); 
               }

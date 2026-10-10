@@ -21,22 +21,26 @@ export interface UserProfile {
 
 interface AppState {
   setupModalType: SetupModalType;
+  isUpgradeModalOpen: boolean;
   userProfile: UserProfile | null;
   profileLoaded: boolean;
   devMode: boolean;
 
   setSetupModalType: (type: SetupModalType) => void;
+  setIsUpgradeModalOpen: (open: boolean) => void;
   setUserProfile: (profile: Partial<UserProfile>) => void;
   toggleDevMode: () => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
   setupModalType: null,
+  isUpgradeModalOpen: false,
   userProfile: null,
   profileLoaded: false,
   devMode: false,
 
   setSetupModalType: (type) => set({ setupModalType: type }),
+  setIsUpgradeModalOpen: (open) => set({ isUpgradeModalOpen: open }),
 
   setUserProfile: (updates) => set((state) => ({
     userProfile: state.userProfile ? { ...state.userProfile, ...updates } : {

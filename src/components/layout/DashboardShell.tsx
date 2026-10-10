@@ -6,6 +6,7 @@ import { BottomNav } from './BottomNav';
 import { TopHeader } from './TopHeader';
 import { CelebrationModal } from '@/components/gamification/CelebrationModal';
 import { ExamSetupModal } from '@/components/dashboard/ExamSetupModal';
+import { UpgradeModal } from '@/components/upgrade/UpgradeModal';
 
 export const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname() || '';
@@ -37,6 +38,9 @@ export const DashboardShell = ({ children }: { children: React.ReactNode }) => {
 
         {/* Global Exam & Notes Setup Modal */}
         <ExamSetupModal />
+
+        {/* Global 1-Tap PRO Upgrade In-Context Sheet */}
+        <UpgradeModal />
       </main>
     </div>
   );

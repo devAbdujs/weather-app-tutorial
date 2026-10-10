@@ -28,6 +28,7 @@ import { Question } from '@/types';
 import { useTelegram } from '@/hooks/useTelegram';
 import { TemariMascot } from '@/components/mascot/TemariMascot';
 import { sounds } from '@/lib/sounds';
+import { useAppStore } from '@/store/useAppStore';
 
 interface AITutorDrawerProps {
   mode?: 'exam' | 'notes';
@@ -60,6 +61,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
   isSimulator = false,
 }) => {
   const { haptic } = useTelegram();
+  const setIsUpgradeModalOpen = useAppStore((s) => s.setIsUpgradeModalOpen);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -370,6 +372,22 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
                         >
                           {normalizeMarkdownLaTeX(msg.content)}
                         </ReactMarkdown>
+                        {(msg.content.includes('AI Tutor Limit Reached') || msg.content.includes('Weekly AI Quota Reached')) && (
+                          <div className="mt-3 pt-2.5 border-t border-black/10 dark:border-white/10">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                sounds.playCelebration();
+                                setIsUpgradeModalOpen(true);
+                              }}
+                              className="w-full py-2.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-500 text-stone-950 font-black text-xs shadow-tactile-xs active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                            >
+                              <span>👑</span>
+                              <span>Upgrade to PRO (250 ETB)</span>
+                              <span className="text-stone-700 font-bold">↗</span>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div className="flex items-center gap-2 text-primary py-1">
