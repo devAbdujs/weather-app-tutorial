@@ -9,7 +9,7 @@ import {
 describe('Referral Attribution Engine', () => {
   const baseTime = new Date('2026-10-01T10:00:00Z').getTime();
 
-  it('correctly attributes free students with 0 ETB commission', () => {
+  it('correctly attributes free students with 5 ETB commission', () => {
     const profiles: ReferredProfile[] = [
       {
         telegram_id: '1001',
@@ -25,7 +25,7 @@ describe('Referral Attribution Engine', () => {
     expect(result.totalRecruited).toBe(1);
     expect(result.proConverted).toBe(0);
     expect(result.freeCount).toBe(1);
-    expect(result.totalEarnedETB).toBe(0);
+    expect(result.totalEarnedETB).toBe(5);
     expect(result.conversionRate).toBe(0);
     expect(result.students[0].conversionStatus).toBe('free');
     expect(result.students[0].isConvertedPro).toBe(false);
@@ -65,7 +65,7 @@ describe('Referral Attribution Engine', () => {
     expect(result.students[0].isConvertedPro).toBe(true);
   });
 
-  it('strictly expires referral when student stays free >24 hours and upgrades later (0 ETB commission)', () => {
+  it('strictly expires referral when student stays free >24 hours and upgrades later (5 ETB free commission)', () => {
     const signupDate = new Date(baseTime).toISOString();
     // Payment submitted 26 hours after signup (window expired)
     const paymentDate = new Date(baseTime + 26 * 60 * 60 * 1000).toISOString();
@@ -91,10 +91,10 @@ describe('Referral Attribution Engine', () => {
     const result = calculateReferralAttribution(profiles, receipts);
 
     expect(result.totalRecruited).toBe(1);
-    // User is NOT counted as PRO conversion for commission
+    // User is NOT counted as PRO conversion for commission, but earns 5 ETB as capped free recruit
     expect(result.proConverted).toBe(0);
     expect(result.freeCount).toBe(1);
-    expect(result.totalEarnedETB).toBe(0);
+    expect(result.totalEarnedETB).toBe(5);
     expect(result.conversionRate).toBe(0);
     expect(result.students[0].conversionStatus).toBe('pro_expired');
     expect(result.students[0].isConvertedPro).toBe(false);
@@ -199,7 +199,8 @@ describe('Referral Attribution Engine', () => {
     expect(result.totalRecruited).toBe(4);
     expect(result.proConverted).toBe(2); // user-1 and user-4
     expect(result.freeCount).toBe(2); // user-2 (free) and user-3 (expired)
-    expect(result.totalEarnedETB).toBe(100); // 2 * 50
+    // 2 PRO @ 50 ETB (100) + 2 Free @ 5 ETB (10) = 110 ETB
+    expect(result.totalEarnedETB).toBe(110);
     expect(result.conversionRate).toBe(50); // 2 / 4 = 50%
   });
 
@@ -221,7 +222,8 @@ describe('Referral Attribution Engine', () => {
     // 15 surplus recruits tagged as free_capped
     expect(result.freeCappedCount).toBe(15);
     expect(result.proConverted).toBe(0);
-    expect(result.totalEarnedETB).toBe(0);
+    // 30 free @ 5 ETB = 150 ETB
+    expect(result.totalEarnedETB).toBe(150);
 
     const cappedStudents = result.students.filter(s => s.conversionStatus === 'free_capped');
     expect(cappedStudents).toHaveLength(15);
@@ -275,8 +277,9 @@ describe('Referral Attribution Engine', () => {
 
     expect(result.totalRecruited).toBe(35);
     expect(result.freeCount).toBe(30);
-    expect(result.proConverted).toBe(5);
-    expect(result.freeCappedCount).toBe(0);
-    expect(result.totalEarnedETB).toBe(250); // 5 * 50
+    // 30 free @ 5 ETB (150) + 5 PRO @ 50 ETB (250) = 400 ETB
+    expect(result.totalEarnedETB).toBe(400);
+    expect(result.freeEarningsETB).toBe(150);
+    expect(result.proEarningsETB).toBe(250);
   });
 });

@@ -66,7 +66,7 @@ describe('AmbassadorView Component', () => {
     expect(screen.getByText('Campus Ambassador')).toBeInTheDocument();
     expect(screen.getByText('@aau_ambassador')).toBeInTheDocument();
     expect(screen.getAllByText(/ref_aau_ambassador/).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/Earn 50 ETB for each recruit who upgrades within 24h\./)).toBeInTheDocument();
+    expect(screen.getByText(/Earn 5 ETB per free recruit/)).toBeInTheDocument();
   });
 
   it('renders metrics with 24h upgrade subtitles', () => {
@@ -79,7 +79,7 @@ describe('AmbassadorView Component', () => {
     expect(screen.getByText('24h upgrades')).toBeInTheDocument();
 
     expect(screen.getAllByText(/50/).length).toBeGreaterThanOrEqual(1); // Commission
-    expect(screen.getByText('50 ETB per 24h PRO')).toBeInTheDocument();
+    expect(screen.getByText('5 ETB/free (max 30/mo) + 50 ETB/PRO')).toBeInTheDocument();
 
     expect(screen.getByText('33%')).toBeInTheDocument();
     expect(screen.getByText('24h rate')).toBeInTheDocument();

@@ -93,7 +93,7 @@ export function ExecutiveDashboardView({ data }: ExecutiveDashboardViewProps) {
               <span className="text-xs font-normal text-muted-foreground">ETB</span>
             </div>
             <p className="text-[11px] text-muted-foreground mt-1">
-              50 ETB / eligible 24h recruit
+              5 ETB/free (max 30/mo) + 50 ETB/PRO
             </p>
           </div>
 

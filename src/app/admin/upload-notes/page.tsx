@@ -14,21 +14,22 @@ const MarkdownRenderer = dynamic(() => import('@/components/dashboard/MarkdownRe
 
 const COURSE_SUGGESTIONS: Record<string, string[]> = {
   freshman: [
-    'Applied Mathematics I',
-    'Mathematics for Natural Sciences',
-    'Economics',
-    'General Physics',
-    'Emerging Technology',
-    'Logic & Critical Thinking',
-    'Communicative English',
-    'General Psychology',
-    'Geography of Ethiopia',
-    'History of Ethiopia',
-    'Moral & Civics',
-    'Global Trends',
-    'Inclusiveness',
-    'Entrepreneurship',
+    'Communicative English Language Skills (I & II)',
+    'Logic and Critical Thinking',
+    'Geography of Ethiopia and the Horn',
+    'History of Ethiopia and the Horn',
+    'General Psychology and Life Skills',
     'Social Anthropology',
+    'Moral and Civic Education',
+    'Global Trends',
+    'Introduction to Emerging Technologies',
+    'Entrepreneurship',
+    'Economics',
+    'Inclusiveness',
+    'Mathematics for Natural Sciences',
+    'Mathematics for Social Sciences',
+    'Applied Mathematics I',
+    'General Physics',
   ],
   entrance: [
     'Mathematics (Natural)',
@@ -79,6 +80,7 @@ export default function AdminUploadNotes() {
   const [activeTab, setActiveTab] = useState<'batch' | 'manual'>('batch');
   const [examType, setExamType] = useState('freshman');
   const [department, setDepartment] = useState('Applied Mathematics I');
+  const [selectedGrade, setSelectedGrade] = useState<'11' | '12' | '10' | '9' | ''>('11');
   
   // Inventory State
   const [existingNotes, setExistingNotes] = useState<ExistingNoteItem[]>([]);
@@ -138,10 +140,15 @@ export default function AdminUploadNotes() {
       const ext = file.name.substring(file.name.lastIndexOf('.'));
       let base = file.name.replace(ext, '').replace(/[-_]/g, ' ');
 
-      // Try to clean up titles like "Applied Mathematics I ch1" -> "Chapter 1"
+      // Check if title or filename already mentions grade or chapter
       const chMatch = base.match(/(?:chapter|ch)\s*(\d+)/i);
+      const gradeMatch = base.match(/grade[-\s]*(\d+)/i) || base.match(/\bg(\d+)\b/i);
+      const effectiveGrade = examType === 'entrance' ? (gradeMatch ? gradeMatch[1] : selectedGrade) : '';
+
       if (chMatch) {
-        base = `Chapter ${chMatch[1]}`;
+        base = effectiveGrade ? `Grade ${effectiveGrade} - Chapter ${chMatch[1]}` : `Chapter ${chMatch[1]}`;
+      } else if (effectiveGrade && !base.toLowerCase().includes(`grade ${effectiveGrade}`)) {
+        base = `Grade ${effectiveGrade} - ${base}`;
       }
 
       return {
@@ -380,22 +387,45 @@ export default function AdminUploadNotes() {
         </div>
 
         {/* Quick Suggestion Pills */}
-        <div className="flex flex-wrap gap-1.5 pt-1">
-          <span className="text-[11px] font-medium text-muted-foreground self-center mr-1">Quick Picks:</span>
-          {(COURSE_SUGGESTIONS[examType] || []).slice(0, 8).map(c => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => setDepartment(c)}
-              className={`text-xs px-2.5 py-1 rounded-lg border font-medium transition-all ${
-                department === c
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                  : 'bg-ground text-foreground border-border hover:border-blue-500/50'
-              }`}
-            >
-              {c}
-            </button>
-          ))}
+        <div className="space-y-1.5 pt-1">
+          <div className="flex flex-wrap gap-1.5">
+            <span className="text-[11px] font-semibold text-muted-foreground self-center mr-1">Quick Picks:</span>
+            {(COURSE_SUGGESTIONS[examType] || []).map(c => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setDepartment(c)}
+                className={`text-xs px-2.5 py-1 rounded-lg border font-medium transition-all ${
+                  department === c
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                    : 'bg-ground text-foreground border-border hover:border-blue-500/50'
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+
+          {/* Grade Level Selector (Entrance Exam Only) */}
+          {examType === 'entrance' && (
+            <div className="pt-2 border-t border-border/60 flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] font-bold text-muted-foreground mr-1">Entrance Grade Target:</span>
+              {(['11', '12', '10', '9', ''] as const).map(g => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => setSelectedGrade(g)}
+                  className={`text-xs px-2.5 py-1 rounded-lg border font-semibold transition-all ${
+                    selectedGrade === g
+                      ? 'bg-purple-600 text-white border-purple-600 shadow-xs'
+                      : 'bg-ground text-foreground border-border hover:border-purple-500/50'
+                  }`}
+                >
+                  {g ? `Grade ${g}` : 'All / General'}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -709,9 +739,31 @@ export default function AdminUploadNotes() {
                   type="text" 
                   value={manualTitle} 
                   onChange={(e) => setManualTitle(e.target.value)}
-                  placeholder="e.g. Chapter 1: Introduction to Economics"
+                  placeholder={
+                    examType === 'entrance' && selectedGrade
+                      ? `e.g. Grade ${selectedGrade} - Chapter 1: Vectors and Kinematics`
+                      : 'e.g. Chapter 1: Introduction to Economics'
+                  }
                   className="w-full px-3.5 py-2.5 border border-border rounded-xl bg-ground font-medium text-foreground text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
                 />
+                {examType === 'entrance' && (
+                  <div className="flex items-center gap-1.5 mt-1.5 text-[11px] text-muted-foreground">
+                    <span>Quick prefix:</span>
+                    {(['11', '12', '10', '9'] as const).map(g => (
+                      <button
+                        key={g}
+                        type="button"
+                        onClick={() => {
+                          const clean = manualTitle.replace(/^Grade\s*\d+\s*[-–:]\s*/i, '');
+                          setManualTitle(`Grade ${g} - ${clean}`);
+                        }}
+                        className="px-2 py-0.5 rounded bg-ground border border-border hover:border-purple-500/50 font-bold text-foreground"
+                      >
+                        + Grade {g}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="sm:self-end">
                 <button

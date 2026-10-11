@@ -166,7 +166,7 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
             {totalEarnedETB.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">ETB</span>
           </div>
           <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium mt-0.5">
-            50 ETB per 24h PRO
+            5 ETB/free (max 30/mo) + 50 ETB/PRO
           </p>
         </div>
 
@@ -192,7 +192,7 @@ export function AmbassadorView({ data }: AmbassadorViewProps) {
           <div className="flex items-center justify-between gap-2">
             <div>
               <h2 className="text-sm font-semibold text-foreground">Your Link</h2>
-              <p className="text-[11px] text-muted-foreground">Earn 50 ETB for each recruit who upgrades within 24h.</p>
+              <p className="text-[11px] text-muted-foreground">Earn 5 ETB per free recruit (up to 30/mo) and 50 ETB for each 24h PRO upgrade.</p>
             </div>
             <span className="text-xs font-mono text-muted-foreground bg-ground px-2 py-0.5 rounded border border-border">
               ref_{referralCode}

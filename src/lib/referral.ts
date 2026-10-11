@@ -15,7 +15,9 @@
  * 5. Commission Rate: Exactly 50 ETB per eligible 24h PRO conversion.
  */
 
-export const REFERRAL_COMMISSION_ETB = 50;
+export const FREE_RECRUIT_COMMISSION_ETB = 5;
+export const PRO_CONVERSION_COMMISSION_ETB = 50;
+export const REFERRAL_COMMISSION_ETB = 50; // Legacy alias for PRO conversion
 export const REFERRAL_ATTRIBUTION_WINDOW_HOURS = 24;
 export const REFERRAL_ATTRIBUTION_WINDOW_MS = REFERRAL_ATTRIBUTION_WINDOW_HOURS * 60 * 60 * 1000;
 export const MONTHLY_FREE_RECRUIT_CAP = 30; // Max free recruits attributed per calendar month per ambassador
@@ -52,6 +54,8 @@ export interface ReferralAttributionSummary {
   freeCappedCount: number;
   currentMonthFreeCount: number;
   monthlyFreeCap: number;
+  freeEarningsETB: number;
+  proEarningsETB: number;
   totalEarnedETB: number;
   conversionRate: number;
   students: EvaluatedStudentReferral[];
@@ -154,7 +158,9 @@ export function calculateReferralAttribution(
   const proConverted = students.filter(s => s.isConvertedPro).length;
   const freeCount = students.filter(s => s.conversionStatus === 'free' || s.conversionStatus === 'pro_expired').length;
   const freeCappedCount = students.filter(s => s.conversionStatus === 'free_capped').length;
-  const totalEarnedETB = proConverted * REFERRAL_COMMISSION_ETB;
+  const freeEarningsETB = freeCount * FREE_RECRUIT_COMMISSION_ETB;
+  const proEarningsETB = proConverted * PRO_CONVERSION_COMMISSION_ETB;
+  const totalEarnedETB = freeEarningsETB + proEarningsETB;
   const conversionRate = totalRecruited > 0 ? Math.round((proConverted / totalRecruited) * 100) : 0;
 
   const currentMonthKey = new Date().toISOString().slice(0, 7);
@@ -167,6 +173,8 @@ export function calculateReferralAttribution(
     freeCappedCount,
     currentMonthFreeCount,
     monthlyFreeCap: MONTHLY_FREE_RECRUIT_CAP,
+    freeEarningsETB,
+    proEarningsETB,
     totalEarnedETB,
     conversionRate,
     students,

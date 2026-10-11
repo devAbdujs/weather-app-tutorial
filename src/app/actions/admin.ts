@@ -476,6 +476,7 @@ export async function getSuperAdminExecutiveMetrics(): Promise<ExecutiveMetricsD
   const supabase = await createAdminClient();
   const PRO_PRICE = 250;
   const COMMISSION_PER_PRO = 50;
+  const COMMISSION_PER_FREE = 5;
 
   const [
     profilesRes,
@@ -536,11 +537,6 @@ export async function getSuperAdminExecutiveMetrics(): Promise<ExecutiveMetricsD
     });
   }
 
-  // Financials
-  const grossRevenueETB = approvedReceipts.length * PRO_PRICE;
-  const commissionsPaidETB = total24hProConversions * COMMISSION_PER_PRO;
-  const netPlatformRevenueETB = grossRevenueETB - commissionsPaidETB;
-
   // Users
   const totalStudents = profiles.length;
   const totalProStudents = profiles.filter(p => p.subscription_status === 'premium').length;
@@ -584,6 +580,9 @@ export async function getSuperAdminExecutiveMetrics(): Promise<ExecutiveMetricsD
     const byId = ambassadorStats.get(amb.id) || { recruits: 0, proConversions: 0 };
     const recruits = byUser.recruits + byId.recruits;
     const proConversions = byUser.proConversions + byId.proConversions;
+    const freeRecruits = Math.max(0, recruits - proConversions);
+    const cappedFreeRecruits = Math.min(30, freeRecruits);
+    const commissionsETB = (cappedFreeRecruits * COMMISSION_PER_FREE) + (proConversions * COMMISSION_PER_PRO);
 
     if (recruits > 0) activeAmbassadorsCount++;
 
@@ -591,11 +590,16 @@ export async function getSuperAdminExecutiveMetrics(): Promise<ExecutiveMetricsD
       username: amb.username,
       recruits,
       proConversions,
-      commissionsETB: proConversions * COMMISSION_PER_PRO,
+      commissionsETB,
     });
   }
 
   topAmbassadorsList.sort((a, b) => b.recruits - a.recruits);
+
+  // Financials
+  const grossRevenueETB = approvedReceipts.length * PRO_PRICE;
+  const commissionsPaidETB = topAmbassadorsList.reduce((sum, a) => sum + a.commissionsETB, 0);
+  const netPlatformRevenueETB = grossRevenueETB - commissionsPaidETB;
 
   // Track Breakdown
   const entrance = profiles.filter(p => p.target_exam === 'entrance').length;

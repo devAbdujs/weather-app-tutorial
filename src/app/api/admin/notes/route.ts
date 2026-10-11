@@ -29,24 +29,51 @@ export async function GET(req: NextRequest) {
 
     if (error) throw error;
 
-    // Fallback: If 0 notes found, handle variants like '&' vs 'and'
+    // Fallback: If 0 notes found, handle curriculum course aliases & naming variants
     if (!notes || notes.length === 0) {
-      const altDept = department.includes('&')
-        ? department.replace(/&/g, 'and')
-        : department.includes(' and ')
-          ? department.replace(/\band\b/gi, '&')
-          : null;
+      const getAliases = (dept: string): string[] => {
+        const d = dept.toLowerCase().trim();
+        const list: string[] = [];
+        if (d.includes('math') && d.includes('natural')) {
+          list.push('Mathematics', 'Mathematics for Natural Sciences', 'Mathematics (Natural)');
+        } else if (d === 'mathematics' || d === 'math') {
+          list.push('Mathematics for Natural Sciences', 'Mathematics (Natural)', 'Mathematics (Social)');
+        } else if (d.includes('emerging tech')) {
+          list.push('Emerging Technology', 'Introduction to Emerging Technologies');
+        } else if (d.includes('communicative english') || d.includes('english language skills')) {
+          list.push('Communicative English', 'English', 'Communicative English Language Skills (I & II)');
+        } else if (d.includes('moral') || d.includes('civic')) {
+          list.push('Moral & Civics', 'Moral and Civic Education', 'Civics', 'Civics & Ethical Education');
+        } else if (d.includes('geography')) {
+          list.push('Geography of Ethiopia', 'Geography of Ethiopia and the Horn', 'Geography');
+        } else if (d.includes('history')) {
+          list.push('History of Ethiopia', 'History of Ethiopia and the Horn', 'History');
+        } else if (d.includes('psychology')) {
+          list.push('General Psychology', 'General Psychology and Life Skills', 'Psychology');
+        } else if (d.includes('logic')) {
+          list.push('Logic & Critical Thinking', 'Logic and Critical Thinking', 'Logic');
+        } else if (d.includes('anthropology')) {
+          list.push('Social Anthropology', 'Anthropology');
+        }
 
-      if (altDept) {
+        if (dept.includes('&')) list.push(dept.replace(/&/g, 'and'));
+        if (dept.includes(' and ')) list.push(dept.replace(/\band\b/gi, '&'));
+        return Array.from(new Set(list));
+      };
+
+      const aliases = getAliases(department);
+      for (const alias of aliases) {
+        if (alias.toLowerCase() === department.toLowerCase()) continue;
         const { data: altNotes, error: altErr } = await supabase
           .from('study_notes')
           .select('id, title, content')
           .eq('exam_type', examType)
-          .ilike('department', altDept)
+          .ilike('department', alias)
           .order('title', { ascending: true });
 
         if (!altErr && altNotes && altNotes.length > 0) {
           notes = altNotes;
+          break;
         }
       }
     }

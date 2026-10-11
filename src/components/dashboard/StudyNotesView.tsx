@@ -143,18 +143,46 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({
   const accentBg = 'bg-primary/5';
   const emoji = SUBJECT_EMOJI[dept] ?? '📚';
 
-  // Sort notes naturally by chapter number (Chapter 1, Chapter 2, etc.)
+  const [selectedGrade, setSelectedGrade] = useState<string>('all');
+
+  // Extract all unique grades available in the notes (e.g. ['11', '12'])
+  const availableGrades = useMemo(() => {
+    const grades = new Set<string>();
+    initialNotes.forEach(n => {
+      const m = n.title.match(/grade[-\s]*(\d+)/i) || n.title.match(/\bg(\d+)\b/i);
+      if (m) grades.add(m[1]);
+    });
+    return Array.from(grades).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+  }, [initialNotes]);
+
+  // Sort notes naturally by grade and chapter number
   const sortedNotes = useMemo(() => {
-    return [...initialNotes].sort((a, b) => {
+    let list = [...initialNotes];
+
+    if (examType === 'entrance' && selectedGrade !== 'all') {
+      list = list.filter(n => {
+        const m = n.title.match(/grade[-\s]*(\d+)/i) || n.title.match(/\bg(\d+)\b/i);
+        return m ? m[1] === selectedGrade : true;
+      });
+    }
+
+    return list.sort((a, b) => {
+      const getGrade = (str: string) => {
+        const m = str.match(/grade[-\s]*(\d+)/i) || str.match(/\bg(\d+)\b/i);
+        return m ? parseInt(m[1], 10) : 0;
+      };
+      const gradeDiff = getGrade(a.title) - getGrade(b.title);
+      if (gradeDiff !== 0) return gradeDiff;
+
       const getNum = (str: string) => {
-        const m = str.match(/chapter\s*(\d+)/i);
+        const m = str.match(/(?:chapter|ch)\s*(\d+)/i);
         return m ? parseInt(m[1], 10) : 999;
       };
       const diff = getNum(a.title) - getNum(b.title);
       if (diff !== 0) return diff;
       return a.title.localeCompare(b.title, undefined, { numeric: true });
     });
-  }, [initialNotes]);
+  }, [initialNotes, examType, selectedGrade]);
 
   const getStorageKey = useCallback((chapTitle: string) => {
     return `temari_hl_${subject}_${chapTitle}`;
@@ -996,6 +1024,44 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({
         />
       </div>
 
+      {/* Grade Selector Tabs for Entrance Exam */}
+      {examType === 'entrance' && (availableGrades.length > 0 || initialNotes.length > 0) && (
+        <div className="flex items-center gap-1.5 px-1 mb-3 overflow-x-auto no-scrollbar">
+          <span className="text-caption font-bold text-muted-foreground mr-1 shrink-0">Grade:</span>
+          <button
+            type="button"
+            onClick={() => { sounds.playTap(); haptic.selection(); setSelectedGrade('all'); }}
+            className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 ${
+              selectedGrade === 'all'
+                ? 'bg-primary text-white shadow-xs'
+                : 'bg-black/5 dark:bg-white/5 text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            All Grades ({initialNotes.length})
+          </button>
+          {(availableGrades.length > 0 ? availableGrades : ['11', '12']).map(g => {
+            const count = initialNotes.filter(n => {
+              const m = n.title.match(/grade[-\s]*(\d+)/i) || n.title.match(/\bg(\d+)\b/i);
+              return m && m[1] === g;
+            }).length;
+            return (
+              <button
+                key={g}
+                type="button"
+                onClick={() => { sounds.playTap(); haptic.selection(); setSelectedGrade(g); }}
+                className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 ${
+                  selectedGrade === g
+                    ? 'bg-purple-600 text-white shadow-xs'
+                    : 'bg-black/5 dark:bg-white/5 text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Grade {g} {count > 0 ? `(${count})` : ''}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {initialNotes.length > 0 && (
         <div className="px-5 py-2.5 flex gap-4 border-b border-black/[0.06] dark:border-white/[0.08] mb-3">
           <div className="flex items-center gap-1.5 text-xs font-black text-slate-600 dark:text-slate-400">
@@ -1048,6 +1114,14 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({
                       {note.title}
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
+                      {(() => {
+                        const m = note.title.match(/grade[-\s]*(\d+)/i) || note.title.match(/\bg(\d+)\b/i);
+                        return m ? (
+                          <span className="text-micro font-black px-2 py-0.5 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/25">
+                            Grade {m[1]}
+                          </span>
+                        ) : null;
+                      })()}
                       <span className={`text-micro font-black uppercase tracking-wider px-2 py-0.5 rounded-lg ${themeClass}`}>
                         {note.department}
                       </span>
