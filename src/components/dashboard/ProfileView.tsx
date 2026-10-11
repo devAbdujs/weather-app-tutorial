@@ -314,7 +314,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats, referr
 
           <button
             onClick={() => { sounds.playTap(); haptic.selection(); router.push('/mastery'); }}
-            className="px-3.5 py-1.5 rounded-xl bg-gray-950 text-white dark:bg-white dark:text-gray-950 text-xs font-black transition-all active:scale-95 shadow-tactile-xs border border-black/10 dark:border-white/10"
+            className="btn-3d-primary px-3.5 py-1.5 rounded-xl text-white text-xs font-black transition-all active:scale-95 shadow-tactile-xs"
           >
             Scores
           </button>
@@ -328,7 +328,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats, referr
           {/* Attempted (Pastel Lavender) */}
           <div className="bg-tint-purple text-tint-purple-fg border-2 border-b-[3px] border-tint-purple-border rounded-2xl p-3 text-center shadow-2xs">
             <FileQuestion className="w-5 h-5 mx-auto mb-1 stroke-[2.5] text-purple-600 dark:text-purple-400" />
-            <span className="text-xl font-black font-mono tabular-nums block text-gray-950 dark:text-white leading-tight">
+            <span className="text-xl font-black font-mono tabular-nums block text-foreground leading-tight">
               {totalQuestions}
             </span>
             <span className="text-micro font-black uppercase tracking-wider text-muted-foreground mt-0.5 block">
@@ -430,10 +430,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats, referr
 
             <button
               type="button"
-              className="bg-stone-950 text-white px-3.5 py-2 rounded-full text-xs font-black shadow-md shrink-0 flex items-center gap-1 hover:bg-black transition-all"
+              className="bg-white text-stone-900 hover:bg-white/95 px-4 py-2 rounded-full text-xs font-black shadow-tactile-sm shrink-0 flex items-center gap-1 active:scale-95 transition-all"
             >
               <span>Upgrade</span>
-              <span className="text-amber-400 text-sm">↗</span>
+              <span className="text-amber-600 text-sm">↗</span>
             </button>
           </section>
         )}

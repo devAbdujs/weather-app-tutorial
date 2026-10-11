@@ -440,7 +440,7 @@ export const MasteryTree: React.FC<MasteryTreeProps> = ({ stats, profile }) => {
                 }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-black capitalize transition-all ${
                   filterMode === tab
-                    ? 'bg-card text-gray-950 dark:text-white shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
+                    ? 'bg-card text-foreground shadow-tactile-xs border border-black/[0.08] dark:border-white/[0.08]'
                     : 'text-muted-foreground hover:text-foreground font-bold'
                 }`}
               >

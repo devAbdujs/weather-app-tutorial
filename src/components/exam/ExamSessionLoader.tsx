@@ -73,7 +73,7 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         </div>
         <h2 className="text-xl font-bold text-foreground mb-2">Error Loading Session</h2>
         <p className="text-sm text-muted-foreground mb-6">{serverError}</p>
-        <button onClick={() => router.back()} className="px-6 py-3 bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 font-black rounded-xl shadow-tactile-xs border border-black/10 dark:border-white/10 active:scale-95 transition-all">
+        <button onClick={() => router.back()} className="btn-3d-primary px-6 py-3 font-black rounded-xl shadow-tactile-sm active:scale-95 transition-all text-sm">
           Go Back
         </button>
       </div>
@@ -96,7 +96,7 @@ export const ExamSessionLoader: React.FC<ExamSessionLoaderProps> = ({
         <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
           <Link 
             href="/practice"
-            className="w-full h-12 rounded-xl bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 font-black flex items-center justify-center gap-2 shadow-tactile-xs border border-black/10 dark:border-white/10 active:scale-95 transition-transform text-sm"
+            className="btn-3d-primary w-full h-12 rounded-xl font-black flex items-center justify-center gap-2 shadow-tactile-sm active:scale-95 transition-transform text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Pick Another Subject

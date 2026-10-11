@@ -94,7 +94,7 @@ export function AdminMobileNav({
   }
 
   return (
-    <div className="md:hidden sticky top-0 z-40 w-full bg-gray-950/95 backdrop-blur-md border-b border-white/10 shadow-tactile-sm">
+    <div className="md:hidden sticky top-0 z-40 w-full bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-tactile-sm">
       {/* Native App Top Header Bar */}
       <div className="flex items-center justify-between px-4 h-15">
         <Link href="/admin" className="flex items-center gap-2.5">
@@ -131,7 +131,7 @@ export function AdminMobileNav({
       {/* Slide-over / Dropdown Drawer Overlay */}
       {isOpen && (
         <div className="fixed inset-0 top-15 z-50 bg-black/70 backdrop-blur-sm animate-fade-in flex flex-col justify-between">
-          <div className="bg-gray-950 border-b border-white/10 p-4 space-y-1.5 max-h-[calc(100vh-60px)] overflow-y-auto custom-scrollbar shadow-2xl">
+          <div className="bg-slate-900 border-b border-slate-800 p-4 space-y-1.5 max-h-[calc(100vh-60px)] overflow-y-auto custom-scrollbar shadow-2xl">
             <div className="px-2 pb-2 mb-2 border-b border-white/10 flex items-center justify-between">
               <span className="text-micro font-black uppercase tracking-wider text-gray-400">
                 Admin Navigation

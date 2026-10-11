@@ -845,7 +845,7 @@ export const StudyNotesView: React.FC<StudyNotesViewProps> = ({
               }}
               className={`h-9 px-3 rounded-control flex items-center gap-1.5 text-xs font-black border transition-all duration-200 ease-bespoke ${
                 penModeActive
-                  ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 border-black dark:border-white shadow-tactile-xs'
+                  ? 'bg-primary text-white border-primary shadow-tactile-xs'
                   : 'bg-card text-slate-700 dark:text-slate-300 border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5'
               }`}
               title={penModeActive ? 'Pen Mode Active (Tap to disable)' : 'Enable Pen Mode (Instant highlight on select)'}

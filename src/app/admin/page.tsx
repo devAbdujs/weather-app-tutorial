@@ -96,7 +96,7 @@ export default async function AdminDashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4 pb-3 border-b border-tint-cream-border">
           <div>
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center shadow-xs">
+              <div className="w-7 h-7 rounded-lg bg-tint-cream-fg/10 text-tint-cream-fg border border-tint-cream-border flex items-center justify-center shadow-xs">
                 <Bot className="w-4 h-4" />
               </div>
               <h2 className="text-base font-bold tracking-tight text-tint-cream-fg">
@@ -109,7 +109,7 @@ export default async function AdminDashboard() {
           </div>
           <Link
             href="/admin/ai"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs transition-all shadow-xs shrink-0 active:scale-95"
+            className="btn-3d-primary inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-white font-black text-xs transition-all shadow-tactile-xs shrink-0 active:scale-95"
           >
             <span>View Telemetry</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -122,7 +122,7 @@ export default async function AdminDashboard() {
               <Key className="w-4 h-4 text-primary" />
               <span>Key Pool Health</span>
             </div>
-            <p className="text-3xl font-black tabular-nums text-gray-950 dark:text-white">
+            <p className="text-3xl font-black tabular-nums text-foreground">
               {aiStats?.keyDetails.activeKeys ?? 0} / {aiStats?.keyDetails.totalKeys ?? 0}
             </p>
             <p className="text-caption font-black text-emerald-700 dark:text-emerald-300 mt-1.5 flex items-center gap-1.5">
@@ -136,7 +136,7 @@ export default async function AdminDashboard() {
               <Sparkles className="w-4 h-4 text-primary" />
               <span>Weekly Inquiries</span>
             </div>
-            <p className="text-3xl font-black tabular-nums text-gray-950 dark:text-white">
+            <p className="text-3xl font-black tabular-nums text-foreground">
               {aiStats?.usage.totalWeeklyInquiries.toLocaleString() ?? '0'}
             </p>
             <p className="text-caption font-bold text-gray-700 dark:text-gray-300 mt-1.5">
@@ -149,7 +149,7 @@ export default async function AdminDashboard() {
               <Database className="w-4 h-4 text-emerald-600" />
               <span>Cache Savings</span>
             </div>
-            <p className="text-3xl font-black tabular-nums text-gray-950 dark:text-white">
+            <p className="text-3xl font-black tabular-nums text-foreground">
               {aiStats?.cache.totalCached.toLocaleString() ?? '0'}
             </p>
             <p className="text-caption font-black text-emerald-700 dark:text-emerald-300 mt-1.5">

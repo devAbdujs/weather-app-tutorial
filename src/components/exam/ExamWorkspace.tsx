@@ -431,7 +431,7 @@ export const ExamWorkspace: React.FC<ExamWorkspaceProps> = ({ questions, title, 
                       : isRevealed && isWrongSelected 
                       ? 'bg-rose-600 text-white' 
                       : isSelected 
-                      ? 'bg-gray-950 text-white dark:bg-white dark:text-gray-950 shadow-tactile-xs font-black' 
+                      ? 'bg-primary text-white shadow-tactile-xs font-black' 
                       : 'bg-panel text-foreground'
                   }`}>
                     {letter}

@@ -586,7 +586,7 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
             setPhase('form');
             handleRemoveFile();
           }}
-          className="w-full max-w-xs h-14 rounded-2xl bg-gray-950 hover:bg-black text-white dark:bg-white dark:text-gray-950 font-black shadow-tactile-md active:scale-[0.98] transition-all border-2 border-b-[4px] border-black dark:border-white"
+          className="btn-3d-primary w-full max-w-xs h-14 rounded-2xl font-black text-base shadow-tactile-md active:scale-[0.98] transition-all"
         >
           Try Uploading Again
         </button>
@@ -633,7 +633,7 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
         {/* Step 1: Payment Instructions */}
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base font-black text-foreground flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center text-xs font-black shadow-2xs">
+            <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-black shadow-2xs">
               1
             </span>
             Transfer 250 ETB
@@ -719,7 +719,7 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
         <form onSubmit={handleSubmit} className="bg-card border border-black/5 dark:border-white/10 p-5 rounded-hero shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-black text-foreground flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-gray-950 text-white dark:bg-white dark:text-gray-950 flex items-center justify-center text-xs font-black shadow-2xs">
+              <span className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-black shadow-2xs">
                 2
               </span>
               Upload Payment Receipt
