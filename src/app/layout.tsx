@@ -69,7 +69,8 @@ const themeScript = `
 (function() {
   try {
     var stored = localStorage.getItem('theme');
-    if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    var isTgDark = window.Telegram && window.Telegram.WebApp && (window.Telegram.WebApp.colorScheme === 'dark');
+    if (stored === 'dark' || (!stored && (isTgDark || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)))) {
       document.documentElement.classList.add('dark');
     }
     // Apply Telegram theme colors to CSS variables if in Mini App

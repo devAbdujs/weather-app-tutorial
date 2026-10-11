@@ -17,7 +17,8 @@ export function useTheme() {
 
     const applyTheme = (t: Theme) => {
       try {
-        const prefersDark = typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)')?.matches;
+        const isTgDark = typeof window !== 'undefined' && (window as any).Telegram?.WebApp?.colorScheme === 'dark';
+        const prefersDark = typeof window !== 'undefined' && (Boolean(window.matchMedia?.('(prefers-color-scheme: dark)')?.matches) || isTgDark);
         const isDark = t === 'dark' || (t === 'system' && Boolean(prefersDark));
         if (typeof document !== 'undefined') {
           document.documentElement.classList.toggle('dark', isDark);
@@ -51,7 +52,8 @@ export function useTheme() {
     setThemeState(t);
     safeLocalStorage.setItem('theme', t);
     try {
-      const prefersDark = typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)')?.matches;
+      const isTgDark = typeof window !== 'undefined' && (window as any).Telegram?.WebApp?.colorScheme === 'dark';
+      const prefersDark = typeof window !== 'undefined' && (Boolean(window.matchMedia?.('(prefers-color-scheme: dark)')?.matches) || isTgDark);
       const isDark = t === 'dark' || (t === 'system' && Boolean(prefersDark));
       if (typeof document !== 'undefined') {
         document.documentElement.classList.toggle('dark', isDark);
