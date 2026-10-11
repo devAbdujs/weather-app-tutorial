@@ -845,10 +845,10 @@ Require all admin accounts to update password; remove plaintext comparison branc
    - **Compact KPI Gauges**: Admin metric cards resize smoothly without horizontal scroll jank.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[MOB-01]` Overhaul `src/components/marketing/LandingPage.tsx` and `ExamLandingHero.tsx` into a high-impact, swipeable mobile-first experience.
-- [ ] `[MOB-02]` Implement mobile drawer / bottom navigation for `AdminNav.tsx` across all `/admin/*` views.
-- [ ] `[MOB-03]` Implement responsive mobile card feeds for tables in `/admin/payments`, `/admin/ambassador`, `/admin/users`, and `/admin/questions` (cards on mobile, tables on desktop).
-- [ ] `[MOB-04]` Ensure all admin buttons, status pills, and filters are thumb-friendly ($\ge 44$px) with tactile physical feedback (`active:scale-[0.97]`).
+- [x] `[MOB-01]` Overhaul `src/components/marketing/LandingPage.tsx` and `ExamLandingHero.tsx` into a high-impact, swipeable mobile-first experience.
+- [x] `[MOB-02]` Implement mobile drawer / bottom navigation for `AdminNav.tsx` across all `/admin/*` views (`AdminMobileNav.tsx`).
+- [x] `[MOB-03]` Implement responsive mobile card feeds for tables in `/admin/payments`, `/admin/ambassador`, `/admin/users`, and `/admin/questions` (cards on mobile, tables on desktop).
+- [x] `[MOB-04]` Ensure all admin buttons, status pills, and filters are thumb-friendly ($\ge 44$px) with tactile physical feedback (`active:scale-[0.97]`).
 
 ---
 
@@ -887,78 +887,42 @@ Require all admin accounts to update password; remove plaintext comparison branc
    - Lightweight, responsive SVG/CSS time-series and tier distribution charts (100% native, instant render, zero dependencies).
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[BI-01]` Create `getSuperAdminExecutiveMetrics()` in `src/app/actions/admin.ts` aggregating revenue, payment status, ambassador ledger, user tiers, and content stats with optimized single-pass queries.
-- [ ] `[BI-02]` Build `src/components/admin/ExecutiveDashboardView.tsx` with KPI cards, revenue vs commission ledger, monthly free signup cap meter, and ambassador leaderboard.
-- [ ] `[BI-03]` Build native responsive SVG charts for revenue trends and user tier distribution.
-- [ ] `[BI-04]` Mount `ExecutiveDashboardView` in `src/app/admin/page.tsx` for Super Admin with live refresh and export capabilities.
-- [ ] `[BI-05]` Add automated unit tests in `__tests__/lib/executiveMetrics.test.ts`.
+- [x] `[BI-01]` Create `getSuperAdminExecutiveMetrics()` in `src/app/actions/admin.ts` aggregating revenue, payment status, ambassador ledger, user tiers, and content stats with optimized single-pass queries.
+- [x] `[BI-02]` Build `src/components/admin/ExecutiveDashboardView.tsx` with KPI cards, revenue vs commission ledger, monthly free signup cap meter, and ambassador leaderboard.
+- [x] `[BI-03]` Build native responsive SVG charts for revenue trends and user tier distribution.
+- [x] `[BI-04]` Mount `ExecutiveDashboardView` in `src/app/admin/page.tsx` for Super Admin with live refresh and export capabilities.
+- [x] `[BI-05]` Add automated unit tests in `__tests__/lib/executiveMetrics.test.ts`.
 
 ---
 
 ### [P-14] Seamless Ubiquitous PRO Subscription UX (1-Tap Header, Bottom Sheet, In-Context Access)
 **Files:** `src/components/layout/Header.tsx`, `src/components/layout/BottomNav.tsx`, `src/components/upgrade/UpgradeModal.tsx`, `src/components/ai/AITutorDrawer.tsx`, `src/components/dashboard/StudyNotesView.tsx`, `src/app/(app)/layout.tsx`
 
-**Current State & Audit Findings:**
-- Upgrading to PRO currently requires students to navigate to `/profile`, scroll through user stats, locate the upgrade button, and open `/upgrade`.
-- When students hit paywalls (e.g. 5th free AI question in `AITutorDrawer`, locked chapters in `StudyNotesView`, or mock exam limits), the app displays text asking them to manually navigate to their profile page.
-- This creates unnecessary friction and hurts upgrade conversion rates.
-
-**Architecture & Solution Design:**
-1. **Global 1-Tap "⚡ PRO" Triggers:**
-   - Add a prominent, tactile `⚡ PRO` pill button directly in the top app header on both mobile and desktop.
-   - Add a dedicated `👑 PRO` quick-action tab in the mobile bottom navigation bar (`BottomNav.tsx`).
-2. **Instant In-Context Upgrade Bottom Sheet (`UpgradeModal.tsx`):**
-   - Hitting any premium gate triggers a native, slick slide-up bottom sheet directly over the current screen without navigating away from study material.
-   - Includes 1-tap copy for CBE (`1000217910448`) and Telebirr (`0942202051`), instant price pill (250 ETB), and direct slip photo upload.
-3. **Seamless Paywall Integration:**
-   - AI Tutor drawer quota warnings and locked study note chapters immediately trigger the upgrade sheet on tap with zero extra clicks.
-
 **Action Items & Implementation Roadmap:**
-- [ ] `[UPG-01]` Build reusable `UpgradeModal.tsx` / `UpgradeSheet.tsx` containing the instant 250 ETB transfer details and slip upload flow.
-- [ ] `[UPG-02]` Mount 1-tap `⚡ PRO` button in top navigation header and mobile bottom bar for all free-tier users.
-- [ ] `[UPG-03]` Connect `AITutorDrawer.tsx` quota paywall and `StudyNotesView.tsx` chapter locks to directly open the upgrade sheet.
-- [ ] `[UPG-04]` Add deep link support (`?upgrade=true` / `/upgrade`) that auto-launches the sheet with zero friction.
+- [x] `[UPG-01]` Build reusable `UpgradeModal.tsx` containing the instant 250 ETB transfer details and slip upload flow.
+- [x] `[UPG-02]` Mount 1-tap `⚡ PRO` button in top navigation header and mobile bottom bar for all free-tier users.
+- [x] `[UPG-03]` Connect `AITutorDrawer.tsx` quota paywall and `StudyNotesView.tsx` chapter locks to directly open the upgrade sheet.
+- [x] `[UPG-04]` Add deep link support (`?upgrade=true` / `/upgrade`) that auto-launches the sheet with zero friction.
 
 ---
 
 ### [P-15] Automated Instant Payment Approval Engine (Gemini Vision Account & Amount Auto-Verification)
 **Files:** `src/app/api/payments/submit/route.ts`, `src/app/actions/admin.ts`, `src/lib/paymentNotifier.ts`, `src/components/upgrade/UpgradeFlow.tsx`
 
-**Current State & Audit Findings:**
-- When a student submits a payment receipt, Gemini Vision OCR extracts the amount and transaction ID, but does NOT verify the recipient/credited account or receiver name.
-- Even if the receipt is 100% genuine and matches 250 ETB, the route ALWAYS leaves the receipt in `'pending'` status, requiring manual admin review on Telegram or `/admin/payments`.
-- Students are forced to wait on a polling screen ("Verifying Membership...") for minutes or hours until an admin manually approves it.
+**Action Items & Implementation Roadmap:**
+- [x] `[AUT-01]` Update Gemini Vision prompt in `src/app/api/payments/submit/route.ts` to extract `credited_account` and `receiver_name`.
+- [x] `[AUT-02]` Implement replay attack protection checking for duplicate `transaction_id` against previously approved receipts.
+- [x] `[AUT-03]` Implement instant auto-approval logic in `submit/route.ts`: auto-upgrade profile to `premium` and set status to `approved` when amount and credited account match.
+- [x] `[AUT-04]` Update admin alert and student notification in `paymentNotifier.ts` to indicate instant auto-approval.
+- [x] `[AUT-05]` Add automated unit tests covering valid match auto-approval, wrong account fallback to pending, duplicate transaction protection, and underpayment flagging.
 
-**Architecture & Solution Design:**
-1. **Credited Account Multi-Factor Matching in Gemini Vision Prompt:**
-   - Configure platform owner's verified accounts:
-     - CBE Account: `1000217910448`
-     - Telebirr Phone/Account: `0942202051`
-   - Update Gemini Vision prompt to extract:
-     - `credited_account`: The bank account or mobile phone credited.
-     - `receiver_name`: Name of the recipient.
-     - `amount_etb`: Number.
-     - `transaction_id`: Transaction reference code.
-     - `is_suspicious`: Boolean forgery check.
-2. **Automated Instant Approval Guard:**
-   - A payment receipt is **automatically approved immediately** upon upload if:
-     - `amount_etb >= 245` (matching 250 ETB with bank fee tolerance).
-     - `credited_account` matches CBE `1000217910448` OR Telebirr `0942202051` (or receiver name matches).
-     - `transaction_id` is present AND has not been used in any previously approved receipt (replay/duplicate attack protection).
-     - `is_suspicious === false`.
-3. **Immediate Auto-Activation Execution:**
-   - When all 4 criteria match:
-     - Set `payment_receipts.status = 'approved'` immediately in the database.
-     - Set `profiles.subscription_status = 'premium'` immediately.
-     - Send student Telegram confirmation: `🎉 Payment verified automatically! PRO activated.`
-     - Notify admin on Telegram: `⚡ [AUTO-APPROVED] 250 ETB via CBE/Telebirr for ${studentName} (Tx: ${txId})`.
-     - Polling in `UpgradeFlow.tsx` receives approval on the first poll (within 3 seconds), immediately triggering celebration and confetti!
-4. **Graceful Fallback for Ambiguous Receipts:**
-   - If the receipt is blurry, partially cropped, or receiver account is obscured, leave as `status = 'pending'` and alert admin for manual review (no false rejections).
+---
+
+### [P-16] Subadmin Access Portal & 3 Payment Methods (Telebirr, CBE, Awash Bank)
+**Files:** `src/components/dashboard/ProfileView.tsx`, `src/components/admin/AdminLogin.tsx`, `src/app/actions/admin.ts`, `src/components/upgrade/UpgradeModal.tsx`, `src/components/upgrade/UpgradeFlow.tsx`, `src/lib/telegramBot.ts`
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[AUT-01]` Update Gemini Vision prompt in `src/app/api/payments/submit/route.ts` to extract `credited_account` and `receiver_name`.
-- [ ] `[AUT-02]` Implement replay attack protection checking for duplicate `transaction_id` against previously approved receipts.
-- [ ] `[AUT-03]` Implement instant auto-approval logic in `submit/route.ts`: auto-upgrade profile to `premium` and set status to `approved` when amount and credited account match.
-- [ ] `[AUT-04]` Update admin alert and student notification in `paymentNotifier.ts` to indicate instant auto-approval.
-- [ ] `[AUT-05]` Add automated unit tests covering valid match auto-approval, wrong account fallback to pending, duplicate transaction protection, and underpayment flagging.
+- [x] `[SUB-01]` Add "Staff & Subadmin Portal" button in student profile settings leading to `/admin`.
+- [x] `[SUB-02]` Implement smart role-based redirect in `loginAdmin` and `AdminLogin.tsx` (editor -> `/admin/upload-notes`, ambassador -> `/admin/ambassador`, financial_admin -> `/admin/payments`, superadmin -> `/admin`).
+- [x] `[PAY-01]` Add 3 payment alternatives (Telebirr, CBE Bank, Awash Bank) with authentic vector brand badges and 1-tap copy buttons.
+- [x] `[PAY-02]` Expand Gemini Vision verification and Telegram Bot instructions to recognize Awash Bank alongside CBE and Telebirr.
