@@ -121,6 +121,44 @@ describe('LaTeX Normalization & Formatting Suite', () => {
       expect(output).not.toContain('$$A = $$');
       expect(output).toContain('\\begin{pmatrix}');
     });
+
+    it('strips outer markdown code fences wrapping the entire note', () => {
+      const input = '```markdown\n# Chapter 1: Introduction\n\nContent here.\n```';
+      const output = normalizeMarkdownLaTeX(input);
+      expect(output).toBe('# Chapter 1: Introduction\n\nContent here.');
+      expect(output).not.toContain('```');
+    });
+
+    it('preserves math formulas starting with numbers without escaping as currency', () => {
+      const input = 'Solve the equation $1 + x = 2$ and find circumference $2\\pi r$.';
+      const output = normalizeMarkdownLaTeX(input);
+      expect(output).toContain('$1 + x = 2$');
+      expect(output).toContain('$2\\pi r$');
+      expect(output).not.toContain('\\$1');
+      expect(output).not.toContain('\\$2');
+    });
+
+    it('preserves multi-line $$ display math delimiters without degrading to single $', () => {
+      const input = '$$\n\\frac{a}{b} = c\n$$';
+      const output = normalizeMarkdownLaTeX(input);
+      expect(output).toContain('$$\n\\frac{a}{b} = c\n$$');
+      // Ensure opening and closing are both double dollars
+      const doubleDollars = (output.match(/\$\$/g) || []).length;
+      expect(doubleDollars).toBe(2);
+    });
+
+    it('converts double-escaped block math \\\\[ ... \\\\] to $$ ... $$', () => {
+      const input = 'Formula:\n\\\\[x^2 + y^2 = 1\\\\]';
+      const output = normalizeMarkdownLaTeX(input);
+      expect(output).toContain('$$\nx^2 + y^2 = 1\n$$');
+    });
+
+    it('unescapes literal escaped headings', () => {
+      const input = '\\# Chapter 1: Vectors\n\n\\## 1.1 Intro';
+      const output = normalizeMarkdownLaTeX(input);
+      expect(output).toContain('# Chapter 1: Vectors');
+      expect(output).toContain('## 1.1 Intro');
+    });
   });
 
   describe('splitMathAndText', () => {

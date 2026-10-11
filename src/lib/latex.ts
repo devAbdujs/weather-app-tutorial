@@ -65,8 +65,8 @@ export function cleanCorruptedLaTeX(text: string): string {
 
   // 2. Normalize 4-backslash and 2-backslash delimiters and commands
   // \\\\( -> \(, \\\\) -> \), \\\\frac -> \frac
-  p = p.replace(/\\\\\\\\([()[\]a-zA-Z]+)/g, '\\$1');
-  p = p.replace(/\\\\([()[\]a-zA-Z]+)/g, '\\$1');
+  p = p.replace(/\\\\\\\\([()[\]a-zA-Z0-9_{}]+)/g, (_, cmd) => `\\${cmd}`);
+  p = p.replace(/\\\\([()[\]a-zA-Z0-9_{}]+)/g, (_, cmd) => `\\${cmd}`);
 
   // 3. Fix bare frac{ or sqrt{ missing backslash
   p = p.replace(/(?<![\\a-zA-Z])frac\{/g, '\\frac{');
@@ -119,27 +119,40 @@ export function repairUnclosedMath(text: string): string {
   return lines.join('\n');
 }
 
+// Remark-math inline math pattern: opening $ not followed by space, closing $ not preceded by space
+const INLINE_MATH_PROTECT_REGEX = /(?<!\\)\$(?!\s)([^$\n]+?)(?<!\s)(?<!\\)\$/g;
+
 /**
- * Escapes currency amounts ($20, $0.25) and lone trailing dollars ("We say $")
- * so they don't pair up with formulas across distant lines.
+ * Escapes currency amounts ($20, $0.25, $5,000) and lone trailing dollars ("We say $")
+ * while protecting all valid inline and display math formulas ($1 + x = 2$, $2\pi r$).
  */
 export function repairUnclosedSingleDollars(text: string): string {
   if (!text) return '';
+  // Split around display math blocks first to protect $$ ... $$
   const parts = text.split(/(\$\$[\s\S]*?\$\$)/g);
   for (let p = 0; p < parts.length; p++) {
     if (parts[p].startsWith('$$')) continue;
-    const lines = parts[p].split('\n');
-    for (let i = 0; i < lines.length; i++) {
-      let line = lines[i];
-      // Escape currency amounts: $20, $0.25, $5,000
-      line = line.replace(/\$(\d+(?:\.\d+)?(?:\s|$|[,\.]))/g, '\\$$$1');
-      // Check for trailing lone dollar e.g. "We say $"
-      if (/(?<!\\)\$\s*$/.test(line) && (line.match(/(?<!\\)\$/g) || []).length % 2 === 1) {
-        line = line.replace(/(?<!\\)\$(\s*)$/, '\\$$$1');
+
+    // Protect valid inline math formulas on these lines
+    const mathPlaceholders: string[] = [];
+    let protectedPart = parts[p].replace(INLINE_MATH_PROTECT_REGEX, (match) => {
+      // If it looks like an unclosed currency sentence accidentally spanning two numbers e.g. "$20 and $30"
+      if (/^\$\d+(?:\.\d+)?\s+(?:and|or|is|was|to|for|plus|minus)\s+\d+(?:\.\d+)?\$$/i.test(match)) {
+        return match;
       }
-      lines[i] = line;
-    }
-    parts[p] = lines.join('\n');
+      const idx = mathPlaceholders.length;
+      mathPlaceholders.push(match);
+      return `___TEMARI_MATH_${idx}___`;
+    });
+
+    // Escape currency amounts: $20, $0.25, $5,000
+    protectedPart = protectedPart.replace(/(?<!\\)\$(\d+(?:,\d{3})*(?:\.\d+)?(?:\s|$|[,\.]))/g, (_, amt) => `\\$${amt}`);
+
+    // Escape lone trailing dollars at line ends e.g. "We say $"
+    protectedPart = protectedPart.replace(/(?<!\\)\$(\s*)$/gm, (_, sp) => `\\$${sp}`);
+
+    // Restore protected inline math formulas
+    parts[p] = protectedPart.replace(/___TEMARI_MATH_(\d+)___/g, (_, idx) => mathPlaceholders[Number(idx)] || '');
   }
   return parts.join('');
 }
@@ -163,48 +176,67 @@ export function autoWrapAlignedDisplay(text: string): string {
  *   \[ ... \] -> $$ ... $$
  *   \( ... \) -> $ ... $
  *   Standalone \begin{equation|align|gather} -> $$ ... $$
+ *   Strips outer markdown code fences (```markdown ... ```)
+ *   Unescapes literal \n sequences if needed
  *   Isolates multi-line $$ delimiters on separate lines for CommonMark compatibility.
  */
 export function normalizeMarkdownLaTeX(text: string): string {
   if (!text) return '';
-  let p = cleanCorruptedLaTeX(text);
+  let p = text.trim();
 
-  // Auto-repair unclosed display $$ blocks
+  // 1. Strip outer code fences if the entire note was wrapped in ```markdown ... ```
+  if (/^```(?:markdown|md)?\s*\n[\s\S]*\n```\s*$/i.test(p)) {
+    p = p.replace(/^```(?:markdown|md)?\s*\n/i, '').replace(/\n```\s*$/, '').trim();
+  }
+
+  // 2. Unescape escaped newlines if text contains literal \n but no actual newlines
+  if (!p.includes('\n') && p.includes('\\n')) {
+    p = p.replace(/\\n/g, '\n');
+  }
+
+  // 3. Unescape escaped markdown headings (e.g. \# Heading -> # Heading)
+  p = p.replace(/^(\\#{1,6}\s+)/gm, (match) => match.replace(/\\/g, ''));
+
+  // 4. Clean corrupted LaTeX control characters and backslashes
+  p = cleanCorruptedLaTeX(p);
+
+  // 5. Auto-repair unclosed display $$ blocks
   p = repairUnclosedMath(p);
 
-  // Auto-repair stray or currency $ signs
+  // 6. Auto-repair stray or currency $ signs
   p = repairUnclosedSingleDollars(p);
 
-  // Auto-wrap multi-line aligned equations in $$ blocks
+  // 7. Auto-wrap multi-line aligned equations in $$ blocks
   p = autoWrapAlignedDisplay(p);
 
-  // Convert LaTeX block math \[ ... \] to $$ ... $$
-  p = p.replace(/\\\[([\s\S]*?)\\\]/g, (_, m) => `\n\n$$\n${m.trim()}\n$$\n\n`);
+  // 8. Convert LaTeX block math \[ ... \] to $$ ... $$ (supports single or double backslash)
+  p = p.replace(/\\\\?\[([\s\S]*?)\\\\?\]/g, (_, m) => `\n\n$$\n${m.trim()}\n$$\n\n`);
 
-  // Convert standalone equation and align environments (not already inside $$)
+  // 9. Convert standalone equation and align environments (not already inside $$)
   p = p.replace(
     /(?<!\$\$[\s\S]*?)\\begin\{(equation|align|gather)\*?\}([\s\S]*?)\\end\{\1\*?\}/g,
     (_, env, m) => `\n\n$$\n\\begin{${env}}${m}\\end{${env}}\n$$\n\n`
   );
 
-  // Convert LaTeX inline math \( ... \) to $ ... $
-  p = p.replace(/\\\(([\s\S]*?)\\\)/g, (_, m) => `$${m.trim()}$`);
+  // 10. Convert LaTeX inline math \( ... \) to $ ... $ (supports single or double backslash)
+  p = p.replace(/\\\\?\(([\s\S]*?)\\\\?\)/g, (_, m) => `$${m.trim()}$`);
 
-  // Wrap isolated bare \frac{...}{...} and \sqrt{...} outside math delimiters
+  // 11. Wrap isolated bare \frac{...}{...} and \sqrt{...} outside math delimiters
   const mathParts = p.split(/(\$\$[\s\S]*?\$\$|\$[^\n$]+?\$)/g);
   for (let i = 0; i < mathParts.length; i++) {
     if (!mathParts[i].startsWith('$')) {
       mathParts[i] = mathParts[i].replace(
         /(?<!\$|\\\(|\\\[)(\\frac\{[^{}]*\}\{[^{}]*\}|\\sqrt\{[^{}]*\})(?!\$|\\\)|\\])/g,
-        '$$$1$$'
+        (_, math) => `$$${math}$$`
       );
     }
   }
   p = mathParts.join('');
 
-  // Isolate multi-line $$ blocks so opening and closing $$ are on their own lines (remark-math requirement)
-  p = p.replace(/\$\$([^\n$]+)\n/g, '$$\n$1\n');
-  p = p.replace(/\n([^\n$]+)\$\$/g, '\n$1\n$$');
+  // 12. Isolate multi-line $$ blocks so opening and closing $$ are on their own lines (remark-math requirement).
+  // Use function replacers to prevent JS string replacement from treating '$$' as a single '$' escape!
+  p = p.replace(/\$\$([^\n$]+)\n/g, (_, inner) => `$$\n${inner}\n`);
+  p = p.replace(/\n([^\n$]+)\$\$/g, (_, inner) => `\n${inner}\n$$`);
 
   return p;
 }

@@ -7,6 +7,8 @@ import {
   Trash2, Eye, Sparkles, RefreshCw, Layers, ArrowRight, X 
 } from 'lucide-react';
 
+import { normalizeLaTeX } from '@/components/dashboard/MarkdownRenderer';
+
 const MarkdownRenderer = dynamic(() => import('@/components/dashboard/MarkdownRenderer'), { 
   ssr: false, 
   loading: () => <div className="animate-pulse h-40 bg-black/5 dark:bg-white/5 rounded-2xl" /> 
@@ -278,6 +280,7 @@ export default function AdminUploadNotes() {
     try {
       let cleanContent = manualContent.replace(/\b\d+(more_horiz)?\.\n/g, '\n');
       cleanContent = cleanContent.replace(/\[\d+\]/g, '').trim();
+      cleanContent = normalizeLaTeX(cleanContent);
 
       const res = await fetch('/api/admin/notes', {
         method: 'POST',

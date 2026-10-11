@@ -23,6 +23,7 @@ const MIME_MAP: Record<string, string> = {
 };
 
 import { hasPermission } from '@/lib/adminPermissions';
+import { normalizeMarkdownLaTeX } from '@/lib/latex';
 
 export async function POST(req: NextRequest) {
   try {
@@ -57,6 +58,7 @@ export async function POST(req: NextRequest) {
       // Basic artifact cleanup
       let cleanContent = rawText.replace(/\b\d+(more_horiz)?\.\n/g, '\n');
       cleanContent = cleanContent.replace(/\[\d+\]/g, '').trim();
+      cleanContent = normalizeMarkdownLaTeX(cleanContent);
 
       // Derive title from filename or hint
       let derivedTitle = chapterHint;
@@ -123,6 +125,7 @@ Your task:
        $$
        x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}
        $$
+   - Do NOT wrap your entire response or the JSON content value in code blocks (do not wrap in \`\`\`markdown ... \`\`\`).
    - Do NOT include conversational filler (do NOT say "Here is the summary" or "Sure!").
    - If there are structural cycles, lifecycles, or flowcharts, represent them with Mermaid diagram code blocks (\`\`\`mermaid ... \`\`\`).
 
@@ -145,11 +148,12 @@ Return the response strictly as a JSON object with this exact structure:
       }
 
       const parsed = JSON.parse(jsonMatch[0]);
+      let cleanedContent = normalizeMarkdownLaTeX(parsed.content || '');
 
       return NextResponse.json({
         success: true,
         title: parsed.title || chapterHint || file.name.replace(ext, ''),
-        content: parsed.content || '',
+        content: cleanedContent,
       });
 
     } catch (err: any) {
