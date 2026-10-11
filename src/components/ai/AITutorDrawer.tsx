@@ -347,7 +347,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
                 )}
                 <div className={`p-4 rounded-3xl max-w-[85%] font-sans shadow-tactile-xs ${
                   msg.role === 'user' 
-                    ? 'bg-primary text-white border border-primary/30 rounded-br-xs font-semibold whitespace-pre-line shadow-tactile-xs' 
+                    ? 'bg-tint-sky text-tint-sky-fg border border-sky-400 dark:border-sky-500 rounded-br-xs font-semibold whitespace-pre-line shadow-tactile-xs' 
                     : 'bg-card border border-black/[0.06] dark:border-white/[0.08] rounded-bl-xs text-foreground'
                 }`}>
                   {msg.role === 'assistant' ? (
@@ -576,7 +576,7 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
             type="submit"
             disabled={!input.trim() || isLoading}
             onClick={() => sounds.playTap()}
-            className="btn-3d-primary w-11 h-11 rounded-full flex items-center justify-center text-white disabled:opacity-30 transition-all shrink-0 shadow-tactile-xs active:scale-95"
+            className="w-11 h-11 rounded-full flex items-center justify-center bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-sky-400 dark:border-sky-500 disabled:opacity-40 transition-all shrink-0 shadow-tactile-xs active:scale-95"
             title="Send query"
             aria-label="Send query"
           >

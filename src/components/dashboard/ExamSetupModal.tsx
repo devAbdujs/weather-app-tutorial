@@ -188,7 +188,7 @@ export const ExamSetupModal: React.FC = () => {
                         onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
-                            ? 'bg-primary text-white border-primary border-b-primary-border shadow-tactile-xs active:translate-y-0.5' 
+                            ? 'bg-tint-sky text-tint-sky-fg border-sky-400 dark:border-sky-500 border-b-sky-600 dark:border-b-sky-700 shadow-tactile-xs active:translate-y-0.5' 
                             : 'bg-card text-foreground border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
@@ -210,7 +210,7 @@ export const ExamSetupModal: React.FC = () => {
                         onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
-                            ? 'bg-primary text-white border-primary border-b-primary-border shadow-tactile-xs active:translate-y-0.5' 
+                            ? 'bg-tint-sky text-tint-sky-fg border-sky-400 dark:border-sky-500 border-b-sky-600 dark:border-b-sky-700 shadow-tactile-xs active:translate-y-0.5' 
                             : 'bg-card text-foreground border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
@@ -284,7 +284,7 @@ export const ExamSetupModal: React.FC = () => {
                               onClick={() => { sounds.playTap(); haptic.selection(); setSelectedYear(yr); }}
                               className={`shrink-0 px-4 py-2.5 rounded-2xl border-2 border-b-[4px] text-sm font-black transition-all ${
                                 selectedYear === yr 
-                                  ? 'bg-primary text-white border-primary border-b-primary-border shadow-tactile-xs' 
+                                  ? 'bg-tint-sky text-tint-sky-fg border-sky-400 dark:border-sky-500 border-b-sky-600 dark:border-b-sky-700 shadow-tactile-xs' 
                                   : 'bg-card text-muted-foreground border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30'
                               }`}
                             >
@@ -314,7 +314,7 @@ export const ExamSetupModal: React.FC = () => {
                         onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
-                            ? 'bg-primary text-white border-primary border-b-primary-border shadow-tactile-xs active:translate-y-0.5' 
+                            ? 'bg-tint-sky text-tint-sky-fg border-sky-400 dark:border-sky-500 border-b-sky-600 dark:border-b-sky-700 shadow-tactile-xs active:translate-y-0.5' 
                             : 'bg-card text-foreground border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >
@@ -335,7 +335,7 @@ export const ExamSetupModal: React.FC = () => {
                         onClick={() => { sounds.playTap(); haptic.selection(); setSubject(s.id); }}
                         className={`px-3.5 py-3 rounded-2xl border-2 border-b-[4px] text-xs font-black transition-all text-left ${
                           subject === s.id 
-                            ? 'bg-primary text-white border-primary border-b-primary-border shadow-tactile-xs active:translate-y-0.5' 
+                            ? 'bg-tint-sky text-tint-sky-fg border-sky-400 dark:border-sky-500 border-b-sky-600 dark:border-b-sky-700 shadow-tactile-xs active:translate-y-0.5' 
                             : 'bg-card text-foreground border-black/[0.08] dark:border-white/[0.08] border-b-black/[0.14] dark:border-b-white/[0.14] hover:border-black/30 dark:hover:border-white/30 active:translate-y-0.5'
                         }`}
                       >

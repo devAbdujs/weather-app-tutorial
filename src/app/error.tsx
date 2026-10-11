@@ -83,7 +83,7 @@ export default function ErrorBoundary({
         <div className="w-full space-y-2.5">
           <button
             onClick={reset}
-            className="btn-3d-primary w-full h-12 rounded-2xl font-black shadow-tactile-sm active:translate-y-0.5 transition-all flex items-center justify-center gap-2 text-sm text-white"
+            className="bg-tint-sky text-tint-sky-fg border-2 border-b-[4px] border-sky-400 dark:border-sky-500 border-b-sky-600 dark:border-b-sky-700 w-full h-12 rounded-2xl font-black shadow-tactile-sm active:translate-y-0.5 transition-all flex items-center justify-center gap-2 text-sm"
           >
             <RefreshCw className="w-4 h-4 stroke-[2.5]" />
             Try Again

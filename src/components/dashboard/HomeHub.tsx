@@ -205,7 +205,7 @@ export const HomeHub: React.FC = () => {
                 </div>
               </div>
 
-              <div className="w-11 h-11 rounded-full bg-primary text-white border border-primary/20 flex items-center justify-center shrink-0 shadow-tactile-sm group-hover:scale-105 group-hover:bg-primary/90 active:scale-95 transition-all">
+              <div className="w-11 h-11 rounded-full bg-tint-green text-tint-green-fg border-2 border-emerald-400 dark:border-emerald-500 flex items-center justify-center shrink-0 shadow-tactile-sm group-hover:scale-105 active:scale-95 transition-all">
                 <ArrowRight className="w-5 h-5 stroke-[2.8]" />
               </div>
             </div>
@@ -226,7 +226,7 @@ export const HomeHub: React.FC = () => {
               <h3 className="font-black text-foreground text-sm leading-snug">{lastSession.subject}</h3>
               <p className="text-xs font-bold text-muted-foreground mt-0.5">{lastSession.label || 'Session'} • {lastSession.mode} mode</p>
             </div>
-            <div className="w-10 h-10 bg-primary text-white rounded-2xl flex items-center justify-center shrink-0 shadow-tactile-xs">
+            <div className="w-10 h-10 bg-tint-sky text-tint-sky-fg border-2 border-sky-400 dark:border-sky-500 rounded-2xl flex items-center justify-center shrink-0 shadow-tactile-xs">
               <ArrowRight className="w-5 h-5 stroke-[2.6]" />
             </div>
           </button>

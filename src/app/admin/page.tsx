@@ -109,7 +109,7 @@ export default async function AdminDashboard() {
           </div>
           <Link
             href="/admin/ai"
-            className="btn-3d-primary inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-white font-black text-xs transition-all shadow-tactile-xs shrink-0 active:scale-95"
+            className="bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-sky-400 dark:border-sky-500 border-b-sky-600 dark:border-b-sky-700 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-black text-xs transition-all shadow-tactile-xs shrink-0 active:scale-95"
           >
             <span>View Telemetry</span>
             <ArrowRight className="w-3.5 h-3.5" />

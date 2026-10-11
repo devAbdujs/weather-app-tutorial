@@ -314,7 +314,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats, referr
 
           <button
             onClick={() => { sounds.playTap(); haptic.selection(); router.push('/mastery'); }}
-            className="btn-3d-primary px-3.5 py-1.5 rounded-xl text-white text-xs font-black transition-all active:scale-95 shadow-tactile-xs"
+            className="bg-tint-sky text-tint-sky-fg border-2 border-b-[3px] border-sky-400 dark:border-sky-500 px-3.5 py-1.5 rounded-xl text-xs font-black transition-all active:scale-95 shadow-tactile-xs"
           >
             Scores
           </button>

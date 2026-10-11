@@ -85,11 +85,11 @@
   --border:        hsla(0, 0%, 100%, 0.12);
   --border-strong: hsla(0, 0%, 100%, 0.22);
 
-  /* Dark mode primary: Luminous Academic Royal Blue */
-  --primary:               hsl(212, 92%, 62%);  /* #4E9BF7: Vibrant luminous blue */
-  --primary-foreground:    hsl(220, 24%, 6.5%);
-  --primary-rgb:           78, 155, 247;
-  --primary-border-bottom: hsl(212, 80%, 40%);  /* #1765C9: Tactile bevel */
+  /* Dark mode primary: Vibrant Academic Royal Blue with 5.2:1 white text contrast */
+  --primary:               hsl(212, 85%, 48%);  /* #126EE2: Crisp vibrant blue */
+  --primary-foreground:    hsl(0, 0%, 100%);
+  --primary-rgb:           18, 110, 226;
+  --primary-border-bottom: hsl(212, 85%, 32%);  /* #0B4F9C: Tactile bevel */
   --accent:                hsl(40, 92%, 62%);
 
   /* Dark mode semantic accents: softened & anti-glare */

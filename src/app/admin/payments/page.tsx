@@ -35,7 +35,7 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
             <div key={payment.id} className="p-4 space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-black text-xs shadow-2xs shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-tint-sky text-tint-sky-fg border border-sky-400 dark:border-sky-500 flex items-center justify-center font-black text-xs shadow-2xs shrink-0">
                     {payment.profiles?.full_name?.charAt(0).toUpperCase() || '?'}
                   </div>
                   <div>
@@ -109,7 +109,7 @@ export default async function AdminPaymentsPage({ searchParams }: { searchParams
                 <tr key={payment.id} className="border-b border-black/[0.04] dark:border-white/[0.04] hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-black text-sm shadow-2xs shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-tint-sky text-tint-sky-fg border border-sky-400 dark:border-sky-500 flex items-center justify-center font-black text-sm shadow-2xs shrink-0">
                         {payment.profiles?.full_name?.charAt(0).toUpperCase() || '?'}
                       </div>
                       <div>

@@ -588,9 +588,9 @@ export default function AdminUploadNotes() {
                   <button
                     onClick={handlePublishAll}
                     disabled={!queue.some(q => q.status === 'ready')}
-                    className="btn-3d-emerald flex-1 sm:flex-initial px-4 py-2 font-black text-xs rounded-xl shadow-tactile-sm active:scale-95 transition-all disabled:opacity-40 flex items-center justify-center gap-1.5"
+                    className="bg-tint-green text-tint-green-fg border-2 border-b-[3px] border-emerald-400 dark:border-emerald-500 border-b-emerald-600 dark:border-b-emerald-700 flex-1 sm:flex-initial px-4 py-2 font-black text-xs rounded-xl shadow-tactile-sm active:scale-95 transition-all disabled:opacity-40 flex items-center justify-center gap-1.5"
                   >
-                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                    <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
                     Publish All Ready
                   </button>
                 </div>

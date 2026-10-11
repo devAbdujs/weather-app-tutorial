@@ -375,7 +375,7 @@ export const PracticeHub = () => {
                     <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400 text-amber-400' : 'text-gray-400 dark:text-gray-500'}`} />
                   </button>
 
-                  <div className="w-10 h-10 rounded-full bg-primary text-white border border-primary/20 flex items-center justify-center shrink-0 shadow-tactile-xs group-hover:scale-105 group-hover:bg-primary/90 active:scale-95 transition-all">
+                  <div className="w-10 h-10 rounded-full bg-tint-sky text-tint-sky-fg border-2 border-sky-400 dark:border-sky-500 flex items-center justify-center shrink-0 shadow-tactile-xs group-hover:scale-105 active:scale-95 transition-all">
                     <ArrowRight className="w-4 h-4 stroke-[2.8]" />
                   </div>
                 </div>
