@@ -18,7 +18,11 @@ export const AdminLogin = () => {
     try {
       const res = await loginAdmin(username, secret);
       if (res.success) {
-        window.location.reload();
+        if (res.redirectTo) {
+          window.location.href = res.redirectTo;
+        } else {
+          window.location.reload();
+        }
       } else {
         setError(res.error || 'Login failed');
       }

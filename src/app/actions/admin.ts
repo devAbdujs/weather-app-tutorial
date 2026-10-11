@@ -208,7 +208,18 @@ export async function loginAdmin(username: string, passcode: string) {
     maxAge: 60 * 60 * 24 // 1 day
   });
 
-  return { success: true };
+  const roleRedirectMap: Record<string, string> = {
+    editor: '/admin/upload-notes',
+    content_editor: '/admin/upload-notes',
+    ambassador: '/admin/ambassador',
+    financial_admin: '/admin/payments',
+    superadmin: '/admin',
+    readonly: '/admin/payments',
+  };
+
+  const redirectTo = roleRedirectMap[admin.role] || '/admin';
+
+  return { success: true, role: admin.role, redirectTo };
 }
 
 export async function verifyAdmin() {

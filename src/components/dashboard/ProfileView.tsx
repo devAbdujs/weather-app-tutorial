@@ -682,6 +682,32 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, stats, referr
             </div>
             <ChevronRight className="w-5 h-5 text-muted-foreground stroke-[2.5]" />
           </button>
+
+          {/* Staff & Subadmin Portal */}
+          <button 
+            type="button"
+            onClick={() => {
+              sounds.playTap();
+              haptic.selection();
+              router.push('/admin');
+            }}
+            className="w-full bg-card border-2 border-b-[3px] border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between shadow-2xs hover:border-primary/40 transition-colors text-left active:scale-[0.99]"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/50 dark:border-slate-700 flex items-center justify-center shadow-2xs shrink-0">
+                <ShieldCheck className="w-5 h-5 stroke-[2.4]" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-foreground leading-tight">
+                  Staff &amp; Subadmin Portal
+                </h3>
+                <p className="text-caption font-bold text-muted-foreground mt-0.5">
+                  Sign in as Note Uploader, Ambassador or Admin
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground stroke-[2.5]" />
+          </button>
         </section>
 
         {/* ── 7. SIGN OUT & EXIT BUTTONS ── */}

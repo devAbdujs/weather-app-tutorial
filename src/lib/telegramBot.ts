@@ -752,16 +752,16 @@ export function getUpgradePayload(siteUrl: string = SITE_URL) {
     `✅ <b>Full Mock Exams</b> with national percentile ranking`,
     `✅ <b>Cross-Device Sync</b> on Telegram, Web & Mobile`,
     ``,
-    `💰 <b>Affordable Student Pricing:</b>`,
-    `• <b>Semester Pass:</b> 150 ETB`,
-    `• <b>Full Year / Exit Pass:</b> 250 ETB`,
+    `💰 <b>Student Pricing:</b>`,
+    `• <b>Temari PRO Pass:</b> 250 ETB (Complete Access)`,
     ``,
-    `💳 <b>Payment Methods:</b>`,
-    `• <b>Telebirr:</b> <code>0942202051</code>`,
-    `• <b>CBE Account:</b> <code>1000217910448</code>`,
+    `💳 <b>Payment Methods (Tap to Copy):</b>`,
+    `• <b>Telebirr:</b> <code>0942202051</code> (Abdu Seid)`,
+    `• <b>CBE Account:</b> <code>1000217910448</code> (Abdu Seid)`,
+    `• <b>Awash Bank:</b> <code>01320875412900</code> (Abdu Seid)`,
     ``,
     `📸 <b>Instant Activation:</b>`,
-    `Transfer 250 ETB and upload your payment receipt. Accounts are verified automatically within seconds!`,
+    `Transfer 250 ETB and upload your screenshot. Instant automated verification within seconds!`,
   ].join('\n');
 
   const reply_markup = {

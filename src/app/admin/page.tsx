@@ -9,7 +9,7 @@ import { hasPermission } from '@/lib/adminPermissions';
 export default async function AdminDashboard() {
   const admin = await verifyAdmin();
   if (admin?.role === 'editor' || admin?.role === 'content_editor') {
-    redirect('/admin/questions');
+    redirect('/admin/upload-notes');
   }
   if (admin?.role === 'ambassador') {
     redirect('/admin/ambassador');

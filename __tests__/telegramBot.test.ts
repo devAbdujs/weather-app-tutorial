@@ -114,12 +114,12 @@ describe('Telegram Bot Utilities & Formatting', () => {
   });
 
   describe('getUpgradePayload', () => {
-    it('includes pricing, Telebirr, and CBE info', () => {
+    it('includes pricing, Telebirr, CBE, and Awash Bank info', () => {
       const { text, reply_markup } = getUpgradePayload('https://temari.top');
-      expect(text).toContain('150 ETB');
       expect(text).toContain('250 ETB');
       expect(text).toContain('Telebirr');
       expect(text).toContain('CBE Account');
+      expect(text).toContain('Awash Bank');
       expect(reply_markup.inline_keyboard[0][0].web_app.url).toBe('https://temari.top/upgrade');
     });
   });

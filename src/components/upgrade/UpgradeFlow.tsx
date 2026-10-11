@@ -24,6 +24,7 @@ import {
 import { sounds } from '@/lib/sounds';
 import { TemariMascot } from '@/components/mascot/TemariMascot';
 import { useAppStore } from '@/store/useAppStore';
+import { TelebirrLogo, CbeLogo, AwashLogo } from './UpgradeModal';
 
 type FlowPhase = 'loading' | 'form' | 'verifying' | 'approved' | 'rejected';
 
@@ -641,43 +642,75 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
         </div>
         
         <div className="space-y-3 mb-6">
+          {/* Telebirr */}
+          <div className="bg-card border border-black/5 dark:border-white/10 p-3.5 rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-center gap-3 min-w-0">
+              <TelebirrLogo className="w-9 h-9 shrink-0 rounded-xl shadow-2xs" />
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs font-black uppercase text-foreground">Telebirr</p>
+                  <span className="text-[10px] text-muted-foreground truncate">(Abdu Seid)</span>
+                </div>
+                <p className="font-black text-base text-foreground font-mono tracking-tight">
+                  0942202051
+                </p>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              onClick={() => handleCopy('0942202051', 'telebirr')} 
+              className="text-foreground font-bold text-xs bg-ground hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 px-3 py-2 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5 shrink-0"
+            >
+              {copiedBank === 'telebirr' ? <Check className="w-3.5 h-3.5 text-accent-emerald" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedBank === 'telebirr' ? 'Copied' : 'Copy'}
+            </button>
+          </div>
+
           {/* CBE */}
-          <div className="bg-card border border-black/5 dark:border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-sm">
-            <div>
-              <p className="text-caption font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                Commercial Bank of Ethiopia (CBE)
-              </p>
-              <p className="font-black text-lg text-foreground font-mono tracking-tight">
-                1000217910448
-              </p>
+          <div className="bg-card border border-black/5 dark:border-white/10 p-3.5 rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-center gap-3 min-w-0">
+              <CbeLogo className="w-9 h-9 shrink-0 rounded-xl shadow-2xs" />
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs font-black uppercase text-foreground">CBE Bank</p>
+                  <span className="text-[10px] text-muted-foreground truncate">(Abdu Seid)</span>
+                </div>
+                <p className="font-black text-base text-foreground font-mono tracking-tight">
+                  1000217910448
+                </p>
+              </div>
             </div>
             <button 
               type="button" 
               onClick={() => handleCopy('1000217910448', 'cbe')} 
-              className="text-primary font-bold text-xs bg-primary/10 hover:bg-primary/20 px-3 py-2 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5"
+              className="text-foreground font-bold text-xs bg-ground hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 px-3 py-2 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5"
             >
               {copiedBank === 'cbe' ? <Check className="w-3.5 h-3.5 text-accent-emerald" /> : <Copy className="w-3.5 h-3.5" />}
               {copiedBank === 'cbe' ? 'Copied' : 'Copy'}
             </button>
           </div>
 
-          {/* Telebirr */}
-          <div className="bg-card border border-black/5 dark:border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-sm">
-            <div>
-              <p className="text-caption font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                Telebirr
-              </p>
-              <p className="font-black text-lg text-foreground font-mono tracking-tight">
-                0942202051
-              </p>
+          {/* Awash Bank */}
+          <div className="bg-card border border-black/5 dark:border-white/10 p-3.5 rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-center gap-3 min-w-0">
+              <AwashLogo className="w-9 h-9 shrink-0 rounded-xl shadow-2xs" />
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs font-black uppercase text-foreground">Awash Bank</p>
+                  <span className="text-[10px] text-muted-foreground truncate">(Abdu Seid)</span>
+                </div>
+                <p className="font-black text-base text-foreground font-mono tracking-tight">
+                  01320875412900
+                </p>
+              </div>
             </div>
             <button 
               type="button" 
-              onClick={() => handleCopy('0942202051', 'telebirr')} 
-              className="text-primary font-bold text-xs bg-primary/10 hover:bg-primary/20 px-3 py-2 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5"
+              onClick={() => handleCopy('01320875412900', 'awash')} 
+              className="text-foreground font-bold text-xs bg-ground hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 px-3 py-2 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5 shrink-0"
             >
-              {copiedBank === 'telebirr' ? <Check className="w-3.5 h-3.5 text-accent-emerald" /> : <Copy className="w-3.5 h-3.5" />}
-              {copiedBank === 'telebirr' ? 'Copied' : 'Copy'}
+              {copiedBank === 'awash' ? <Check className="w-3.5 h-3.5 text-accent-emerald" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedBank === 'awash' ? 'Copied' : 'Copy'}
             </button>
           </div>
         </div>

@@ -55,6 +55,36 @@ async function compressReceiptImage(inputFile: File): Promise<Blob> {
   });
 }
 
+export function TelebirrLogo({ className = "w-7 h-7" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="40" height="40" rx="10" fill="#00A3E0" />
+      <path d="M12 14C12 12.8954 12.8954 12 14 12H26C27.1046 12 28 12.8954 28 14V17C28 18.1046 27.1046 19 26 19H22V27C22 28.1046 21.1046 29 20 29H18C16.8954 29 16 28.1046 16 27V19H14C12.8954 19 12 18.1046 12 17V14Z" fill="white" />
+      <circle cx="27" cy="25" r="3" fill="#FFCC00" />
+    </svg>
+  );
+}
+
+export function CbeLogo({ className = "w-7 h-7" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="40" height="40" rx="10" fill="#5A187A" />
+      <path d="M20 9L20 31M14 14H26M13 14L10 21H16L13 14ZM27 14L24 21H30L27 14Z" stroke="#FFB81C" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="20" cy="11" r="2" fill="#FFB81C" />
+    </svg>
+  );
+}
+
+export function AwashLogo({ className = "w-7 h-7" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="40" height="40" rx="10" fill="#003B70" />
+      <path d="M20 10L11 28H16L20 19L24 28H29L20 10Z" fill="#F58220" />
+      <path d="M16 23H24L20 15L16 23Z" fill="white" />
+    </svg>
+  );
+}
+
 export function UpgradeModal() {
   const isUpgradeModalOpen = useAppStore((s) => s.isUpgradeModalOpen);
   const setIsUpgradeModalOpen = useAppStore((s) => s.setIsUpgradeModalOpen);
@@ -295,38 +325,72 @@ export function UpgradeModal() {
               {/* Bank Accounts */}
               <div className="space-y-2">
                 <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                  1. Transfer 250 ETB to either account
+                  1. Transfer 250 ETB to any account
                 </p>
 
+                {/* Telebirr Account */}
+                <div className="p-3 rounded-2xl bg-ground border border-black/5 dark:border-white/5 flex items-center justify-between gap-3 shadow-2xs">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <TelebirrLogo className="w-8 h-8 shrink-0 rounded-xl shadow-2xs" />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-[11px] font-black uppercase text-foreground">Telebirr</p>
+                        <span className="text-[10px] text-muted-foreground truncate">(Abdu Seid)</span>
+                      </div>
+                      <p className="text-xs font-black font-mono tracking-tight text-foreground">0942202051</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy('0942202051', 'telebirr')}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-card hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 text-xs font-bold text-foreground transition-all active:scale-95 shrink-0"
+                  >
+                    {copiedBank === 'telebirr' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedBank === 'telebirr' ? 'Copied' : 'Copy'}</span>
+                  </button>
+                </div>
+
                 {/* CBE Account */}
-                <div className="p-3 rounded-xl bg-ground border border-black/5 dark:border-white/5 flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase">CBE Bank</p>
-                    <p className="text-sm font-black font-mono tracking-tight text-foreground">1000217910448</p>
+                <div className="p-3 rounded-2xl bg-ground border border-black/5 dark:border-white/5 flex items-center justify-between gap-3 shadow-2xs">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <CbeLogo className="w-8 h-8 shrink-0 rounded-xl shadow-2xs" />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-[11px] font-black uppercase text-foreground">CBE Bank</p>
+                        <span className="text-[10px] text-muted-foreground truncate">(Abdu Seid)</span>
+                      </div>
+                      <p className="text-xs font-black font-mono tracking-tight text-foreground">1000217910448</p>
+                    </div>
                   </div>
                   <button
                     type="button"
                     onClick={() => handleCopy('1000217910448', 'cbe')}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-card hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 text-xs font-bold text-foreground transition-all active:scale-95"
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-card hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 text-xs font-bold text-foreground transition-all active:scale-95 shrink-0"
                   >
                     {copiedBank === 'cbe' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copiedBank === 'cbe' ? 'Copied' : 'Copy'}</span>
                   </button>
                 </div>
 
-                {/* Telebirr Account */}
-                <div className="p-3 rounded-xl bg-ground border border-black/5 dark:border-white/5 flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase">Telebirr</p>
-                    <p className="text-sm font-black font-mono tracking-tight text-foreground">0942202051</p>
+                {/* Awash Bank Account */}
+                <div className="p-3 rounded-2xl bg-ground border border-black/5 dark:border-white/5 flex items-center justify-between gap-3 shadow-2xs">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <AwashLogo className="w-8 h-8 shrink-0 rounded-xl shadow-2xs" />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-[11px] font-black uppercase text-foreground">Awash Bank</p>
+                        <span className="text-[10px] text-muted-foreground truncate">(Abdu Seid)</span>
+                      </div>
+                      <p className="text-xs font-black font-mono tracking-tight text-foreground">01320875412900</p>
+                    </div>
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleCopy('0942202051', 'telebirr')}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-card hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 text-xs font-bold text-foreground transition-all active:scale-95"
+                    onClick={() => handleCopy('01320875412900', 'awash')}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-card hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 text-xs font-bold text-foreground transition-all active:scale-95 shrink-0"
                   >
-                    {copiedBank === 'telebirr' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedBank === 'telebirr' ? 'Copied' : 'Copy'}</span>
+                    {copiedBank === 'awash' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedBank === 'awash' ? 'Copied' : 'Copy'}</span>
                   </button>
                 </div>
               </div>
