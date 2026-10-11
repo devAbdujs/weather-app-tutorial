@@ -197,8 +197,8 @@ describe('POST /api/payments/submit - Auto-Approval Engine', () => {
         transaction_id: 'AWASH998877',
         amount: '250 ETB',
         sender_name: 'Abebe Bikila',
-        credited_account: '01320875412900',
-        receiver_name: 'Abdu Seid Ahmed',
+        credited_account: '014251052392700',
+        receiver_name: 'Abdulwahid',
         is_suspicious: false,
       }),
     });

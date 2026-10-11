@@ -649,7 +649,7 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
                   <p className="text-xs font-black uppercase text-foreground">Telebirr</p>
-                  <span className="text-[10px] text-muted-foreground truncate">(Abdu Seid)</span>
+                  <span className="text-[10px] text-muted-foreground truncate">(Abdulwahid)</span>
                 </div>
                 <p className="font-black text-base text-foreground font-mono tracking-tight">
                   0942202051
@@ -673,7 +673,7 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
                   <p className="text-xs font-black uppercase text-foreground">CBE Bank</p>
-                  <span className="text-[10px] text-muted-foreground truncate">(Abdu Seid)</span>
+                  <span className="text-[10px] text-muted-foreground truncate">(Abdulwahid)</span>
                 </div>
                 <p className="font-black text-base text-foreground font-mono tracking-tight">
                   1000217910448
@@ -697,16 +697,16 @@ export function UpgradeFlow({ isInitiallyPro = false, initialStudentName = 'Scho
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
                   <p className="text-xs font-black uppercase text-foreground">Awash Bank</p>
-                  <span className="text-[10px] text-muted-foreground truncate">(Abdu Seid)</span>
+                  <span className="text-[10px] text-muted-foreground truncate">(Abdulwahid)</span>
                 </div>
                 <p className="font-black text-base text-foreground font-mono tracking-tight">
-                  01320875412900
+                  014251052392700
                 </p>
               </div>
             </div>
             <button 
               type="button" 
-              onClick={() => handleCopy('01320875412900', 'awash')} 
+              onClick={() => handleCopy('014251052392700', 'awash')} 
               className="text-foreground font-bold text-xs bg-ground hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 px-3 py-2 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5 shrink-0"
             >
               {copiedBank === 'awash' ? <Check className="w-3.5 h-3.5 text-accent-emerald" /> : <Copy className="w-3.5 h-3.5" />}

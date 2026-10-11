@@ -214,11 +214,11 @@ Respond ONLY with the JSON object, no explanation, no markdown.`,
               const rawReceiver = (extractedReceiverName || '').toLowerCase();
 
               // Verify credited account: CBE (1000217910448), Telebirr (0942202051), or Awash Bank
-              const awashAccount = (process.env.AWASH_ACCOUNT || process.env.NEXT_PUBLIC_AWASH_ACCOUNT || '01320875412900').replace(/\D/g, '');
+              const awashAccount = (process.env.AWASH_ACCOUNT || process.env.NEXT_PUBLIC_AWASH_ACCOUNT || '014251052392700').replace(/\D/g, '');
               const isCbeMatch = rawCredited.includes('1000217910448') || rawReceiver.includes('cbe');
               const isTelebirrMatch = rawCredited.endsWith('942202051') || rawReceiver.includes('telebirr') || rawReceiver.includes('temari');
               const isAwashMatch = (awashAccount && rawCredited.includes(awashAccount)) || rawReceiver.includes('awash');
-              const isHolderMatch = rawReceiver.includes('abdu') && rawReceiver.includes('seid');
+              const isHolderMatch = rawReceiver.includes('abdulwahid') || (rawReceiver.includes('abdu') && rawReceiver.includes('seid'));
 
               if (isCbeMatch || isTelebirrMatch || isAwashMatch || isHolderMatch) {
                 isAutoApproved = true;

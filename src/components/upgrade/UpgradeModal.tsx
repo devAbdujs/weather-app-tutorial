@@ -335,7 +335,7 @@ export function UpgradeModal() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
                         <p className="text-[11px] font-black uppercase text-foreground">Telebirr</p>
-                        <span className="text-[10px] text-muted-foreground truncate">(Abdu Seid)</span>
+                        <span className="text-[10px] text-muted-foreground truncate">(Abdulwahid)</span>
                       </div>
                       <p className="text-xs font-black font-mono tracking-tight text-foreground">0942202051</p>
                     </div>
@@ -357,7 +357,7 @@ export function UpgradeModal() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
                         <p className="text-[11px] font-black uppercase text-foreground">CBE Bank</p>
-                        <span className="text-[10px] text-muted-foreground truncate">(Abdu Seid)</span>
+                        <span className="text-[10px] text-muted-foreground truncate">(Abdulwahid)</span>
                       </div>
                       <p className="text-xs font-black font-mono tracking-tight text-foreground">1000217910448</p>
                     </div>
@@ -379,14 +379,14 @@ export function UpgradeModal() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
                         <p className="text-[11px] font-black uppercase text-foreground">Awash Bank</p>
-                        <span className="text-[10px] text-muted-foreground truncate">(Abdu Seid)</span>
+                        <span className="text-[10px] text-muted-foreground truncate">(Abdulwahid)</span>
                       </div>
-                      <p className="text-xs font-black font-mono tracking-tight text-foreground">01320875412900</p>
+                      <p className="text-xs font-black font-mono tracking-tight text-foreground">014251052392700</p>
                     </div>
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleCopy('01320875412900', 'awash')}
+                    onClick={() => handleCopy('014251052392700', 'awash')}
                     className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-card hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 text-xs font-bold text-foreground transition-all active:scale-95 shrink-0"
                   >
                     {copiedBank === 'awash' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
