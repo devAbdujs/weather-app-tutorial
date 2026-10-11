@@ -151,7 +151,7 @@ Extract and respond with ONLY valid JSON in this exact format:
   "transaction_id": "the transaction reference or confirmation code (string or null)",
   "amount_etb": 250,
   "sender_name": "the full name of the sender (string or null)",
-  "credited_account": "the recipient bank account number or phone number credited (string or null)",
+  "credited_account": "the recipient bank account number or phone number credited (exact number digits string or null)",
   "receiver_name": "the recipient name or merchant credited (string or null)",
   "is_suspicious": false
 }
@@ -211,16 +211,19 @@ Respond ONLY with the JSON object, no explanation, no markdown.`,
 
             if (!duplicateTx) {
               const rawCredited = (extractedCreditedAccount || '').replace(/\D/g, '');
-              const rawReceiver = (extractedReceiverName || '').toLowerCase();
 
-              // Verify credited account: CBE (1000217910448), Telebirr (0942202051), or Awash Bank
+              // Verify credited account number directly (immune to recipient name typos):
+              // 1. CBE Bank: 1000217910448
+              const isCbeMatch = rawCredited.includes('1000217910448');
+
+              // 2. Telebirr: 0942202051 (matches 0942202051, 942202051, or 251942202051)
+              const isTelebirrMatch = rawCredited.endsWith('942202051');
+
+              // 3. Awash Bank: 014251052392700
               const awashAccount = (process.env.AWASH_ACCOUNT || process.env.NEXT_PUBLIC_AWASH_ACCOUNT || '014251052392700').replace(/\D/g, '');
-              const isCbeMatch = rawCredited.includes('1000217910448') || rawReceiver.includes('cbe');
-              const isTelebirrMatch = rawCredited.endsWith('942202051') || rawReceiver.includes('telebirr') || rawReceiver.includes('temari');
-              const isAwashMatch = (awashAccount && rawCredited.includes(awashAccount)) || rawReceiver.includes('awash');
-              const isHolderMatch = rawReceiver.includes('abdulwahid') || (rawReceiver.includes('abdu') && rawReceiver.includes('seid'));
+              const isAwashMatch = Boolean(awashAccount && rawCredited.includes(awashAccount));
 
-              if (isCbeMatch || isTelebirrMatch || isAwashMatch || isHolderMatch) {
+              if (isCbeMatch || isTelebirrMatch || isAwashMatch) {
                 isAutoApproved = true;
               }
             } else {

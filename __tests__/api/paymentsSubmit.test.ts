@@ -220,6 +220,73 @@ describe('POST /api/payments/submit - Auto-Approval Engine', () => {
     expect(sendAutoApprovalAdminAlert).toHaveBeenCalled();
   });
 
+  it('auto-approves payment even if receiver name has a typo as long as account number matches', async () => {
+    const insertMock = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        single: jest.fn().mockResolvedValue({ data: { id: 'rec-typo-123' }, error: null }),
+      }),
+    });
+    const updateMock = jest.fn().mockReturnValue({
+      eq: jest.fn().mockReturnValue({
+        eq: jest.fn().mockResolvedValue({ data: null, error: null }),
+      }),
+    });
+
+    mockSupabase.from.mockImplementation((table: string) => {
+      if (table === 'payment_receipts') {
+        return {
+          insert: insertMock,
+          update: updateMock,
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockImplementation(() => ({
+              eq: jest.fn().mockImplementation(() => ({
+                maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null }),
+              })),
+            })),
+          }),
+        };
+      }
+      if (table === 'profiles') {
+        return {
+          update: updateMock,
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockReturnValue({
+              single: jest.fn().mockResolvedValue({ data: { full_name: 'Abebe Bikila' }, error: null }),
+            }),
+          }),
+        };
+      }
+      return { update: updateMock };
+    });
+
+    // Mock Gemini response with misspelled name
+    (generateText as jest.Mock).mockResolvedValue({
+      text: JSON.stringify({
+        transaction_id: 'CBE-TYPO-99',
+        amount: '250 ETB',
+        sender_name: 'Abebe Bikila',
+        credited_account: '1000217910448',
+        receiver_name: 'Abdelwahed Misspelled Name',
+        is_suspicious: false,
+      }),
+    });
+
+    const file = new File(['fake-image-bytes'], 'cbe-typo.jpg', { type: 'image/jpeg' });
+    const formData = new FormData();
+    formData.append('receipt', file);
+
+    const req = new NextRequest('http://localhost:3000/api/payments/submit', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.success).toBe(true);
+    expect(body.isAutoApproved).toBe(true);
+  });
+
   it('rejects auto-approval when duplicate transaction ID was previously approved (replay attack protection)', async () => {
     const insertMock = jest.fn().mockReturnValue({
       select: jest.fn().mockReturnValue({
