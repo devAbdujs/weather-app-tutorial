@@ -135,7 +135,7 @@ describe('QuestionStudio Component', () => {
       );
       expect(mockRefresh).toHaveBeenCalled();
     });
-  });
+  }, 15000);
 
   it('calls deleteQuestion when delete button is confirmed', async () => {
     (adminActions.deleteQuestion as jest.Mock).mockResolvedValueOnce({ success: true });

@@ -105,7 +105,16 @@ export default function AdminUploadNotes() {
       const res = await fetch(`/api/admin/notes?examType=${encodeURIComponent(examType)}&department=${encodeURIComponent(department)}`);
       const data = await res.json();
       if (data.success && Array.isArray(data.notes)) {
-        setExistingNotes(data.notes);
+        const sorted = [...data.notes].sort((a, b) => {
+          const getNum = (str: string) => {
+            const m = str.match(/(?:chapter|ch)\s*(\d+)/i);
+            return m ? parseInt(m[1], 10) : 9999;
+          };
+          const diff = getNum(a.title) - getNum(b.title);
+          if (diff !== 0) return diff;
+          return a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' });
+        });
+        setExistingNotes(sorted);
       } else {
         setExistingNotes([]);
       }

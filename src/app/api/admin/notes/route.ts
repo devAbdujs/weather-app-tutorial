@@ -20,21 +20,54 @@ export async function GET(req: NextRequest) {
     }
 
     const supabase = await createAdminClient();
-    const { data: notes, error } = await supabase
+    let { data: notes, error } = await supabase
       .from('study_notes')
-      .select('id, title, created_at, content')
+      .select('id, title, content')
       .eq('exam_type', examType)
-      .eq('department', department)
-      .order('created_at', { ascending: true });
+      .ilike('department', department)
+      .order('title', { ascending: true });
 
     if (error) throw error;
 
-    const inventory = (notes || []).map((n) => {
+    // Fallback: If 0 notes found, handle variants like '&' vs 'and'
+    if (!notes || notes.length === 0) {
+      const altDept = department.includes('&')
+        ? department.replace(/&/g, 'and')
+        : department.includes(' and ')
+          ? department.replace(/\band\b/gi, '&')
+          : null;
+
+      if (altDept) {
+        const { data: altNotes, error: altErr } = await supabase
+          .from('study_notes')
+          .select('id, title, content')
+          .eq('exam_type', examType)
+          .ilike('department', altDept)
+          .order('title', { ascending: true });
+
+        if (!altErr && altNotes && altNotes.length > 0) {
+          notes = altNotes;
+        }
+      }
+    }
+
+    // Sort chapters naturally: Chapter 1, Chapter 2, ..., Chapter 10
+    const sortedNotes = (notes || []).sort((a, b) => {
+      const getNum = (str: string) => {
+        const m = str.match(/(?:chapter|ch)\s*(\d+)/i);
+        return m ? parseInt(m[1], 10) : 9999;
+      };
+      const diff = getNum(a.title) - getNum(b.title);
+      if (diff !== 0) return diff;
+      return a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' });
+    });
+
+    const inventory = sortedNotes.map((n) => {
       const words = (n.content || '').trim().split(/\s+/).filter(Boolean).length;
       return {
         id: n.id,
         title: n.title,
-        createdAt: n.created_at,
+        createdAt: (n as any).created_at || new Date().toISOString(),
         wordCount: words,
       };
     });
@@ -91,8 +124,8 @@ export async function POST(req: NextRequest) {
         .from('study_notes')
         .select('id')
         .eq('exam_type', examType)
-        .eq('department', department)
-        .eq('title', title)
+        .ilike('department', department)
+        .ilike('title', title)
         .maybeSingle();
 
       if (existing?.id) {

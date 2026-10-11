@@ -41,8 +41,9 @@ export default async function NotesPage({
   //    Avoids serializing 1–2 MB of markdown into the initial SSR HTML payload.
   let query = supabase
     .from('study_notes')
-    .select('id, title, department, exam_type, content_url, created_at')
+    .select('id, title, department, exam_type, content_url')
     .eq('exam_type', examType)
+    .order('title', { ascending: true })
     .limit(200);
 
   if (subject !== 'All') {
