@@ -129,6 +129,54 @@ describe('LaTeX Normalization & Formatting Suite', () => {
       expect(output).not.toContain('```');
     });
 
+    it('strips conversational preamble and outer markdown code fences', () => {
+      const input = 'Here is the summary of the chapter:\n```markdown\n# Chapter 1: Vectors\n\nStudy content.\n```\nHope this helps!';
+      const output = normalizeMarkdownLaTeX(input);
+      expect(output).toBe('# Chapter 1: Vectors\n\nStudy content.');
+      expect(output).not.toContain('```');
+      expect(output).not.toContain('Here is the summary');
+      expect(output).not.toContain('Hope this helps');
+    });
+
+    it('strips unclosed opening markdown code fences from truncated AI outputs', () => {
+      const input = '```markdown\n# Chapter 2: Kinematics\n\nVelocity and acceleration formulas...';
+      const output = normalizeMarkdownLaTeX(input);
+      expect(output).toBe('# Chapter 2: Kinematics\n\nVelocity and acceleration formulas...');
+      expect(output).not.toContain('```');
+    });
+
+    it('preserves legitimate internal code blocks inside the markdown document', () => {
+      const input = '```markdown\n# Computer Science\n\nCode snippet:\n```python\nprint("Hello")\n```\nEnd of note.\n```';
+      const output = normalizeMarkdownLaTeX(input);
+      expect(output).toContain('```python\nprint("Hello")\n```');
+      expect(output.startsWith('# Computer Science')).toBe(true);
+    });
+
+    it('converts standalone matrix environments (pmatrix, bmatrix, cases) to $$ ... $$', () => {
+      const input = 'Consider the transformation matrix:\n\\begin{pmatrix}\n1 & 2 \\\\\n3 & 4\n\\end{pmatrix}\n\nAnd piecewise function:\n\\begin{cases}\nx & x > 0 \\\\\n-x & x \\le 0\n\\end{cases}';
+      const output = normalizeMarkdownLaTeX(input);
+      expect(output).toContain('$$\n\\begin{pmatrix}\n1 & 2 \\\\\n3 & 4\n\\end{pmatrix}\n$$');
+      expect(output).toContain('$$\n\\begin{cases}\nx & x > 0 \\\\\n-x & x \\le 0\n\\end{cases}\n$$');
+    });
+
+    it('converts subsequent standalone math environments even when preceded by $$ blocks', () => {
+      const input = '$$\nE = mc^2\n$$\n\nNext formula:\n\\begin{align}\na &= b + c \\\\\nd &= e\n\\end{align}';
+      const output = normalizeMarkdownLaTeX(input);
+      expect(output).toContain('$$\nE = mc^2\n$$');
+      expect(output).toContain('$$\n\\begin{align}\na &= b + c \\\\\nd &= e\n\\end{align}\n$$');
+    });
+
+    it('safely converts literal \\n newlines without corrupting LaTeX commands like \\neq and \\nabla', () => {
+      const input = '## Chapter 1\\n\\nIntroduction\\n- Item 1\\nx \\neq y and \\nabla f\\nNext paragraph';
+      const output = normalizeMarkdownLaTeX(input);
+      expect(output).toContain('## Chapter 1');
+      expect(output).toContain('\n\nIntroduction');
+      expect(output).toContain('- Item 1');
+      expect(output).toContain('\\neq');
+      expect(output).toContain('\\nabla');
+      expect(output).toContain('\nNext paragraph');
+    });
+
     it('preserves math formulas starting with numbers without escaping as currency', () => {
       const input = 'Solve the equation $1 + x = 2$ and find circumference $2\\pi r$.';
       const output = normalizeMarkdownLaTeX(input);

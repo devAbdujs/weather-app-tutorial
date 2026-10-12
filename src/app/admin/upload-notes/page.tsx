@@ -201,7 +201,7 @@ export default function AdminUploadNotes() {
         ...q,
         status: 'ready',
         inferredTitle: data.title || q.inferredTitle,
-        content: data.content,
+        content: data.content ? normalizeLaTeX(data.content) : '',
       } : q));
 
     } catch (err: any) {
@@ -694,7 +694,7 @@ export default function AdminUploadNotes() {
 
                         {item.content && (
                           <button
-                            onClick={() => setPreviewItem(item)}
+                            onClick={() => setPreviewItem({ ...item, content: normalizeLaTeX(item.content) })}
                             className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-muted hover:text-foreground transition-all"
                             title="Preview transformed note"
                           >

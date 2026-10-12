@@ -3,6 +3,7 @@ import { createAdminClient } from '@/utils/supabase/admin';
 import { verifyAdmin } from '@/app/actions/admin';
 import crypto from 'crypto';
 import { hasPermission } from '@/lib/adminPermissions';
+import { normalizeMarkdownLaTeX } from '@/lib/latex';
 
 export async function GET(req: NextRequest) {
   try {
@@ -139,7 +140,8 @@ export async function POST(req: NextRequest) {
       const examType = note.examType?.trim();
       const department = note.department?.trim();
       const title = note.title?.trim();
-      const content = note.content?.trim();
+      const rawContent = note.content?.trim();
+      const content = rawContent ? normalizeMarkdownLaTeX(rawContent) : '';
       const allowOverwrite = note.allowOverwrite !== false; // default true
 
       if (!examType || !department || !title || !content) {

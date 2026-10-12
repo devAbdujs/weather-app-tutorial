@@ -171,13 +171,47 @@ export function autoWrapAlignedDisplay(text: string): string {
 }
 
 /**
+ * Strips outer markdown code fences that wrap an entire document/note
+ * (e.g. ```markdown ... ``` or ````markdown ... ````).
+ * Also strips AI conversational preambles (e.g. "Here is the summary:") and closing sign-offs,
+ * as well as unclosed opening fences that would otherwise trap the whole note in a raw code block.
+ */
+export function stripOuterMarkdownFences(text: string): string {
+  if (!text) return '';
+  let p = text.trim();
+
+  // 1. Remove leading conversational intro if followed by a code fence
+  p = p.replace(/^(?:Here (?:is|are)[^\n]*|Sure[^\n]*|Certainly[^\n]*|Below is[^\n]*|Okay[^\n]*|OK[^\n]*)\s*\n+/i, '');
+
+  // 2. Check if the text begins with a code fence
+  const leadingFence = p.match(/^(`{3,})(?:markdown|md|text)?\s*\n/i);
+  if (leadingFence) {
+    const fenceLen = leadingFence[1].length;
+    // Look for matching closing fence at the end
+    const trailingRegex = new RegExp(`\\n\`{${fenceLen},}\\s*(?:\\n(?:I hope[^\n]*|Let me know[^\n]*|Hope this[^\n]*|Feel free[^\n]*))?\\s*$`, 'i');
+    if (trailingRegex.test(p)) {
+      p = p.slice(leadingFence[0].length);
+      p = p.replace(trailingRegex, '').trim();
+    } else if (/^`{3,}(?:markdown|md)\s*\n/i.test(leadingFence[0])) {
+      // Opening markdown fence without closing fence (e.g. truncated AI output)
+      p = p.slice(leadingFence[0].length).trim();
+    }
+  }
+
+  // 3. Clean any dangling trailing fence alone at the end
+  p = p.replace(/\n`{3,}\s*$/i, '').trim();
+
+  return p;
+}
+
+/**
  * Normalizes any LaTeX content for Markdown engines (e.g. ReactMarkdown with remarkMath).
  * Converts:
  *   \[ ... \] -> $$ ... $$
  *   \( ... \) -> $ ... $
- *   Standalone \begin{equation|align|gather} -> $$ ... $$
+ *   Standalone \begin{equation|align|gather|matrix|pmatrix|bmatrix|vmatrix|cases|array|split|aligned} -> $$ ... $$
  *   Strips outer markdown code fences (```markdown ... ```)
- *   Unescapes literal \n sequences if needed
+ *   Unescapes literal \n sequences safely without breaking LaTeX commands
  *   Isolates multi-line $$ delimiters on separate lines for CommonMark compatibility.
  */
 export function normalizeMarkdownLaTeX(text: string): string {
@@ -185,13 +219,11 @@ export function normalizeMarkdownLaTeX(text: string): string {
   let p = text.trim();
 
   // 1. Strip outer code fences if the entire note was wrapped in ```markdown ... ```
-  if (/^```(?:markdown|md)?\s*\n[\s\S]*\n```\s*$/i.test(p)) {
-    p = p.replace(/^```(?:markdown|md)?\s*\n/i, '').replace(/\n```\s*$/, '').trim();
-  }
+  p = stripOuterMarkdownFences(p);
 
-  // 2. Unescape escaped newlines if text contains literal \n but no actual newlines
-  if (!p.includes('\n') && p.includes('\\n')) {
-    p = p.replace(/\\n/g, '\n');
+  // 2. Unescape escaped newlines safely without corrupting LaTeX commands starting with \n (\neq, \nabla, \nu, \neg, etc.)
+  if (p.includes('\\n')) {
+    p = p.replace(/\\n(?!(?:abla|u\b|eq|eg\b|atural|earrow|warrow|orm|otin|ot\b|ew|oindent|ormalsize|ocite))/g, '\n');
   }
 
   // 3. Unescape escaped markdown headings (e.g. \# Heading -> # Heading)
@@ -212,11 +244,15 @@ export function normalizeMarkdownLaTeX(text: string): string {
   // 8. Convert LaTeX block math \[ ... \] to $$ ... $$ (supports single or double backslash)
   p = p.replace(/\\\\?\[([\s\S]*?)\\\\?\]/g, (_, m) => `\n\n$$\n${m.trim()}\n$$\n\n`);
 
-  // 9. Convert standalone equation and align environments (not already inside $$)
-  p = p.replace(
-    /(?<!\$\$[\s\S]*?)\\begin\{(equation|align|gather)\*?\}([\s\S]*?)\\end\{\1\*?\}/g,
-    (_, env, m) => `\n\n$$\n\\begin{${env}}${m}\\end{${env}}\n$$\n\n`
-  );
+  // 9. Convert standalone math environments outside $$ blocks
+  // (matrices, piecewise cases, equation, align, gather, etc.)
+  const MATH_ENVS = 'equation|align|gather|matrix|pmatrix|bmatrix|vmatrix|cases|array|split|aligned';
+  const envRegex = new RegExp(`\\\\begin\\{(${MATH_ENVS})\\*?\\}[\\s\\S]*?\\\\end\\{\\1\\*?\\}`, 'g');
+  const parts = p.split(/(\$\$[\s\S]*?\$\$)/g);
+  for (let i = 0; i < parts.length; i += 2) {
+    parts[i] = parts[i].replace(envRegex, (match) => `\n\n$$\n${match.trim()}\n$$\n\n`);
+  }
+  p = parts.join('');
 
   // 10. Convert LaTeX inline math \( ... \) to $ ... $ (supports single or double backslash)
   p = p.replace(/\\\\?\(([\s\S]*?)\\\\?\)/g, (_, m) => `$${m.trim()}$`);
@@ -250,7 +286,7 @@ export interface MathPart {
 }
 
 // Math splitting regex matching display blocks, environments, \(...\), and safe inline $...$
-export const MATH_SPLIT_REGEX = /(\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\\begin\{(?:equation|align|gather|matrix|pmatrix|bmatrix|cases)\*?\}[\s\S]*?\\end\{(?:equation|align|gather|matrix|pmatrix|bmatrix|cases)\*?\}|\\\([\s\S]*?\\\)|\$(?:[^\s\$][^\$\n]*?[^\s\$]|[^\s\$])\$)/g;
+export const MATH_SPLIT_REGEX = /(\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\\begin\{(?:equation|align|gather|matrix|pmatrix|bmatrix|vmatrix|cases|array|split|aligned)\*?\}[\s\S]*?\\end\{(?:equation|align|gather|matrix|pmatrix|bmatrix|vmatrix|cases|array|split|aligned)\*?\}|\\\([\s\S]*?\\\)|\$(?:[^\s\$][^\$\n]*?[^\s\$]|[^\s\$])\$)/g;
 
 /**
  * Splits arbitrary text into plain text chunks and KaTeX math chunks.
