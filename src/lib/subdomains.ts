@@ -47,7 +47,7 @@ export const SUBDOMAIN_CONFIGS: Record<SubdomainType, SubdomainConfig> = {
     description: 'Midterm and final past papers for Logic, Applied Math, Psychology, and Emerging Tech. Secure your department placement.',
     badge: 'University Freshman',
     questionCount: '8,000+',
-    subjects: ['Applied Math I', 'Logic & Critical Thinking', 'General Psychology', 'Physics for Freshman', 'Emerging Technology', 'Global Trends', 'Economics'],
+    subjects: ['Applied Math I', 'Logic & Critical Thinking', 'General Psychology', 'Physics for Freshman', 'General Chemistry', 'Emerging Technology', 'Global Trends', 'Economics'],
     targetExam: 'freshman',
     metaTitle: 'University Freshman Courses & Remedial Exam Prep | Temari',
     metaDescription: 'Ace Ethiopian university freshman courses (Logic, Applied Math, Psychology, Physics, Emerging Tech) with notes and past papers.',

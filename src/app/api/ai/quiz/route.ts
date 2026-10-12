@@ -43,13 +43,22 @@ export async function POST(req: NextRequest) {
 
     // SUBSCRIPTION GATE: Only premium users can generate AI quizzes from notes
     const supabase = await createClient();
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('subscription_status')
-      .eq('telegram_id', session.telegram_id)
-      .maybeSingle();
+    const [{ data: profile }, { data: adminUser }] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('subscription_status')
+        .eq('telegram_id', session.telegram_id)
+        .maybeSingle(),
+      supabase
+        .from('admin_users')
+        .select('id')
+        .or(`telegram_id.eq.${session.telegram_id},username.eq.${session.username || ''}`)
+        .maybeSingle(),
+    ]);
 
-    if (!profile || profile.subscription_status !== 'premium') {
+    const isPremium = profile?.subscription_status === 'premium' || Boolean(adminUser);
+
+    if (!isPremium) {
       return NextResponse.json(
         { error: 'upgrade_required', message: 'AI Quiz generation is a premium feature. Upgrade to access it.' },
         { status: 403 }

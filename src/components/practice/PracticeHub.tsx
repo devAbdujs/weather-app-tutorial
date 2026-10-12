@@ -96,6 +96,7 @@ const FRESHMAN_COURSES: Record<string, any[]> = {
     { id: 'Applied Math I', Icon: Binary },
     { id: 'Civics', Icon: Landmark },
     { id: 'Physics', Icon: Atom },
+    { id: 'Chemistry', Icon: FlaskConical },
     { id: 'Economics', Icon: TrendingUp },
     { id: 'Emerging Technology', Icon: Rocket },
     { id: 'Global Trends', Icon: Network },

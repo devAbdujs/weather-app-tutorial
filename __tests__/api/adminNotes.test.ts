@@ -2,6 +2,7 @@
  * @jest-environment node
  */
 import { GET, POST } from '@/app/api/admin/notes/route';
+import { safeParseAiNote } from '@/app/api/admin/notes/transform/route';
 import { NextRequest } from 'next/server';
 import { verifyAdmin } from '@/app/actions/admin';
 import { hasPermission } from '@/lib/adminPermissions';
@@ -111,6 +112,45 @@ describe('Admin Notes API (/api/admin/notes)', () => {
       const data = await res.json();
       expect(data.success).toBe(true);
       expect(data.count).toBe(1);
+    });
+  });
+
+  describe('safeParseAiNote', () => {
+    it('parses valid JSON response with title and content', () => {
+      const raw = '{\n  "title": "Chapter 1: Introduction",\n  "content": "## Basics\\nSome notes here."\n}';
+      const parsed = safeParseAiNote(raw, 'Default Title');
+      expect(parsed.title).toBe('Chapter 1: Introduction');
+      expect(parsed.content).toBe('## Basics\nSome notes here.');
+    });
+
+    it('strips markdown code block fences wrapping JSON', () => {
+      const raw = '```json\n{\n  "title": "Chapter 2: Logic",\n  "content": "Content"\n}\n```';
+      const parsed = safeParseAiNote(raw, 'Default Title');
+      expect(parsed.title).toBe('Chapter 2: Logic');
+      expect(parsed.content).toBe('Content');
+    });
+
+    it('recovers from unescaped solitary LaTeX backslashes', () => {
+      // In raw string from Gemini, solitary backslashes like \sqrt, \alpha make standard JSON.parse throw
+      const raw = '{"title": "Chapter 3: Math", "content": "Formula is \\sqrt{x} and \\alpha + \\beta."}';
+      const parsed = safeParseAiNote(raw, 'Default Title');
+      expect(parsed.title).toBe('Chapter 3: Math');
+      expect(parsed.content).toContain('sqrt{x}');
+    });
+
+    it('recovers from literal raw newlines inside content string', () => {
+      const raw = '{"title": "Chapter 4: Vectors", "content": "Line 1\nLine 2\nLine 3"}';
+      const parsed = safeParseAiNote(raw, 'Default Title');
+      expect(parsed.title).toBe('Chapter 4: Vectors');
+      expect(parsed.content).toContain('Line 1');
+      expect(parsed.content).toContain('Line 3');
+    });
+
+    it('falls back to raw markdown when response is non-JSON', () => {
+      const raw = '# Chapter 5: General Chemistry\n\n## Atoms and Molecules\nNotes here.';
+      const parsed = safeParseAiNote(raw, 'Default Title');
+      expect(parsed.title).toBe('Chapter 5: General Chemistry');
+      expect(parsed.content).toContain('## Atoms and Molecules');
     });
   });
 });

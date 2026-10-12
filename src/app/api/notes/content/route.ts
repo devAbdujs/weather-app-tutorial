@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     }
 
     const supabase = createAdminClient();
-    const [{ data: note, error: noteError }, { data: profile }] = await Promise.all([
+    const [{ data: note, error: noteError }, { data: profile }, { data: adminUser }] = await Promise.all([
       supabase
         .from('study_notes')
         .select('id, content')
@@ -37,13 +37,18 @@ export async function GET(req: NextRequest) {
         .select('subscription_status')
         .eq('telegram_id', session.telegram_id)
         .maybeSingle(),
+      supabase
+        .from('admin_users')
+        .select('id')
+        .or(`telegram_id.eq.${session.telegram_id},username.eq.${session.username || ''}`)
+        .maybeSingle(),
     ]);
 
     if (noteError || !note) {
       return NextResponse.json({ error: 'Note not found' }, { status: 404 });
     }
 
-    const isPremium = profile?.subscription_status === 'premium';
+    const isPremium = profile?.subscription_status === 'premium' || Boolean(adminUser);
     if (!isPremium) {
       const fullText = note.content ?? '';
       const paragraphs = fullText.split(/\n\n+/).filter(Boolean);

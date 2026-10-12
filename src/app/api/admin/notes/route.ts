@@ -95,6 +95,7 @@ export async function GET(req: NextRequest) {
       return {
         id: n.id,
         title: n.title,
+        content: n.content,
         createdAt: (n as any).created_at || new Date().toISOString(),
         wordCount: words,
       };
@@ -194,6 +195,33 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: unknown) {
     console.error('[Admin Notes Save Error]', err);
+    return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const isAdmin = await verifyAdmin();
+    if (!isAdmin) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!hasPermission(isAdmin, 'notes:write')) {
+      return NextResponse.json({ success: false, error: 'Forbidden: Insufficient permissions to delete study notes' }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'Missing note id parameter' }, { status: 400 });
+    }
+
+    const supabase = await createAdminClient();
+    const { error } = await supabase.from('study_notes').delete().eq('id', id);
+    if (error) throw error;
+
+    return NextResponse.json({ success: true });
+  } catch (err: unknown) {
+    console.error('[Admin Notes Delete Error]', err);
     return NextResponse.json({ success: false, error: (err as Error).message }, { status: 500 });
   }
 }

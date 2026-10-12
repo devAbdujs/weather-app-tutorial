@@ -761,10 +761,10 @@ Require all admin accounts to update password; remove plaintext comparison branc
    - In recruits table, display badge `Free · Monthly Cap Reached` for recruits beyond the 30-student monthly free allowance.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[CAP-01]` Update `calculateReferralAttribution` in `src/lib/referral.ts` with `MAX_MONTHLY_FREE_RECRUITS = 30` per calendar month per ambassador.
-- [ ] `[CAP-02]` Tag excess free recruits as `free_capped` so platform signups remain 100% open while ambassador stats are strictly protected.
-- [ ] `[CAP-03]` Update `AmbassadorView.tsx` to render the monthly free recruit cap meter (`X / 30`) and `Free · Cap Reached` table status.
-- [ ] `[CAP-04]` Add automated unit tests in `__tests__/lib/referral.test.ts` verifying that free recruits $> 30$ in a month do not increment the ambassador's free count, while PRO conversions remain credited.
+- [x] `[CAP-01]` Update `calculateReferralAttribution` in `src/lib/referral.ts` with `MAX_MONTHLY_FREE_RECRUITS = 30` per calendar month per ambassador.
+- [x] `[CAP-02]` Tag excess free recruits as `free_capped` so platform signups remain 100% open while ambassador stats are strictly protected.
+- [x] `[CAP-03]` Update `AmbassadorView.tsx` to render the monthly free recruit cap meter (`X / 30`) and `Free · Cap Reached` table status.
+- [x] `[CAP-04]` Add automated unit tests in `__tests__/lib/referral.test.ts` verifying that free recruits $> 30$ in a month do not increment the ambassador's free count, while PRO conversions remain credited.
 
 ---
 
@@ -781,12 +781,12 @@ Require all admin accounts to update password; remove plaintext comparison branc
 - This creates confusion for students transferring via CBE / Telebirr and causes OCR receipts to trigger false fraud flags if the transferred amount is 250 ETB instead of 199 ETB.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[PRC-01]` Update `PAYMENT_AMOUNT_ETB = 250` in `src/app/api/payments/submit/route.ts` and adjust Gemini OCR prompt tolerance (`< 240 ETB` flagged).
-- [ ] `[PRC-02]` Update `src/components/upgrade/UpgradeFlow.tsx` price headers, plan descriptions, and bank transfer copy to `250 ETB`.
-- [ ] `[PRC-03]` Update `src/components/dashboard/ProfileView.tsx` upgrade button and badges to `250 ETB`.
-- [ ] `[PRC-04]` Update `src/components/ai/AITutorDrawer.tsx` quota limit paywall text to `250 ETB`.
-- [ ] `[PRC-05]` Standardize all pricing copy in `src/lib/telegramBot.ts` to `250 ETB`.
-- [ ] `[PRC-06]` Verify with automated tests in `__tests__/api/paymentsSubmit.test.ts`.
+- [x] `[PRC-01]` Update `PAYMENT_AMOUNT_ETB = 250` in `src/app/api/payments/submit/route.ts` and adjust Gemini OCR prompt tolerance (`< 240 ETB` flagged).
+- [x] `[PRC-02]` Update `src/components/upgrade/UpgradeFlow.tsx` price headers, plan descriptions, and bank transfer copy to `250 ETB`.
+- [x] `[PRC-03]` Update `src/components/dashboard/ProfileView.tsx` upgrade button and badges to `250 ETB`.
+- [x] `[PRC-04]` Update `src/components/ai/AITutorDrawer.tsx` quota limit paywall text to `250 ETB`.
+- [x] `[PRC-05]` Standardize all pricing copy in `src/lib/telegramBot.ts` to `250 ETB`.
+- [x] `[PRC-06]` Verify with automated tests in `__tests__/api/paymentsSubmit.test.ts`.
 
 ---
 
@@ -813,11 +813,11 @@ Require all admin accounts to update password; remove plaintext comparison branc
    - Quick preview modal to read markdown and math equations before publishing.
 
 **Action Items & Implementation Roadmap:**
-- [ ] `[NOT-01]` Create `getSubjectNotesInventory(examType, department)` server action in `src/app/actions/admin.ts`.
-- [ ] `[NOT-02]` Build interactive **Chapter Inventory Matrix** in `src/app/admin/upload-notes/page.tsx` showing existing vs missing chapters.
-- [ ] `[NOT-03]` Implement automatic overwrite / duplicate warning in the upload queue when a file matches an existing chapter.
-- [ ] `[NOT-04]` Add single-click chapter actions (View, Edit, Delete) directly inside the subject inventory view.
-- [ ] `[NOT-05]` Refactor studio UI to be clean, punchy, and straightforward for non-technical content uploaders.
+- [x] `[NOT-01]` Create `getSubjectNotesInventory(examType, department)` server action in `src/app/actions/admin.ts`.
+- [x] `[NOT-02]` Build interactive **Chapter Inventory Matrix** in `src/app/admin/upload-notes/page.tsx` showing existing vs missing chapters.
+- [x] `[NOT-03]` Implement automatic overwrite / duplicate warning in the upload queue when a file matches an existing chapter.
+- [x] `[NOT-04]` Add single-click chapter actions (View, Edit, Delete) directly inside the subject inventory view.
+- [x] `[NOT-05]` Refactor studio UI to be clean, punchy, and straightforward for non-technical content uploaders.
 
 ---
 
@@ -926,3 +926,23 @@ Require all admin accounts to update password; remove plaintext comparison branc
 - [x] `[SUB-02]` Implement smart role-based redirect in `loginAdmin` and `AdminLogin.tsx` (editor -> `/admin/upload-notes`, ambassador -> `/admin/ambassador`, financial_admin -> `/admin/payments`, superadmin -> `/admin`).
 - [x] `[PAY-01]` Add 3 payment alternatives (Telebirr, CBE Bank, Awash Bank) with authentic vector brand badges and 1-tap copy buttons.
 - [x] `[PAY-02]` Expand Gemini Vision verification and Telegram Bot instructions to recognize Awash Bank alongside CBE and Telebirr.
+
+---
+
+### [P-17] AI Document Transformation Resilience, Subadmin PRO Privilege, & Curriculum Expansion
+**Files:** `src/app/api/admin/notes/transform/route.ts`, `src/app/admin/upload-notes/page.tsx`, `src/lib/latex.ts`, `src/app/(app)/(protected)/layout.tsx`, `src/app/api/notes/content/route.ts`, `src/app/api/ai/tutor/route.ts`, `src/app/api/ai/quiz/route.ts`
+
+**Current State & Audit Findings:**
+1. **Transform "Failed" Crash**: Solitary LaTeX backslashes (`\sqrt`, `\alpha`, `\pmatrix`) and literal newlines in Gemini output caused JSON parsing syntax errors.
+2. **Logic Notes Under Civics Header**: Queue items in upload-notes were decoupled from the course selection state at upload time.
+3. **Mermaid classDiagrams**: Prompt instructed Gemini to output Mermaid code blocks, which rendered as raw unformatted code blocks on mobile.
+4. **General Chemistry Missing**: Course was omitted from freshman course dropdowns and notes routes.
+5. **Subadmin PRO Privilege**: Subadmins and staff browsing student app features encountered free tier paywalls.
+
+**Action Items & Implementation Roadmap:**
+- [x] `[TRF-01]` Multi-tier `safeParseAiNote` with JSON backslash sanitization, regex fallback, and `responseMimeType: 'application/json'`.
+- [x] `[TRF-02]` Queue course & department isolation: bind `item.department` and `item.examType` at file drop time with visual badges.
+- [x] `[TRF-03]` Ban Mermaid code blocks in AI transform prompt; add `cleanMermaidBlocks` sanitizer in `latex.ts` to convert diagram blocks into clean Markdown callouts.
+- [x] `[TRF-04]` Add "General Chemistry" across all freshman course lists, PracticeHub, ExamSetupModal, notes routing, and subdomains.
+- [x] `[TRF-05]` Automatically grant PRO access (`subscription_status: 'premium'`) to all admins and subadmins across ProtectedLayout, notes viewer, AI tutor, and AI quizzes.
+

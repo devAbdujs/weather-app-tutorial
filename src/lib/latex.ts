@@ -205,6 +205,49 @@ export function stripOuterMarkdownFences(text: string): string {
 }
 
 /**
+ * Transforms any raw Mermaid code blocks (classDiagram, graph, flowchart, etc.)
+ * into clean, readable Markdown blockquotes and bullet points.
+ * Prevents raw diagram syntax from cluttering the reading view.
+ */
+export function cleanMermaidBlocks(text: string): string {
+  if (!text || !text.includes('```mermaid')) return text;
+
+  return text.replace(/```mermaid\s*([\s\S]*?)```/gi, (_, code) => {
+    const rawLines = code.trim().split('\n').map((l: string) => l.trim()).filter(Boolean);
+    // Filter out diagram headers like 'classDiagram', 'graph TD', 'flowchart LR', etc.
+    const filtered = rawLines.filter((l: string) => 
+      !/^(classDiagram|flowchart(?:\s+[A-Za-z]+)?|graph(?:\s+[A-Za-z]+)?|sequenceDiagram|stateDiagram(?:-v2)?|erDiagram|gantt|pie)/i.test(l)
+    );
+
+    const converted: string[] = [];
+    for (const line of filtered) {
+      // Flowchart arrows: A --> B or A["Reactants"] --> B["Products"]
+      if (line.includes('-->') || line.includes('->')) {
+        const parts = line.split(/--?>/).map((p: string) => p.replace(/[[\]()"]/g, '').trim()).filter(Boolean);
+        if (parts.length > 1) {
+          converted.push(`> • ${parts.join(' ➔ ')}`);
+          continue;
+        }
+      }
+      // Class diagram: class Matter {
+      if (line.startsWith('class ')) {
+        const clsName = line.replace(/^class\s+/, '').replace(/[{:]/g, '').trim();
+        if (clsName) converted.push(`> **${clsName}**`);
+        continue;
+      }
+      // Member attributes or definitions: +protons, -neutrons, etc.
+      const cleanLine = line.replace(/^[+-~#:]\s*/, '').replace(/[{}]/g, '').trim();
+      if (cleanLine && cleanLine !== '}') {
+        converted.push(`> • ${cleanLine}`);
+      }
+    }
+
+    if (converted.length === 0) return '';
+    return `\n\n> 📊 **Summary Flow / Classification:**\n${converted.join('\n')}\n\n`;
+  });
+}
+
+/**
  * Normalizes any LaTeX content for Markdown engines (e.g. ReactMarkdown with remarkMath).
  * Converts:
  *   \[ ... \] -> $$ ... $$
@@ -220,6 +263,9 @@ export function normalizeMarkdownLaTeX(text: string): string {
 
   // 1. Strip outer code fences if the entire note was wrapped in ```markdown ... ```
   p = stripOuterMarkdownFences(p);
+
+  // 1b. Sanitize any Mermaid diagram code blocks into clean Markdown callouts
+  p = cleanMermaidBlocks(p);
 
   // 2. Unescape escaped newlines safely without corrupting LaTeX commands starting with \n (\neq, \nabla, \nu, \neg, etc.)
   if (p.includes('\\n')) {

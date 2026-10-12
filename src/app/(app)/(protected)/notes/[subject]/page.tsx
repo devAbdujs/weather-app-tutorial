@@ -21,13 +21,20 @@ export default async function NotesPage({
   // 1. Get the user's exam type — URL param is trusted (set by ExamSetupModal),
   //    but we ALSO verify against the profile as a secure server-side fallback.
   const supabase = await createClient();
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('target_exam, stream, subscription_status')
-    .eq('telegram_id', session.telegram_id)
-    .maybeSingle();
+  const [{ data: profile }, { data: adminUser }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('target_exam, stream, subscription_status')
+      .eq('telegram_id', session.telegram_id)
+      .maybeSingle(),
+    supabase
+      .from('admin_users')
+      .select('id')
+      .or(`telegram_id.eq.${session.telegram_id},username.eq.${session.username || ''}`)
+      .maybeSingle(),
+  ]);
 
-  const isPremium = profile?.subscription_status === 'premium';
+  const isPremium = profile?.subscription_status === 'premium' || Boolean(adminUser);
     
   // Use URL param if valid, otherwise fall back to profile (prevents manual URL tampering)
   const validExamTypes = ['entrance', 'freshman', 'exit'];
@@ -57,16 +64,18 @@ export default async function NotesPage({
     } else if (s.includes('sat') || s.includes('aptitude')) {
       // Matches 'Aptitude' and 'Scholastic Aptitude (SAT)'
       query = query.or('department.ilike.%Aptitude%,department.ilike.%SAT%');
-    } else if (s.includes('civic')) {
-      query = query.ilike('department', '%Civic%');
+    } else if (s.includes('civic') || s.includes('moral')) {
+      query = query.or('department.ilike.%Civic%,department.ilike.%Moral%');
+    } else if (s.includes('logic')) {
+      query = query.or('department.ilike.%Logic%,department.ilike.%Critical Thinking%');
     } else if (s.includes('english')) {
       query = query.ilike('department', '%English%');
     } else if (s.includes('physics')) {
       query = query.ilike('department', '%Physics%');
+    } else if (s.includes('chem')) {
+      query = query.ilike('department', '%Chem%');
     } else if (s.includes('psychology')) {
       query = query.ilike('department', '%Psychology%');
-    } else if (s.includes('logic')) {
-      query = query.ilike('department', '%Logic%');
     } else if (s.includes('geography')) {
       query = query.ilike('department', '%Geography%');
     } else if (s.includes('history')) {
@@ -81,33 +90,36 @@ export default async function NotesPage({
     const stream = profile?.stream || 'Natural Science';
     
     if (examType === 'entrance') {
-      const nat = ['Physics', 'Chemistry', 'Biology', 'Mathematics', 'English', 'Aptitude', 'Scholastic Aptitude (SAT)', 'Civics & Citizenship', 'Civics', 'Agriculture'];
-      const soc = ['Geography', 'History', 'Economics', 'Mathematics', 'English', 'Aptitude', 'Scholastic Aptitude (SAT)', 'Civics & Citizenship', 'Civics', 'Agriculture'];
+      const nat = ['Physics', 'Chemistry', 'Biology', 'Mathematics', 'English', 'Aptitude', 'Scholastic Aptitude (SAT)', 'Civics & Citizenship', 'Civics', 'Civics & Ethical Education', 'Agriculture'];
+      const soc = ['Geography', 'History', 'Economics', 'Mathematics', 'English', 'Aptitude', 'Scholastic Aptitude (SAT)', 'Civics & Citizenship', 'Civics', 'Civics & Ethical Education', 'Agriculture'];
       query = query.in('department', stream === 'Social Science' ? soc : nat);
     } else if (examType === 'freshman') {
       // Freshman courses in Ethiopian universities:
       const dbNat = [
-        'Logic', 'English', 'Communicative English',
-        'Psychology', 'General Psychology',
+        'Logic', 'Logic and Critical Thinking',
+        'English', 'Communicative English', 'Communicative English Language Skills (I & II)',
+        'Psychology', 'General Psychology', 'General Psychology and Life Skills',
         'Mathematics', 'Mathematics for Natural Sciences',
         'Applied Math I', 'Applied Mathematics I',
-        'Civics', 'Moral & Civics',
+        'Civics', 'Moral & Civics', 'Moral and Civic Education',
         'Physics', 'General Physics',
+        'Chemistry', 'General Chemistry',
         'Economics',
-        'Emerging Technology',
+        'Emerging Technology', 'Introduction to Emerging Technologies',
         'Global Trends', 'Inclusiveness', 'Entrepreneurship'
       ];
       const dbSoc = [
-        'Logic', 'English', 'Communicative English',
-        'Psychology', 'General Psychology',
-        'Geography', 'Geography of Ethiopia',
+        'Logic', 'Logic and Critical Thinking',
+        'English', 'Communicative English', 'Communicative English Language Skills (I & II)',
+        'Psychology', 'General Psychology', 'General Psychology and Life Skills',
+        'Geography', 'Geography of Ethiopia', 'Geography of Ethiopia and the Horn',
         'Economics',
-        'Civics', 'Moral & Civics',
-        'History', 'History of Ethiopia',
-        'Emerging Technology',
+        'Civics', 'Moral & Civics', 'Moral and Civic Education',
+        'History', 'History of Ethiopia', 'History of Ethiopia and the Horn',
+        'Emerging Technology', 'Introduction to Emerging Technologies',
         'Global Trends', 'Inclusiveness', 'Entrepreneurship',
         'Anthropology', 'Social Anthropology',
-        'Mathematics'
+        'Mathematics', 'Mathematics for Social Sciences'
       ];
       query = query.in('department', stream === 'Social Science' ? dbSoc : dbNat);
     } else if (examType === 'exit') {

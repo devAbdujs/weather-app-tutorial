@@ -41,10 +41,12 @@ interface StudyNotesViewProps {
 const SUBJECT_EMOJI: Record<string, string> = {
   'Mathematics': '📐', 'Mathematics for Natural Sciences': '📐', 'Applied Math I': '📐',
   'Applied Mathematics I': '📐', 'Applied Mathematics': '📐',
-  'Physics': '⚛️', 'Chemistry': '🧪', 'Biology': '🧬',
+  'Physics': '⚛️', 'General Physics': '⚛️', 'Chemistry': '🧪', 'General Chemistry': '🧪', 'Biology': '🧬',
   'Economics': '📈', 'Introduction to Economics': '📈',
   'History': '📜', 'Geography': '🌍', 'English': '📝',
-  'Logic': '🧠', 'Civics': '⚖️', 'Psychology': '💡', 'Computer Science': '💻',
+  'Logic': '🧠', 'Logic and Critical Thinking': '🧠',
+  'Civics': '⚖️', 'Moral and Civic Education': '⚖️', 'Moral & Civics': '⚖️',
+  'Psychology': '💡', 'General Psychology': '💡', 'Computer Science': '💻',
   'Software Engineering': '🖥️', 'Emerging Technology': '🚀', 'Aptitude': '🎯',
   'Scholastic Aptitude (SAT)': '🎯', 'GAT (Graduate Admission Test)': '🎯',
 };

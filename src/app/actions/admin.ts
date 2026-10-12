@@ -1164,3 +1164,91 @@ export async function getAmbassadorDashboard(targetUsernameOrId?: string): Promi
     students: summary.students,
   };
 }
+
+/**
+ * [NOT-01] Fetches complete chapter inventory for a given course and exam type.
+ * Returns sorted notes with id, title, content, and word count.
+ */
+export async function getSubjectNotesInventory(examType: string, department: string) {
+  const admin = await verifyAdmin();
+  if (!admin) throw new Error('Unauthorized');
+
+  const supabase = await createAdminClient();
+  const { data: notes, error } = await supabase
+    .from('study_notes')
+    .select('id, title, content')
+    .eq('exam_type', examType)
+    .ilike('department', department)
+    .order('title', { ascending: true });
+
+  if (error) throw error;
+
+  // Natural sort by chapter number
+  const sortedNotes = (notes || []).sort((a, b) => {
+    const getNum = (str: string) => {
+      const m = str.match(/(?:chapter|ch)\s*(\d+)/i);
+      return m ? parseInt(m[1], 10) : 9999;
+    };
+    const diff = getNum(a.title) - getNum(b.title);
+    if (diff !== 0) return diff;
+    return a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' });
+  });
+
+  return sortedNotes.map(n => ({
+    id: n.id,
+    title: n.title,
+    content: n.content,
+    wordCount: (n.content || '').trim().split(/\s+/).filter(Boolean).length,
+  }));
+}
+
+/**
+ * [NOT-04] Deletes a specific study note by ID.
+ * Requires notes:write permission.
+ */
+export async function deleteAdminNote(noteId: string) {
+  const admin = await verifyAdmin();
+  if (!admin) throw new Error('Unauthorized');
+  if (!hasPermission(admin, 'notes:write')) {
+    throw new Error('Forbidden: Insufficient permissions to delete study notes');
+  }
+
+  const supabase = await createAdminClient();
+  const { error } = await supabase.from('study_notes').delete().eq('id', noteId);
+  if (error) throw error;
+
+  await logAdminAction(admin, 'notes:delete', {
+    target_resource: 'study_notes',
+    target_id: noteId,
+  });
+
+  return { success: true };
+}
+
+/**
+ * [NOT-04] Updates title and content for a study note.
+ * Requires notes:write permission.
+ */
+export async function updateAdminNote(noteId: string, title: string, content: string) {
+  const admin = await verifyAdmin();
+  if (!admin) throw new Error('Unauthorized');
+  if (!hasPermission(admin, 'notes:write')) {
+    throw new Error('Forbidden: Insufficient permissions to modify study notes');
+  }
+
+  const supabase = await createAdminClient();
+  const { error } = await supabase
+    .from('study_notes')
+    .update({ title: title.trim(), content: content.trim() })
+    .eq('id', noteId);
+  if (error) throw error;
+
+  await logAdminAction(admin, 'notes:update', {
+    target_resource: 'study_notes',
+    target_id: noteId,
+    details: { title },
+  });
+
+  return { success: true };
+}
+

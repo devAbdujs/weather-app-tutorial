@@ -32,6 +32,7 @@ const COURSE_SUGGESTIONS: Record<string, string[]> = {
     'Mathematics for Social Sciences',
     'Applied Mathematics I',
     'General Physics',
+    'General Chemistry',
   ],
   entrance: [
     'Mathematics (Natural)',
@@ -67,6 +68,8 @@ interface ChapterQueueItem {
   file: File;
   inferredTitle: string;
   status: 'pending' | 'transforming' | 'ready' | 'publishing' | 'published' | 'error';
+  department: string;
+  examType: string;
   content?: string;
   error?: string;
 }
@@ -74,6 +77,7 @@ interface ChapterQueueItem {
 interface ExistingNoteItem {
   id: string;
   title: string;
+  content?: string;
   createdAt: string;
   wordCount: number;
 }
@@ -134,6 +138,40 @@ export default function AdminUploadNotes() {
     fetchInventory();
   }, [fetchInventory]);
 
+  const handleDeleteExistingNote = async (id: string, title: string) => {
+    if (!window.confirm(`Delete "${title}" from ${department}? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`/api/admin/notes?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setExistingNotes(prev => prev.filter(n => n.id !== id));
+      } else {
+        alert(data.error || 'Failed to delete note');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete note');
+    }
+  };
+
+  const handleEditExistingNote = (note: ExistingNoteItem) => {
+    setManualTitle(note.title);
+    setManualContent(note.content || '');
+    setActiveTab('manual');
+    window.scrollTo({ top: 350, behavior: 'smooth' });
+  };
+
+  const handleViewExistingNote = (note: ExistingNoteItem) => {
+    setPreviewItem({
+      id: note.id,
+      file: new File([], note.title),
+      inferredTitle: note.title,
+      status: 'published',
+      department,
+      examType,
+      content: note.content || '',
+    });
+  };
+
   // ── Drag & Drop / File Selection Handlers ────────────────────────────────────
   const handleFilesAdded = (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -157,6 +195,8 @@ export default function AdminUploadNotes() {
         id: `item_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         file,
         inferredTitle: base,
+        department,
+        examType,
         status: 'pending',
       };
     });
@@ -183,8 +223,8 @@ export default function AdminUploadNotes() {
     try {
       const formData = new FormData();
       formData.append('file', item.file);
-      formData.append('examType', examType);
-      formData.append('department', department);
+      formData.append('examType', item.examType || examType);
+      formData.append('department', item.department || department);
       formData.append('chapterTitle', item.inferredTitle);
 
       const res = await fetch('/api/admin/notes/transform', {
@@ -238,8 +278,8 @@ export default function AdminUploadNotes() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          examType,
-          department,
+          examType: item.examType || examType,
+          department: item.department || department,
           title: item.inferredTitle,
           content: item.content,
           allowOverwrite,
@@ -467,16 +507,50 @@ export default function AdminUploadNotes() {
           </div>
         ) : (
           <div className="space-y-2.5">
-            {/* Existing Chapters Badges */}
-            <div className="flex flex-wrap gap-1.5">
+            {/* Existing Chapters Interactive Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
               {existingNotes.map((note) => (
                 <div
                   key={note.id}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400 text-xs font-medium"
+                  className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-ground/80 border border-emerald-500/25 text-xs shadow-2xs group hover:border-emerald-500/50 transition-all"
                 >
-                  <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
-                  <span className="font-semibold">{note.title}</span>
-                  <span className="text-[10px] opacity-75 font-mono">({note.wordCount}w)</span>
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-foreground truncate" title={note.title}>{note.title}</p>
+                      <p className="text-[10px] text-muted-foreground font-mono">
+                        {note.wordCount} words
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {note.content && (
+                      <button
+                        type="button"
+                        onClick={() => handleViewExistingNote(note)}
+                        className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground hover:text-foreground transition-all"
+                        title="View chapter preview"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleEditExistingNote(note)}
+                      className="p-1.5 rounded-lg hover:bg-blue-500/10 text-muted-foreground hover:text-blue-600 transition-all"
+                      title="Edit note in Markdown editor"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteExistingNote(note.id, note.title)}
+                      className="p-1.5 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-all"
+                      title="Delete from database"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -560,12 +634,35 @@ export default function AdminUploadNotes() {
                   <h3 className="text-sm font-bold text-foreground">
                     Queue ({queue.length})
                   </h3>
-                  <p className="text-xs text-muted-foreground">
-                    {department} · {examType}
-                  </p>
+                  <div className="text-xs text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                    <span>Active: {department} · {examType}</span>
+                    {queue.some(q => q.department && q.department !== department) && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold border border-amber-500/20">
+                        Mixed courses in queue
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => setQueue(prev => prev.filter(q => q.status !== 'published'))}
+                    disabled={!queue.some(q => q.status === 'published')}
+                    className="text-xs text-muted-foreground hover:text-foreground font-semibold px-2.5 py-1.5 rounded-lg bg-ground border border-border/80 disabled:opacity-40 transition-colors"
+                  >
+                    Clear Done
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm('Clear all files from the queue?')) setQueue([]);
+                    }}
+                    className="text-xs text-muted-foreground hover:text-red-500 font-semibold px-2.5 py-1.5 rounded-lg bg-ground border border-border/80 transition-colors"
+                  >
+                    Clear All
+                  </button>
+
                   <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer select-none px-2.5 py-1.5 rounded-lg bg-ground border border-border/80">
                     <input
                       type="checkbox"
@@ -625,6 +722,9 @@ export default function AdminUploadNotes() {
                             className="font-black text-sm text-foreground bg-transparent border-b border-transparent hover:border-border focus:border-primary outline-none w-full"
                           />
                           <div className="flex flex-wrap items-center gap-2 mt-0.5 text-xs text-muted font-medium">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shrink-0">
+                              {item.department || department}
+                            </span>
                             <span className="truncate max-w-[200px]">{item.file.name}</span>
                             <span>•</span>
                             <span>{(item.file.size / 1024).toFixed(0)} KB</span>
@@ -674,9 +774,16 @@ export default function AdminUploadNotes() {
                         </span>
                       )}
                       {item.status === 'error' && (
-                        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-red-500/15 text-red-600 dark:text-red-400 flex items-center gap-1" title={item.error}>
-                          <AlertCircle className="w-3 h-3" /> Failed
-                        </span>
+                        <div className="flex flex-col items-end gap-0.5 max-w-[200px]">
+                          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-red-500/15 text-red-600 dark:text-red-400 flex items-center gap-1" title={item.error}>
+                            <AlertCircle className="w-3 h-3 shrink-0" /> Failed
+                          </span>
+                          {item.error && (
+                            <span className="text-[10px] text-red-500 text-right truncate w-full" title={item.error}>
+                              {item.error}
+                            </span>
+                          )}
+                        </div>
                       )}
 
                       {/* Action buttons */}

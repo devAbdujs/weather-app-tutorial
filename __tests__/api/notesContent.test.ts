@@ -15,6 +15,7 @@ const mockSingleNote = {
 };
 
 let mockProfileSubscription = 'free';
+let mockAdminUser: any = null;
 
 jest.mock('@/utils/supabase/admin', () => ({
   createAdminClient: jest.fn(() => ({
@@ -37,6 +38,18 @@ jest.mock('@/utils/supabase/admin', () => ({
             eq: jest.fn(() => ({
               maybeSingle: jest.fn().mockResolvedValue({
                 data: { subscription_status: mockProfileSubscription },
+                error: null,
+              }),
+            })),
+          })),
+        };
+      }
+      if (table === 'admin_users') {
+        return {
+          select: jest.fn(() => ({
+            or: jest.fn(() => ({
+              maybeSingle: jest.fn().mockResolvedValue({
+                data: mockAdminUser,
                 error: null,
               }),
             })),
@@ -84,6 +97,20 @@ describe('GET /api/notes/content', () => {
   it('returns full content with 200 for premium users', async () => {
     (getServerSession as jest.Mock).mockResolvedValueOnce({ telegram_id: 999 });
     mockProfileSubscription = 'premium';
+
+    const req = new NextRequest('http://localhost:3000/api/notes/content?id=note-123');
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+
+    const json = await res.json();
+    expect(json.is_locked).toBe(false);
+    expect(json.content).toBe(mockSingleNote.content);
+  });
+
+  it('grants full content with 200 to staff/subadmins even when profile is free', async () => {
+    (getServerSession as jest.Mock).mockResolvedValueOnce({ telegram_id: 999, username: 'editor_user' });
+    mockProfileSubscription = 'free';
+    mockAdminUser = { id: 'admin-1', role: 'editor' };
 
     const req = new NextRequest('http://localhost:3000/api/notes/content?id=note-123');
     const res = await GET(req);

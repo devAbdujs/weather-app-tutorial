@@ -6,6 +6,7 @@ import {
   repairUnclosedMath,
   repairUnclosedSingleDollars,
   autoWrapAlignedDisplay,
+  cleanMermaidBlocks,
 } from '@/lib/latex';
 
 describe('LaTeX Normalization & Formatting Suite', () => {
@@ -268,6 +269,33 @@ describe('LaTeX Normalization & Formatting Suite', () => {
       const html1 = renderKaTeX('\\sqrt{x}', false);
       const html2 = renderKaTeX('\\sqrt{x}', false);
       expect(html1).toBe(html2);
+    });
+  });
+
+  describe('cleanMermaidBlocks', () => {
+    it('transforms Mermaid classDiagram into readable Markdown callout', () => {
+      const input = '```mermaid\nclassDiagram\nclass Matter {\n+Solid\n+Liquid\n+Gas\n}\n```';
+      const output = cleanMermaidBlocks(input);
+      expect(output).toContain('> 📊 **Summary Flow / Classification:**');
+      expect(output).toContain('> **Matter**');
+      expect(output).toContain('> • Solid');
+      expect(output).toContain('> • Liquid');
+      expect(output).toContain('> • Gas');
+      expect(output).not.toContain('```mermaid');
+    });
+
+    it('transforms Mermaid flowchart into readable Markdown callout', () => {
+      const input = '```mermaid\ngraph LR\nReactants --> Intermediates --> Products\n```';
+      const output = cleanMermaidBlocks(input);
+      expect(output).toContain('> • Reactants ➔ Intermediates ➔ Products');
+      expect(output).not.toContain('```mermaid');
+    });
+
+    it('is executed automatically inside normalizeMarkdownLaTeX', () => {
+      const input = '## Reaction Pathways\n\n```mermaid\ngraph TD\nA --> B\n```\n\nNote text.';
+      const output = normalizeMarkdownLaTeX(input);
+      expect(output).toContain('> • A ➔ B');
+      expect(output).not.toContain('```mermaid');
     });
   });
 });

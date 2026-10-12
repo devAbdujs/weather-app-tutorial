@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
         cachedResponseText = await getCachedAIResponse(payload.questionId!, payload.promptType);
       }
 
-      const [profileRes, cacheRes] = await Promise.all([
+      const [profileRes, cacheRes, adminUserRes] = await Promise.all([
         supabaseAdmin
           .from('profiles')
           .select('target_exam, stream, subscription_status, ai_weekly_usage, ai_quota_reset_at')
@@ -166,6 +166,11 @@ export async function POST(req: NextRequest) {
               .eq('prompt_type', payload.promptType)
               .maybeSingle()
           : Promise.resolve({ data: null, error: null }),
+        supabaseAdmin
+          .from('admin_users')
+          .select('id')
+          .or(`telegram_id.eq.${session.telegram_id},username.eq.${session.username || ''}`)
+          .maybeSingle(),
       ]);
 
       profile = profileRes.data;
@@ -183,7 +188,8 @@ export async function POST(req: NextRequest) {
       return new Response(JSON.stringify({ error: 'Profile not found' }), { status: 404 });
     }
 
-    isPremium = profile.subscription_status === 'premium';
+    const isAdminStaff = Boolean(adminUserRes?.data);
+    isPremium = profile.subscription_status === 'premium' || isAdminStaff;
     quotaLimit = isPremium ? 150 : 5;
     let atomicQuotaApplied = false;
 

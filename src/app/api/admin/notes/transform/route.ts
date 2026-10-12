@@ -25,6 +25,60 @@ const MIME_MAP: Record<string, string> = {
 import { hasPermission } from '@/lib/adminPermissions';
 import { normalizeMarkdownLaTeX } from '@/lib/latex';
 
+export function safeParseAiNote(raw: string, fallbackTitle: string): { title: string; content: string } {
+  if (!raw) return { title: fallbackTitle, content: '' };
+  let cleaned = raw.trim();
+
+  // Strip code block wrappers if any
+  cleaned = cleaned.replace(/^```(?:json)?\s*\n/i, '').replace(/\n```\s*$/i, '').trim();
+
+  // 1. First attempt: standard JSON.parse
+  try {
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      if (parsed.content) {
+        return { title: parsed.title || fallbackTitle, content: parsed.content };
+      }
+    }
+  } catch {}
+
+  // 2. Second attempt: fix unescaped solitary LaTeX backslashes & unescaped control chars
+  try {
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      let candidate = jsonMatch[0];
+      // Escape solitary backslashes not followed by valid JSON escape characters (" \ / b f n r t or uXXXX)
+      candidate = candidate.replace(/(?<!\\)\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})/g, '\\\\');
+      // Normalize literal raw newlines inside "content": "..."
+      candidate = candidate.replace(/"content"\s*:\s*"([\s\S]*?)"\s*\}/, (_, inner) => {
+        const escapedInner = inner.replace(/\r?\n/g, '\\n');
+        return `"content": "${escapedInner}"}`;
+      });
+      const parsed = JSON.parse(candidate);
+      if (parsed.content) {
+        return { title: parsed.title || fallbackTitle, content: parsed.content };
+      }
+    }
+  } catch {}
+
+  // 3. Third attempt: regex extraction of title and content fields
+  const titleMatch = cleaned.match(/"title"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/);
+  const contentMatch = cleaned.match(/"content"\s*:\s*"([\s\S]*)"\s*\}?\s*$/);
+  if (contentMatch) {
+    const unescapedContent = contentMatch[1]
+      .replace(/\\"/g, '"')
+      .replace(/\\n/g, '\n');
+    const unescapedTitle = titleMatch ? titleMatch[1].replace(/\\"/g, '"') : fallbackTitle;
+    return { title: unescapedTitle, content: unescapedContent };
+  }
+
+  // 4. Fallback: if Gemini returned plain Markdown instead of JSON
+  const headingMatch = cleaned.match(/^#+\s*([^\n]+)/m);
+  const extractedTitle = headingMatch ? headingMatch[1].trim() : fallbackTitle;
+  return { title: extractedTitle, content: cleaned };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const admin = await verifyAdmin();
@@ -103,7 +157,12 @@ export async function POST(req: NextRequest) {
       uploadUri = uploadRes.file.uri;
       fileResourceName = uploadRes.file.name;
 
-      const model = ai.getGenerativeModel({ model: process.env.GEMINI_MODEL || 'gemini-3.8-flash' });
+      const model = ai.getGenerativeModel({ 
+        model: process.env.GEMINI_MODEL || 'gemini-3.8-flash',
+        generationConfig: {
+          responseMimeType: 'application/json',
+        },
+      });
 
       const prompt = `
 You are an expert curriculum summarizer and university tutor for Ethiopian students.
@@ -127,7 +186,7 @@ Your task:
        $$
    - Do NOT wrap your entire response or the JSON content value in code blocks (do not wrap in \`\`\`markdown ... \`\`\`).
    - Do NOT include conversational filler (do NOT say "Here is the summary" or "Sure!").
-   - If there are structural cycles, lifecycles, or flowcharts, represent them with Mermaid diagram code blocks (\`\`\`mermaid ... \`\`\`).
+   - Do NOT use Mermaid diagrams, class diagrams, or code diagrams (do NOT use \`\`\`mermaid ... \`\`\`). Represent all lifecycles, flows, hierarchies, taxonomies, and classifications using structured Markdown bullet lists, numbered sequences, or Markdown comparison tables.
 
 Return the response strictly as a JSON object with this exact structure:
 {
@@ -142,17 +201,16 @@ Return the response strictly as a JSON object with this exact structure:
       ]);
 
       const rawResponse = result.response.text();
-      const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        throw new Error('Failed to parse structured response from AI.');
-      }
+      const defaultTitle = chapterHint || file.name.replace(ext, '').replace(/[-_]/g, ' ');
 
-      const parsed = JSON.parse(jsonMatch[0]);
-      let cleanedContent = normalizeMarkdownLaTeX(parsed.content || '');
+      // Robust multi-tier extraction: handles standard JSON, unescaped LaTeX backslashes,
+      // unescaped literal newlines, regex field slicing, and raw markdown fallback
+      const parsed = safeParseAiNote(rawResponse, defaultTitle);
+      const cleanedContent = normalizeMarkdownLaTeX(parsed.content || '');
 
       return NextResponse.json({
         success: true,
-        title: parsed.title || chapterHint || file.name.replace(ext, ''),
+        title: parsed.title || defaultTitle,
         content: cleanedContent,
       });
 
