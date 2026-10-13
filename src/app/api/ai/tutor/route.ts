@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+export const maxDuration = 60;
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/session';
 import { streamText } from 'ai';
@@ -13,11 +13,11 @@ import { sendQuotaExhaustionNudge } from '@/lib/telegramBot';
 
 const RequestSchema = z.object({
   mode:            z.enum(['exam', 'notes']).default('exam'),
-  noteText:        z.string().max(50000).optional(),
-  selectedExcerpt: z.string().max(4000).optional(),
+  noteText:        z.string().max(250000).optional(),
+  selectedExcerpt: z.string().max(10000).optional(),
   questionId:      z.string().optional(),
-  questionText:    z.string().max(2000).optional(),
-  options:         z.array(z.string().nullable()).max(4).optional(),
+  questionText:    z.string().max(10000).optional(),
+  options:         z.array(z.string().nullable()).max(10).optional(),
   correctAnswer:   z.string().nullable().optional(),
   explanation:     z.string().nullable().optional(),
   imageUrl:        z.string().optional(),
@@ -27,8 +27,8 @@ const RequestSchema = z.object({
   studentAnswer:   z.string().nullable().optional(),
   chatHistory:     z.array(z.object({
     role: z.enum(['user', 'assistant']),
-    content: z.string().max(4000)
-  })).max(20).optional(),
+    content: z.string().max(10000)
+  })).max(50).optional(),
 });
 
 function buildPrompt(data: z.infer<typeof RequestSchema>, profileContext: string): { system: string; defaultUserPrompt: string } {
@@ -109,7 +109,7 @@ import { createAdminClient } from '@/utils/supabase/admin';
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(req);
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -152,10 +152,10 @@ export async function POST(req: NextRequest) {
         cachedResponseText = await getCachedAIResponse(payload.questionId!, payload.promptType);
       }
 
-      const [profileRes, cacheRes, adminUserRes] = await Promise.all([
+      const [profileRes, cacheRes] = await Promise.all([
         supabaseAdmin
           .from('profiles')
-          .select('target_exam, stream, subscription_status, ai_weekly_usage, ai_quota_reset_at')
+          .select('target_exam, stream, subscription_status, ai_weekly_usage, ai_quota_reset_at, username, full_name')
           .eq('telegram_id', session.telegram_id)
           .maybeSingle(),
         shouldCheckCache && !cachedResponseText
@@ -166,11 +166,6 @@ export async function POST(req: NextRequest) {
               .eq('prompt_type', payload.promptType)
               .maybeSingle()
           : Promise.resolve({ data: null, error: null }),
-        supabaseAdmin
-          .from('admin_users')
-          .select('id')
-          .or(`telegram_id.eq.${session.telegram_id},username.eq.${session.username || ''}`)
-          .maybeSingle(),
       ]);
 
       profile = profileRes.data;
@@ -184,13 +179,69 @@ export async function POST(req: NextRequest) {
       console.error('[AI Parallel Lookup Error]', e);
     }
 
+    // Auto-create/heal profile for valid session to ensure chat never blocks on 404
     if (!profile) {
-      return new Response(JSON.stringify({ error: 'Profile not found' }), { status: 404 });
+      try {
+        const { data: createdProfile } = await supabaseAdmin
+          .from('profiles')
+          .upsert({
+            telegram_id: session.telegram_id,
+            full_name: session.first_name || 'Student',
+            subscription_status: 'free',
+            ai_weekly_usage: 0,
+          }, { onConflict: 'telegram_id' })
+          .select('target_exam, stream, subscription_status, ai_weekly_usage, ai_quota_reset_at, username, full_name')
+          .single();
+        profile = createdProfile || {
+          target_exam: session.target_exam || 'entrance',
+          stream: session.stream || 'natural',
+          subscription_status: 'free',
+          ai_weekly_usage: 0,
+        };
+      } catch {
+        profile = {
+          target_exam: session.target_exam || 'entrance',
+          stream: session.stream || 'natural',
+          subscription_status: 'free',
+          ai_weekly_usage: 0,
+        };
+      }
     }
 
-    const isAdminStaff = Boolean(adminUserRes?.data);
+    // Check staff/admin privileges safely without broken PostgREST queries
+    const adminCookie = req.cookies.get('temari_admin_session')?.value;
+    let isAdminStaff = Boolean(
+      (process.env.ADMIN_TELEGRAM_ID && String(session.telegram_id) === String(process.env.ADMIN_TELEGRAM_ID)) ||
+      adminCookie
+    );
+
+    if (!isAdminStaff && (profile?.username || profile?.full_name)) {
+      try {
+        const identifier = (profile.username || profile.full_name || '').trim();
+        const { data: adminUser } = await supabaseAdmin
+          .from('admin_users')
+          .select('id')
+          .eq('is_active', true)
+          .ilike('username', identifier)
+          .maybeSingle();
+        if (adminUser) isAdminStaff = true;
+      } catch (err) {
+        console.warn('[AI Tutor Admin Check Warning]', err);
+      }
+    }
+
+    // Auto-heal admin/staff profile to premium
+    if (isAdminStaff && profile.subscription_status !== 'premium') {
+      profile.subscription_status = 'premium';
+      supabaseAdmin
+        .from('profiles')
+        .update({ subscription_status: 'premium' })
+        .eq('telegram_id', session.telegram_id)
+        .catch(err => console.warn('[AI Tutor Profile Upgrade Warning]', err));
+    }
+
     isPremium = profile.subscription_status === 'premium' || isAdminStaff;
-    quotaLimit = isPremium ? 150 : 5;
+    quotaLimit = isAdminStaff ? 500 : (isPremium ? 150 : 5);
     let atomicQuotaApplied = false;
 
     // Try atomic RPC increment first to prevent concurrent-tab TOCTOU bypasses (M-03)
@@ -364,7 +415,17 @@ export async function POST(req: NextRequest) {
 
         return stream.toTextStreamResponse();
       } catch (err: unknown) {
-        if ((err as Error)?.message?.includes('429') || (err as Error)?.message?.includes('quota') || (err as Error)?.message?.includes('RESOURCE_EXHAUSTED')) {
+        const errMsg = (err as Error)?.message || '';
+        const isRetryable =
+          errMsg.includes('429') ||
+          errMsg.includes('quota') ||
+          errMsg.includes('RESOURCE_EXHAUSTED') ||
+          errMsg.includes('503') ||
+          errMsg.includes('overloaded') ||
+          errMsg.includes('UNAVAILABLE') ||
+          errMsg.includes('high traffic');
+
+        if (isRetryable) {
           markKeyRateLimited(geminiKey);
           attempt++;
           continue; 

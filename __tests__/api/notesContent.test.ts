@@ -47,6 +47,12 @@ jest.mock('@/utils/supabase/admin', () => ({
       if (table === 'admin_users') {
         return {
           select: jest.fn(() => ({
+            ilike: jest.fn(() => ({
+              maybeSingle: jest.fn().mockResolvedValue({
+                data: mockAdminUser,
+                error: null,
+              }),
+            })),
             or: jest.fn(() => ({
               maybeSingle: jest.fn().mockResolvedValue({
                 data: mockAdminUser,

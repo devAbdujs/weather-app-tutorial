@@ -89,13 +89,23 @@ export async function decryptSession(encryptedStr: string): Promise<SessionData 
   }
 }
 
-export async function getServerSession(): Promise<SessionData | null> {
-  const cookieStore = cookies();
-  const sessionCookie = cookieStore.get('es_session');
+export async function getServerSession(req?: { cookies?: { get: (name: string) => { value?: string } | undefined } }): Promise<SessionData | null> {
+  let sessionToken: string | undefined;
+
+  if (req?.cookies) {
+    sessionToken = req.cookies.get('es_session')?.value;
+  }
+
+  if (!sessionToken) {
+    try {
+      const cookieStore = cookies();
+      sessionToken = cookieStore.get('es_session')?.value;
+    } catch {}
+  }
   
-  if (!sessionCookie?.value) return null;
+  if (!sessionToken) return null;
   
-  return decryptSession(sessionCookie.value);
+  return decryptSession(sessionToken);
 }
 
 /**

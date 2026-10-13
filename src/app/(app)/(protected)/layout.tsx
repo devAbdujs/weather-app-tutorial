@@ -29,24 +29,36 @@ export default async function ProtectedLayout({ children }: { children: React.Re
 
   try {
     const supabase = await createClient();
-    const [{ data: profile }, { data: stats }, { data: adminUser }] = await Promise.all([
+    const adminCookie = cookies().get('temari_admin_session')?.value;
+    const isSuperAdmin = Boolean(
+      process.env.ADMIN_TELEGRAM_ID && String(session.telegram_id) === String(process.env.ADMIN_TELEGRAM_ID)
+    );
+
+    const [{ data: profile }, { data: stats }] = await Promise.all([
       supabase
         .from('profiles')
-        .select('daily_streak, last_activity_date, subscription_status, stream, target_exam, ai_weekly_usage, ai_quota_reset_at')
+        .select('daily_streak, last_activity_date, subscription_status, stream, target_exam, ai_weekly_usage, ai_quota_reset_at, username, full_name')
         .eq('telegram_id', session.telegram_id)
         .maybeSingle(),
       supabase
         .from('user_subject_stats')
         .select('questions_correct')
         .eq('telegram_id', session.telegram_id),
-      supabase
-        .from('admin_users')
-        .select('id, role')
-        .or(`telegram_id.eq.${session.telegram_id},username.eq.${session.username || ''}`)
-        .maybeSingle(),
     ]);
     dbProfile = profile;
-    isStaffOrAdmin = Boolean(adminUser);
+    isStaffOrAdmin = isSuperAdmin || Boolean(adminCookie);
+
+    if (!isStaffOrAdmin && (profile?.username || profile?.full_name)) {
+      try {
+        const identifier = (profile.username || profile.full_name || '').trim();
+        const { data: adminUser } = await supabase
+          .from('admin_users')
+          .select('id, role')
+          .ilike('username', identifier)
+          .maybeSingle();
+        if (adminUser) isStaffOrAdmin = true;
+      } catch {}
+    }
 
     if (stats && Array.isArray(stats)) {
       totalCorrect = stats.reduce((acc, curr) => acc + (curr.questions_correct || 0), 0);

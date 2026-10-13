@@ -946,3 +946,33 @@ Require all admin accounts to update password; remove plaintext comparison branc
 - [x] `[TRF-04]` Add "General Chemistry" across all freshman course lists, PracticeHub, ExamSetupModal, notes routing, and subdomains.
 - [x] `[TRF-05]` Automatically grant PRO access (`subscription_status: 'premium'`) to all admins and subadmins across ProtectedLayout, notes viewer, AI tutor, and AI quizzes.
 
+---
+
+### [P-18] AI Chat & Tutor Diagnostic, Schema Expansion, and Resilient Key Rotation
+**Files:** `src/app/api/ai/tutor/route.ts`, `src/app/api/ai/quiz/route.ts`, `src/components/ai/AITutorDrawer.tsx`, `src/app/api/notes/content/route.ts`, `src/app/(app)/(protected)/notes/[subject]/page.tsx`, `src/app/(app)/(protected)/layout.tsx`, `src/lib/session.ts`
+
+**Audit Findings & Root Cause Analysis:**
+1. **Zod Validation Failure on Comprehensive Study Notes (400 Bad Request):**
+   - `RequestSchema.noteText` in `src/app/api/ai/tutor/route.ts` was hardcoded to `z.string().max(50000)`.
+   - Comprehensive university exit notes (e.g. Software Engineering: 110.5k chars, Psychology: 81.6k chars, Accounting: 69.2k chars, Architecture: 64.7k chars, Computer Science: 62.7k chars) exceeded 50,000 characters.
+   - Any student or note uploader asking AI Tutor about these chapters sent `noteText`, causing Zod validation to fail with `400 Bad Request` ("Invalid request data").
+2. **Broken PostgREST Query on Non-Existent Column:**
+   - Previous staff check attempted `supabaseAdmin.from('admin_users').select('id').or('telegram_id.eq.${session.telegram_id},username.eq.${session.username || ''}')`.
+   - `admin_users` table has no `telegram_id` column (PostgREST error `42703`), and `session.username` was undefined, resulting in a malformed query.
+   - Consequently, subadmins (like `SAV`, editor) and staff were treated as `free` users with a 5 questions/week limit.
+3. **Edge Runtime Timeout Risk & Request Scope:**
+   - AI streaming responses were set to `export const runtime = 'edge'`, subject to edge isolate constraints and timer restrictions.
+   - `getServerSession` called `cookies()` from `next/headers`, which throws outside a request scope or in certain edge worker contexts.
+4. **Gemini Key Rotation Resilience:**
+   - Key rotation only skipped keys on 429, missing transient 503, unavailable, and high-traffic server errors.
+
+**Action Items & Implementation Roadmap:**
+- [x] `[AIC-01]` Expanded `RequestSchema` in `route.ts` and `quiz/route.ts` to accept note text up to 250,000 characters, question text up to 10,000 characters, and chat history up to 50 turns.
+- [x] `[AIC-02]` Replaced broken `admin_users` query with robust multi-tiered staff detection (`ADMIN_TELEGRAM_ID`, `temari_admin_session` cookie, and case-insensitive username match on `admin_users`).
+- [x] `[AIC-03]` Configured Node serverless runtime with `export const maxDuration = 60` for rock-solid streaming stability.
+- [x] `[AIC-04]` Updated `getServerSession` to accept `req` directly for instant cookie reading.
+- [x] `[AIC-05]` Added automatic fallback profile creation in `route.ts` so sessions never block on 404.
+- [x] `[AIC-06]` Enhanced Gemini key rotation to automatically catch 503, unavailable, and overloaded errors.
+- [x] `[AIC-07]` Refined UI error messaging in `AITutorDrawer.tsx` to clearly distinguish authentication issues from service interruptions.
+- [x] `[AIC-08]` Added automated unit tests in `__tests__/api/aiTutor.test.ts` (30 test suites, 215 tests passing, 0 failures).
+

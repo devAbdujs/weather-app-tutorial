@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(req);
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -26,7 +26,12 @@ export async function GET(req: NextRequest) {
     }
 
     const supabase = createAdminClient();
-    const [{ data: note, error: noteError }, { data: profile }, { data: adminUser }] = await Promise.all([
+    const adminCookie = req.cookies.get('temari_admin_session')?.value;
+    const isSuperAdmin = Boolean(
+      process.env.ADMIN_TELEGRAM_ID && String(session.telegram_id) === String(process.env.ADMIN_TELEGRAM_ID)
+    );
+
+    const [{ data: note, error: noteError }, { data: profile }] = await Promise.all([
       supabase
         .from('study_notes')
         .select('id, content')
@@ -34,13 +39,8 @@ export async function GET(req: NextRequest) {
         .maybeSingle(),
       supabase
         .from('profiles')
-        .select('subscription_status')
+        .select('subscription_status, username, full_name')
         .eq('telegram_id', session.telegram_id)
-        .maybeSingle(),
-      supabase
-        .from('admin_users')
-        .select('id')
-        .or(`telegram_id.eq.${session.telegram_id},username.eq.${session.username || ''}`)
         .maybeSingle(),
     ]);
 
@@ -48,7 +48,23 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Note not found' }, { status: 404 });
     }
 
-    const isPremium = profile?.subscription_status === 'premium' || Boolean(adminUser);
+    let isStaff = isSuperAdmin || Boolean(adminCookie);
+
+    if (!isStaff) {
+      const staffIdentifier = (session as any).username || profile?.username || profile?.full_name;
+      if (staffIdentifier) {
+        try {
+          const { data: adminUser } = await supabase
+            .from('admin_users')
+            .select('id')
+            .ilike('username', String(staffIdentifier).trim())
+            .maybeSingle();
+          if (adminUser) isStaff = true;
+        } catch {}
+      }
+    }
+
+    const isPremium = profile?.subscription_status === 'premium' || isStaff;
     if (!isPremium) {
       const fullText = note.content ?? '';
       const paragraphs = fullText.split(/\n\n+/).filter(Boolean);

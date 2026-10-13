@@ -195,7 +195,8 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
         let errMessage = 'Failed to get AI response';
         try {
           const errData = await res.json();
-          if (errData?.error) errMessage = errData.error;
+          if (errData?.message) errMessage = errData.message;
+          else if (errData?.error) errMessage = errData.error;
         } catch (e) {}
         throw new Error(errMessage);
       }
@@ -231,9 +232,12 @@ export const AITutorDrawer: React.FC<AITutorDrawerProps> = ({
         prev.map(m => m.id === assistantMsgId ? { ...m, content: accumulated } : m)
       );
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Unknown error';
-      toast.error('AI Tutor is unavailable right now. Please try again in a moment.');
-      setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, content: `⚠️ Connection lost. ${msg}` } : m));
+      const msg = err instanceof Error ? err.message : 'AI Tutor is temporarily unavailable.';
+      const friendlyMsg = msg === 'Unauthorized'
+        ? '⚠️ Please log in to chat with Temari AI Tutor.'
+        : (msg.startsWith('⚠️') ? msg : `⚠️ ${msg}`);
+      toast.error(friendlyMsg);
+      setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, content: friendlyMsg } : m));
     } finally {
       setIsLoading(false);
     }

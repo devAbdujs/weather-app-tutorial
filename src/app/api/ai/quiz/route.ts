@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+export const maxDuration = 60;
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/session';
 import { generateObject } from 'ai';
@@ -22,7 +22,7 @@ const QuizSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(req);
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -37,26 +37,40 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { noteText, noteId } = body;
     
-    if (!noteText || typeof noteText !== 'string' || noteText.length > 50000) {
-      return NextResponse.json({ error: 'noteText must be a valid string under 50,000 characters' }, { status: 400 });
+    if (!noteText || typeof noteText !== 'string' || noteText.length > 250000) {
+      return NextResponse.json({ error: 'noteText must be a valid string under 250,000 characters' }, { status: 400 });
     }
 
     // SUBSCRIPTION GATE: Only premium users can generate AI quizzes from notes
     const supabase = await createClient();
-    const [{ data: profile }, { data: adminUser }] = await Promise.all([
-      supabase
-        .from('profiles')
-        .select('subscription_status')
-        .eq('telegram_id', session.telegram_id)
-        .maybeSingle(),
-      supabase
-        .from('admin_users')
-        .select('id')
-        .or(`telegram_id.eq.${session.telegram_id},username.eq.${session.username || ''}`)
-        .maybeSingle(),
-    ]);
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('subscription_status, username, full_name')
+      .eq('telegram_id', session.telegram_id)
+      .maybeSingle();
 
-    const isPremium = profile?.subscription_status === 'premium' || Boolean(adminUser);
+    const adminCookie = req.cookies.get('temari_admin_session')?.value;
+    let isStaff = Boolean(
+      (process.env.ADMIN_TELEGRAM_ID && String(session.telegram_id) === String(process.env.ADMIN_TELEGRAM_ID)) ||
+      adminCookie
+    );
+
+    if (!isStaff && (profile?.username || profile?.full_name)) {
+      try {
+        const identifier = (profile.username || profile.full_name || '').trim();
+        const { data: adminUser } = await supabase
+          .from('admin_users')
+          .select('id')
+          .eq('is_active', true)
+          .ilike('username', identifier)
+          .maybeSingle();
+        if (adminUser) isStaff = true;
+      } catch (err) {
+        console.warn('[Quiz Admin Check Warning]', err);
+      }
+    }
+
+    const isPremium = profile?.subscription_status === 'premium' || isStaff;
 
     if (!isPremium) {
       return NextResponse.json(
@@ -128,7 +142,17 @@ The options must be highly plausible to challenge the student. Ensure the correc
         return NextResponse.json({ success: true, quiz: object.questions });
 
       } catch (err: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
-        if (err?.message?.includes('429') || err?.message?.includes('quota') || err?.message?.includes('RESOURCE_EXHAUSTED')) {
+        const errMsg = err?.message || '';
+        const isRetryable =
+          errMsg.includes('429') ||
+          errMsg.includes('quota') ||
+          errMsg.includes('RESOURCE_EXHAUSTED') ||
+          errMsg.includes('503') ||
+          errMsg.includes('overloaded') ||
+          errMsg.includes('UNAVAILABLE') ||
+          errMsg.includes('high traffic');
+
+        if (isRetryable) {
           markKeyRateLimited(geminiKey);
           attempt++;
           continue; 

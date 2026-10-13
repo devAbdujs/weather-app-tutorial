@@ -21,20 +21,31 @@ export default async function NotesPage({
   // 1. Get the user's exam type — URL param is trusted (set by ExamSetupModal),
   //    but we ALSO verify against the profile as a secure server-side fallback.
   const supabase = await createClient();
-  const [{ data: profile }, { data: adminUser }] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('target_exam, stream, subscription_status')
-      .eq('telegram_id', session.telegram_id)
-      .maybeSingle(),
-    supabase
-      .from('admin_users')
-      .select('id')
-      .or(`telegram_id.eq.${session.telegram_id},username.eq.${session.username || ''}`)
-      .maybeSingle(),
-  ]);
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('target_exam, stream, subscription_status, username, full_name')
+    .eq('telegram_id', session.telegram_id)
+    .maybeSingle();
 
-  const isPremium = profile?.subscription_status === 'premium' || Boolean(adminUser);
+  const adminCookie = cookies().get('temari_admin_session')?.value;
+  let isStaff = Boolean(
+    (process.env.ADMIN_TELEGRAM_ID && String(session.telegram_id) === String(process.env.ADMIN_TELEGRAM_ID)) ||
+    adminCookie
+  );
+
+  if (!isStaff && (profile?.username || profile?.full_name)) {
+    try {
+      const identifier = (profile.username || profile.full_name || '').trim();
+      const { data: adminUser } = await supabase
+        .from('admin_users')
+        .select('id')
+        .ilike('username', identifier)
+        .maybeSingle();
+      if (adminUser) isStaff = true;
+    } catch {}
+  }
+
+  const isPremium = profile?.subscription_status === 'premium' || isStaff;
     
   // Use URL param if valid, otherwise fall back to profile (prevents manual URL tampering)
   const validExamTypes = ['entrance', 'freshman', 'exit'];
